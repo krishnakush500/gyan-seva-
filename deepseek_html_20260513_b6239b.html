@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GYAN SEVA - Founder Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            color: #1a237e;
+            letter-spacing: 1px;
+        }
+        .header h1 i {
+            color: #ffc107;
+        }
+        .header .founder {
+            font-size: 1.1rem;
+            color: #666;
+            margin-top: 8px;
+        }
+        .motivation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #1a237e;
+            font-weight: 500;
+            background: #e8eaf6;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 40px;
+        }
+        /* 3 Big Buttons */
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .card-btn {
+            background: white;
+            border-radius: 20px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+        .card-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        .card-btn i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .card-btn h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .card-btn p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .btn-save i { color: #28a745; }
+        .btn-connect i { color: #17a2b8; }
+        .btn-connected i { color: #ffc107; }
+        /* Lists */
+        .list-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: none;
+        }
+        .list-container h3 {
+            margin-bottom: 15px;
+            color: #1a237e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .coaching-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .coaching-item:last-child {
+            border-bottom: none;
+        }
+        .coaching-info {
+            flex: 1;
+        }
+        .coaching-name {
+            font-weight: 600;
+            color: #333;
+        }
+        .coaching-phone {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .whatsapp-link {
+            background: #25D366;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .status-pending { background: #ffc107; color: #333; }
+        .status-connected { background: #28a745; color: white; }
+        .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #999;
+        }
+        .import-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: #1a237e;
+            color: white;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #888;
+            font-size: 0.8rem;
+        }
+        @media (max-width: 768px) {
+            .card-btn { padding: 25px 15px; }
+            .coaching-item { flex-direction: column; gap: 10px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-graduation-cap"></i> GYAN SEVA</h1>
+        <div class="founder">Founder: <strong>Krishna Kumar</strong></div>
+        <div class="motivation">"Chhote coaching ko digital banane ki mission"</div>
+    </div>
+
+    <div class="buttons-grid">
+        <div class="card-btn btn-save" onclick="showSaveCustomer()">
+            <i class="fas fa-save"></i>
+            <h2>SAVE CUSTOMER</h2>
+            <p>GMapsScraper से data lao aur leads save karo</p>
+        </div>
+        <div class="card-btn btn-connect" onclick="showConnectCustomer()">
+            <i class="fas fa-phone-alt"></i>
+            <h2>CONNECT TO CUSTOMER</h2>
+            <p>Saved leads ko WhatsApp message bhejo</p>
+        </div>
+        <div class="card-btn btn-connected" onclick="showConnectedCustomers()">
+            <i class="fas fa-users"></i>
+            <h2>CONNECTED CUSTOMER</h2>
+            <p>Jo coaching se jud chuke, unka dashboard</p>
+        </div>
+    </div>
+
+    <!-- Save Customer Panel -->
+    <div id="savePanel" class="list-container">
+        <button class="close-btn" onclick="closePanel('savePanel')">&times;</button>
+        <h3><i class="fas fa-database"></i> GMapsScraper Data Import</h3>
+        <div class="import-section">
+            <label>Paste CSV/JSON data from GMapsScraper:</label>
+            <textarea id="rawData" rows="6" placeholder='[{"name":"Raman Classes","phone":"9123456789","city":"Begusarai"},...]'></textarea>
+            <button class="btn btn-primary" onclick="importLeads()">Import & Save Leads</button>
+        </div>
+        <div id="saveStatus"></div>
+    </div>
+
+    <!-- Connect Customer Panel -->
+    <div id="connectPanel" class="list-container">
+        <button class="close-btn" onclick="closePanel('connectPanel')">&times;</button>
+        <h3><i class="fab fa-whatsapp"></i> Pending Leads (WhatsApp Connect)</h3>
+        <div id="leadsList"></div>
+    </div>
+
+    <!-- Connected Customers Panel -->
+    <div id="connectedPanel" class="list-container">
+        <button class="close-btn" onclick="closePanel('connectedPanel')">&times;</button>
+        <h3><i class="fas fa-check-circle"></i> Connected Coachings</h3>
+        <div id="coachingsList"></div>
+    </div>
+
+    <div class="footer">
+        GYAN SEVA — Result ki seva, GYAN ki seva
+    </div>
+</div>
+
+<script type="module">
+    import { db } from './firebase-config.js';
+    import { collection, addDoc, getDocs, query, where, updateDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    window.showSaveCustomer = () => {
+        document.getElementById('savePanel').style.display = 'block';
+        document.getElementById('connectPanel').style.display = 'none';
+        document.getElementById('connectedPanel').style.display = 'none';
+    };
+    window.showConnectCustomer = () => {
+        document.getElementById('connectPanel').style.display = 'block';
+        document.getElementById('savePanel').style.display = 'none';
+        document.getElementById('connectedPanel').style.display = 'none';
+        loadLeads();
+    };
+    window.showConnectedCustomers = () => {
+        document.getElementById('connectedPanel').style.display = 'block';
+        document.getElementById('savePanel').style.display = 'none';
+        document.getElementById('connectPanel').style.display = 'none';
+        loadConnectedCoachings();
+    };
+    window.closePanel = (id) => {
+        document.getElementById(id).style.display = 'none';
+    };
+
+    window.importLeads = async () => {
+        const raw = document.getElementById('rawData').value;
+        if(!raw) { alert("Paste data first!"); return; }
+        let data;
+        try {
+            data = JSON.parse(raw);
+        } catch(e) {
+            alert("Invalid JSON. Use format: [{\"name\":\"...\",\"phone\":\"...\",\"city\":\"...\"}]");
+            return;
+        }
+        const leadsRef = collection(db, "leads");
+        let count = 0;
+        for(let item of data) {
+            if(item.name && item.phone) {
+                await addDoc(leadsRef, {
+                    name: item.name,
+                    phone: item.phone,
+                    city: item.city || "",
+                    status: "pending",
+                    createdAt: new Date().toISOString()
+                });
+                count++;
+            }
+        }
+        document.getElementById('saveStatus').innerHTML = `<p style="color:green;">✅ ${count} leads imported successfully!</p>`;
+        document.getElementById('rawData').value = '';
+    };
+
+    async function loadLeads() {
+        const leadsRef = collection(db, "leads");
+        const q = query(leadsRef, where("status", "==", "pending"));
+        const snapshot = await getDocs(q);
+        const container = document.getElementById('leadsList');
+        if(snapshot.empty) {
+            container.innerHTML = '<p>No pending leads. Import first.</p>';
+            return;
+        }
+        let html = '';
+        snapshot.forEach(docSnap => {
+            const lead = docSnap.data();
+            const phone = lead.phone;
+            const whatsappUrl = `https://wa.me/91${phone}?text=नमस्ते ${lead.name} सर,%0Aमैं GYAN SEVA से बोल रहा हूँ।%0Aमैं आपके कोचिंग के लिए FREE DEMO result portal बनाता हूँ।%0Aबिल्कुल नि:शुल्क।%0Aक्या मैं बना दूं?%0AWhatsApp: 8580594404`;
+            html += `
+                <div class="coaching-item">
+                    <div class="coaching-info">
+                        <div class="coaching-name">${lead.name}</div>
+                        <div class="coaching-phone">${lead.phone} | ${lead.city}</div>
+                    </div>
+                    <a href="${whatsappUrl}" target="_blank" class="whatsapp-link"><i class="fab fa-whatsapp"></i> Message</a>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    async function loadConnectedCoachings() {
+        const coachingsRef = collection(db, "coachings");
+        const snapshot = await getDocs(coachingsRef);
+        const container = document.getElementById('coachingsList');
+        if(snapshot.empty) {
+            container.innerHTML = '<p>No connected coachings yet. Add from admin panel.</p>';
+            return;
+        }
+        let html = '';
+        snapshot.forEach(docSnap => {
+            const coaching = docSnap.data();
+            const id = docSnap.id;
+            html += `
+                <div class="coaching-item">
+                    <div class="coaching-info">
+                        <div class="coaching-name">${coaching.name}</div>
+                        <div class="coaching-phone">${coaching.director || ''} | ${coaching.location || ''}</div>
+                    </div>
+                    <a href="dashboard.html?id=${id}" class="whatsapp-link" style="background:#1a237e;"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    window.loadLeads = loadLeads;
+    window.loadConnectedCoachings = loadConnectedCoachings;
+</script>
+</body>
+</html>
