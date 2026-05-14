@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>GYAN SEVA — Connected Customers</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: #ffffff;
+      min-height: 100vh;
+      padding: 40px 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .nav-links {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      background: #f1f5f9;
+      padding: 8px 24px;
+      border-radius: 40px;
+      margin: 0 8px;
+      color: #1e293b;
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    .connected-card {
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.08);
+      border: 1px solid #dbeafe;
+      overflow: hidden;
+    }
+    .connected-header {
+      background: #2563eb;
+      padding: 28px 32px;
+      text-align: center;
+    }
+    .connected-header h2 {
+      color: white;
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .connected-header p {
+      color: #dbeafe;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+    .connected-body {
+      padding: 32px;
+    }
+
+    .stats-bar {
+      background: #eef2ff;
+      border-radius: 24px;
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .stat-count {
+      background: #2563eb;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: 600;
+    }
+    .refresh-btn {
+      background: #f1f5f9;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .coachings-container {
+      max-height: 550px;
+      overflow-y: auto;
+    }
+    .coaching-card {
+      background: #f8fafc;
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid #e2e8f0;
+      transition: 0.2s;
+    }
+    .coaching-card:hover {
+      border-color: #2563eb;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+    }
+    .coaching-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .coaching-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .status-badge {
+      background: #dbeafe;
+      color: #2563eb;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .coaching-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      color: #475569;
+    }
+    .coaching-details i {
+      width: 20px;
+      color: #2563eb;
+    }
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .btn-dashboard {
+      background: #2563eb;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-create-result {
+      background: #10b981;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 40px;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: #94a3b8;
+    }
+    .error-state {
+      text-align: center;
+      padding: 30px;
+      background: #fee2e2;
+      border-radius: 24px;
+      color: #b91c1c;
+    }
+    .add-new {
+      margin-top: 24px;
+      text-align: center;
+    }
+    .add-new a {
+      background: #1e293b;
+      color: white;
+      padding: 10px 28px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #94a3b8;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-links">
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="save-customer.html"><i class="fas fa-save"></i> Save Customer</a>
+    <a href="connect.html"><i class="fab fa-whatsapp"></i> Connect to Customer</a>
+  </div>
+
+  <div class="connected-card">
+    <div class="connected-header">
+      <h2><i class="fas fa-handshake"></i> CONNECTED CUSTOMER</h2>
+      <p>Active coachings that have joined GYAN SEVA</p>
+    </div>
+    <div class="connected-body">
+      <div class="stats-bar">
+        <span><i class="fas fa-users"></i> <strong>Active Coachings</strong></span>
+        <span class="stat-count" id="coachingCount">0</span>
+        <button class="refresh-btn" onclick="loadConnectedCoachings()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+
+      <div id="coachingsList" class="coachings-container">
+        <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading connected coachings...</div>
+      </div>
+
+      <div class="add-new">
+        <a href="admin.html"><i class="fas fa-plus-circle"></i> Add New Coaching</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing
+  </footer>
+</div>
+
+<script type="module">
+  import { db } from './firebase-config.js';
+  import { collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  window.loadConnectedCoachings = async function() {
+    try {
+      console.log("🔍 Loading connected coachings from Firebase...");
+      
+      const coachingsRef = collection(db, "coachings");
+      const snapshot = await getDocs(coachingsRef);
+      
+      console.log("📊 Total coachings found:", snapshot.size);
+      
+      const container = document.getElementById('coachingsList');
+      const countSpan = document.getElementById('coachingCount');
+      
+      if (snapshot.empty) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><br>No connected coachings yet.<br>Click "Add New Coaching" to get started.</div>`;
+        countSpan.innerText = '0';
+        return;
+      }
+      
+      countSpan.innerText = snapshot.size;
+      
+      let html = '';
+      for (const docSnap of snapshot.docs) {
+        const coaching = docSnap.data();
+        const id = docSnap.id;
+        
+        // Count results for this coaching
+        const resultsRef = collection(db, "results");
+        const resultsQuery = await getDocs(resultsRef);
+        let resultCount = 0;
+        resultsQuery.forEach(resultDoc => {
+          if (resultDoc.data().coachingId === id) resultCount++;
+        });
+        
+        const whatsappMessage = `Namaste ${coaching.name} team,%0A%0AThis is GYAN SEVA. Your result portal is ready.%0A%0A📊 Total results published: ${resultCount}%0A📈 Students can check marks online.%0A%0AKeep growing! 🙏%0A%0A-GYAN SEVA Team`;
+        const waLink = `https://wa.me/91${coaching.phone}?text=${whatsappMessage}`;
+        
+        html += `
+          <div class="coaching-card">
+            <div class="coaching-header">
+              <div class="coaching-name">🎓 ${coaching.name}</div>
+              <span class="status-badge"><i class="fas fa-check-circle"></i> Active</span>
+            </div>
+            <div class="coaching-details">
+              <div><i class="fas fa-user-tie"></i> ${coaching.director || 'Director not set'}</div>
+              <div><i class="fas fa-phone"></i> ${coaching.phone}</div>
+              <div><i class="fas fa-location-dot"></i> ${coaching.location || 'Location not set'}</div>
+              <div><i class="fas fa-chart-line"></i> ${resultCount} Results Published</div>
+            </div>
+            <div class="action-buttons">
+              <a href="dashboard.html?id=${id}" class="btn-dashboard">
+                <i class="fas fa-tachometer-alt"></i> Full Dashboard
+              </a>
+              <a href="https://wa.me/91${coaching.phone}?text=${whatsappMessage}" target="_blank" class="btn-whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+              </a>
+            </div>
+          </div>
+        `;
+      }
+      
+      container.innerHTML = html;
+      
+    } catch (error) {
+      console.error("❌ Error loading coachings:", error);
+      document.getElementById('coachingsList').innerHTML = `<div class="error-state"><i class="fas fa-exclamation-triangle"></i><br>Error loading coachings: ${error.message}</div>`;
+    }
+  };
+
+  // Load when page loads
+  window.addEventListener('DOMContentLoaded', () => {
+    loadConnectedCoachings();
+  });
+  
+  // Auto refresh every 20 seconds
+  setInterval(loadConnectedCoachings, 20000);
+</script>
+</body>
+</html>
