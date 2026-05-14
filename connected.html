@@ -29,24 +29,24 @@
     .coaching-details i { width:20px; color:#2563eb; }
     .action-buttons { display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; }
     .btn-dashboard { background:#2563eb; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
-    .btn-edit { background:#f59e0b; color:white; padding:8px 20px; border-radius:40px; border:none; font-size:0.8rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .btn-dashboard:hover { background:#1d4ed8; }
     .btn-whatsapp { background:#25D366; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .btn-edit { background:#f59e0b; color:white; padding:8px 20px; border-radius:40px; border:none; font-size:0.8rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .btn-edit:hover { background:#d97706; }
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     .add-new { margin-top:24px; text-align:center; }
     .add-new a { background:#1e293b; color:white; padding:10px 28px; border-radius:40px; text-decoration:none; font-weight:600; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
-
+    
     /* Modal Styles */
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
-    .modal-content { background:white; border-radius:32px; padding:30px; max-width:500px; width:90%; max-height:90vh; overflow-y:auto; }
-    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:2px solid #eef2ff; padding-bottom:15px; }
-    .modal-header h3 { color:#1e293b; font-size:1.5rem; }
-    .close-modal { background:none; border:none; font-size:1.5rem; cursor:pointer; color:#94a3b8; }
-    .form-group { margin-bottom:15px; }
-    .form-group label { display:block; font-weight:600; margin-bottom:5px; color:#1e293b; }
-    .form-group input, .form-group textarea { width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:12px; font-size:0.9rem; }
-    .form-group input:focus { outline:none; border-color:#2563eb; }
-    .btn-save { background:#2563eb; color:white; padding:12px; border:none; border-radius:40px; font-weight:600; cursor:pointer; width:100%; }
+    .modal-content { background:white; border-radius:32px; padding:32px; max-width:500px; width:90%; max-height:90vh; overflow-y:auto; }
+    .modal-content h3 { margin-bottom:20px; color:#1e293b; }
+    .modal-content input, .modal-content textarea { width:100%; padding:12px; margin:10px 0; border:1px solid #e2e8f0; border-radius:16px; font-size:0.9rem; }
+    .modal-buttons { display:flex; gap:12px; margin-top:20px; justify-content:flex-end; }
+    .modal-buttons button { padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; }
+    .save-btn { background:#10b981; color:white; }
+    .cancel-btn { background:#e2e8f0; color:#475569; }
     .toast { position:fixed; bottom:30px; right:30px; background:#1e293b; color:white; padding:12px 24px; border-radius:50px; font-size:0.85rem; z-index:1001; animation:fadeInOut 3s ease; }
     @keyframes fadeInOut { 0% { opacity:0; transform:translateY(20px); } 15% { opacity:1; transform:translateY(0); } 85% { opacity:1; } 100% { opacity:0; transform:translateY(20px); } }
   </style>
@@ -71,48 +71,27 @@
         <span class="stat-count" id="coachingCount">0</span>
         <button class="refresh-btn" onclick="loadConnectedCoachings()"><i class="fas fa-sync-alt"></i> Refresh</button>
       </div>
-
-      <div id="coachingsList" class="coachings-container">
-        <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading connected coachings...</div>
-      </div>
-
-      <div class="add-new">
-        <a href="admin.html"><i class="fas fa-plus-circle"></i> Add New Coaching</a>
-      </div>
+      <div id="coachingsList" class="coachings-container"><div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading...</div></div>
+      <div class="add-new"><a href="admin.html"><i class="fas fa-plus-circle"></i> Add New Coaching</a></div>
     </div>
   </div>
-
   <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
 </div>
 
 <!-- Edit Modal -->
 <div id="editModal" class="modal">
   <div class="modal-content">
-    <div class="modal-header">
-      <h3><i class="fas fa-edit"></i> Edit Coaching Details</h3>
-      <button class="close-modal" onclick="closeEditModal()">&times;</button>
+    <h3><i class="fas fa-edit"></i> Edit Coaching Details</h3>
+    <input type="text" id="editCoachingId" style="display:none;">
+    <input type="text" id="editName" placeholder="Coaching Name">
+    <input type="text" id="editDirector" placeholder="Director / Teacher Name">
+    <input type="text" id="editPhone" placeholder="Phone Number">
+    <input type="text" id="editLocation" placeholder="Location / Address">
+    <input type="text" id="editLogo" placeholder="Logo URL (optional)">
+    <div class="modal-buttons">
+      <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+      <button class="save-btn" onclick="saveCoachingEdit()">Save Changes</button>
     </div>
-    <div class="form-group">
-      <label>Coaching Name</label>
-      <input type="text" id="editName" placeholder="e.g., Raman Science Classes">
-    </div>
-    <div class="form-group">
-      <label>Director Name</label>
-      <input type="text" id="editDirector" placeholder="e.g., Raman Sir">
-    </div>
-    <div class="form-group">
-      <label>Phone Number</label>
-      <input type="text" id="editPhone" placeholder="e.g., 9123456789">
-    </div>
-    <div class="form-group">
-      <label>Location / Address</label>
-      <input type="text" id="editLocation" placeholder="e.g., Begusarai, Bihar">
-    </div>
-    <div class="form-group">
-      <label>Logo URL (optional)</label>
-      <input type="text" id="editLogo" placeholder="https://example.com/logo.png">
-    </div>
-    <button class="btn-save" id="saveEditBtn"><i class="fas fa-save"></i> Save Changes</button>
   </div>
 </div>
 
@@ -133,6 +112,7 @@
 
   window.openEditModal = (id, name, director, phone, location, logo) => {
     currentEditId = id;
+    document.getElementById('editCoachingId').value = id;
     document.getElementById('editName').value = name || '';
     document.getElementById('editDirector').value = director || '';
     document.getElementById('editPhone').value = phone || '';
@@ -141,14 +121,14 @@
     document.getElementById('editModal').style.display = 'flex';
   };
 
-  window.closeEditModal = () => {
+  window.closeModal = () => {
     document.getElementById('editModal').style.display = 'none';
     currentEditId = null;
   };
 
-  window.saveEdit = async function() {
+  window.saveCoachingEdit = async () => {
     if (!currentEditId) return;
-    
+    const coachingRef = doc(db, "coachings", currentEditId);
     const updatedData = {
       name: document.getElementById('editName').value,
       director: document.getElementById('editDirector').value,
@@ -157,43 +137,32 @@
       logo: document.getElementById('editLogo').value,
       updatedAt: new Date().toISOString()
     };
-    
-    if (!updatedData.name) {
-      showToast("Coaching name is required!", true);
-      return;
-    }
-    
     try {
-      const coachingRef = doc(db, "coachings", currentEditId);
       await updateDoc(coachingRef, updatedData);
-      showToast(`✅ ${updatedData.name} details updated!`);
-      closeEditModal();
+      showToast("✅ Coaching details updated!");
+      closeModal();
       loadConnectedCoachings();
     } catch (error) {
-      console.error("Error updating:", error);
-      showToast("❌ Failed to update", true);
+      showToast("❌ Error updating: " + error.message, true);
     }
   };
-
-  document.getElementById('saveEditBtn').onclick = () => saveEdit();
 
   window.loadConnectedCoachings = async function() {
     try {
       const coachingsRef = collection(db, "coachings");
       const snapshot = await getDocs(coachingsRef);
-      
       const container = document.getElementById('coachingsList');
       const countSpan = document.getElementById('coachingCount');
       
       if (snapshot.empty) {
-        container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><br>No connected coachings yet.<br>Click "Make Dashboard" in Connect to Customer page.<br><br>👇 Or click below to add manually.</div>`;
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><br>No connected coachings yet.<br>Click "Make Dashboard" in Connect to Customer page.</div>`;
         countSpan.innerText = '0';
         return;
       }
       
       countSpan.innerText = snapshot.size;
-      
       let html = '';
+      
       for (const docSnap of snapshot.docs) {
         const coaching = docSnap.data();
         const id = docSnap.id;
@@ -203,7 +172,7 @@
         const resultsSnap = await getDocs(resultsQuery);
         const resultCount = resultsSnap.size;
         
-        const whatsappMessage = `Namaste ${coaching.name} team,%0A%0AThis is GYAN SEVA. Your result portal is ready!%0A%0A📊 Total results published: ${resultCount}%0A📈 Students can check marks online.%0A%0ADashboard: https://gyanseva.web.app/dashboard.html?id=${id}%0A%0AKeep growing! 🙏%0A%0A-GYAN SEVA Team`;
+        const whatsappMessage = `Namaste ${coaching.name} team,%0A%0AThis is GYAN SEVA. Your result portal is ready!%0A%0A📊 Total results published: ${resultCount}%0A📈 Students can check marks online.%0A%0ADashboard: https://gyanseva.web.app/dashboard.html?id=${id}%0A%0AKeep growing! 🙏`;
         const waLink = `https://wa.me/91${coaching.phone}?text=${whatsappMessage}`;
         
         html += `
@@ -213,30 +182,23 @@
               <span class="status-badge"><i class="fas fa-check-circle"></i> Active</span>
             </div>
             <div class="coaching-details">
-              <div><i class="fas fa-user-tie"></i> ${coaching.director || 'Director not set'}</div>
-              <div><i class="fas fa-phone"></i> ${coaching.phone}</div>
-              <div><i class="fas fa-location-dot"></i> ${coaching.location || 'Location not set'}</div>
+              <div><i class="fas fa-user-tie"></i> ${coaching.director || 'Not set'}</div>
+              <div><i class="fas fa-phone"></i> ${coaching.phone || 'Not set'}</div>
+              <div><i class="fas fa-location-dot"></i> ${coaching.location || 'Not set'}</div>
               <div><i class="fas fa-chart-line"></i> ${resultCount} Results</div>
             </div>
             <div class="action-buttons">
-              <a href="dashboard.html?id=${id}" class="btn-dashboard">
-                <i class="fas fa-tachometer-alt"></i> Open Dashboard
-              </a>
-              <button class="btn-edit" onclick="openEditModal('${id}', '${coaching.name.replace(/'/g, "\\'")}', '${coaching.director || ''}', '${coaching.phone || ''}', '${coaching.location || ''}', '${coaching.logo || ''}')">
-                <i class="fas fa-edit"></i> Edit
-              </button>
-              <a href="${waLink}" target="_blank" class="btn-whatsapp">
-                <i class="fab fa-whatsapp"></i> WhatsApp
-              </a>
+              <a href="dashboard.html?id=${id}" class="btn-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+              <button class="btn-edit" onclick="openEditModal('${id}', '${coaching.name.replace(/'/g, "\\'")}', '${(coaching.director || '').replace(/'/g, "\\'")}', '${coaching.phone || ''}', '${(coaching.location || '').replace(/'/g, "\\'")}', '${coaching.logo || ''}')"><i class="fas fa-edit"></i> Edit</button>
+              <a href="${waLink}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
             </div>
           </div>
         `;
       }
       container.innerHTML = html;
-      
     } catch (error) {
       console.error("Error:", error);
-      document.getElementById('coachingsList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Error loading coachings</div>`;
+      document.getElementById('coachingsList').innerHTML = `<div class="empty-state">Error loading coachings</div>`;
     }
   };
 
