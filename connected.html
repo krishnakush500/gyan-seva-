@@ -12,18 +12,15 @@
       box-sizing: border-box;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
-
     body {
       background: #ffffff;
       min-height: 100vh;
       padding: 40px 24px;
     }
-
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
     }
-
     .nav-links {
       text-align: center;
       margin-bottom: 30px;
@@ -38,7 +35,6 @@
       font-weight: 500;
       font-size: 0.85rem;
     }
-
     .connected-card {
       background: #ffffff;
       border-radius: 48px;
@@ -68,7 +64,6 @@
     .connected-body {
       padding: 32px;
     }
-
     .stats-bar {
       background: #eef2ff;
       border-radius: 24px;
@@ -95,7 +90,6 @@
       cursor: pointer;
       font-weight: 500;
     }
-
     .coachings-container {
       max-height: 550px;
       overflow-y: auto;
@@ -133,6 +127,14 @@
       font-size: 0.7rem;
       font-weight: 600;
     }
+    .dashboard-badge {
+      background: #10b981;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
     .coaching-details {
       display: flex;
       flex-wrap: wrap;
@@ -163,7 +165,7 @@
       align-items: center;
       gap: 6px;
     }
-    .btn-create-result {
+    .btn-make-dashboard {
       background: #10b981;
       color: white;
       padding: 8px 20px;
@@ -175,6 +177,10 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+    }
+    .btn-make-dashboard:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
     }
     .btn-whatsapp {
       background: #25D366;
@@ -193,12 +199,23 @@
       padding: 50px 20px;
       color: #94a3b8;
     }
-    .error-state {
-      text-align: center;
-      padding: 30px;
-      background: #fee2e2;
-      border-radius: 24px;
-      color: #b91c1c;
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #1e293b;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      z-index: 1000;
+      animation: fadeInOut 3s ease;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      15% { opacity: 1; transform: translateY(0); }
+      85% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
     }
     .add-new {
       margin-top: 24px;
@@ -258,7 +275,94 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, updateDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // Store created dashboards in localStorage to track
+  const createdDashboards = JSON.parse(localStorage.getItem('createdDashboards') || '{}');
+
+  function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.background = isError ? '#dc2626' : '#10b981';
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  async function createDashboardForCoaching(coachingId, coachingData) {
+    try {
+      const dashboardRef = doc(db, "dashboards", coachingId);
+      await setDoc(dashboardRef, {
+        coachingId: coachingId,
+        name: coachingData.name,
+        director: coachingData.director || '',
+        phone: coachingData.phone,
+        location: coachingData.location || '',
+        logo: coachingData.logo || '',
+        createdAt: new Date().toISOString(),
+        dashboardCreated: true
+      });
+      
+      // Also update coaching record to mark dashboard created
+      const coachingRef = doc(db, "coachings", coachingId);
+      await updateDoc(coachingRef, {
+        dashboardCreated: true,
+        dashboardCreatedAt: new Date().toISOString()
+      });
+      
+      createdDashboards[coachingId] = true;
+      localStorage.setItem('createdDashboards', JSON.stringify(createdDashboards));
+      
+      return true;
+    } catch (error) {
+      console.error("Error creating dashboard:", error);
+      return false;
+    }
+  }
+
+  window.makeDashboard = async function(coachingId, coachingName) {
+    const button = document.getElementById(`makeBtn_${coachingId}`);
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating...';
+    }
+    
+    // Get coaching data
+    const coachingRef = doc(db, "coachings", coachingId);
+    const coachingSnap = await getDocs(coachingRef);
+    let coachingData = null;
+    
+    // Fetch the document
+    const snap = await getDocs(collection(db, "coachings"));
+    snap.forEach(docSnap => {
+      if (docSnap.id === coachingId) {
+        coachingData = docSnap.data();
+      }
+    });
+    
+    if (!coachingData) {
+      showToast("❌ Coaching data not found!", true);
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-magic"></i> Make Dashboard';
+      }
+      return;
+    }
+    
+    const success = await createDashboardForCoaching(coachingId, coachingData);
+    
+    if (success) {
+      showToast(`✅ Dashboard created for ${coachingName}!`);
+      // Reload the list to show dashboard button
+      loadConnectedCoachings();
+    } else {
+      showToast(`❌ Failed to create dashboard for ${coachingName}`, true);
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-magic"></i> Make Dashboard';
+      }
+    }
+  };
 
   window.loadConnectedCoachings = async function() {
     try {
@@ -284,6 +388,7 @@
       for (const docSnap of snapshot.docs) {
         const coaching = docSnap.data();
         const id = docSnap.id;
+        const dashboardExists = coaching.dashboardCreated === true || createdDashboards[id] === true;
         
         // Count results for this coaching
         const resultsRef = collection(db, "results");
@@ -293,14 +398,14 @@
           if (resultDoc.data().coachingId === id) resultCount++;
         });
         
-        const whatsappMessage = `Namaste ${coaching.name} team,%0A%0AThis is GYAN SEVA. Your result portal is ready.%0A%0A📊 Total results published: ${resultCount}%0A📈 Students can check marks online.%0A%0AKeep growing! 🙏%0A%0A-GYAN SEVA Team`;
+        const whatsappMessage = `Namaste ${coaching.name} team,%0A%0AThis is GYAN SEVA. Your result portal ${dashboardExists ? 'is ready' : 'can be created'}!%0A%0A📊 Total results published: ${resultCount}%0A📈 Students can check marks online.%0A%0AKeep growing! 🙏%0A%0A-GYAN SEVA Team`;
         const waLink = `https://wa.me/91${coaching.phone}?text=${whatsappMessage}`;
         
         html += `
           <div class="coaching-card">
             <div class="coaching-header">
               <div class="coaching-name">🎓 ${coaching.name}</div>
-              <span class="status-badge"><i class="fas fa-check-circle"></i> Active</span>
+              ${dashboardExists ? '<span class="dashboard-badge"><i class="fas fa-check-circle"></i> Dashboard Ready</span>' : '<span class="status-badge"><i class="fas fa-clock"></i> Dashboard Not Created</span>'}
             </div>
             <div class="coaching-details">
               <div><i class="fas fa-user-tie"></i> ${coaching.director || 'Director not set'}</div>
@@ -309,12 +414,11 @@
               <div><i class="fas fa-chart-line"></i> ${resultCount} Results Published</div>
             </div>
             <div class="action-buttons">
-              <a href="dashboard.html?id=${id}" class="btn-dashboard">
-                <i class="fas fa-tachometer-alt"></i> Full Dashboard
-              </a>
-              <a href="https://wa.me/91${coaching.phone}?text=${whatsappMessage}" target="_blank" class="btn-whatsapp">
-                <i class="fab fa-whatsapp"></i> WhatsApp
-              </a>
+              ${dashboardExists ? 
+                `<a href="dashboard.html?id=${id}" class="btn-dashboard"><i class="fas fa-tachometer-alt"></i> Open Dashboard</a>` :
+                `<button class="btn-make-dashboard" id="makeBtn_${id}" onclick="makeDashboard('${id}', '${coaching.name.replace(/'/g, "\\'")}')"><i class="fas fa-magic"></i> Make Dashboard</button>`
+              }
+              <a href="${waLink}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
             </div>
           </div>
         `;
