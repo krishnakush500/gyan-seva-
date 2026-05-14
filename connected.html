@@ -6,235 +6,35 @@
   <title>GYAN SEVA — Connected Customers</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    }
-    body {
-      background: #ffffff;
-      min-height: 100vh;
-      padding: 40px 24px;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .nav-links {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .nav-links a {
-      text-decoration: none;
-      background: #f1f5f9;
-      padding: 8px 24px;
-      border-radius: 40px;
-      margin: 0 8px;
-      color: #1e293b;
-      font-weight: 500;
-      font-size: 0.85rem;
-    }
-    .connected-card {
-      background: #ffffff;
-      border-radius: 48px;
-      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.08);
-      border: 1px solid #dbeafe;
-      overflow: hidden;
-    }
-    .connected-header {
-      background: #2563eb;
-      padding: 28px 32px;
-      text-align: center;
-    }
-    .connected-header h2 {
-      color: white;
-      font-size: 2rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-    .connected-header p {
-      color: #dbeafe;
-      margin-top: 8px;
-      font-size: 0.9rem;
-    }
-    .connected-body {
-      padding: 32px;
-    }
-    .stats-bar {
-      background: #eef2ff;
-      border-radius: 24px;
-      padding: 16px 20px;
-      margin-bottom: 28px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .stat-count {
-      background: #2563eb;
-      color: white;
-      padding: 6px 16px;
-      border-radius: 40px;
-      font-weight: 600;
-    }
-    .refresh-btn {
-      background: #f1f5f9;
-      border: none;
-      padding: 8px 20px;
-      border-radius: 40px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .coachings-container {
-      max-height: 550px;
-      overflow-y: auto;
-    }
-    .coaching-card {
-      background: #f8fafc;
-      border-radius: 24px;
-      padding: 20px;
-      margin-bottom: 16px;
-      border: 1px solid #e2e8f0;
-      transition: 0.2s;
-    }
-    .coaching-card:hover {
-      border-color: #2563eb;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
-    }
-    .coaching-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .coaching-name {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #1e293b;
-    }
-    .status-badge {
-      background: #dbeafe;
-      color: #2563eb;
-      padding: 4px 12px;
-      border-radius: 30px;
-      font-size: 0.7rem;
-      font-weight: 600;
-    }
-    .dashboard-badge {
-      background: #10b981;
-      color: white;
-      padding: 4px 12px;
-      border-radius: 30px;
-      font-size: 0.7rem;
-      font-weight: 600;
-    }
-    .coaching-details {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 16px;
-      font-size: 0.85rem;
-      color: #475569;
-    }
-    .coaching-details i {
-      width: 20px;
-      color: #2563eb;
-    }
-    .action-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 8px;
-    }
-    .btn-dashboard {
-      background: #2563eb;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 40px;
-      text-decoration: none;
-      font-size: 0.8rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-make-dashboard {
-      background: #10b981;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 40px;
-      border: none;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-make-dashboard:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
-    }
-    .btn-whatsapp {
-      background: #25D366;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 40px;
-      text-decoration: none;
-      font-size: 0.8rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .empty-state {
-      text-align: center;
-      padding: 50px 20px;
-      color: #94a3b8;
-    }
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: #1e293b;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      z-index: 1000;
-      animation: fadeInOut 3s ease;
-    }
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateY(20px); }
-      15% { opacity: 1; transform: translateY(0); }
-      85% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(20px); }
-    }
-    .add-new {
-      margin-top: 24px;
-      text-align: center;
-    }
-    .add-new a {
-      background: #1e293b;
-      color: white;
-      padding: 10px 28px;
-      border-radius: 40px;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    footer {
-      text-align: center;
-      margin-top: 40px;
-      color: #94a3b8;
-      font-size: 0.75rem;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', system-ui, sans-serif; }
+    body { background:#ffffff; min-height:100vh; padding:40px 24px; }
+    .container { max-width:1200px; margin:0 auto; }
+    .nav-links { text-align:center; margin-bottom:30px; }
+    .nav-links a { text-decoration:none; background:#f1f5f9; padding:8px 24px; border-radius:40px; margin:0 8px; color:#1e293b; font-weight:500; font-size:0.85rem; }
+    .connected-card { background:#ffffff; border-radius:48px; box-shadow:0 20px 40px -12px rgba(0,0,0,0.08); border:1px solid #dbeafe; overflow:hidden; }
+    .connected-header { background:#2563eb; padding:28px 32px; text-align:center; }
+    .connected-header h2 { color:white; font-size:2rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:12px; }
+    .connected-header p { color:#dbeafe; margin-top:8px; font-size:0.9rem; }
+    .connected-body { padding:32px; }
+    .stats-bar { background:#eef2ff; border-radius:24px; padding:16px 20px; margin-bottom:28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+    .stat-count { background:#2563eb; color:white; padding:6px 16px; border-radius:40px; font-weight:600; }
+    .refresh-btn { background:#f1f5f9; border:none; padding:8px 20px; border-radius:40px; cursor:pointer; font-weight:500; }
+    .coachings-container { max-height:550px; overflow-y:auto; }
+    .coaching-card { background:#f8fafc; border-radius:24px; padding:20px; margin-bottom:16px; border:1px solid #e2e8f0; transition:0.2s; }
+    .coaching-card:hover { border-color:#2563eb; box-shadow:0 4px 12px rgba(37,99,235,0.1); }
+    .coaching-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
+    .coaching-name { font-size:1.2rem; font-weight:700; color:#1e293b; }
+    .status-badge { background:#dbeafe; color:#2563eb; padding:4px 12px; border-radius:30px; font-size:0.7rem; font-weight:600; }
+    .coaching-details { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; font-size:0.85rem; color:#475569; }
+    .coaching-details i { width:20px; color:#2563eb; }
+    .action-buttons { display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; }
+    .btn-dashboard { background:#2563eb; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .btn-dashboard:hover { background:#1d4ed8; }
+    .btn-whatsapp { background:#25D366; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
+    .add-new { margin-top:24px; text-align:center; }
+    .add-new a { background:#1e293b; color:white; padding:10px 28px; border-radius:40px; text-decoration:none; font-weight:600; }
+    footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
   </style>
 </head>
 <body>
@@ -275,109 +75,18 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, updateDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  // Store created dashboards in localStorage to track
-  const createdDashboards = JSON.parse(localStorage.getItem('createdDashboards') || '{}');
-
-  function showToast(message, isError = false) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.style.background = isError ? '#dc2626' : '#10b981';
-    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
-
-  async function createDashboardForCoaching(coachingId, coachingData) {
-    try {
-      const dashboardRef = doc(db, "dashboards", coachingId);
-      await setDoc(dashboardRef, {
-        coachingId: coachingId,
-        name: coachingData.name,
-        director: coachingData.director || '',
-        phone: coachingData.phone,
-        location: coachingData.location || '',
-        logo: coachingData.logo || '',
-        createdAt: new Date().toISOString(),
-        dashboardCreated: true
-      });
-      
-      // Also update coaching record to mark dashboard created
-      const coachingRef = doc(db, "coachings", coachingId);
-      await updateDoc(coachingRef, {
-        dashboardCreated: true,
-        dashboardCreatedAt: new Date().toISOString()
-      });
-      
-      createdDashboards[coachingId] = true;
-      localStorage.setItem('createdDashboards', JSON.stringify(createdDashboards));
-      
-      return true;
-    } catch (error) {
-      console.error("Error creating dashboard:", error);
-      return false;
-    }
-  }
-
-  window.makeDashboard = async function(coachingId, coachingName) {
-    const button = document.getElementById(`makeBtn_${coachingId}`);
-    if (button) {
-      button.disabled = true;
-      button.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating...';
-    }
-    
-    // Get coaching data
-    const coachingRef = doc(db, "coachings", coachingId);
-    const coachingSnap = await getDocs(coachingRef);
-    let coachingData = null;
-    
-    // Fetch the document
-    const snap = await getDocs(collection(db, "coachings"));
-    snap.forEach(docSnap => {
-      if (docSnap.id === coachingId) {
-        coachingData = docSnap.data();
-      }
-    });
-    
-    if (!coachingData) {
-      showToast("❌ Coaching data not found!", true);
-      if (button) {
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-magic"></i> Make Dashboard';
-      }
-      return;
-    }
-    
-    const success = await createDashboardForCoaching(coachingId, coachingData);
-    
-    if (success) {
-      showToast(`✅ Dashboard created for ${coachingName}!`);
-      // Reload the list to show dashboard button
-      loadConnectedCoachings();
-    } else {
-      showToast(`❌ Failed to create dashboard for ${coachingName}`, true);
-      if (button) {
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-magic"></i> Make Dashboard';
-      }
-    }
-  };
+  import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   window.loadConnectedCoachings = async function() {
     try {
-      console.log("🔍 Loading connected coachings from Firebase...");
-      
       const coachingsRef = collection(db, "coachings");
       const snapshot = await getDocs(coachingsRef);
-      
-      console.log("📊 Total coachings found:", snapshot.size);
       
       const container = document.getElementById('coachingsList');
       const countSpan = document.getElementById('coachingCount');
       
       if (snapshot.empty) {
-        container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><br>No connected coachings yet.<br>Click "Add New Coaching" to get started.</div>`;
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><br>No connected coachings yet.<br>Click "Make Dashboard" in Connect to Customer page.<br><br>👇 Or click below to add manually.</div>`;
         countSpan.innerText = '0';
         return;
       }
@@ -388,57 +97,49 @@
       for (const docSnap of snapshot.docs) {
         const coaching = docSnap.data();
         const id = docSnap.id;
-        const dashboardExists = coaching.dashboardCreated === true || createdDashboards[id] === true;
         
         // Count results for this coaching
         const resultsRef = collection(db, "results");
-        const resultsQuery = await getDocs(resultsRef);
-        let resultCount = 0;
-        resultsQuery.forEach(resultDoc => {
-          if (resultDoc.data().coachingId === id) resultCount++;
-        });
+        const resultsQuery = query(resultsRef, where("coachingId", "==", id));
+        const resultsSnap = await getDocs(resultsQuery);
+        const resultCount = resultsSnap.size;
         
-        const whatsappMessage = `Namaste ${coaching.name} team,%0A%0AThis is GYAN SEVA. Your result portal ${dashboardExists ? 'is ready' : 'can be created'}!%0A%0A📊 Total results published: ${resultCount}%0A📈 Students can check marks online.%0A%0AKeep growing! 🙏%0A%0A-GYAN SEVA Team`;
+        const whatsappMessage = `Namaste ${coaching.name} team,%0A%0AThis is GYAN SEVA. Your result portal is ready!%0A%0A📊 Total results published: ${resultCount}%0A📈 Students can check marks online.%0A%0ADashboard: https://gyanseva.web.app/dashboard.html?id=${id}%0A%0AKeep growing! 🙏%0A%0A-GYAN SEVA Team`;
         const waLink = `https://wa.me/91${coaching.phone}?text=${whatsappMessage}`;
         
         html += `
           <div class="coaching-card">
             <div class="coaching-header">
               <div class="coaching-name">🎓 ${coaching.name}</div>
-              ${dashboardExists ? '<span class="dashboard-badge"><i class="fas fa-check-circle"></i> Dashboard Ready</span>' : '<span class="status-badge"><i class="fas fa-clock"></i> Dashboard Not Created</span>'}
+              <span class="status-badge"><i class="fas fa-check-circle"></i> Active</span>
             </div>
             <div class="coaching-details">
               <div><i class="fas fa-user-tie"></i> ${coaching.director || 'Director not set'}</div>
               <div><i class="fas fa-phone"></i> ${coaching.phone}</div>
               <div><i class="fas fa-location-dot"></i> ${coaching.location || 'Location not set'}</div>
-              <div><i class="fas fa-chart-line"></i> ${resultCount} Results Published</div>
+              <div><i class="fas fa-chart-line"></i> ${resultCount} Results</div>
             </div>
             <div class="action-buttons">
-              ${dashboardExists ? 
-                `<a href="dashboard.html?id=${id}" class="btn-dashboard"><i class="fas fa-tachometer-alt"></i> Open Dashboard</a>` :
-                `<button class="btn-make-dashboard" id="makeBtn_${id}" onclick="makeDashboard('${id}', '${coaching.name.replace(/'/g, "\\'")}')"><i class="fas fa-magic"></i> Make Dashboard</button>`
-              }
-              <a href="${waLink}" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+              <a href="dashboard.html?id=${id}" class="btn-dashboard">
+                <i class="fas fa-tachometer-alt"></i> Open Dashboard
+              </a>
+              <a href="${waLink}" target="_blank" class="btn-whatsapp">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+              </a>
             </div>
           </div>
         `;
       }
-      
       container.innerHTML = html;
       
     } catch (error) {
-      console.error("❌ Error loading coachings:", error);
-      document.getElementById('coachingsList').innerHTML = `<div class="error-state"><i class="fas fa-exclamation-triangle"></i><br>Error loading coachings: ${error.message}</div>`;
+      console.error("Error:", error);
+      document.getElementById('coachingsList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Error loading coachings</div>`;
     }
   };
 
-  // Load when page loads
-  window.addEventListener('DOMContentLoaded', () => {
-    loadConnectedCoachings();
-  });
-  
-  // Auto refresh every 20 seconds
-  setInterval(loadConnectedCoachings, 20000);
+  window.loadConnectedCoachings();
+  setInterval(loadConnectedCoachings, 15000);
 </script>
 </body>
 </html>
