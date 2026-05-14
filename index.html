@@ -73,7 +73,7 @@
       color: #b45309;
     }
 
-    /* ========= 3 ACTION CARDS - RED, GREEN, BLUE (premium & bold) ========= */
+    /* ========= 3 ACTION CARDS ========= */
     .action-row {
       display: flex;
       flex-wrap: wrap;
@@ -98,50 +98,20 @@
       transform: translateY(-8px);
     }
 
-    /* CARD 1 - PREMIUM RED */
-    .card-save {
-      border-bottom: 5px solid #dc2626;
-    }
-    .card-save .icon-bg {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-    .card-save h3 {
-      color: #991b1b;
-    }
-    .card-save .btn-preview {
-      background: #dc2626;
-    }
+    .card-save { border-bottom: 5px solid #dc2626; }
+    .card-save .icon-bg { background: #fee2e2; color: #b91c1c; }
+    .card-save h3 { color: #991b1b; }
+    .card-save .btn-preview { background: #dc2626; }
 
-    /* CARD 2 - PREMIUM GREEN */
-    .card-connect {
-      border-bottom: 5px solid #10b981;
-    }
-    .card-connect .icon-bg {
-      background: #d1fae5;
-      color: #047857;
-    }
-    .card-connect h3 {
-      color: #065f46;
-    }
-    .card-connect .btn-preview {
-      background: #10b981;
-    }
+    .card-connect { border-bottom: 5px solid #10b981; }
+    .card-connect .icon-bg { background: #d1fae5; color: #047857; }
+    .card-connect h3 { color: #065f46; }
+    .card-connect .btn-preview { background: #10b981; }
 
-    /* CARD 3 - PREMIUM BLUE */
-    .card-connected {
-      border-bottom: 5px solid #2563eb;
-    }
-    .card-connected .icon-bg {
-      background: #dbeafe;
-      color: #1e40af;
-    }
-    .card-connected h3 {
-      color: #1e3a8a;
-    }
-    .card-connected .btn-preview {
-      background: #2563eb;
-    }
+    .card-connected { border-bottom: 5px solid #2563eb; }
+    .card-connected .icon-bg { background: #dbeafe; color: #1e40af; }
+    .card-connected h3 { color: #1e3a8a; }
+    .card-connected .btn-preview { background: #2563eb; }
 
     .icon-bg {
       width: 90px;
@@ -175,7 +145,6 @@
       letter-spacing: 0.3px;
     }
 
-    /* stats row */
     .stats-line {
       display: flex;
       justify-content: center;
@@ -191,85 +160,13 @@
       color: #0f172a;
     }
 
-    /* ========= PANELS (premium clean) ========= */
-    .panel {
-      background: #ffffff;
-      border-radius: 36px;
-      padding: 28px 32px;
-      margin-top: 30px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
-      border: 1px solid #eef2ff;
-      display: none;
-    }
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 16px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-    .panel-header h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-    .close-panel {
-      background: #f8fafc;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 60px;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-    textarea {
-      width: 100%;
-      padding: 14px;
-      border-radius: 24px;
-      border: 1px solid #e2e8f0;
-      background: #fefce8;
-      font-family: monospace;
-    }
-    .btn-primary {
-      background: #1e293b;
-      border: none;
-      padding: 12px 28px;
-      border-radius: 40px;
-      font-weight: 600;
-      color: white;
-      cursor: pointer;
-      margin-top: 12px;
-    }
-    .lead-item, .connected-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 0;
-      border-bottom: 1px solid #ecfdf5;
-      flex-wrap: wrap;
-    }
-    .whatsapp-btn {
-      background: #10b981;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 40px;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .dashboard-link {
-      background: #2563eb;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 40px;
-      text-decoration: none;
-    }
     footer {
       text-align: center;
       margin-top: 55px;
       color: #94a3b8;
       font-size: 0.8rem;
     }
+
     @media (max-width: 750px) {
       .action-card h3 { font-size: 1.3rem; }
     }
@@ -294,26 +191,26 @@
     </div>
   </div>
 
-  <!-- 🔴 RED | 🟢 GREEN | 🔵 BLUE action cards -->
+  <!-- 🔴 RED | 🟢 GREEN | 🔵 BLUE action cards -> PAGE CHANGE -->
   <div class="action-row">
-    <!-- SAVE CUSTOMER - RED -->
-    <div class="action-card card-save" onclick="showSavePanel()">
+    <!-- SAVE CUSTOMER - RED - Opens save-customer.html -->
+    <div class="action-card card-save" onclick="window.location.href='save-customer.html'">
       <div class="icon-bg"><i class="fas fa-save"></i></div>
       <h3>📥 SAVE CUSTOMER</h3>
       <p>Import leads from GMapsScraper & store directly in your secure database.</p>
       <div class="btn-preview"><i class="fas fa-cloud-upload-alt"></i> Import Leads</div>
     </div>
 
-    <!-- CONNECT TO CUSTOMER - GREEN -->
-    <div class="action-card card-connect" onclick="showConnectPanel()">
+    <!-- CONNECT TO CUSTOMER - GREEN - Opens connect.html -->
+    <div class="action-card card-connect" onclick="window.location.href='connect.html'">
       <div class="icon-bg"><i class="fab fa-whatsapp"></i></div>
       <h3>💬 CONNECT TO CUSTOMER</h3>
       <p>WhatsApp pending leads instantly with one tap — ready-made templates.</p>
       <div class="btn-preview"><i class="fab fa-whatsapp"></i> Message Now</div>
     </div>
 
-    <!-- CONNECTED CUSTOMER - BLUE -->
-    <div class="action-card card-connected" onclick="showConnectedPanel()">
+    <!-- CONNECTED CUSTOMER - BLUE - Opens connected.html -->
+    <div class="action-card card-connected" onclick="window.location.href='connected.html'">
       <div class="icon-bg"><i class="fas fa-handshake"></i></div>
       <h3>🤝 CONNECTED CUSTOMER</h3>
       <p>Manage active coachings, create results, and track their journey.</p>
@@ -321,44 +218,11 @@
     </div>
   </div>
 
-  <!-- stats -->
+  <!-- Stats Row -->
   <div class="stats-line">
     <div class="stat-badge"><i class="fas fa-user-plus" style="color:#dc2626;"></i> Pending Leads: <span id="pendingCount">0</span></div>
     <div class="stat-badge"><i class="fas fa-check-circle" style="color:#10b981;"></i> Active Coachings: <span id="activeCount">0</span></div>
     <div class="stat-badge"><i class="fas fa-chart-line" style="color:#2563eb;"></i> Total Results: <span id="resultsCount">0</span></div>
-  </div>
-
-  <!-- Panel 1 - SAVE (RED ZONE) -->
-  <div id="savePanel" class="panel">
-    <div class="panel-header">
-      <h2 style="color:#b91c1c;"><i class="fas fa-database"></i> Import GMapsScraper Data</h2>
-      <button class="close-panel" onclick="closeAllPanels()">✕</button>
-    </div>
-    <p>Paste JSON (name, phone, city) → 🔥 instantly saved as leads.</p>
-    <textarea id="rawJsonInput" rows="5" placeholder='[{"name":"Raman Classes","phone":"9123456789","city":"Begusarai"},{"name":"Kumar Tuition","phone":"9876543210","city":"Samastipur"}]'></textarea>
-    <button class="btn-primary" id="importLeadsBtn"><i class="fas fa-save"></i> SAVE TO FIREBASE</button>
-    <div id="importStatus" style="margin-top:14px;"></div>
-  </div>
-
-  <!-- Panel 2 - CONNECT (GREEN ZONE) -->
-  <div id="connectPanel" class="panel">
-    <div class="panel-header">
-      <h2 style="color:#047857;"><i class="fab fa-whatsapp"></i> Pending Leads — WhatsApp Ready</h2>
-      <button class="close-panel" onclick="closeAllPanels()">✕</button>
-    </div>
-    <div id="leadsListContainer">Loading leads...</div>
-  </div>
-
-  <!-- Panel 3 - CONNECTED (BLUE ZONE) -->
-  <div id="connectedPanel" class="panel">
-    <div class="panel-header">
-      <h2 style="color:#1e3a8a;"><i class="fas fa-users"></i> Active Coachings (Connected)</h2>
-      <button class="close-panel" onclick="closeAllPanels()">✕</button>
-    </div>
-    <div id="coachingsListContainer">Loading connected coachings...</div>
-    <div style="margin-top:28px; text-align:right;">
-      <a href="admin.html" style="background:#1e293b; color:white; padding:8px 28px; border-radius:40px; text-decoration:none;"><i class="fas fa-plus-circle"></i> + Add New Coaching</a>
-    </div>
   </div>
 
   <footer>
@@ -368,61 +232,7 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  window.showSavePanel = () => { closeAllPanels(); document.getElementById('savePanel').style.display = 'block'; };
-  window.showConnectPanel = () => { closeAllPanels(); document.getElementById('connectPanel').style.display = 'block'; loadLeads(); };
-  window.showConnectedPanel = () => { closeAllPanels(); document.getElementById('connectedPanel').style.display = 'block'; loadConnected(); };
-  window.closeAllPanels = () => { document.querySelectorAll('.panel').forEach(p => p.style.display = 'none'); };
-
-  // IMPORT LEADS
-  document.getElementById('importLeadsBtn').addEventListener('click', async () => {
-    const raw = document.getElementById('rawJsonInput').value.trim();
-    if (!raw) { alert("Paste JSON leads first"); return; }
-    let data;
-    try { data = JSON.parse(raw); } catch(e) { alert("Invalid JSON"); return; }
-    const leadsRef = collection(db, "leads");
-    let count = 0;
-    for(let item of data) {
-      if(item.name && item.phone) {
-        await addDoc(leadsRef, { name: item.name, phone: item.phone, city: item.city || "", status: "pending", createdAt: new Date().toISOString() });
-        count++;
-      }
-    }
-    document.getElementById('importStatus').innerHTML = `<span style="color:#10b981;">✅ ${count} leads imported. Go to "CONNECT" panel.</span>`;
-    document.getElementById('rawJsonInput').value = '';
-    updateStats();
-  });
-
-  async function loadLeads() {
-    const q = query(collection(db, "leads"), where("status", "==", "pending"));
-    const snap = await getDocs(q);
-    const container = document.getElementById('leadsListContainer');
-    if(snap.empty) { container.innerHTML = '<div>✨ No pending leads. Import some first.</div>'; return; }
-    let html = '';
-    snap.forEach(docSnap => {
-      const l = docSnap.data();
-      const waMsg = `नमस्ते ${l.name} sir,%0AThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.%0AStudents can check marks online.%0AInterested? Reply here.`;
-      const waLink = `https://wa.me/91${l.phone}?text=${waMsg}`;
-      html += `<div class="lead-item"><div><strong>🏫 ${l.name}</strong><br><span>📞 ${l.phone} | ${l.city}</span></div><a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Message</a></div>`;
-    });
-    container.innerHTML = html;
-  }
-
-  async function loadConnected() {
-    const coachingsSnap = await getDocs(collection(db, "coachings"));
-    const container = document.getElementById('coachingsListContainer');
-    if(coachingsSnap.empty) { container.innerHTML = '<div>🚀 No connected coachings yet. Add via admin panel.</div>'; return; }
-    let html = '';
-    for(const docSnap of coachingsSnap.docs) {
-      const c = docSnap.data();
-      const id = docSnap.id;
-      const qRes = query(collection(db, "results"), where("coachingId", "==", id));
-      const resSnap = await getDocs(qRes);
-      html += `<div class="lead-item"><div><strong>🎓 ${c.name}</strong><br><span class="badge" style="background:#eef2ff;">📊 ${resSnap.size} results</span><br>📍 ${c.location || ''}</div><a href="dashboard.html?id=${id}" class="dashboard-link"><i class="fas fa-tachometer-alt"></i> Full Dashboard</a></div>`;
-    }
-    container.innerHTML = html;
-  }
+  import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   async function updateStats() {
     const leadsSnap = await getDocs(query(collection(db, "leads"), where("status", "==", "pending")));
