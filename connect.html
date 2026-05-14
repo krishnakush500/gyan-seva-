@@ -72,33 +72,42 @@
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // Create coaching document in 'coachings' collection and mark lead as connected
-  async function createDashboard(leadId, leadData, buttonElement) {
+  // Create coaching and move to connected customers
+  window.createDashboard = async function(leadId, leadName, leadPhone, leadCity, buttonElement) {
     try {
       buttonElement.disabled = true;
       buttonElement.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating...';
       
-      // Add to coachings collection
+      // Add to coachings collection (Connected Customers)
       const coachingsRef = collection(db, "coachings");
       const newCoachingRef = await addDoc(coachingsRef, {
-        name: leadData.name,
-        phone: leadData.phone,
-        city: leadData.city || "",
+        name: leadName,
+        phone: leadPhone,
+        city: leadCity || "",
         director: "",
-        location: leadData.city || "",
+        location: leadCity || "",
         logo: "",
         createdAt: new Date().toISOString(),
         dashboardCreated: true
       });
       
-      // Update lead status to "connected"
+      // Update lead status to "connected" (so it disappears from pending list)
       const leadRef = doc(db, "leads", leadId);
-      await updateDoc(leadRef, { status: "connected", coachingId: newCoachingRef.id });
+      await updateDoc(leadRef, { 
+        status: "connected", 
+        coachingId: newCoachingRef.id,
+        connectedAt: new Date().toISOString()
+      });
       
-      showToast(`✅ Dashboard created for ${leadData.name}!`);
+      showToast(`✅ ${leadName} dashboard created! Now in Connected Customers.`);
       
-      // Reload leads list
+      // Reload leads list (this lead will disappear)
       loadLeads();
+      
+      // Also update stats in connected.html if open
+      if(window.opener) {
+        try { window.opener.loadConnectedCoachings(); } catch(e) {}
+      }
       
     } catch (error) {
       console.error("Error:", error);
@@ -106,7 +115,7 @@
       buttonElement.disabled = false;
       buttonElement.innerHTML = '<i class="fas fa-magic"></i> Make Dashboard';
     }
-  }
+  };
 
   window.loadLeads = async function() {
     try {
@@ -125,7 +134,7 @@
       document.getElementById('leadCount').innerText = pendingLeads.length;
       
       if (pendingLeads.length === 0) {
-        container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><br>No pending leads. Import some first.</div>`;
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><br>No pending leads!<br>All leads are connected or processed.<br><br>👉 Go to "Connected Customers" to see all coachings.</div>`;
         return;
       }
       
@@ -141,7 +150,7 @@
               <span>📞 ${lead.phone} | 📍 ${lead.city || 'Location not available'}</span>
             </div>
             <div style="display:flex; gap:8px;">
-              <button class="btn-make-dashboard" id="makeBtn_${lead.id}" onclick="createDashboard('${lead.id}', ${JSON.stringify(lead).replace(/'/g, "\\'")}, this)">
+              <button class="btn-make-dashboard" id="makeBtn_${lead.id}" onclick="createDashboard('${lead.id}', '${lead.name.replace(/'/g, "\\'")}', '${lead.phone}', '${lead.city || ''}', this)">
                 <i class="fas fa-magic"></i> Make Dashboard
               </button>
               <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Message</a>
@@ -156,9 +165,8 @@
     }
   };
 
-  window.createDashboard = createDashboard;
   window.loadLeads();
-  setInterval(loadLeads, 15000);
+  setInterval(loadLeads, 10000);
 </script>
 </body>
 </html>
