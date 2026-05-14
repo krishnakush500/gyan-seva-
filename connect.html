@@ -6,146 +6,31 @@
   <title>GYAN SEVA — Connect to Customer</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    }
-    body {
-      background: #ffffff;
-      min-height: 100vh;
-      padding: 40px 24px;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .nav-links {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .nav-links a {
-      text-decoration: none;
-      background: #f1f5f9;
-      padding: 8px 24px;
-      border-radius: 40px;
-      margin: 0 8px;
-      color: #1e293b;
-      font-weight: 500;
-      font-size: 0.85rem;
-    }
-    .connect-card {
-      background: #ffffff;
-      border-radius: 48px;
-      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.08);
-      border: 1px solid #d1fae5;
-      overflow: hidden;
-    }
-    .connect-header {
-      background: #10b981;
-      padding: 28px 32px;
-      text-align: center;
-    }
-    .connect-header h2 {
-      color: white;
-      font-size: 2rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-    .connect-header p {
-      color: #ecfdf5;
-      margin-top: 8px;
-      font-size: 0.9rem;
-    }
-    .connect-body {
-      padding: 32px;
-    }
-    .stats-bar {
-      background: #ecfdf5;
-      border-radius: 24px;
-      padding: 16px 20px;
-      margin-bottom: 28px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .stat-count {
-      background: #10b981;
-      color: white;
-      padding: 6px 16px;
-      border-radius: 40px;
-      font-weight: 600;
-    }
-    .refresh-btn {
-      background: #f1f5f9;
-      border: none;
-      padding: 8px 20px;
-      border-radius: 40px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .leads-container {
-      max-height: 550px;
-      overflow-y: auto;
-    }
-    .lead-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 0;
-      border-bottom: 1px solid #e2e8f0;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .lead-info strong {
-      font-size: 1rem;
-      color: #1e293b;
-    }
-    .lead-info span {
-      font-size: 0.75rem;
-      color: #64748b;
-    }
-    .whatsapp-btn {
-      background: #25D366;
-      color: white;
-      padding: 8px 24px;
-      border-radius: 40px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.85rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: 0.2s;
-    }
-    .whatsapp-btn:hover {
-      background: #128C7E;
-      transform: scale(0.97);
-    }
-    .empty-state {
-      text-align: center;
-      padding: 50px 20px;
-      color: #94a3b8;
-    }
-    .error-state {
-      text-align: center;
-      padding: 30px;
-      background: #fee2e2;
-      border-radius: 24px;
-      color: #b91c1c;
-    }
-    footer {
-      text-align: center;
-      margin-top: 40px;
-      color: #94a3b8;
-      font-size: 0.75rem;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', system-ui, sans-serif; }
+    body { background:#ffffff; min-height:100vh; padding:40px 24px; }
+    .container { max-width:1200px; margin:0 auto; }
+    .nav-links { text-align:center; margin-bottom:30px; }
+    .nav-links a { text-decoration:none; background:#f1f5f9; padding:8px 24px; border-radius:40px; margin:0 8px; color:#1e293b; font-weight:500; font-size:0.85rem; }
+    .connect-card { background:#ffffff; border-radius:48px; box-shadow:0 20px 40px -12px rgba(0,0,0,0.08); border:1px solid #d1fae5; overflow:hidden; }
+    .connect-header { background:#10b981; padding:28px 32px; text-align:center; }
+    .connect-header h2 { color:white; font-size:2rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:12px; }
+    .connect-header p { color:#ecfdf5; margin-top:8px; font-size:0.9rem; }
+    .connect-body { padding:32px; }
+    .stats-bar { background:#ecfdf5; border-radius:24px; padding:16px 20px; margin-bottom:28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+    .stat-count { background:#10b981; color:white; padding:6px 16px; border-radius:40px; font-weight:600; }
+    .refresh-btn { background:#f1f5f9; border:none; padding:8px 20px; border-radius:40px; cursor:pointer; font-weight:500; }
+    .leads-container { max-height:550px; overflow-y:auto; }
+    .lead-item { display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid #e2e8f0; flex-wrap:wrap; gap:12px; }
+    .lead-info strong { font-size:1rem; color:#1e293b; }
+    .lead-info span { font-size:0.75rem; color:#64748b; }
+    .btn-make-dashboard { background:#2563eb; color:white; padding:8px 24px; border-radius:40px; border:none; font-size:0.85rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+    .btn-make-dashboard:hover { background:#1d4ed8; transform:scale(0.97); }
+    .btn-make-dashboard:disabled { background:#94a3b8; cursor:not-allowed; }
+    .whatsapp-btn { background:#25D366; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
+    .toast { position:fixed; bottom:30px; right:30px; background:#1e293b; color:white; padding:12px 24px; border-radius:50px; font-size:0.85rem; z-index:1000; animation:fadeInOut 3s ease; }
+    @keyframes fadeInOut { 0% { opacity:0; transform:translateY(20px); } 15% { opacity:1; transform:translateY(0); } 85% { opacity:1; } 100% { opacity:0; transform:translateY(20px); } }
+    footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
   </style>
 </head>
 <body>
@@ -160,7 +45,7 @@
   <div class="connect-card">
     <div class="connect-header">
       <h2><i class="fab fa-whatsapp"></i> CONNECT TO CUSTOMER</h2>
-      <p>Send WhatsApp messages to pending leads — one click away</p>
+      <p>Send WhatsApp messages or create dashboard for pending leads</p>
     </div>
     <div class="connect-body">
       <div class="stats-bar">
@@ -168,95 +53,111 @@
         <span class="stat-count" id="leadCount">0</span>
         <button class="refresh-btn" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh</button>
       </div>
-
-      <div id="leadsList" class="leads-container">
-        <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading leads...</div>
-      </div>
+      <div id="leadsList" class="leads-container"><div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading leads...</div></div>
     </div>
   </div>
-
-  <footer>
-    <i class="fas fa-heart" style="color:#10b981;"></i> GYAN SEVA — Connect, Convert, Serve
-  </footer>
+  <footer><i class="fas fa-heart" style="color:#10b981;"></i> GYAN SEVA — Connect, Convert, Serve</footer>
 </div>
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, addDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.background = isError ? '#dc2626' : '#10b981';
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // Create coaching document in 'coachings' collection and mark lead as connected
+  async function createDashboard(leadId, leadData, buttonElement) {
+    try {
+      buttonElement.disabled = true;
+      buttonElement.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating...';
+      
+      // Add to coachings collection
+      const coachingsRef = collection(db, "coachings");
+      const newCoachingRef = await addDoc(coachingsRef, {
+        name: leadData.name,
+        phone: leadData.phone,
+        city: leadData.city || "",
+        director: "",
+        location: leadData.city || "",
+        logo: "",
+        createdAt: new Date().toISOString(),
+        dashboardCreated: true
+      });
+      
+      // Update lead status to "connected"
+      const leadRef = doc(db, "leads", leadId);
+      await updateDoc(leadRef, { status: "connected", coachingId: newCoachingRef.id });
+      
+      showToast(`✅ Dashboard created for ${leadData.name}!`);
+      
+      // Reload leads list
+      loadLeads();
+      
+    } catch (error) {
+      console.error("Error:", error);
+      showToast(`❌ Failed to create dashboard`, true);
+      buttonElement.disabled = false;
+      buttonElement.innerHTML = '<i class="fas fa-magic"></i> Make Dashboard';
+    }
+  }
 
   window.loadLeads = async function() {
     try {
-      console.log("🔍 Loading leads from Firebase...");
-      
-      // SIMPLE QUERY - WITHOUT any where or orderBy (for testing)
       const leadsRef = collection(db, "leads");
       const snapshot = await getDocs(leadsRef);
-      
-      console.log("📊 Total leads found:", snapshot.size);
-      
       const container = document.getElementById('leadsList');
-      const countSpan = document.getElementById('leadCount');
-      
-      if (snapshot.empty) {
-        container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><br>No leads found in database.<br>Go to "Save Customer" and import some leads first.</div>`;
-        countSpan.innerText = '0';
-        return;
-      }
-      
-      // Filter pending leads manually
       const pendingLeads = [];
+      
       snapshot.forEach(docSnap => {
         const lead = docSnap.data();
         if (lead.status === "pending") {
-          pendingLeads.push(lead);
+          pendingLeads.push({ id: docSnap.id, ...lead });
         }
       });
       
-      console.log("⏳ Pending leads:", pendingLeads.length);
-      countSpan.innerText = pendingLeads.length;
+      document.getElementById('leadCount').innerText = pendingLeads.length;
       
       if (pendingLeads.length === 0) {
-        container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><br>No pending leads! All leads are processed.<br>Import new leads from "Save Customer" page.</div>`;
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><br>No pending leads. Import some first.</div>`;
         return;
       }
       
       let html = '';
       for (const lead of pendingLeads) {
-        const phone = lead.phone;
-        const name = lead.name;
-        const city = lead.city || 'Location not available';
-        
-        const whatsappMessage = `नमस्ते ${name} sir%0A%0AThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.%0A%0A✅ Online result system%0A✅ Students can check marks with roll number%0A✅ PDF download option%0A%0A🔰 Completely FREE trial for 1 month.%0A🔰 No technical knowledge required.%0A%0AInterested? Reply "YES" to get your demo portal.%0A%0AThank you%0AGYAN SEVA Team`;
-        
-        const waLink = `https://wa.me/91${phone}?text=${whatsappMessage}`;
+        const whatsappMessage = `नमस्ते ${lead.name} sir,%0A%0AThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.%0A%0A✅ Online result system%0A✅ Students can check marks with roll number%0A✅ PDF download option%0A%0A🔰 Completely FREE trial for 1 month.%0A🔰 No technical knowledge required.%0A%0AInterested? Reply "YES" to get your demo portal.%0A%0AThank you%0AGYAN SEVA Team`;
+        const waLink = `https://wa.me/91${lead.phone}?text=${whatsappMessage}`;
         
         html += `
           <div class="lead-item">
             <div class="lead-info">
-              <strong>🏫 ${name}</strong><br>
-              <span>📞 ${phone} | 📍 ${city}</span>
+              <strong>🏫 ${lead.name}</strong><br>
+              <span>📞 ${lead.phone} | 📍 ${lead.city || 'Location not available'}</span>
             </div>
-            <a href="${waLink}" target="_blank" class="whatsapp-btn">
-              <i class="fab fa-whatsapp"></i> Message on WhatsApp
-            </a>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-make-dashboard" id="makeBtn_${lead.id}" onclick="createDashboard('${lead.id}', ${JSON.stringify(lead).replace(/'/g, "\\'")}, this)">
+                <i class="fas fa-magic"></i> Make Dashboard
+              </button>
+              <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Message</a>
+            </div>
           </div>
         `;
       }
-      
       container.innerHTML = html;
-      
     } catch (error) {
-      console.error("❌ Error loading leads:", error);
-      document.getElementById('leadsList').innerHTML = `<div class="error-state"><i class="fas fa-exclamation-triangle"></i><br>Error loading leads: ${error.message}<br><br>Make sure Firebase is properly configured and rules are set.</div>`;
+      console.error("Error loading leads:", error);
+      document.getElementById('leadsList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Error loading leads</div>`;
     }
   };
 
-  // Load leads when page loads
-  window.addEventListener('DOMContentLoaded', () => {
-    loadLeads();
-  });
-  
-  // Auto refresh every 15 seconds
+  window.createDashboard = createDashboard;
+  window.loadLeads();
   setInterval(loadLeads, 15000);
 </script>
 </body>
