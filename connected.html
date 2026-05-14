@@ -29,12 +29,26 @@
     .coaching-details i { width:20px; color:#2563eb; }
     .action-buttons { display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; }
     .btn-dashboard { background:#2563eb; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
-    .btn-dashboard:hover { background:#1d4ed8; }
+    .btn-edit { background:#f59e0b; color:white; padding:8px 20px; border-radius:40px; border:none; font-size:0.8rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-whatsapp { background:#25D366; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     .add-new { margin-top:24px; text-align:center; }
     .add-new a { background:#1e293b; color:white; padding:10px 28px; border-radius:40px; text-decoration:none; font-weight:600; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
+
+    /* Modal Styles */
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
+    .modal-content { background:white; border-radius:32px; padding:30px; max-width:500px; width:90%; max-height:90vh; overflow-y:auto; }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:2px solid #eef2ff; padding-bottom:15px; }
+    .modal-header h3 { color:#1e293b; font-size:1.5rem; }
+    .close-modal { background:none; border:none; font-size:1.5rem; cursor:pointer; color:#94a3b8; }
+    .form-group { margin-bottom:15px; }
+    .form-group label { display:block; font-weight:600; margin-bottom:5px; color:#1e293b; }
+    .form-group input, .form-group textarea { width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:12px; font-size:0.9rem; }
+    .form-group input:focus { outline:none; border-color:#2563eb; }
+    .btn-save { background:#2563eb; color:white; padding:12px; border:none; border-radius:40px; font-weight:600; cursor:pointer; width:100%; }
+    .toast { position:fixed; bottom:30px; right:30px; background:#1e293b; color:white; padding:12px 24px; border-radius:50px; font-size:0.85rem; z-index:1001; animation:fadeInOut 3s ease; }
+    @keyframes fadeInOut { 0% { opacity:0; transform:translateY(20px); } 15% { opacity:1; transform:translateY(0); } 85% { opacity:1; } 100% { opacity:0; transform:translateY(20px); } }
   </style>
 </head>
 <body>
@@ -68,14 +82,100 @@
     </div>
   </div>
 
-  <footer>
-    <i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing
-  </footer>
+  <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-edit"></i> Edit Coaching Details</h3>
+      <button class="close-modal" onclick="closeEditModal()">&times;</button>
+    </div>
+    <div class="form-group">
+      <label>Coaching Name</label>
+      <input type="text" id="editName" placeholder="e.g., Raman Science Classes">
+    </div>
+    <div class="form-group">
+      <label>Director Name</label>
+      <input type="text" id="editDirector" placeholder="e.g., Raman Sir">
+    </div>
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="text" id="editPhone" placeholder="e.g., 9123456789">
+    </div>
+    <div class="form-group">
+      <label>Location / Address</label>
+      <input type="text" id="editLocation" placeholder="e.g., Begusarai, Bihar">
+    </div>
+    <div class="form-group">
+      <label>Logo URL (optional)</label>
+      <input type="text" id="editLogo" placeholder="https://example.com/logo.png">
+    </div>
+    <button class="btn-save" id="saveEditBtn"><i class="fas fa-save"></i> Save Changes</button>
+  </div>
 </div>
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  let currentEditId = null;
+
+  function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.background = isError ? '#dc2626' : '#10b981';
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  window.openEditModal = (id, name, director, phone, location, logo) => {
+    currentEditId = id;
+    document.getElementById('editName').value = name || '';
+    document.getElementById('editDirector').value = director || '';
+    document.getElementById('editPhone').value = phone || '';
+    document.getElementById('editLocation').value = location || '';
+    document.getElementById('editLogo').value = logo || '';
+    document.getElementById('editModal').style.display = 'flex';
+  };
+
+  window.closeEditModal = () => {
+    document.getElementById('editModal').style.display = 'none';
+    currentEditId = null;
+  };
+
+  window.saveEdit = async function() {
+    if (!currentEditId) return;
+    
+    const updatedData = {
+      name: document.getElementById('editName').value,
+      director: document.getElementById('editDirector').value,
+      phone: document.getElementById('editPhone').value,
+      location: document.getElementById('editLocation').value,
+      logo: document.getElementById('editLogo').value,
+      updatedAt: new Date().toISOString()
+    };
+    
+    if (!updatedData.name) {
+      showToast("Coaching name is required!", true);
+      return;
+    }
+    
+    try {
+      const coachingRef = doc(db, "coachings", currentEditId);
+      await updateDoc(coachingRef, updatedData);
+      showToast(`✅ ${updatedData.name} details updated!`);
+      closeEditModal();
+      loadConnectedCoachings();
+    } catch (error) {
+      console.error("Error updating:", error);
+      showToast("❌ Failed to update", true);
+    }
+  };
+
+  document.getElementById('saveEditBtn').onclick = () => saveEdit();
 
   window.loadConnectedCoachings = async function() {
     try {
@@ -98,7 +198,6 @@
         const coaching = docSnap.data();
         const id = docSnap.id;
         
-        // Count results for this coaching
         const resultsRef = collection(db, "results");
         const resultsQuery = query(resultsRef, where("coachingId", "==", id));
         const resultsSnap = await getDocs(resultsQuery);
@@ -123,6 +222,9 @@
               <a href="dashboard.html?id=${id}" class="btn-dashboard">
                 <i class="fas fa-tachometer-alt"></i> Open Dashboard
               </a>
+              <button class="btn-edit" onclick="openEditModal('${id}', '${coaching.name.replace(/'/g, "\\'")}', '${coaching.director || ''}', '${coaching.phone || ''}', '${coaching.location || ''}', '${coaching.logo || ''}')">
+                <i class="fas fa-edit"></i> Edit
+              </button>
               <a href="${waLink}" target="_blank" class="btn-whatsapp">
                 <i class="fab fa-whatsapp"></i> WhatsApp
               </a>
