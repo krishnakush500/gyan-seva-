@@ -21,16 +21,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 35px;
+      gap: 30px;
       flex-wrap: wrap;
     }
-    /* Logo Section */
+    /* Logo Section - Bigger Logo */
     .logo-section {
       flex-shrink: 0;
     }
     .coaching-logo { 
-      width: 100px; 
-      height: 100px; 
+      width: 120px; 
+      height: 120px; 
       border-radius: 50%; 
       border: 3px solid #ffc107; 
       object-fit: cover; 
@@ -52,6 +52,7 @@
       opacity: 0.85;
       margin-bottom: 12px;
     }
+    /* Director info - Name and Phone in SAME LINE */
     .director-info {
       display: flex;
       align-items: center;
@@ -61,17 +62,17 @@
       margin-top: 5px;
     }
     .director-detail {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
+      gap: 8px;
+      font-size: 0.9rem;
       background: rgba(255,255,255,0.12);
-      padding: 5px 14px;
+      padding: 6px 18px;
       border-radius: 40px;
     }
     .director-detail i {
       color: #ffc107;
-      width: 20px;
+      font-size: 0.9rem;
     }
     
     /* Tabs */
@@ -109,21 +110,22 @@
     
     /* Mobile Responsive */
     @media (max-width:768px){
-      .header-content { gap: 18px; }
-      .coaching-logo { width: 70px; height: 70px; }
-      .school-name { font-size: 1.4rem; }
-      .director-detail { font-size: 0.75rem; padding: 4px 10px; }
+      .header-content { gap: 20px; }
+      .coaching-logo { width: 90px; height: 90px; }
+      .school-name { font-size: 1.5rem; }
+      .director-detail { font-size: 0.8rem; padding: 4px 12px; }
       .tab-btn { font-size: 0.8rem; padding: 10px; }
     }
     @media (max-width:550px){
-      .header-content { flex-direction: column; text-align: center; gap: 12px; }
+      .header-content { flex-direction: column; text-align: center; gap: 15px; }
       .text-section { text-align: center; }
-      .coaching-logo { width: 80px; height: 80px; }
+      .coaching-logo { width: 100px; height: 100px; }
       .director-info { justify-content: center; }
     }
     @media (max-width:480px){
-      .school-name { font-size: 1.2rem; }
-      .director-detail { font-size: 0.7rem; }
+      .school-name { font-size: 1.3rem; }
+      .coaching-logo { width: 80px; height: 80px; }
+      .director-detail { font-size: 0.7rem; padding: 4px 10px; gap: 5px; }
       .tab-btn { font-size: 0.7rem; padding: 8px; }
       .section-title { font-size: 1.1rem; }
     }
@@ -134,17 +136,18 @@
   <!-- ========= HEADER - PERFECT ALIGNMENT ========= -->
   <div class="header">
     <div class="header-content">
-      <!-- Logo - Left Side -->
+      <!-- Logo - Bigger -->
       <div class="logo-section">
-        <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/100?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/100?text=GYAN'">
+        <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
       </div>
-      <!-- Text - Centered -->
+      <!-- Text Section -->
       <div class="text-section">
         <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
         <p class="location" id="coachingLocation">Loading...</p>
+        <!-- Director Name & Phone in SAME LINE -->
         <div class="director-info">
-          <div class="director-detail"><i class="fas fa-user-tie"></i> <span id="directorName">Director</span></div>
-          <div class="director-detail"><i class="fas fa-phone"></i> <span id="directorPhone">---</span></div>
+          <span class="director-detail"><i class="fas fa-user-tie"></i> <span id="directorName">Director</span></span>
+          <span class="director-detail"><i class="fas fa-phone"></i> <span id="directorPhone">---</span></span>
         </div>
       </div>
     </div>
