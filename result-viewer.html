@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>GYAN SEVA - Result</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { 
+      background: #ffffff;
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+    
+    /* Main Container */
+    .result-container {
+      max-width: 750px;
+      margin: 0 auto;
+    }
+    
+    /* 3 Buttons - Top Section */
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    
+    .action-btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    
+    .btn-download {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-share {
+      background: #25D366;
+      color: white;
+    }
+    
+    .btn-print {
+      background: #1a237e;
+      color: white;
+    }
+    
+    /* Result Card - Exactly like MODERN ACADEMY style */
+    .result-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+      border: 1px solid #e0e0e0;
+    }
+    
+    /* Header inside result - MODERN ACADEMY style */
+    .result-header {
+      background: linear-gradient(to right, #1a237e, #283593, #303f9f);
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+    }
+    
+    .school-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    
+    .location {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-bottom: 12px;
+    }
+    
+    .director-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .director-photo {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      border: 2px solid #ffc107;
+      overflow: hidden;
+      background: white;
+    }
+    
+    .director-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .director-details h3 {
+      font-size: 1rem;
+      color: #ffc107;
+    }
+    
+    .director-details p {
+      font-size: 0.75rem;
+      opacity: 0.9;
+    }
+    
+    /* Exam Title */
+    .exam-title {
+      background: #fff3e0;
+      padding: 12px;
+      text-align: center;
+      border-bottom: 2px solid #ffc107;
+    }
+    
+    .exam-title h3 {
+      color: #b21f1f;
+      font-size: 1.1rem;
+    }
+    
+    .exam-title p {
+      color: #666;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+    
+    /* Student Info - Like MODERN ACADEMY */
+    .student-info {
+      background: #f5f5f5;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .info-row {
+      flex: 1;
+      min-width: 150px;
+    }
+    
+    .info-label {
+      font-weight: 600;
+      color: #1a237e;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+    
+    .info-value {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    /* Marks Table - Like MODERN ACADEMY */
+    .marks-table-container {
+      padding: 20px;
+      overflow-x: auto;
+    }
+    
+    .marks-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 400px;
+    }
+    
+    .marks-table th {
+      background: #1a237e;
+      color: white;
+      padding: 12px;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+    
+    .marks-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 0.9rem;
+    }
+    
+    .marks-table tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    
+    .total-row {
+      background: #e8f5e8 !important;
+      font-weight: 600;
+    }
+    
+    .total-row td {
+      font-weight: 600;
+      color: #1a237e;
+    }
+    
+    /* Percentage & Division */
+    .result-stats {
+      padding: 0 20px 20px;
+      text-align: center;
+    }
+    
+    .percentage-display {
+      background: #f0f7ff;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1a237e;
+    }
+    
+    .division-display {
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    
+    /* Footer */
+    .coaching-footer {
+      text-align: center;
+      padding: 15px;
+      background: #f8f9fa;
+      font-size: 0.7rem;
+      color: #888;
+      border-top: 1px solid #eee;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 600px) {
+      body { padding: 15px; }
+      .school-name { font-size: 1.2rem; }
+      .director-photo { width: 50px; height: 50px; }
+      .student-info { flex-direction: column; gap: 8px; }
+      .action-btn { padding: 8px 16px; font-size: 0.75rem; }
+      .marks-table { min-width: 320px; }
+      .marks-table th, .marks-table td { padding: 6px; font-size: 0.75rem; }
+    }
+    
+    /* Print Styles - A4 Perfect */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+      .action-buttons {
+        display: none;
+      }
+      .result-card {
+        box-shadow: none;
+        border-radius: 0;
+        border: none;
+      }
+      .result-header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="result-container">
+  <!-- 3 Buttons - Top Section (Sirf yehi upar dikhega) -->
+  <div class="action-buttons">
+    <button class="action-btn btn-download" onclick="downloadResultPDF()">
+      <i class="fas fa-download"></i> Download PDF
+    </button>
+    <button class="action-btn btn-share" onclick="shareOnWhatsApp()">
+      <i class="fab fa-whatsapp"></i> Share on WhatsApp
+    </button>
+    <button class="action-btn btn-print" onclick="window.print()">
+      <i class="fas fa-print"></i> Print
+    </button>
+  </div>
+  
+  <!-- Result Card - Complete result with coaching details inside -->
+  <div class="result-card" id="resultCard">
+    <!-- Header - Coaching Details (Exactly like MODERN ACADEMY) -->
+    <div class="result-header">
+      <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
+      <p class="location" id="coachingLocation">Loading...</p>
+      <div class="director-info">
+        <div class="director-photo">
+          <img id="directorImg" src="https://via.placeholder.com/65?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/65?text=Logo'">
+        </div>
+        <div class="director-details">
+          <h3 id="directorName">Director</h3>
+          <p id="directorPhone"><i class="fas fa-phone"></i> ---</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Exam Title -->
+    <div class="exam-title">
+      <h3 id="examName">Examination Result</h3>
+      <p id="examDate"></p>
+    </div>
+    
+    <!-- Student Info -->
+    <div class="student-info">
+      <div class="info-row">
+        <div class="info-label">Student Name</div>
+        <div class="info-value" id="studentName">-</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Father's Name</div>
+        <div class="info-value" id="fatherName">-</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Roll Number</div>
+        <div class="info-value" id="studentRoll">-</div>
+      </div>
+    </div>
+    
+    <!-- Marks Table -->
+    <div class="marks-table-container">
+      <table class="marks-table">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Marks Obtained</th>
+            <th>Total Marks</th>
+            <th>Percentage</th>
+          </tr>
+        </thead>
+        <tbody id="marksTableBody"></tbody>
+      </table>
+    </div>
+    
+    <!-- Result Stats -->
+    <div class="result-stats">
+      <div class="percentage-display" id="totalPercentage">
+        Total Percentage: 0%
+      </div>
+      <div class="division-display" id="divisionBox">
+        Division: -
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="coaching-footer">
+      <p id="coachingMention">This result is published by GYAN SEVA</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Get data from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const studentName = decodeURIComponent(urlParams.get('name') || '-');
+  const studentRoll = decodeURIComponent(urlParams.get('roll') || '-');
+  const fatherName = decodeURIComponent(urlParams.get('father') || '-');
+  const examName = decodeURIComponent(urlParams.get('exam') || 'Examination');
+  const examDate = decodeURIComponent(urlParams.get('date') || '');
+  const subjects = JSON.parse(decodeURIComponent(urlParams.get('subjects') || '[]'));
+  const marks = JSON.parse(decodeURIComponent(urlParams.get('marks') || '{}'));
+  const totalPercent = decodeURIComponent(urlParams.get('percent') || '0');
+  const division = decodeURIComponent(urlParams.get('division') || '-');
+  
+  // Coaching info from localStorage (set from dashboard)
+  const coachingName = localStorage.getItem('coachingName') || 'GYAN SEVA';
+  const coachingLocation = localStorage.getItem('coachingLocation') || 'Bihar, India';
+  const directorName = localStorage.getItem('directorName') || 'Director';
+  const directorPhone = localStorage.getItem('directorPhone') || 'Not provided';
+  const coachingLogo = localStorage.getItem('coachingLogo') || 'https://via.placeholder.com/65?text=Logo';
+  
+  // Populate data
+  document.getElementById('coachingName').innerText = coachingName;
+  document.getElementById('coachingLocation').innerText = coachingLocation;
+  document.getElementById('directorName').innerText = directorName;
+  document.getElementById('directorPhone').innerHTML = `<i class="fas fa-phone"></i> ${directorPhone}`;
+  document.getElementById('directorImg').src = coachingLogo;
+  document.getElementById('examName').innerText = examName;
+  document.getElementById('examDate').innerHTML = examDate ? `📅 ${examDate}` : '';
+  document.getElementById('studentName').innerText = studentName;
+  document.getElementById('studentRoll').innerText = studentRoll;
+  document.getElementById('fatherName').innerText = fatherName;
+  document.getElementById('totalPercentage').innerHTML = `Total Percentage: ${totalPercent}%`;
+  document.getElementById('coachingMention').innerHTML = `This result is published by ${coachingName} | Director: ${directorName}`;
+  
+  // Division with color
+  const divisionBox = document.getElementById('divisionBox');
+  if(division === 'FIRST DIVISION') {
+    divisionBox.style.background = '#d4edda';
+    divisionBox.style.color = '#28a745';
+    divisionBox.style.border = '2px solid #28a745';
+  } else if(division === 'SECOND DIVISION') {
+    divisionBox.style.background = '#d1ecf1';
+    divisionBox.style.color = '#17a2b8';
+    divisionBox.style.border = '2px solid #17a2b8';
+  } else if(division === 'THIRD DIVISION') {
+    divisionBox.style.background = '#fff3cd';
+    divisionBox.style.color = '#ffc107';
+    divisionBox.style.border = '2px solid #ffc107';
+  } else {
+    divisionBox.style.background = '#f8d7da';
+    divisionBox.style.color = '#dc3545';
+    divisionBox.style.border = '2px solid #dc3545';
+  }
+  divisionBox.innerHTML = `Division: ${division}`;
+  
+  // Generate marks table
+  let marksHtml = '';
+  let totalObtained = 0;
+  let totalMax = 0;
+  
+  for(let i = 0; i < subjects.length; i++) {
+    const subj = subjects[i];
+    const mark = marks[subj] || 0;
+    const max = 100;
+    const perc = ((mark / max) * 100).toFixed(2);
+    totalObtained += mark;
+    totalMax += max;
+    marksHtml += `
+      <tr>
+        <td>${subj}</td>
+        <td>${mark}</td>
+        <td>${max}</td>
+        <td>${perc}%</td>
+      </tr>
+    `;
+  }
+  
+  marksHtml += `
+    <tr class="total-row">
+      <td><strong>Total</strong></td>
+      <td><strong>${totalObtained}</strong></td>
+      <td><strong>${totalMax}</strong></td>
+      <td><strong>${totalPercent}%</strong></td>
+    </tr>
+  `;
+  
+  document.getElementById('marksTableBody').innerHTML = marksHtml;
+  
+  // Download PDF function
+  function downloadResultPDF() {
+    const btn = document.querySelector('.btn-download');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    btn.disabled = true;
+    
+    const element = document.getElementById('resultCard');
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: `${studentRoll}_Result.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(element).save().then(() => {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }).catch(() => {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      alert('Error generating PDF');
+    });
+  }
+  
+  // Share on WhatsApp function
+  function shareOnWhatsApp() {
+    const shareText = `📢 *Result Published* 📢\n\n🏫 *${coachingName}*\n📚 *${examName}*\n\n👨‍🎓 Student: ${studentName}\n📝 Roll No: ${studentRoll}\n📊 Percentage: ${totalPercent}%\n\n🔗 View full result: ${window.location.href}\n\n- ${coachingName} Team`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+  
+  // Set page title
+  document.title = `${studentName} - ${examName} Result | GYAN SEVA`;
+</script>
+</body>
+</html>
