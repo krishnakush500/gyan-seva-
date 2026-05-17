@@ -63,198 +63,172 @@
       color: white;
     }
     
-    /* Result Card - Exactly like MODERN ACADEMY style */
+    /* Result Card - Exactly like MODERN ACADEMY */
     .result-card {
+      width: 100%;
       background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      overflow: hidden;
-      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 15px;
+      position: relative;
+      overflow-x: auto;
     }
     
-    /* Header inside result - MODERN ACADEMY style */
-    .result-header {
-      background: linear-gradient(to right, #1a237e, #283593, #303f9f);
-      color: white;
-      padding: 25px 20px;
+    /* Result Card Header - White Background (like MODERN ACADEMY) */
+    .result-card-header {
       text-align: center;
-    }
-    
-    .school-name {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-    
-    .location {
-      font-size: 0.85rem;
-      opacity: 0.9;
-      margin-bottom: 12px;
-    }
-    
-    .director-info {
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #1a237e;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 15px;
       flex-wrap: wrap;
-    }
-    
-    .director-photo {
-      width: 65px;
-      height: 65px;
-      border-radius: 50%;
-      border: 2px solid #ffc107;
-      overflow: hidden;
       background: white;
     }
     
-    .director-photo img {
+    .result-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #1a237e;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .result-logo img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
     
-    .director-details h3 {
-      font-size: 1rem;
-      color: #ffc107;
-    }
-    
-    .director-details p {
-      font-size: 0.75rem;
-      opacity: 0.9;
-    }
-    
-    /* Exam Title */
-    .exam-title {
-      background: #fff3e0;
-      padding: 12px;
+    .result-title {
       text-align: center;
-      border-bottom: 2px solid #ffc107;
     }
     
-    .exam-title h3 {
+    .result-title h2 {
+      color: #1a237e;
+      margin-bottom: 4px;
+      font-size: 1.2rem;
+    }
+    
+    .result-title h3 {
       color: #b21f1f;
-      font-size: 1.1rem;
+      margin-bottom: 4px;
+      font-size: 1rem;
     }
     
-    .exam-title p {
+    .result-title p {
       color: #666;
       font-size: 0.8rem;
-      margin-top: 4px;
     }
     
-    /* Student Info - Like MODERN ACADEMY */
+    /* Student Info - Exactly like MODERN ACADEMY */
     .student-info {
-      background: #f5f5f5;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 15px;
-      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 15px;
     }
     
     .info-row {
-      flex: 1;
-      min-width: 150px;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 6px;
+      padding: 6px 10px;
+      background: #f5f5f5;
+      border-radius: 5px;
     }
     
     .info-label {
       font-weight: 600;
       color: #1a237e;
-      font-size: 0.8rem;
-      margin-bottom: 4px;
+      font-size: 0.85rem;
+      margin-bottom: 2px;
     }
     
     .info-value {
-      font-size: 0.95rem;
-      font-weight: 500;
       color: #333;
+      font-size: 0.9rem;
     }
     
-    /* Marks Table - Like MODERN ACADEMY */
-    .marks-table-container {
-      padding: 20px;
-      overflow-x: auto;
-    }
-    
+    /* Marks Table - Exactly like MODERN ACADEMY */
     .marks-table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 400px;
+      margin-bottom: 15px;
+      min-width: 450px;
     }
     
     .marks-table th {
       background: #1a237e;
       color: white;
-      padding: 12px;
+      padding: 8px;
       text-align: left;
       font-size: 0.85rem;
     }
     
     .marks-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #eee;
-      font-size: 0.9rem;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.85rem;
     }
     
     .marks-table tr:nth-child(even) {
       background: #f9f9f9;
     }
     
-    .total-row {
-      background: #e8f5e8 !important;
-      font-weight: 600;
+    .marks-table tr:hover {
+      background: #f0f0f0;
     }
     
-    .total-row td {
+    .total-marks {
+      background: #e8f5e8 !important;
       font-weight: 600;
       color: #1a237e;
     }
     
     /* Percentage & Division */
-    .result-stats {
-      padding: 0 20px 20px;
-      text-align: center;
-    }
-    
     .percentage-display {
-      background: #f0f7ff;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 12px;
+      text-align: center;
       font-size: 1.1rem;
-      font-weight: 700;
       color: #1a237e;
+      font-weight: 700;
+      padding: 10px;
+      background: #f0f7ff;
+      border-radius: 8px;
+      margin-top: 12px;
     }
     
     .division-display {
-      padding: 12px;
-      border-radius: 10px;
+      text-align: center;
+      font-size: 1.2rem;
       font-weight: 700;
-      font-size: 1rem;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
     }
     
-    /* Footer */
-    .coaching-footer {
+    /* Coaching Mention Footer */
+    .coaching-mention {
       text-align: center;
-      padding: 15px;
-      background: #f8f9fa;
-      font-size: 0.7rem;
-      color: #888;
-      border-top: 1px solid #eee;
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 2px solid #ddd;
+      color: #666;
+      font-style: italic;
+      font-size: 0.85rem;
     }
     
     /* Mobile Responsive */
     @media (max-width: 600px) {
       body { padding: 15px; }
-      .school-name { font-size: 1.2rem; }
-      .director-photo { width: 50px; height: 50px; }
-      .student-info { flex-direction: column; gap: 8px; }
-      .action-btn { padding: 8px 16px; font-size: 0.75rem; }
+      .result-logo { width: 55px; height: 55px; }
+      .result-title h2 { font-size: 1rem; }
+      .result-title h3 { font-size: 0.9rem; }
       .marks-table { min-width: 320px; }
       .marks-table th, .marks-table td { padding: 6px; font-size: 0.75rem; }
+      .action-btn { padding: 8px 16px; font-size: 0.75rem; }
+      .percentage-display { font-size: 0.9rem; }
     }
     
     /* Print Styles - A4 Perfect */
@@ -270,9 +244,13 @@
       .result-card {
         box-shadow: none;
         border-radius: 0;
-        border: none;
+        padding: 0;
       }
-      .result-header {
+      .result-card-header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .marks-table th {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -282,7 +260,7 @@
 <body>
 
 <div class="result-container">
-  <!-- 3 Buttons - Top Section (Sirf yehi upar dikhega) -->
+  <!-- 3 Buttons - Top Section -->
   <div class="action-buttons">
     <button class="action-btn btn-download" onclick="downloadResultPDF()">
       <i class="fas fa-download"></i> Download PDF
@@ -295,73 +273,63 @@
     </button>
   </div>
   
-  <!-- Result Card - Complete result with coaching details inside -->
+  <!-- Result Card - Exactly like MODERN ACADEMY -->
   <div class="result-card" id="resultCard">
-    <!-- Header - Coaching Details (Exactly like MODERN ACADEMY) -->
-    <div class="result-header">
-      <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
-      <p class="location" id="coachingLocation">Loading...</p>
-      <div class="director-info">
-        <div class="director-photo">
-          <img id="directorImg" src="https://via.placeholder.com/65?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/65?text=Logo'">
-        </div>
-        <div class="director-details">
-          <h3 id="directorName">Director</h3>
-          <p id="directorPhone"><i class="fas fa-phone"></i> ---</p>
-        </div>
+    <!-- Header with Logo and Title -->
+    <div class="result-card-header">
+      <div class="result-logo">
+        <img id="coachingLogo" src="https://via.placeholder.com/80?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/80?text=Logo'">
       </div>
-    </div>
-    
-    <!-- Exam Title -->
-    <div class="exam-title">
-      <h3 id="examName">Examination Result</h3>
-      <p id="examDate"></p>
+      <div class="result-title">
+        <h2 id="coachingName">MODERN ACADEMY BEGUSARAI</h2>
+        <h3 id="examName">Exam Name</h3>
+        <p>Under the guidance of <strong id="directorName">Director</strong></p>
+      </div>
     </div>
     
     <!-- Student Info -->
     <div class="student-info">
       <div class="info-row">
-        <div class="info-label">Student Name</div>
-        <div class="info-value" id="studentName">-</div>
+        <span class="info-label">Student Name:</span>
+        <span class="info-value" id="studentName">-</span>
       </div>
       <div class="info-row">
-        <div class="info-label">Father's Name</div>
-        <div class="info-value" id="fatherName">-</div>
+        <span class="info-label">Father's Name:</span>
+        <span class="info-value" id="fatherName">-</span>
       </div>
       <div class="info-row">
-        <div class="info-label">Roll Number</div>
-        <div class="info-value" id="studentRoll">-</div>
+        <span class="info-label">Roll Number:</span>
+        <span class="info-value" id="studentRoll">-</span>
       </div>
     </div>
     
     <!-- Marks Table -->
-    <div class="marks-table-container">
-      <table class="marks-table">
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>Marks Obtained</th>
-            <th>Total Marks</th>
-            <th>Percentage</th>
-          </tr>
-        </thead>
-        <tbody id="marksTableBody"></tbody>
-      </table>
+    <table class="marks-table">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Marks Obtained</th>
+          <th>Total Marks</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+      <tbody id="marksTableBody"></tbody>
+    </table>
+    
+    <!-- Percentage -->
+    <div class="percentage-display" id="totalPercentage">
+      Total Percentage: 0%
     </div>
     
-    <!-- Result Stats -->
-    <div class="result-stats">
-      <div class="percentage-display" id="totalPercentage">
-        Total Percentage: 0%
-      </div>
-      <div class="division-display" id="divisionBox">
-        Division: -
-      </div>
+    <!-- Division -->
+    <div class="division-display" id="divisionBox">
+      Division: -
     </div>
     
-    <!-- Footer -->
-    <div class="coaching-footer">
-      <p id="coachingMention">This result is published by GYAN SEVA</p>
+    <!-- Coaching Mention -->
+    <div class="coaching-mention" id="coachingMention">
+      <p>This result is published by MODERN ACADEMY, Begusarai | Director: RAMAN SIR</p>
+      <p>For queries: +91 8252658421</p>
     </div>
   </div>
 </div>
@@ -380,25 +348,21 @@
   const division = decodeURIComponent(urlParams.get('division') || '-');
   
   // Coaching info from localStorage (set from dashboard)
-  const coachingName = localStorage.getItem('coachingName') || 'GYAN SEVA';
-  const coachingLocation = localStorage.getItem('coachingLocation') || 'Bihar, India';
-  const directorName = localStorage.getItem('directorName') || 'Director';
-  const directorPhone = localStorage.getItem('directorPhone') || 'Not provided';
-  const coachingLogo = localStorage.getItem('coachingLogo') || 'https://via.placeholder.com/65?text=Logo';
+  const coachingName = localStorage.getItem('coachingName') || 'MODERN ACADEMY BEGUSARAI';
+  const directorName = localStorage.getItem('directorName') || 'RAMAN SIR';
+  const coachingLogo = localStorage.getItem('coachingLogo') || 'https://i.ibb.co/d4ybLkFS/logo-modern.jpg';
+  const coachingPhone = localStorage.getItem('directorPhone') || '+91 8252658421';
   
   // Populate data
+  document.getElementById('coachingLogo').src = coachingLogo;
   document.getElementById('coachingName').innerText = coachingName;
-  document.getElementById('coachingLocation').innerText = coachingLocation;
   document.getElementById('directorName').innerText = directorName;
-  document.getElementById('directorPhone').innerHTML = `<i class="fas fa-phone"></i> ${directorPhone}`;
-  document.getElementById('directorImg').src = coachingLogo;
-  document.getElementById('examName').innerText = examName;
-  document.getElementById('examDate').innerHTML = examDate ? `📅 ${examDate}` : '';
+  document.getElementById('examName').innerText = examDate ? `${examName} | ${examDate}` : examName;
   document.getElementById('studentName').innerText = studentName;
   document.getElementById('studentRoll').innerText = studentRoll;
   document.getElementById('fatherName').innerText = fatherName;
   document.getElementById('totalPercentage').innerHTML = `Total Percentage: ${totalPercent}%`;
-  document.getElementById('coachingMention').innerHTML = `This result is published by ${coachingName} | Director: ${directorName}`;
+  document.getElementById('coachingMention').innerHTML = `<p>This result is published by ${coachingName} | Director: ${directorName}</p><p>For queries: ${coachingPhone}</p>`;
   
   // Division with color
   const divisionBox = document.getElementById('divisionBox');
@@ -444,7 +408,7 @@
   }
   
   marksHtml += `
-    <tr class="total-row">
+    <tr class="total-marks">
       <td><strong>Total</strong></td>
       <td><strong>${totalObtained}</strong></td>
       <td><strong>${totalMax}</strong></td>
@@ -482,7 +446,7 @@
   
   // Share on WhatsApp function
   function shareOnWhatsApp() {
-    const shareText = `📢 *Result Published* 📢\n\n🏫 *${coachingName}*\n📚 *${examName}*\n\n👨‍🎓 Student: ${studentName}\n📝 Roll No: ${studentRoll}\n📊 Percentage: ${totalPercent}%\n\n🔗 View full result: ${window.location.href}\n\n- ${coachingName} Team`;
+    const shareText = `📢 *Result Published* 📢\n\n🏫 *${coachingName}*\n📚 *${examName}*\n\n👨‍🎓 Student: ${studentName}\n📝 Roll No: ${studentRoll}\n📊 Percentage: ${totalPercent}%\n📞 Contact: ${coachingPhone}\n\n🔗 View result: ${window.location.href}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappUrl, '_blank');
   }
