@@ -29,6 +29,7 @@
     .coaching-details i { width:20px; color:#2563eb; }
     .action-buttons { display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; }
     .btn-dashboard { background:#2563eb; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .btn-create-result { background:#10b981; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
     .btn-edit { background:#f59e0b; color:white; padding:8px 20px; border-radius:40px; border:none; font-size:0.8rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-whatsapp { background:#25D366; color:white; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:0.8rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
@@ -44,7 +45,7 @@
     .btn-save-modal { background:#10b981; color:white; }
     .btn-cancel-modal { background:#94a3b8; color:white; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
-    @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .btn-dashboard, .btn-edit, .btn-whatsapp{ text-align:center; } }
+    @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .btn-dashboard, .btn-create-result, .btn-edit, .btn-whatsapp{ text-align:center; } }
   </style>
 </head>
 <body>
@@ -67,8 +68,14 @@
         <span class="stat-count" id="coachingCount">0</span>
         <button class="refresh-btn" onclick="loadConnectedCoachings()"><i class="fas fa-sync-alt"></i> Refresh</button>
       </div>
-      <div id="coachingsList" class="coachings-container"><div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading...</div></div>
-      <div class="add-new"><a href="admin.html"><i class="fas fa-plus-circle"></i> Add New Coaching</a></div>
+
+      <div id="coachingsList" class="coachings-container">
+        <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>
+      </div>
+
+      <div class="add-new">
+        <a href="admin.html"><i class="fas fa-plus-circle"></i> Add New Coaching</a>
+      </div>
     </div>
   </div>
   <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
@@ -83,7 +90,7 @@
     <input type="text" id="editDirector" placeholder="Director Name">
     <input type="text" id="editPhone" placeholder="Phone Number">
     <input type="text" id="editLocation" placeholder="Location">
-    <textarea id="editLogo" rows="2" placeholder="Logo Image URL (direct link, e.g., https://example.com/logo.png)"></textarea>
+    <textarea id="editLogo" rows="2" placeholder="Logo Image URL (direct link)"></textarea>
     <div class="modal-buttons">
       <button class="btn-cancel-modal" onclick="closeEditModal()">Cancel</button>
       <button class="btn-save-modal" onclick="saveCoachingEdit()">Save Changes</button>
@@ -96,6 +103,11 @@
   import { collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   let currentEditId = null;
+
+  // Open Create Result page for a coaching
+  window.openCreateResult = (coachingId) => {
+    window.open(`create-result.html?id=${coachingId}`, '_blank');
+  };
 
   window.loadConnectedCoachings = async function() {
     try {
@@ -110,7 +122,7 @@
         const id = docSnap.id;
         const resultsQuery = query(collection(db, "results"), where("coachingId", "==", id));
         const resultsSnap = await getDocs(resultsQuery);
-        const logoHtml = c.logo ? `<img src="${c.logo}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:8px;" onerror="this.style.display='none'">` : '';
+        const logoHtml = c.logo ? `<img src="${c.logo}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; margin-right:8px; vertical-align:middle;" onerror="this.style.display='none'">` : '';
         html += `
           <div class="coaching-card">
             <div class="coaching-header">
@@ -125,6 +137,7 @@
             </div>
             <div class="action-buttons">
               <a href="dashboard.html?id=${id}" class="btn-dashboard"><i class="fas fa-tachometer-alt"></i> Open Dashboard</a>
+              <button class="btn-create-result" onclick="openCreateResult('${id}')"><i class="fas fa-plus-circle"></i> Create Result</button>
               <button class="btn-edit" onclick="openEditModal('${id}', '${c.name.replace(/'/g, "\\'")}', '${(c.director || '').replace(/'/g, "\\'")}', '${c.phone}', '${(c.location || '').replace(/'/g, "\\'")}', '${(c.logo || '').replace(/'/g, "\\'")}')"><i class="fas fa-pen"></i> Edit</button>
               <a href="https://wa.me/91${c.phone}?text=Namaste%20${c.name}%20team,%0AThis%20is%20GYAN%20SEVA.%20Dashboard%20is%20ready!" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
             </div>
