@@ -11,18 +11,68 @@
     body { background:linear-gradient(to bottom, #f5f5f5, #e0e7ff); min-height:100vh; padding:20px; }
     .container { max-width:1200px; margin:0 auto; background:white; border-radius:20px; box-shadow:0 5px 20px rgba(0,0,0,0.1); overflow:hidden; }
     
-    /* Header with single logo */
-    .header { background:linear-gradient(to right,#1a237e,#283593,#303f9f); color:white; padding:25px 20px; text-align:center; }
-    .header-main { display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap; }
-    .coaching-logo { width:80px; height:80px; border-radius:50%; border:3px solid #ffc107; object-fit:cover; background:#fff; }
-    .school-name { font-size:1.8rem; font-weight:700; }
-    .location { font-size:0.9rem; margin-top:5px; opacity:0.9; }
-    
-    /* Director info - with phone number */
-    .director-info { display:flex; align-items:center; justify-content:center; margin-top:15px; gap:12px; flex-wrap:wrap; }
-    .director-details { text-align:center; }
-    .director-details h3 { font-size:1rem; color:#ffc107; margin-bottom:4px; }
-    .director-details p { font-size:0.85rem; opacity:0.9; }
+    /* ========= HEADER - PERFECT ALIGNMENT ========= */
+    .header { 
+      background:linear-gradient(to right,#1a237e,#283593,#303f9f); 
+      color:white; 
+      padding:30px 25px;
+    }
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 35px;
+      flex-wrap: wrap;
+    }
+    /* Logo Section */
+    .logo-section {
+      flex-shrink: 0;
+    }
+    .coaching-logo { 
+      width: 100px; 
+      height: 100px; 
+      border-radius: 50%; 
+      border: 3px solid #ffc107; 
+      object-fit: cover; 
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    /* Text Section - Centered */
+    .text-section {
+      text-align: center;
+    }
+    .school-name { 
+      font-size: 2rem; 
+      font-weight: 700; 
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .location { 
+      font-size: 0.9rem; 
+      opacity: 0.85;
+      margin-bottom: 12px;
+    }
+    .director-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+    .director-detail {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      background: rgba(255,255,255,0.12);
+      padding: 5px 14px;
+      border-radius: 40px;
+    }
+    .director-detail i {
+      color: #ffc107;
+      width: 20px;
+    }
     
     /* Tabs */
     .main-tabs { display:flex; background:white; border-bottom:2px solid #1a237e; flex-wrap:wrap; }
@@ -59,34 +109,43 @@
     
     /* Mobile Responsive */
     @media (max-width:768px){
-      .school-name{ font-size:1.3rem; }
-      .coaching-logo{ width:60px; height:60px; }
-      .tab-btn{ font-size:0.8rem; padding:10px; }
-      .header-main{ gap:10px; }
-      .director-details h3{ font-size:0.9rem; }
+      .header-content { gap: 18px; }
+      .coaching-logo { width: 70px; height: 70px; }
+      .school-name { font-size: 1.4rem; }
+      .director-detail { font-size: 0.75rem; padding: 4px 10px; }
+      .tab-btn { font-size: 0.8rem; padding: 10px; }
+    }
+    @media (max-width:550px){
+      .header-content { flex-direction: column; text-align: center; gap: 12px; }
+      .text-section { text-align: center; }
+      .coaching-logo { width: 80px; height: 80px; }
+      .director-info { justify-content: center; }
     }
     @media (max-width:480px){
-      .school-name{ font-size:1.1rem; }
-      .coaching-logo{ width:50px; height:50px; }
-      .tab-btn{ font-size:0.7rem; padding:8px; }
-      .section-title{ font-size:1.1rem; }
+      .school-name { font-size: 1.2rem; }
+      .director-detail { font-size: 0.7rem; }
+      .tab-btn { font-size: 0.7rem; padding: 8px; }
+      .section-title { font-size: 1.1rem; }
     }
   </style>
 </head>
 <body>
 <div class="container">
-  <div class="header" id="coachingHeader">
-    <div class="header-main">
-      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/80?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/80?text=GYAN'">
-      <div>
+  <!-- ========= HEADER - PERFECT ALIGNMENT ========= -->
+  <div class="header">
+    <div class="header-content">
+      <!-- Logo - Left Side -->
+      <div class="logo-section">
+        <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/100?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/100?text=GYAN'">
+      </div>
+      <!-- Text - Centered -->
+      <div class="text-section">
         <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
         <p class="location" id="coachingLocation">Loading...</p>
-      </div>
-    </div>
-    <div class="director-info">
-      <div class="director-details">
-        <h3><i class="fas fa-user-tie"></i> <span id="directorName">Director</span></h3>
-        <p><i class="fas fa-phone"></i> <span id="directorPhone">---</span></p>
+        <div class="director-info">
+          <div class="director-detail"><i class="fas fa-user-tie"></i> <span id="directorName">Director</span></div>
+          <div class="director-detail"><i class="fas fa-phone"></i> <span id="directorPhone">---</span></div>
+        </div>
       </div>
     </div>
   </div>
