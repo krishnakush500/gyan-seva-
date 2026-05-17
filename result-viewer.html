@@ -63,7 +63,7 @@
       color: white;
     }
     
-    /* Result Card - Exactly like MODERN ACADEMY */
+    /* Result Card */
     .result-card {
       width: 100%;
       background: white;
@@ -74,7 +74,7 @@
       overflow-x: auto;
     }
     
-    /* Result Card Header - White Background (like MODERN ACADEMY) */
+    /* Result Card Header */
     .result-card-header {
       text-align: center;
       margin-bottom: 15px;
@@ -125,7 +125,7 @@
       font-size: 0.8rem;
     }
     
-    /* Student Info - Exactly like MODERN ACADEMY */
+    /* Student Info */
     .student-info {
       margin-bottom: 15px;
     }
@@ -151,18 +151,18 @@
       font-size: 0.9rem;
     }
     
-    /* Marks Table - Exactly like MODERN ACADEMY */
+    /* Marks Table - with Grade Column */
     .marks-table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 15px;
-      min-width: 450px;
+      min-width: 400px;
     }
     
     .marks-table th {
       background: #1a237e;
       color: white;
-      padding: 8px;
+      padding: 10px 8px;
       text-align: left;
       font-size: 0.85rem;
     }
@@ -186,6 +186,15 @@
       font-weight: 600;
       color: #1a237e;
     }
+    
+    /* Grade Colors */
+    .grade-a-plus { background: #d4edda; color: #155724; font-weight: 600; text-align: center; border-radius: 20px; display: inline-block; padding: 2px 10px; }
+    .grade-a { background: #d1ecf1; color: #0c5460; font-weight: 600; text-align: center; border-radius: 20px; display: inline-block; padding: 2px 10px; }
+    .grade-b-plus { background: #fff3cd; color: #856404; font-weight: 600; text-align: center; border-radius: 20px; display: inline-block; padding: 2px 10px; }
+    .grade-b { background: #ffe6b3; color: #856404; font-weight: 600; text-align: center; border-radius: 20px; display: inline-block; padding: 2px 10px; }
+    .grade-c { background: #ffe0b3; color: #cc7000; font-weight: 600; text-align: center; border-radius: 20px; display: inline-block; padding: 2px 10px; }
+    .grade-d { background: #f8d7da; color: #721c24; font-weight: 600; text-align: center; border-radius: 20px; display: inline-block; padding: 2px 10px; }
+    .grade-f { background: #f5c6cb; color: #721c24; font-weight: 600; text-align: center; border-radius: 20px; display: inline-block; padding: 2px 10px; }
     
     /* Percentage & Division */
     .percentage-display {
@@ -231,7 +240,7 @@
       .percentage-display { font-size: 0.9rem; }
     }
     
-    /* Print Styles - A4 Perfect */
+    /* Print Styles */
     @media print {
       body {
         background: white;
@@ -246,11 +255,11 @@
         border-radius: 0;
         padding: 0;
       }
-      .result-card-header {
+      .marks-table th {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      .marks-table th {
+      .grade-a-plus, .grade-a, .grade-b-plus, .grade-b, .grade-c, .grade-d, .grade-f {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -273,7 +282,7 @@
     </button>
   </div>
   
-  <!-- Result Card - Exactly like MODERN ACADEMY -->
+  <!-- Result Card -->
   <div class="result-card" id="resultCard">
     <!-- Header with Logo and Title -->
     <div class="result-card-header">
@@ -303,20 +312,20 @@
       </div>
     </div>
     
-    <!-- Marks Table -->
+    <!-- Marks Table with Grade Column (No Percentage Column) -->
     <table class="marks-table">
       <thead>
         <tr>
           <th>Subject</th>
           <th>Marks Obtained</th>
           <th>Total Marks</th>
-          <th>Percentage</th>
+          <th>Grade</th>
         </tr>
       </thead>
       <tbody id="marksTableBody"></tbody>
     </table>
     
-    <!-- Percentage -->
+    <!-- Total Percentage Only (No individual subject percentage) -->
     <div class="percentage-display" id="totalPercentage">
       Total Percentage: 0%
     </div>
@@ -335,6 +344,17 @@
 </div>
 
 <script>
+  // Function to calculate grade based on percentage
+  function getGrade(percentage) {
+    if(percentage >= 90) return { grade: "A+", className: "grade-a-plus" };
+    if(percentage >= 75) return { grade: "A", className: "grade-a" };
+    if(percentage >= 65) return { grade: "B+", className: "grade-b-plus" };
+    if(percentage >= 55) return { grade: "B", className: "grade-b" };
+    if(percentage >= 45) return { grade: "C", className: "grade-c" };
+    if(percentage >= 33) return { grade: "D", className: "grade-d" };
+    return { grade: "F", className: "grade-f" };
+  }
+  
   // Get data from URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const studentName = decodeURIComponent(urlParams.get('name') || '-');
@@ -347,7 +367,7 @@
   const totalPercent = decodeURIComponent(urlParams.get('percent') || '0');
   const division = decodeURIComponent(urlParams.get('division') || '-');
   
-  // Coaching info from localStorage (set from dashboard)
+  // Coaching info from localStorage
   const coachingName = localStorage.getItem('coachingName') || 'MODERN ACADEMY BEGUSARAI';
   const directorName = localStorage.getItem('directorName') || 'RAMAN SIR';
   const coachingLogo = localStorage.getItem('coachingLogo') || 'https://i.ibb.co/d4ybLkFS/logo-modern.jpg';
@@ -385,7 +405,7 @@
   }
   divisionBox.innerHTML = `Division: ${division}`;
   
-  // Generate marks table
+  // Generate marks table with Grade column (NO percentage column)
   let marksHtml = '';
   let totalObtained = 0;
   let totalMax = 0;
@@ -394,25 +414,28 @@
     const subj = subjects[i];
     const mark = marks[subj] || 0;
     const max = 100;
-    const perc = ((mark / max) * 100).toFixed(2);
+    const subPercent = (mark / max) * 100;
+    const gradeInfo = getGrade(subPercent);
     totalObtained += mark;
     totalMax += max;
+    
     marksHtml += `
       <tr>
         <td>${subj}</td>
         <td>${mark}</td>
         <td>${max}</td>
-        <td>${perc}%</td>
+        <td><span class="${gradeInfo.className}">${gradeInfo.grade}</span></td>
       </tr>
     `;
   }
   
+  // Add total row (only marks, no grade for total)
   marksHtml += `
     <tr class="total-marks">
       <td><strong>Total</strong></td>
       <td><strong>${totalObtained}</strong></td>
       <td><strong>${totalMax}</strong></td>
-      <td><strong>${totalPercent}%</strong></td>
+      <td></td>
     </tr>
   `;
   
@@ -446,7 +469,7 @@
   
   // Share on WhatsApp function
   function shareOnWhatsApp() {
-    const shareText = `📢 *Result Published* 📢\n\n🏫 *${coachingName}*\n📚 *${examName}*\n\n👨‍🎓 Student: ${studentName}\n📝 Roll No: ${studentRoll}\n📊 Percentage: ${totalPercent}%\n📞 Contact: ${coachingPhone}\n\n🔗 View result: ${window.location.href}`;
+    const shareText = `📢 *Result Published* 📢\n\n🏫 *${coachingName}*\n📚 *${examName}*\n\n👨‍🎓 Student: ${studentName}\n📝 Roll No: ${studentRoll}\n📊 Percentage: ${totalPercent}%\n📞 Contact: ${coachingPhone}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappUrl, '_blank');
   }
