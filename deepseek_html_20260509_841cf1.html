@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>MODERN ACADEMY | Best Coaching in एजनी, तुस्मा, छौड़ाही</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- html2pdf library for PDF generation (kept intact) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { 
+      background:linear-gradient(to bottom, #f5f5f5, #e0e7ff); 
+      min-height:100vh; 
+      padding:0;
+    }
+    .container { 
+      width:100%; 
+      max-width:1200px; 
+      margin:0 auto;
+      background:rgba(255,255,255,0.98); 
+      border-radius:0;
+      box-shadow:0 5px 20px rgba(0,0,0,0.1); 
+      overflow:hidden; 
+      min-height:100vh;
+    }
+
+    /* Header with logo on left side - attractive layout */
+    .header { 
+      background:linear-gradient(135deg, #0b1750, #1a237e, #283593); 
+      color:white; 
+      padding:20px 25px;
+      position:relative; 
+      overflow:hidden; 
+    }
+    .header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .logo-area {
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .director-photo { 
+      width: 110px;
+      height: 110px; 
+      border-radius: 50%; 
+      border: 4px solid #ffc107;
+      overflow: hidden; 
+      cursor: pointer; 
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      background: white;
+    }
+    .director-photo:hover { 
+      transform: scale(1.05); 
+      box-shadow: 0 0 20px rgba(255,193,7,0.5); 
+    }
+    .director-photo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .title-area {
+      flex: 2;
+      text-align: center;
+    }
+    .school-name { 
+      font-size: 2rem;
+      font-weight: 800; 
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      background: linear-gradient(135deg, #fff, #ffd966);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+    .location { 
+      font-size: 0.95rem; 
+      margin-top: 8px;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+    .director-details-area {
+      flex-shrink: 0;
+      text-align: right;
+      background: rgba(255,255,255,0.12);
+      padding: 10px 18px;
+      border-radius: 50px;
+      backdrop-filter: blur(4px);
+    }
+    .director-details-area h2{
+      font-size: 0.85rem; 
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      color: #ffc107;
+    }
+    .director-details-area h3{
+      font-size: 1.1rem; 
+      font-weight: 700;
+      margin-bottom: 4px; 
+    }
+    .director-details-area p{
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+    @media (max-width: 780px) {
+      .header-flex { flex-direction: column; text-align: center; }
+      .director-details-area { text-align: center; }
+      .director-details-area p { justify-content: center; }
+      .title-area { width: 100%; }
+      .school-name { font-size: 1.6rem; }
+      .director-photo { width: 90px; height: 90px; }
+    }
+    @media (max-width: 480px) {
+      .school-name { font-size: 1.4rem; }
+    }
+
+    /* Moving Admission Text */
+    .marquee-container {
+      background:#ffc107;
+      overflow:hidden;
+      position:relative;
+      height:45px;
+      display:flex;
+      align-items:center;
+    }
+    .marquee-content {
+      display:flex;
+      animation: marquee 20s linear infinite;
+      white-space:nowrap;
+      font-weight:600;
+      font-size:1rem;
+      color:#333;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Main Tabs Navigation */
+    .main-tabs {
+      display: flex;
+      background: white;
+      border-bottom: 2px solid #1a237e;
+      position: relative;
+      z-index: 10;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 16px 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-bottom: 3px solid transparent;
+    }
+    .tab-btn:hover {
+      background: #f5f5f5;
+      color: #1a237e;
+    }
+    .tab-btn.active {
+      color: #1a237e;
+      border-bottom: 3px solid #1a237e;
+      background: #f0f7ff;
+    }
+    .tab-btn i {
+      font-size: 1.1rem;
+    }
+
+    /* Content Sections */
+    .tab-content {
+      display: none;
+      padding: 0;
+      min-height: 400px;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Results Section */
+    .results-section {
+      padding: 20px 15px;
+      background: #f9f9f9;
+      min-height: 500px;
+    }
+    .section-title {
+      font-size: 1.4rem;
+      color: #1a237e;
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #1a237e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .section-title i {
+      color: #ffc107;
+    }
+    .results-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .result-item {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 4px solid #1a237e;
+      position: relative;
+    }
+    .result-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    }
+    .result-item.active {
+      border-left-color: #ffc107;
+      background: #fffae6;
+    }
+    .exam-name {
+      font-size: 0.95rem;
+      color: #1a237e;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .exam-date {
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    
+    .roll-input-section {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-top: 15px;
+      text-align: center;
+      display: none;
+    }
+    .roll-input-section h3 {
+      color: #1a237e;
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+    .input-group {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .input-group input {
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+      max-width: 220px;
+    }
+    .result-btn {
+      padding: 8px 16px;
+      background: #1a237e;
+      color: white;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .result-btn:hover {
+      background: #283593;
+    }
+
+    /* Show More/Less Button */
+    .show-more-btn {
+      display: block;
+      margin: 15px auto;
+      padding: 8px 20px;
+      background: #1a237e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.3s;
+    }
+    .show-more-btn:hover {
+      background: #283593;
+    }
+
+    /* Result Card - Mobile Optimized */
+    .result-card {
+      display: none;
+      width: 95%;
+      max-width: 700px;
+      margin: 15px auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 15px;
+      position: relative;
+      overflow-x: auto;
+    }
+    .result-card-header {
+      text-align: center;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #1a237e;
+    }
+    .result-card-header h2 {
+      color: #1a237e;
+      margin-bottom: 4px;
+      font-size: 1.2rem;
+    }
+    .result-card-header h3 {
+      color: #b21f1f;
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+    .result-card-header p {
+      color: #666;
+      font-size: 0.8rem;
+    }
+    
+    .student-info {
+      margin-bottom: 15px;
+    }
+    .info-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 6px;
+      padding: 6px 10px;
+      background: #f5f5f5;
+      border-radius: 5px;
+    }
+    .info-label {
+      font-weight: 600;
+      color: #1a237e;
+      font-size: 0.85rem;
+      margin-bottom: 2px;
+    }
+    .info-value {
+      color: #333;
+      font-size: 0.9rem;
+    }
+    
+    .marks-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+      min-width: 450px;
+    }
+    .marks-table th {
+      background: #1a237e;
+      color: white;
+      padding: 8px;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+    .marks-table td {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.85rem;
+    }
+    .marks-table tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    .marks-table tr:hover {
+      background: #f0f0f0;
+    }
+    
+    .total-marks {
+      background: #e8f5e8 !important;
+      font-weight: 600;
+      color: #1a237e;
+    }
+    .percentage-display {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #1a237e;
+      font-weight: 700;
+      padding: 10px;
+      background: #f0f7ff;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+    .division-display {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #1a237e;
+      font-weight: 700;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+    
+    /* Exam Toppers Section */
+    .exam-toppers-section {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border-left: 4px solid #1a237e;
+      border-top: 2px solid #ddd;
+    }
+    .exam-toppers-title {
+      font-size: 1rem;
+      color: #b21f1f;
+      margin-bottom: 12px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .exam-toppers-list {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .exam-topper-card {
+      background: white;
+      border-radius: 6px;
+      padding: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      min-width: 110px;
+    }
+    .exam-topper-rank {
+      background: #1a237e;
+      color: white;
+      padding: 4px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .exam-topper-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    .exam-topper-score {
+      font-size: 0.85rem;
+      color: #1a237e;
+      font-weight: 700;
+    }
+    
+    .coaching-mention { 
+      text-align: center; 
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 2px solid #ddd; 
+      color: #666; 
+      font-style: italic; 
+      font-size: 0.85rem;
+    }
+    
+    .action-buttons { 
+      display: flex; 
+      justify-content: center; 
+      gap: 8px;
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px solid #ddd; 
+      flex-wrap: wrap; 
+    }
+    .action-buttons button { 
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      border: none; 
+      border-radius: 6px;
+      cursor: pointer; 
+      transition: all 0.3s; 
+      display: flex; 
+      align-items: center; 
+      gap: 4px;
+    }
+    .download-btn {
+      background: #28a745;
+      color: white;
+    }
+    .download-btn:hover {
+      background: #218838;
+    }
+    .back-btn {
+      background: #6c757d;
+      color: white;
+    }
+    .back-btn:hover {
+      background: #5a6268;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 30px 15px;
+      font-size: 0.95rem;
+      color: #1a237e;
+    }
+    .error {
+      text-align: center;
+      padding: 12px;
+      background: #ffe6e6;
+      color: #b30000;
+      border-radius: 5px;
+      margin: 12px 0;
+    }
+
+    /* Tests Section */
+    .tests-section {
+      padding: 20px 15px;
+      background: #f9f9f9;
+      min-height: 500px;
+    }
+    .tests-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .test-card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      border-left: 5px solid #1a237e;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .test-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .test-card h3 {
+      color: #1a237e;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .test-card h3 i {
+      color: #ffc107;
+    }
+    .test-description {
+      color: #555;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    .test-details {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .test-detail {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #666;
+      font-size: 0.8rem;
+    }
+    .test-detail i {
+      color: #1a237e;
+      font-size: 0.85rem;
+    }
+    .test-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(to right, #1a237e, #283593);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      text-decoration: none;
+    }
+    .test-btn:hover {
+      background: linear-gradient(to right, #283593, #303f9f);
+      transform: scale(1.02);
+    }
+    .no-tests-message {
+      text-align: center;
+      padding: 50px 30px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      color: #666;
+      margin-top: 15px;
+    }
+    /* Toppers section removed as per instruction */
+
+    /* Developer Contact Section */
+    .developer-contact {
+      background: #f8f9fa;
+      padding: 15px;
+      text-align: center;
+      border-top: 2px solid #1a237e;
+      margin-top: 15px;
+    }
+    .developer-contact h3 {
+      color: #1a237e;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+    .developer-contact p {
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    .contact-info {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .contact-item {
+      background: white;
+      padding: 10px 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.3s;
+    }
+    .contact-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .contact-item i {
+      color: #1a237e;
+      font-size: 1rem;
+    }
+    
+    .footer {
+      background: #1a237e;
+      color: white;
+      text-align: center;
+      padding: 12px;
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    /* PDF Clone Container */
+    .pdf-clone-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      z-index: 9999;
+      overflow: auto;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .pdf-clone {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+      .marks-table { font-size: 0.8rem; min-width: 400px; }
+      .exam-toppers-list { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header with logo left side for attractive look -->
+    <div class="header">
+      <div class="header-flex">
+        <div class="logo-area">
+          <div class="director-photo">
+            <img src="https://i.ibb.co/Lhvq8Syw" alt="MODERN ACADEMY Logo - Raman Sir">
+          </div>
+        </div>
+        <div class="title-area">
+          <h1 class="school-name">MODERN ACADEMY</h1>
+          <p class="location"><i class="fas fa-map-marker-alt"></i> एजनी, तुस्मा, छौड़ाही (बेगूसराय)</p>
+        </div>
+        <div class="director-details-area">
+          <h2>DIRECTOR & FOUNDER</h2>
+          <h3>MR. RAMAN SIR</h3>
+          <p><i class="fas fa-phone-alt"></i> +91 8252658421</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Moving Admission Text -->
+    <div class="marquee-container">
+      <div class="marquee-content">
+        <span>📚 नए सत्र 2026-27 के लिए प्रवेश चल रहा है | कक्षा 6 से 12वीं तक | सीमित सीटें | आज ही संपर्क करें &nbsp;&nbsp;📞 8252658421 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span>📚 नए सत्र 2026-27 के लिए प्रवेश चल रहा है | कक्षा 6 से 12वीं तक | सीमित सीटें | आज ही संपर्क करें &nbsp;&nbsp;📞 8252658421 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      </div>
+    </div>
+
+    <!-- Main Tabs Navigation -->
+    <div class="main-tabs">
+      <button class="tab-btn active" id="results-tab" onclick="switchTab('results')">
+        <i class="fas fa-chart-line"></i> Check Results
+      </button>
+      <button class="tab-btn" id="tests-tab" onclick="openOnlineTest()">
+        <i class="fas fa-laptop-code"></i> Online Tests
+      </button>
+    </div>
+
+    <!-- Results Tab Content (STATIC FAKE RESULTS) -->
+    <div class="tab-content active" id="results-content">
+      <div class="results-section">
+        <div class="results-list" id="results-list"></div>
+        <button class="show-more-btn" id="show-more-btn" style="display:none;" onclick="toggleShowMore()">Show More Results</button>
+        
+        <div class="roll-input-section" id="roll-input-section">
+          <h3 id="selected-exam-name">Enter Roll Number</h3>
+          <div class="input-group">
+            <input type="number" id="roll-input" placeholder="Enter Roll Number">
+            <button class="result-btn" onclick="fetchStudentResult()">📑 Get Result</button>
+            <button class="result-btn" onclick="goBackToResults()" style="background:#666;">⬅ Back</button>
+          </div>
+          <div style="margin-top: 12px; font-size: 0.8rem; background: #eef2ff; padding: 6px; border-radius: 20px; display: inline-block; width: auto; margin-left: auto; margin-right: auto;">
+            💡 Hint Demo Roll: 101, 102, 103, 104, 105
+          </div>
+        </div>
+        
+        <div class="result-card" id="result-card">
+          <div class="result-card-header">
+            <h2>MODERN ACADEMY बेगूसराय</h2>
+            <h3 id="result-exam-name">Exam Name</h3>
+            <p>Under the guidance of <strong>MR. RAMAN SIR</strong></p>
+          </div>
+          <div class="student-info">
+            <div class="info-row"><span class="info-label">Student Name:</span><span class="info-value" id="result-student-name">-</span></div>
+            <div class="info-row"><span class="info-label">Father's Name:</span><span class="info-value" id="result-father-name">-</span></div>
+            <div class="info-row"><span class="info-label">Roll Number:</span><span class="info-value" id="result-roll-no">-</span></div>
+          </div>
+          <table class="marks-table"><thead><tr><th>Subject</th><th>Marks Obtained</th><th>Total Marks</th><th>Percentage</th></tr></thead><tbody id="marks-table-body"></tbody></table>
+          <div class="percentage-display" id="total-percentage">Total Percentage: 0%</div>
+          <div class="division-display" id="division-display">Division: -</div>
+          <div class="coaching-mention"><p>This result is published by MODERN ACADEMY, एजनी, तुस्मा, छौड़ाही (बेगूसराय) | Director: MR. RAMAN SIR<br>For queries: +91 8252658421</p></div>
+          <div class="action-buttons"><button class="download-btn" onclick="downloadResultAsPDF()"><i class="fas fa-download"></i> Download Result PDF</button><button class="back-btn" onclick="goBackToResults()"><i class="fas fa-arrow-left"></i> Back to Results</button></div>
+          <div class="exam-toppers-section" id="exam-toppers-section" style="display:none;"><h3 class="exam-toppers-title">🏆 Top 3 Performers of This Exam</h3><div class="exam-toppers-list" id="exam-toppers-list"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tests Tab Content -->
+    <div class="tab-content" id="tests-content">
+      <div class="tests-section">
+        <h2 class="section-title"><i class="fas fa-laptop-code"></i> Online Live Tests</h2>
+        <div class="tests-list" id="tests-list"></div>
+        <div class="no-tests-message" id="no-tests-message" style="display:none;"><i class="fas fa-file-alt"></i><h3>No Tests Available</h3><p>Check back later for online test series.</p></div>
+      </div>
+    </div>
+
+    <!-- Developer Contact Section -->
+    <div class="developer-contact">
+      <h3><i class="fas fa-laptop-code"></i> Website Development Contact</h3>
+      <p>This website was developed by:</p>
+      <div class="contact-info">
+        <div class="contact-item"><i class="fas fa-phone"></i><span>8580594404</span></div>
+        <div class="contact-item"><i class="fas fa-envelope"></i><span>kk5674010@gmail.com</span></div>
+      </div>
+      <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">Want a similar website for your institute? Feel free to contact.</p>
+    </div>
+
+    <div class="footer"><p>&copy; 2025 MODERN ACADEMY. All Rights Reserved.</p></div>
+  </div>
+  <div id="pdf-clone-container" class="pdf-clone-container"></div>
+
+  <script>
+    // STATIC FAKE RESULTS (NO FIREBASE)
+    const staticExams = [
+      { id: "exam_1", examName: "बोर्ड प्रैक्टिस परीक्षा - दिसंबर 2025", date: "दिसंबर 20, 2025", subjects: [{name:"गणित", total:100},{name:"विज्ञान", total:100},{name:"अंग्रेजी", total:100},{name:"हिंदी", total:100},{name:"सामाजिक विज्ञान", total:100}],
+        students: [
+          {rollNo:101, name:"आरुषि कुमारी", fatherName:"रामाश्रय सिंह", marks:{ "गणित":85,"विज्ञान":78,"अंग्रेजी":82,"हिंदी":88,"सामाजिक विज्ञान":79} },
+          {rollNo:102, name:"आदित्य राज", fatherName:"मनोज कुमार", marks:{ "गणित":92,"विज्ञान":89,"अंग्रेजी":84,"हिंदी":91,"सामाजिक विज्ञान":86} },
+          {rollNo:103, name:"सौरभ कुमार", fatherName:"विनोद सिंह", marks:{ "गणित":75,"विज्ञान":80,"अंग्रेजी":78,"हिंदी":82,"सामाजिक विज्ञान":74} },
+          {rollNo:104, name:"रितिका कुमारी", fatherName:"सुशील पासवान", marks:{ "गणित":88,"विज्ञान":91,"अंग्रेजी":85,"हिंदी":90,"सामाजिक विज्ञान":87} },
+          {rollNo:105, name:"अंकित कुमार", fatherName:"दिनेश सिंह", marks:{ "गणित":68,"विज्ञान":72,"अंग्रेजी":70,"हिंदी":74,"सामाजिक विज्ञान":69} }
+        ] },
+      { id: "exam_2", examName: "अर्धवार्षिक परीक्षा 2025-26", date: "सितंबर 15, 2025", subjects: [{name:"गणित", total:100},{name:"विज्ञान", total:100},{name:"अंग्रेजी", total:100},{name:"हिंदी", total:100},{name:"संस्कृत", total:100}],
+        students: [
+          {rollNo:101, name:"आरुषि कुमारी", fatherName:"रामाश्रय सिंह", marks:{"गणित":78,"विज्ञान":82,"अंग्रेजी":79,"हिंदी":85,"संस्कृत":80} },
+          {rollNo:102, name:"आदित्य राज", fatherName:"मनोज कुमार", marks:{"गणित":94,"विज्ञान":88,"अंग्रेजी":91,"हिंदी":92,"संस्कृत":88} },
+          {rollNo:103, name:"सौरभ कुमार", fatherName:"विनोद सिंह", marks:{"गणित":74,"विज्ञान":76,"अंग्रेजी":72,"हिंदी":78,"संस्कृत":77} },
+          {rollNo:104, name:"रितिका कुमारी", fatherName:"सुशील पासवान", marks:{"गणित":85,"विज्ञान":90,"अंग्रेजी":86,"हिंदी":89,"संस्कृत":88} }
+        ] }
+    ];
+    
+    let allResults = [];
+    let selectedExamId = null, selectedExamData = null, currentStudentResult = null;
+    let showAllResults = false;
+
+    function initStaticResults() {
+      allResults = staticExams.map(exam => ({
+        id: exam.id,
+        examName: exam.examName,
+        createdAt: exam.date,
+        isNew: false,
+        data: exam
+      }));
+      displayResultsList();
+    }
+    
+    function displayResultsList() {
+      const resultsList = document.getElementById("results-list");
+      if(!resultsList) return;
+      resultsList.style.display = "grid";
+      const resultsToShow = showAllResults ? allResults : allResults.slice(0, 4);
+      let html = "";
+      resultsToShow.forEach((result, idx) => {
+        html += `<div class="result-item" onclick="selectExam('${result.id}', ${idx})" id="result-item-${idx}">
+          <div class="exam-name">📘 ${result.examName}</div>
+          <div class="exam-date">📅 ${result.createdAt}</div>
+        </div>`;
+      });
+      resultsList.innerHTML = html;
+      const showMoreBtn = document.getElementById("show-more-btn");
+      if(allResults.length > 4){
+         showMoreBtn.style.display = "block";
+         showMoreBtn.textContent = showAllResults ? "Show Less" : "Show More Results";
+      } else showMoreBtn.style.display = "none";
+    }
+    
+    function toggleShowMore(){ showAllResults = !showAllResults; displayResultsList(); }
+    
+    function selectExam(examId, index){
+      selectedExamId = examId;
+      const found = allResults.find(r => r.id === examId);
+      if(found) selectedExamData = found.data;
+      document.getElementById('selected-exam-name').innerHTML = `🔢 रोल नंबर दर्ज करें: ${selectedExamData.examName}`;
+      document.getElementById('results-list').style.display = 'none';
+      document.getElementById('show-more-btn').style.display = 'none';
+      document.getElementById('roll-input-section').style.display = 'block';
+      document.getElementById('result-card').style.display = 'none';
+      document.getElementById('roll-input').value = '';
+      document.querySelectorAll('.result-item').forEach(it => it.classList.remove('active'));
+      const activeItem = document.getElementById(`result-item-${index}`);
+      if(activeItem) activeItem.classList.add('active');
+    }
+    
+    function goBackToResults(){
+      document.getElementById('results-list').style.display = 'grid';
+      document.getElementById('roll-input-section').style.display = 'none';
+      document.getElementById('result-card').style.display = 'none';
+      if(allResults.length > 4) document.getElementById('show-more-btn').style.display = 'block';
+      document.querySelectorAll('.result-item').forEach(it => it.classList.remove('active'));
+    }
+    
+    function calculateTopPerformersForExam(examData){
+      if(!examData || !examData.students) return [];
+      const studentsWithScores = examData.students.map(student => {
+        let totalObtained = 0, totalPossible = 0;
+        examData.subjects.forEach(subj => {
+          totalObtained += student.marks[subj.name] || 0;
+          totalPossible += subj.total;
+        });
+        const percentage = totalPossible > 0 ? (totalObtained/totalPossible)*100 : 0;
+        return { name: student.name, rollNo: student.rollNo, totalObtained, percentage };
+      });
+      studentsWithScores.sort((a,b)=> b.percentage - a.percentage);
+      let rank=1, prev=null;
+      const top3=[];
+      for(let i=0; i<studentsWithScores.length && top3.length<3; i++){
+        if(studentsWithScores[i].percentage !== prev) rank = i+1;
+        if(rank <=3) top3.push({...studentsWithScores[i], rank});
+        prev = studentsWithScores[i].percentage;
+      }
+      return top3;
+    }
+    
+    function displayTopPerformers(topPerformers){
+      const section = document.getElementById('exam-toppers-section');
+      const container = document.getElementById('exam-toppers-list');
+      if(!topPerformers.length){ section.style.display='none'; return; }
+      let html='';
+      topPerformers.forEach(p => {
+        const rankText = p.rank===1?'1st':p.rank===2?'2nd':p.rank===3?'3rd':`${p.rank}th`;
+        html+=`<div class="exam-topper-card"><div class="exam-topper-rank">${rankText} Rank</div><div class="exam-topper-name">${p.name}</div><div class="exam-topper-score">${p.percentage.toFixed(2)}%</div></div>`;
+      });
+      container.innerHTML=html;
+      section.style.display='block';
+    }
+    
+    function fetchStudentResult(){
+      const rollInput = document.getElementById('roll-input').value.trim();
+      if(!rollInput){ alert("कृपया रोल नंबर दर्ज करें"); return; }
+      if(!selectedExamData || !selectedExamData.students){ alert("Exam data not loaded"); return; }
+      const student = selectedExamData.students.find(s => s.rollNo == rollInput);
+      if(!student){ alert("रोल नंबर नहीं मिला। हिंट रोल: 101,102,103,104,105 आज़माएं"); return; }
+      const topPerformers = calculateTopPerformersForExam(selectedExamData);
+      displayStudentResult(student, topPerformers);
+    }
+    
+    function displayStudentResult(student, topPerformers){
+      currentStudentResult = student;
+      document.getElementById('roll-input-section').style.display = 'none';
+      const resultCard = document.getElementById('result-card');
+      resultCard.style.display = 'block';
+      document.getElementById('result-exam-name').innerHTML = selectedExamData.examName;
+      document.getElementById('result-student-name').innerHTML = student.name;
+      document.getElementById('result-father-name').innerHTML = student.fatherName || "-";
+      document.getElementById('result-roll-no').innerHTML = student.rollNo;
+      let totalObtained=0, totalPossible=0;
+      let html='';
+      selectedExamData.subjects.forEach(subj => {
+        const marks = student.marks[subj.name] || 0;
+        const percent = ((marks/subj.total)*100).toFixed(2);
+        html+=`<tr><td>${subj.name}</td><td>${marks}</td><td>${subj.total}</td><td>${percent}%</td></tr>`;
+        totalObtained+=marks;
+        totalPossible+=subj.total;
+      });
+      const finalPercent = ((totalObtained/totalPossible)*100).toFixed(2);
+      html+=`<tr class="total-marks"><td><strong>Total</strong></td><td><strong>${totalObtained}</strong></td><td><strong>${totalPossible}</strong></td><td><strong>${finalPercent}%</strong></td></tr>`;
+      document.getElementById('marks-table-body').innerHTML = html;
+      document.getElementById('total-percentage').innerHTML = `Total Percentage: ${finalPercent}%`;
+      let division = { division: "FIRST DIVISION", color:"#28a745", bgColor:"#d4edda"};
+      const percFloat = parseFloat(finalPercent);
+      if(percFloat>=60) division = { division:"FIRST DIVISION", color:"#28a745", bgColor:"#d4edda"};
+      else if(percFloat>=45) division = { division:"SECOND DIVISION", color:"#17a2b8", bgColor:"#d1ecf1"};
+      else if(percFloat>=30) division = { division:"THIRD DIVISION", color:"#ffc107", bgColor:"#fff3cd"};
+      else division = { division:"FAIL", color:"#dc3545", bgColor:"#f8d7da"};
+      const divElem = document.getElementById('division-display');
+      divElem.textContent = `Division: ${division.division}`;
+      divElem.style.backgroundColor = division.bgColor;
+      divElem.style.color = division.color;
+      displayTopPerformers(topPerformers);
+      resultCard.scrollIntoView({ behavior:'smooth' });
+    }
+    
+    function createPDFClone(){
+      const orig = document.getElementById('result-card');
+      const container = document.getElementById('pdf-clone-container');
+      container.innerHTML = '';
+      const clone = orig.cloneNode(true);
+      clone.classList.add('pdf-clone');
+      const btns = clone.querySelector('.action-buttons');
+      if(btns) btns.remove();
+      const topperSec = clone.querySelector('.exam-toppers-section');
+      if(topperSec) topperSec.remove();
+      container.appendChild(clone);
+      container.style.visibility='visible';
+      return clone;
+    }
+    
+    function preloadImages(cb){
+      const imgs = document.querySelectorAll('#result-card img');
+      let cnt=0, total=imgs.length;
+      if(total===0) { cb(); return; }
+      imgs.forEach(img=>{ if(img.complete) cnt++; else { img.onload = ()=> { cnt++; if(cnt===total) cb(); }; img.onerror=()=>{ cnt++; if(cnt===total) cb(); }; } });
+      if(cnt===total) cb();
+    }
+    
+    function downloadResultAsPDF(){
+      const btn = document.querySelector('.download-btn');
+      const original = btn.innerHTML;
+      btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+      btn.disabled=true;
+      const clone = createPDFClone();
+      setTimeout(()=>{
+        preloadImages(()=>{
+          const opt = { margin:[10,10,10,10], filename:`Result_${currentStudentResult?.rollNo || 'student'}.pdf`, image:{type:'jpeg', quality:0.98}, html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}};
+          html2pdf().set(opt).from(clone).save().then(()=>{
+            document.getElementById('pdf-clone-container').innerHTML='';
+            btn.innerHTML=original;
+            btn.disabled=false;
+            alert('PDF downloaded successfully!');
+          }).catch(()=>{
+            document.getElementById('pdf-clone-container').innerHTML='';
+            btn.innerHTML=original;
+            btn.disabled=false;
+            alert('Try again');
+          });
+        });
+      }, 300);
+    }
+    
+    function openOnlineTest(){
+      window.open('https://forms.gle/your-test-link', '_blank');
+    }
+    
+    function switchTab(tab){
+      document.getElementById('results-tab').classList.toggle('active', tab==='results');
+      document.getElementById('tests-tab').classList.toggle('active', tab==='tests');
+      document.getElementById('results-content').classList.toggle('active', tab==='results');
+      document.getElementById('tests-content').classList.toggle('active', tab==='tests');
+      if(tab === 'tests'){
+        const testsListDiv = document.getElementById('tests-list');
+        if(testsListDiv){
+          testsListDiv.innerHTML = `<div class="test-card"><h3><i class="fas fa-chalkboard-user"></i> Weekly Test Series</h3><div class="test-description">Practice tests for board exams. New schedule coming soon.</div><div class="test-details"><span class="test-detail"><i class="far fa-calendar-alt"></i> Starting Jan 2026</span></div><button class="test-btn" onclick="openOnlineTest()"><i class="fas fa-external-link-alt"></i> Register Now</button></div>`;
+          document.getElementById('no-tests-message').style.display='none';
+        }
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', ()=>{
+      initStaticResults();
+    });
+  </script>
+</body>
+</html>
