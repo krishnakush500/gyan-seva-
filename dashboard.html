@@ -3,29 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>GYAN SEVA — Coaching Result Portal</title>
+  <title>GYAN SEVA — Result Portal</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background:linear-gradient(to bottom, #f5f5f5, #e0e7ff); min-height:100vh; padding:20px; }
     .container { max-width:1200px; margin:0 auto; background:white; border-radius:20px; box-shadow:0 5px 20px rgba(0,0,0,0.1); overflow:hidden; }
+    
+    /* Header with single logo */
     .header { background:linear-gradient(to right,#1a237e,#283593,#303f9f); color:white; padding:25px 20px; text-align:center; }
     .header-main { display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap; }
-    .logo-img { width:80px; height:80px; border-radius:50%; border:3px solid white; object-fit:cover; background:#fff; }
+    .coaching-logo { width:80px; height:80px; border-radius:50%; border:3px solid #ffc107; object-fit:cover; background:#fff; }
     .school-name { font-size:1.8rem; font-weight:700; }
-    .location { font-size:0.9rem; margin-top:5px; }
-    .director-info { display:flex; align-items:center; justify-content:center; margin-top:15px; gap:15px; flex-wrap:wrap; }
-    .director-photo { width:70px; height:70px; border-radius:50%; border:2px solid #ffc107; overflow:hidden; }
-    .director-photo img { width:100%; height:100%; object-fit:cover; }
-    .director-details { text-align:left; }
-    .director-details h3 { font-size:1.1rem; }
+    .location { font-size:0.9rem; margin-top:5px; opacity:0.9; }
+    
+    /* Director info - with phone number */
+    .director-info { display:flex; align-items:center; justify-content:center; margin-top:15px; gap:12px; flex-wrap:wrap; }
+    .director-details { text-align:center; }
+    .director-details h3 { font-size:1rem; color:#ffc107; margin-bottom:4px; }
     .director-details p { font-size:0.85rem; opacity:0.9; }
+    
+    /* Tabs */
     .main-tabs { display:flex; background:white; border-bottom:2px solid #1a237e; flex-wrap:wrap; }
     .tab-btn { flex:1; padding:15px; font-size:1rem; font-weight:600; border:none; background:transparent; color:#666; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; border-bottom:3px solid transparent; }
     .tab-btn.active { color:#1a237e; border-bottom:3px solid #1a237e; background:#f0f7ff; }
     .tab-content { display:none; padding:25px; background:#f9f9f9; min-height:500px; }
     .tab-content.active { display:block; }
+    
+    /* Results */
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
     .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
@@ -44,25 +50,43 @@
     .action-buttons { display:flex; justify-content:center; gap:10px; margin-top:20px; flex-wrap:wrap; }
     .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
+    
+    /* Create Result */
     .create-result-form { background:white; padding:20px; border-radius:12px; }
     .create-result-form input, .create-result-form textarea { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px; }
     .btn-publish { background:#10b981; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
     footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
-    @media (max-width:768px){ .school-name{ font-size:1.3rem; } .tab-btn{ font-size:0.8rem; padding:10px; } .header-main{ gap:10px; } .logo-img{ width:55px; height:55px; } .director-photo{ width:50px; height:50px; } .director-details{ text-align:center; } .director-info{ flex-direction:column; } }
+    
+    /* Mobile Responsive */
+    @media (max-width:768px){
+      .school-name{ font-size:1.3rem; }
+      .coaching-logo{ width:60px; height:60px; }
+      .tab-btn{ font-size:0.8rem; padding:10px; }
+      .header-main{ gap:10px; }
+      .director-details h3{ font-size:0.9rem; }
+    }
+    @media (max-width:480px){
+      .school-name{ font-size:1.1rem; }
+      .coaching-logo{ width:50px; height:50px; }
+      .tab-btn{ font-size:0.7rem; padding:8px; }
+      .section-title{ font-size:1.1rem; }
+    }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="header" id="coachingHeader">
     <div class="header-main">
-      <img id="coachingLogo" class="logo-img" src="https://via.placeholder.com/80?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/80?text=GYAN'">
-      <div><h1 class="school-name" id="coachingName">GYAN SEVA</h1><p class="location" id="coachingLocation">Loading...</p></div>
+      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/80?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/80?text=GYAN'">
+      <div>
+        <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
+        <p class="location" id="coachingLocation">Loading...</p>
+      </div>
     </div>
     <div class="director-info">
-      <div class="director-photo"><img id="directorImg" src="https://via.placeholder.com/70?text=D" alt="Director"></div>
       <div class="director-details">
-        <h3 id="directorName"><i class="fas fa-user-tie"></i> Director</h3>
-        <p id="directorPhone"><i class="fas fa-phone"></i> <span id="phoneNumber">---</span></p>
+        <h3><i class="fas fa-user-tie"></i> <span id="directorName">Director</span></h3>
+        <p><i class="fas fa-phone"></i> <span id="directorPhone">---</span></p>
       </div>
     </div>
   </div>
@@ -106,7 +130,7 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, addDoc, getDocs, query, where, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, addDoc, getDocs, query, where, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
@@ -121,11 +145,10 @@
       coachingData = snap.data();
       document.getElementById('coachingName').innerText = coachingData.name || "GYAN SEVA";
       document.getElementById('coachingLocation').innerText = coachingData.location || "Bihar, India";
-      document.getElementById('directorName').innerHTML = `<i class="fas fa-user-tie"></i> ${coachingData.director || 'Director'}`;
-      document.getElementById('phoneNumber').innerText = coachingData.phone || 'Not provided';
+      document.getElementById('directorName').innerText = coachingData.director || 'Director';
+      document.getElementById('directorPhone').innerText = coachingData.phone || 'Not provided';
       if(coachingData.logo && coachingData.logo.trim() !== '') {
         document.getElementById('coachingLogo').src = coachingData.logo;
-        document.getElementById('directorImg').src = coachingData.logo;
       }
     }
     loadResults();
