@@ -61,7 +61,7 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, addDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, addDoc, updateDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   function showToast(message, isError = false) {
     const toast = document.createElement('div');
@@ -72,13 +72,89 @@
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // Create coaching and move to connected customers
+  // Fake results data to be added when dashboard is created
+  async function addFakeResults(coachingId, coachingName) {
+    const fakeResults = [
+      {
+        examName: "📘 Demo Exam 1 - Monthly Test (January 2025)",
+        examDate: "2025-01-15",
+        subjects: ["Mathematics", "Science", "English", "Social Science"],
+        marksData: {
+          "101": { name: "Aryan Kumar", marks: { "Mathematics": 85, "Science": 78, "English": 82, "Social Science": 88 } }
+        },
+        hintRoll: "101"
+      },
+      {
+        examName: "📙 Demo Exam 2 - Half Yearly (December 2024)",
+        examDate: "2024-12-20",
+        subjects: ["Mathematics", "Science", "English", "Hindi", "SST"],
+        marksData: {
+          "202": { name: "Priya Singh", marks: { "Mathematics": 92, "Science": 88, "English": 85, "Hindi": 90, "SST": 87 } }
+        },
+        hintRoll: "202"
+      },
+      {
+        examName: "📕 Demo Exam 3 - Pre-Board (February 2025)",
+        examDate: "2025-02-10",
+        subjects: ["Physics", "Chemistry", "Mathematics", "Biology"],
+        marksData: {
+          "303": { name: "Rohan Verma", marks: { "Physics": 75, "Chemistry": 80, "Mathematics": 88, "Biology": 79 } }
+        },
+        hintRoll: "303"
+      }
+    ];
+
+    for (const exam of fakeResults) {
+      // Add result document
+      const resultRef = await addDoc(collection(db, "results"), {
+        coachingId: coachingId,
+        examName: exam.examName,
+        examDate: exam.examDate,
+        subjects: exam.subjects,
+        publishedAt: new Date().toISOString(),
+        isDemo: true  // Flag to identify demo results
+      });
+      
+      // Add marks subcollection
+      for (const [rollNo, studentData] of Object.entries(exam.marksData)) {
+        await setDoc(doc(db, "results", resultRef.id, "marks", rollNo), {
+          name: studentData.name,
+          marks: studentData.marks,
+          isDemo: true
+        });
+      }
+    }
+    
+    showToast(`🎯 Demo results added for ${coachingName}. Show them to the client!`);
+  }
+
+  // Delete all fake/demo results for a coaching
+  async function deleteFakeResults(coachingId) {
+    const resultsQuery = query(collection(db, "results"), where("coachingId", "==", coachingId), where("isDemo", "==", true));
+    const snapshot = await getDocs(resultsQuery);
+    let deletedCount = 0;
+    for (const resultDoc of snapshot.docs) {
+      // Delete marks subcollection first
+      const marksSnapshot = await getDocs(collection(db, "results", resultDoc.id, "marks"));
+      for (const markDoc of marksSnapshot.docs) {
+        await deleteDoc(doc(db, "results", resultDoc.id, "marks", markDoc.id));
+      }
+      await deleteDoc(doc(db, "results", resultDoc.id));
+      deletedCount++;
+    }
+    if (deletedCount > 0) {
+      showToast(`🗑️ ${deletedCount} demo results deleted. Now add real results!`);
+    }
+    return deletedCount;
+  }
+
+  // Create dashboard with fake results
   window.createDashboard = async function(leadId, leadName, leadPhone, leadCity, buttonElement) {
     try {
       buttonElement.disabled = true;
       buttonElement.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating...';
       
-      // Add to coachings collection (Connected Customers)
+      // Add to coachings collection
       const coachingsRef = collection(db, "coachings");
       const newCoachingRef = await addDoc(coachingsRef, {
         name: leadName,
@@ -88,10 +164,14 @@
         location: leadCity || "",
         logo: "",
         createdAt: new Date().toISOString(),
-        dashboardCreated: true
+        dashboardCreated: true,
+        demoResultsAdded: true
       });
       
-      // Update lead status to "connected" (so it disappears from pending list)
+      // Add fake demo results
+      await addFakeResults(newCoachingRef.id, leadName);
+      
+      // Update lead status
       const leadRef = doc(db, "leads", leadId);
       await updateDoc(leadRef, { 
         status: "connected", 
@@ -99,15 +179,10 @@
         connectedAt: new Date().toISOString()
       });
       
-      showToast(`✅ ${leadName} dashboard created! Now in Connected Customers.`);
+      showToast(`✅ ${leadName} dashboard created! Demo results added.`);
       
-      // Reload leads list (this lead will disappear)
+      // Reload leads list
       loadLeads();
-      
-      // Also update stats in connected.html if open
-      if(window.opener) {
-        try { window.opener.loadConnectedCoachings(); } catch(e) {}
-      }
       
     } catch (error) {
       console.error("Error:", error);
