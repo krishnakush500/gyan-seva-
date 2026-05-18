@@ -25,7 +25,8 @@
     .lead-info span { font-size:0.75rem; color:#64748b; }
     .btn-make-dashboard { background:#2563eb; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .whatsapp-btn { background:#25D366; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; transition:0.2s; }
-    .whatsapp-sent { background:#94a3b8; pointer-events:none; opacity:0.6; }
+    .whatsapp-sent { background:#94a3b8; }
+    .whatsapp-reminder { background:#f59e0b; }
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     .pagination { display:flex; justify-content:center; gap:10px; margin-top:25px; flex-wrap:wrap; }
     .page-btn { background:#f1f5f9; border:none; padding:8px 14px; border-radius:30px; cursor:pointer; font-weight:500; }
@@ -44,7 +45,7 @@
     <a href="connected.html"><i class="fas fa-handshake"></i> Connected Customers</a>
   </div>
   <div class="connect-card">
-    <div class="connect-header"><h2><i class="fab fa-whatsapp"></i> CONNECT TO CUSTOMER</h2><p>Send WhatsApp messages — sent leads move to bottom</p></div>
+    <div class="connect-header"><h2><i class="fab fa-whatsapp"></i> CONNECT TO CUSTOMER</h2><p>Send messages — first message then reminder</p></div>
     <div class="connect-body">
       <div class="stats-bar"><span><i class="fas fa-users"></i> <strong>Pending Leads</strong></span><span class="stat-count" id="leadCount">0</span><button class="refresh-btn" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh</button></div>
       <div id="leadsList" class="leads-container"><div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading leads...</div></div>
@@ -53,51 +54,75 @@
   </div>
   <footer><i class="fas fa-heart" style="color:#10b981;"></i> GYAN SEVA — Connect, Convert, Serve</footer>
 </div>
+
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, addDoc, updateDoc, doc, getDocs, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, addDoc, updateDoc, doc, getDocs, query, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   
   let allLeads = [], currentPage = 1, itemsPerPage = 10;
-  let sentLeads = JSON.parse(localStorage.getItem('whatsapp_sent_leads') || '{}');
+  let leadStatus = JSON.parse(localStorage.getItem('lead_status') || '{}'); // { leadId: 'sent' or 'reminder_sent' }
+  let templates = {};
   
   function showToast(msg, isError=false){ let t=document.createElement('div'); t.className='toast'; t.style.background=isError?'#dc2626':'#10b981'; t.innerHTML=`<i class="fas ${isError?'fa-exclamation-triangle':'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
   
-  window.markAsSent = (leadId) => { sentLeads[leadId]=true; localStorage.setItem('whatsapp_sent_leads',JSON.stringify(sentLeads)); showToast('✅ Marked as sent. Lead will move to bottom.'); loadLeads(); };
-  
-  // ========== FAKE RESULTS FUNCTION ==========
-  async function addFakeResults(coachingId, coachingName) {
-    const fakeResults = [
-      { examName: "📘 Demo Exam 1 - Monthly Test", examDate: "2025-01-15", subjects: ["Mathematics", "Science", "English", "Social Science"], roll: "101", studentName: "Aryan Kumar", fatherName: "Rajesh Singh", marks: {"Mathematics":85, "Science":78, "English":82, "Social Science":88} },
-      { examName: "📙 Demo Exam 2 - Half Yearly", examDate: "2024-12-20", subjects: ["Mathematics", "Science", "English", "Hindi", "SST"], roll: "202", studentName: "Priya Singh", fatherName: "Mohan Singh", marks: {"Mathematics":92, "Science":88, "English":85, "Hindi":90, "SST":87} },
-      { examName: "📕 Demo Exam 3 - Pre-Board", examDate: "2025-02-10", subjects: ["Physics", "Chemistry", "Mathematics", "Biology"], roll: "303", studentName: "Rohan Verma", fatherName: "Suresh Verma", marks: {"Physics":75, "Chemistry":80, "Mathematics":88, "Biology":79} }
-    ];
-    
-    for (const exam of fakeResults) {
-      const resultsRef = collection(db, "coachings", coachingId, "results");
-      const newResult = await addDoc(resultsRef, {
-        examName: exam.examName,
-        examDate: exam.examDate,
-        subjects: exam.subjects,
-        publishedAt: new Date().toISOString(),
-        totalStudents: 1,
-        isDemo: true
-      });
-      
-      const total = Object.values(exam.marks).reduce((a,b)=>a+b,0);
-      const percentage = (total / (exam.subjects.length * 100)) * 100;
-      
-      await setDoc(doc(db, "coachings", coachingId, "results", newResult.id, "marks", exam.roll), {
-        name: exam.studentName,
-        fatherName: exam.fatherName,
-        marks: exam.marks,
-        total: total,
-        percentage: percentage.toFixed(2),
-        isDemo: true
-      });
+  // Load templates from Firebase
+  async function loadTemplates() {
+    try {
+      const docRef = doc(db, "templates", "whatsapp_templates");
+      const docSnap = await getDoc(docRef);
+      if(docSnap.exists()) {
+        templates = docSnap.data();
+      } else {
+        // Default templates if not exists
+        templates = {
+          template1: "📢 GYAN SEVA\n\nHello {name},\n\nWe provide online result system for institutes.\n\n🎁 FREE DEMO for your institute.\n\n✅ Students check marks online with roll number\n✅ No phone calls for result\n✅ Save your time\n\nInterested? Reply YES.\n\nThank you\nGYAN SEVA",
+          template2: "👋 GYAN SEVA\n\nHello {name},\n\nJust a gentle reminder about FREE DEMO for your institute.\n\nYour students can check online result with roll number.\n\nReply YES to get your free demo link.\n\nThank you\nGYAN SEVA"
+        };
+      }
+    } catch(e) {
+      console.error("Error loading templates:", e);
     }
-    showToast(`🎯 3 Demo results added for ${coachingName}! Show them to the client.`);
   }
-  // ========================================
+  
+  // Get message based on type
+  function getMessage(leadName, type) {
+    const template = type === 'reminder' ? (templates.template2 || templates.template1) : (templates.template1 || templates.template2);
+    return template.replace(/{name}/g, leadName);
+  }
+  
+  // Mark lead action (sent or reminder)
+  window.markLeadAction = async (leadId, leadName, leadPhone, action) => {
+    if(action === 'sent') {
+      leadStatus[leadId] = 'sent';
+      localStorage.setItem('lead_status', JSON.stringify(leadStatus));
+      showToast('✅ First message sent! Now you can send reminder.');
+    } else if(action === 'reminder') {
+      leadStatus[leadId] = 'reminder_sent';
+      localStorage.setItem('lead_status', JSON.stringify(leadStatus));
+      showToast('📢 Reminder sent!');
+    }
+    loadLeads();
+  };
+  
+  // Get WhatsApp link with template
+  function getWhatsAppLink(leadId, leadName, leadPhone, currentStatus) {
+    let template, actionType;
+    
+    if(currentStatus === 'sent') {
+      // Send reminder
+      template = getMessage(leadName, 'reminder');
+      actionType = 'reminder';
+    } else {
+      // Send first message
+      template = getMessage(leadName, 'first');
+      actionType = 'sent';
+    }
+    
+    const encodedMsg = encodeURIComponent(template);
+    const waLink = `https://wa.me/91${leadPhone}?text=${encodedMsg}`;
+    
+    return { waLink, actionType };
+  }
   
   window.createDashboard = async (leadId, leadName, leadPhone, leadCity, btn) => {
     btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-pulse"></i>';
@@ -107,7 +132,35 @@
       });
       
       // Add fake demo results
-      await addFakeResults(coachingRef.id, leadName);
+      const fakeResults = [
+        { examName: "📘 Demo Exam 1 - Monthly Test", examDate: "2025-01-15", subjects: ["Mathematics", "Science", "English", "Social Science"], roll: "101", studentName: "Aryan Kumar", fatherName: "Rajesh Singh", marks: {"Mathematics":85, "Science":78, "English":82, "Social Science":88} },
+        { examName: "📙 Demo Exam 2 - Half Yearly", examDate: "2024-12-20", subjects: ["Mathematics", "Science", "English", "Hindi", "SST"], roll: "202", studentName: "Priya Singh", fatherName: "Mohan Singh", marks: {"Mathematics":92, "Science":88, "English":85, "Hindi":90, "SST":87} },
+        { examName: "📕 Demo Exam 3 - Pre-Board", examDate: "2025-02-10", subjects: ["Physics", "Chemistry", "Mathematics", "Biology"], roll: "303", studentName: "Rohan Verma", fatherName: "Suresh Verma", marks: {"Physics":75, "Chemistry":80, "Mathematics":88, "Biology":79} }
+      ];
+      
+      for (const exam of fakeResults) {
+        const resultsRef = collection(db, "coachings", coachingRef.id, "results");
+        const newResult = await addDoc(resultsRef, {
+          examName: exam.examName,
+          examDate: exam.examDate,
+          subjects: exam.subjects,
+          publishedAt: new Date().toISOString(),
+          totalStudents: 1,
+          isDemo: true
+        });
+        
+        const total = Object.values(exam.marks).reduce((a,b)=>a+b,0);
+        const percentage = (total / (exam.subjects.length * 100)) * 100;
+        
+        await setDoc(doc(db, "coachings", coachingRef.id, "results", newResult.id, "marks", exam.roll), {
+          name: exam.studentName,
+          fatherName: exam.fatherName,
+          marks: exam.marks,
+          total: total,
+          percentage: percentage.toFixed(2),
+          isDemo: true
+        });
+      }
       
       await updateDoc(doc(db, "leads", leadId), { status:"connected", coachingId:coachingRef.id, connectedAt:new Date().toISOString() });
       showToast(`✅ ${leadName} dashboard created with 3 demo results!`);
@@ -124,10 +177,28 @@
     const start=(currentPage-1)*itemsPerPage, end=start+itemsPerPage, pageLeads=allLeads.slice(start,end);
     let html='';
     for(const lead of pageLeads){
-      const isSent=sentLeads[lead.id]===true;
-      const waMsg=`नमस्ते ${lead.name} sir,%0A%0AThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.%0A%0A✅ Online result system%0A✅ Students can check marks%0A✅ PDF download%0A%0A🔰 FREE trial for 1 month.%0A%0AInterested? Reply "YES".%0A%0AThank you%0AGYAN SEVA Team`;
-      const waLink=`https://wa.me/91${lead.phone}?text=${waMsg}`;
-      html+=`<div class="lead-item"><div class="lead-info"><strong>🏫 ${lead.name}</strong><br><span>📞 ${lead.phone} | 📍 ${lead.city||''}</span></div><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn-make-dashboard" onclick="createDashboard('${lead.id}','${lead.name.replace(/'/g,"\\'")}','${lead.phone}','${lead.city||''}',this)"><i class="fas fa-magic"></i> Make Dashboard</button><a href="${waLink}" target="_blank" class="whatsapp-btn ${isSent?'whatsapp-sent':''}" onclick="${isSent?'return false;':'markAsSent(\''+lead.id+'\')'}"><i class="fab fa-whatsapp"></i> ${isSent?'Sent':'Message'}</a></div></div>`;
+      const currentStatus = leadStatus[lead.id];
+      let btnClass = 'whatsapp-btn';
+      let btnText = 'Message';
+      let action = 'sent';
+      
+      if(currentStatus === 'sent') {
+        btnClass = 'whatsapp-btn whatsapp-reminder';
+        btnText = 'Reminder';
+        action = 'reminder';
+      } else if(currentStatus === 'reminder_sent') {
+        btnClass = 'whatsapp-btn whatsapp-sent';
+        btnText = 'Sent';
+        action = null;
+      }
+      
+      const { waLink, actionType } = currentStatus === 'reminder_sent' ? 
+        { waLink: '#', actionType: null } : 
+        getWhatsAppLink(lead.id, lead.name, lead.phone, currentStatus);
+      
+      const isDisabled = currentStatus === 'reminder_sent';
+      
+      html+=`<div class="lead-item"><div class="lead-info"><strong>🏫 ${lead.name}</strong><br><span>📞 ${lead.phone} | 📍 ${lead.city||''}</span></div><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn-make-dashboard" onclick="createDashboard('${lead.id}','${lead.name.replace(/'/g,"\\'")}','${lead.phone}','${lead.city||''}',this)"><i class="fas fa-magic"></i> Make Dashboard</button>${isDisabled ? `<span class="whatsapp-btn whatsapp-sent"><i class="fas fa-check"></i> Done</span>` : `<a href="${waLink}" target="_blank" class="${btnClass}" onclick="markLeadAction('${lead.id}','${lead.name.replace(/'/g,"\\'")}','${lead.phone}','${actionType}')"><i class="fab fa-whatsapp"></i> ${btnText}</a>`}</div></div>`;
     }
     container.innerHTML=html;
     if(totalPages>1){ let pgHtml=''; for(let i=1;i<=totalPages;i++) pgHtml+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`; document.getElementById('pagination').innerHTML=pgHtml; }
@@ -138,10 +209,17 @@
   window.goToPage=(page)=>{ currentPage=page; renderPage(); };
   
   window.loadLeads=async()=>{
+    await loadTemplates();
     const snap=await getDocs(query(collection(db,"leads"), where("status","==","pending")));
     let leads=[];
     snap.forEach(d=>leads.push({id:d.id,...d.data()}));
-    allLeads=leads.sort((a,b)=>{ let aSent=sentLeads[a.id]===true, bSent=sentLeads[b.id]===true; return aSent===bSent?0:aSent?1:-1; });
+    // Sort: unsent first, then sent, then reminder_sent
+    allLeads=leads.sort((a,b)=>{ 
+      const aStatus = leadStatus[a.id] || 'unsent';
+      const bStatus = leadStatus[b.id] || 'unsent';
+      const order = { unsent: 0, sent: 1, reminder_sent: 2 };
+      return (order[aStatus] || 0) - (order[bStatus] || 0);
+    });
     currentPage=1; renderPage();
   };
   
