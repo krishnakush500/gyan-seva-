@@ -19,41 +19,46 @@
     .stats-bar { background:#ecfdf5; border-radius:24px; padding:16px 20px; margin-bottom:28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
     .stat-count { background:#10b981; color:white; padding:6px 16px; border-radius:40px; font-weight:600; }
     .refresh-btn { background:#f1f5f9; border:none; padding:8px 20px; border-radius:40px; cursor:pointer; font-weight:500; }
-    .reset-btn { background:#f59e0b; color:white; border:none; padding:8px 20px; border-radius:40px; cursor:pointer; font-weight:500; }
     .leads-container { max-height:550px; overflow-y:auto; }
     .lead-item { display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid #e2e8f0; flex-wrap:wrap; gap:12px; }
     .lead-info strong { font-size:1rem; color:#1e293b; }
     .lead-info span { font-size:0.75rem; color:#64748b; }
-    .whatsapp-btn {
-      background: #25D366;
-      color: white;
-      padding: 8px 24px;
-      border-radius: 40px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-    .whatsapp-btn.sent {
-      background: #94a3b8;
-      cursor: default;
-      opacity: 0.7;
-      pointer-events: none;
-    }
-    .whatsapp-btn:hover:not(.sent) {
-      background: #128C7E;
-      transform: scale(0.97);
-    }
+    .whatsapp-btn { background:#25D366; color:white; padding:8px 24px; border-radius:40px; text-decoration:none; font-size:0.85rem; font-weight:600; display:inline-flex; align-items:center; gap:8px; transition:0.2s; }
+    .whatsapp-btn.sent { background:#94a3b8; cursor:default; pointer-events:none; }
+    .whatsapp-btn:hover { transform:scale(0.97); }
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     .toast { position:fixed; bottom:30px; right:30px; background:#1e293b; color:white; padding:12px 24px; border-radius:50px; font-size:0.85rem; z-index:1000; animation:fadeInOut 3s ease; }
     @keyframes fadeInOut { 0% { opacity:0; transform:translateY(20px); } 15% { opacity:1; transform:translateY(0); } 85% { opacity:1; } 100% { opacity:0; transform:translateY(20px); } }
+    
+    /* Pagination Styles */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid #e2e8f0;
+    }
+    .pagination button {
+      background: #1a237e;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .pagination button:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+    .pagination span {
+      color: #1e293b;
+      font-weight: 500;
+    }
+    
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
-    .lead-item.sent-item { opacity:0.6; background:#f8fafc; border-radius:12px; margin:8px 0; padding:12px; }
   </style>
 </head>
 <body>
@@ -68,16 +73,22 @@
   <div class="connect-card">
     <div class="connect-header">
       <h2><i class="fab fa-whatsapp"></i> CONNECT TO CUSTOMER</h2>
-      <p>Send WhatsApp messages to pending leads — ordered by status</p>
+      <p>Send WhatsApp messages to pending leads — one click away</p>
     </div>
     <div class="connect-body">
       <div class="stats-bar">
-        <span><i class="fas fa-users"></i> <strong>Pending Leads</strong></span>
+        <span><i class="fas fa-users"></i> <strong>Total Pending Leads</strong></span>
         <span class="stat-count" id="leadCount">0</span>
         <button class="refresh-btn" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        <button class="reset-btn" onclick="resetAllMessages()"><i class="fas fa-undo-alt"></i> Reset All</button>
       </div>
       <div id="leadsList" class="leads-container"><div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading leads...</div></div>
+      
+      <!-- Pagination Controls -->
+      <div class="pagination" id="paginationControls" style="display:none;">
+        <button id="prevPageBtn" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i> Previous</button>
+        <span id="pageInfo">Page 1 of 1</span>
+        <button id="nextPageBtn" onclick="changePage(1)">Next <i class="fas fa-chevron-right"></i></button>
+      </div>
     </div>
   </div>
   <footer><i class="fas fa-heart" style="color:#10b981;"></i> GYAN SEVA — Connect, Convert, Serve</footer>
@@ -85,10 +96,12 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, updateDoc, doc, addDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // Track sent messages in localStorage
-  let sentLeads = JSON.parse(localStorage.getItem('whatsapp_sent_leads') || '{}');
+  let allLeads = [];           // Store all pending leads
+  let sentLeads = JSON.parse(localStorage.getItem('sentLeads') || '{}');  // Track sent leads { phone: true }
+  let currentPage = 1;
+  const itemsPerPage = 10;
 
   function showToast(message, isError = false) {
     const toast = document.createElement('div');
@@ -99,160 +112,125 @@
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // Mark lead as sent
-  window.markAsSent = async (leadId, leadName, buttonElement) => {
-    sentLeads[leadId] = { sent: true, sentAt: new Date().toISOString(), name: leadName };
-    localStorage.setItem('whatsapp_sent_leads', JSON.stringify(sentLeads));
+  // Mark lead as sent and update UI
+  window.markAsSent = async (leadId, phone, leadName) => {
+    // Update local storage
+    sentLeads[phone] = true;
+    localStorage.setItem('sentLeads', JSON.stringify(sentLeads));
     
-    // Also update in Firebase (optional - to keep sync)
+    // Update Firebase lead status
     try {
       const leadRef = doc(db, "leads", leadId);
-      await updateDoc(leadRef, { whatsappSent: true, whatsappSentAt: new Date().toISOString() });
-    } catch(e) { console.log("Firebase update optional"); }
+      await updateDoc(leadRef, { status: "connected", connectedAt: new Date().toISOString() });
+      showToast(`✅ Message sent to ${leadName}`);
+    } catch(e) {
+      console.error("Error updating lead:", e);
+    }
     
-    showToast(`✅ Message marked as sent to ${leadName}!`);
-    
-    // Reload list to reorder
+    // Refresh the list (lead will move down)
     loadLeads();
   };
 
-  // Reset all messages (clear sent tracking)
-  window.resetAllMessages = async () => {
-    if(confirm("⚠️ Reset all WhatsApp message status? This will move all leads back to pending section.")) {
-      sentLeads = {};
-      localStorage.setItem('whatsapp_sent_leads', JSON.stringify(sentLeads));
-      showToast("🔄 All message status reset! Leads moved back to pending.");
-      loadLeads();
-    }
-  };
-
-  // Create dashboard and move to connected customers (existing function)
-  window.createDashboard = async function(leadId, leadName, leadPhone, leadCity, buttonElement) {
-    try {
-      buttonElement.disabled = true;
-      buttonElement.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating...';
-      
-      const coachingsRef = collection(db, "coachings");
-      const newCoachingRef = await addDoc(coachingsRef, {
-        name: leadName,
-        phone: leadPhone,
-        city: leadCity || "",
-        director: "",
-        location: leadCity || "",
-        logo: "",
-        createdAt: new Date().toISOString(),
-        dashboardCreated: true
-      });
-      
-      const leadRef = doc(db, "leads", leadId);
-      await updateDoc(leadRef, { 
-        status: "connected", 
-        coachingId: newCoachingRef.id,
-        connectedAt: new Date().toISOString()
-      });
-      
-      showToast(`✅ ${leadName} dashboard created! Now in Connected Customers.`);
-      loadLeads();
-      
-    } catch (error) {
-      console.error("Error:", error);
-      showToast(`❌ Failed to create dashboard`, true);
-      buttonElement.disabled = false;
-      buttonElement.innerHTML = '<i class="fas fa-magic"></i> Make Dashboard';
-    }
-  };
-
-  window.loadLeads = async function() {
+  // Load leads from Firebase and sort (pending first, then sent)
+  async function loadLeads() {
     try {
       const leadsRef = collection(db, "leads");
       const snapshot = await getDocs(leadsRef);
-      const container = document.getElementById('leadsList');
-      const pendingLeads = [];
-      const sentLeadsList = [];
+      const leads = [];
       
       snapshot.forEach(docSnap => {
         const lead = docSnap.data();
-        const leadId = docSnap.id;
-        // Check if already sent (from localStorage or Firebase)
-        const isSent = sentLeads[leadId]?.sent === true || lead.whatsappSent === true;
-        
         if (lead.status === "pending") {
-          if (isSent) {
-            sentLeadsList.push({ id: leadId, ...lead, isSent: true });
-          } else {
-            pendingLeads.push({ id: leadId, ...lead, isSent: false });
-          }
+          const isSent = sentLeads[lead.phone] === true;
+          leads.push({ id: docSnap.id, ...lead, isSent });
         }
       });
       
-      document.getElementById('leadCount').innerText = pendingLeads.length;
+      // Sort: Not sent first (upar), sent later (neeche)
+      leads.sort((a, b) => {
+        if (a.isSent === b.isSent) return 0;
+        if (!a.isSent && b.isSent) return -1;  // Not sent goes up
+        return 1;  // Sent goes down
+      });
       
-      if (pendingLeads.length === 0 && sentLeadsList.length === 0) {
-        container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><br>No pending leads!<br>All leads are connected or processed.<br><br>👉 Go to "Connected Customers" to see all coachings.</div>`;
+      allLeads = leads;
+      document.getElementById('leadCount').innerText = leads.length;
+      
+      if (leads.length === 0) {
+        document.getElementById('leadsList').innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><br>No pending leads!<br>All leads are processed.<br><br>👉 Go to "Save Customer" to import new leads.</div>`;
+        document.getElementById('paginationControls').style.display = 'none';
         return;
       }
       
-      let html = '';
-      
-      // First show PENDING leads (upar)
-      if (pendingLeads.length > 0) {
-        html += `<div style="margin-bottom:15px;"><strong style="background:#10b981; color:white; padding:4px 12px; border-radius:20px;">📨 PENDING ({pendingLeads.length})</strong></div>`;
-        for (const lead of pendingLeads) {
-          const whatsappMessage = `नमस्ते ${lead.name} sir,%0A%0AThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.%0A%0A✅ Online result system%0A✅ Students can check marks with roll number%0A✅ PDF download option%0A%0A🔰 Completely FREE trial for 1 month.%0A🔰 No technical knowledge required.%0A%0AInterested? Reply "YES" to get your demo portal.%0A%0AThank you%0AGYAN SEVA Team`;
-          const waLink = `https://wa.me/91${lead.phone}?text=${whatsappMessage}`;
-          
-          html += `
-            <div class="lead-item">
-              <div class="lead-info">
-                <strong>🏫 ${lead.name}</strong><br>
-                <span>📞 ${lead.phone} | 📍 ${lead.city || 'Location not available'}</span>
-              </div>
-              <div style="display:flex; gap:8px;">
-                <button class="whatsapp-btn" onclick="window.open('${waLink}', '_blank'); markAsSent('${lead.id}', '${lead.name.replace(/'/g, "\\'")}', this);">
-                  <i class="fab fa-whatsapp"></i> Message on WhatsApp
-                </button>
-                <button class="btn-make-dashboard" style="background:#2563eb; color:white; padding:8px 18px; border-radius:40px; border:none; font-weight:600; cursor:pointer;" onclick="createDashboard('${lead.id}', '${lead.name.replace(/'/g, "\\'")}', '${lead.phone}', '${lead.city || ''}', this)">
-                  <i class="fas fa-magic"></i> Make Dashboard
-                </button>
-              </div>
-            </div>
-          `;
-        }
-      }
-      
-      // Then show SENT leads (neeche - with gray button)
-      if (sentLeadsList.length > 0) {
-        html += `<div style="margin-top:20px; margin-bottom:15px;"><strong style="background:#94a3b8; color:white; padding:4px 12px; border-radius:20px;">✅ SENT (${sentLeadsList.length})</strong></div>`;
-        for (const lead of sentLeadsList) {
-          html += `
-            <div class="lead-item" style="opacity:0.7; background:#f8fafc; border-radius:12px; margin-bottom:8px; padding:12px;">
-              <div class="lead-info">
-                <strong>🏫 ${lead.name}</strong><br>
-                <span>📞 ${lead.phone} | 📍 ${lead.city || 'Location not available'}</span>
-              </div>
-              <div style="display:flex; gap:8px;">
-                <button class="whatsapp-btn sent" style="background:#94a3b8; cursor:default;" disabled>
-                  <i class="fab fa-whatsapp"></i> Message Sent ✓
-                </button>
-                <button class="btn-make-dashboard" style="background:#2563eb; color:white; padding:8px 18px; border-radius:40px; border:none; font-weight:600; cursor:pointer;" onclick="createDashboard('${lead.id}', '${lead.name.replace(/'/g, "\\'")}', '${lead.phone}', '${lead.city || ''}', this)">
-                  <i class="fas fa-magic"></i> Make Dashboard
-                </button>
-              </div>
-            </div>
-          `;
-        }
-      }
-      
-      container.innerHTML = html;
+      displayCurrentPage();
+      document.getElementById('paginationControls').style.display = 'flex';
       
     } catch (error) {
       console.error("Error loading leads:", error);
       document.getElementById('leadsList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Error loading leads</div>`;
     }
+  }
+
+  // Display current page's leads
+  function displayCurrentPage() {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageLeads = allLeads.slice(startIndex, endIndex);
+    
+    const container = document.getElementById('leadsList');
+    const totalPages = Math.ceil(allLeads.length / itemsPerPage);
+    
+    // Update pagination info
+    document.getElementById('pageInfo').innerHTML = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById('prevPageBtn').disabled = currentPage === 1;
+    document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+    
+    if (pageLeads.length === 0) {
+      container.innerHTML = '<div class="empty-state">No leads on this page</div>';
+      return;
+    }
+    
+    let html = '';
+    for (const lead of pageLeads) {
+      const isSent = lead.isSent;
+      const whatsappMessage = `नमस्ते ${lead.name} sir,%0A%0AThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.%0A%0A✅ Online result system%0A✅ Students can check marks with roll number%0A✅ PDF download option%0A%0A🔰 Completely FREE trial for 1 month.%0A🔰 No technical knowledge required.%0A%0AInterested? Reply "YES" to get your demo portal.%0A%0AThank you%0AGYAN SEVA Team`;
+      const waLink = `https://wa.me/91${lead.phone}?text=${whatsappMessage}`;
+      
+      // Different button styles: sent = grey, not sent = green
+      const buttonClass = isSent ? 'whatsapp-btn sent' : 'whatsapp-btn';
+      const buttonHtml = isSent 
+        ? `<button class="${buttonClass}" disabled><i class="fas fa-check-circle"></i> Message Sent</button>`
+        : `<a href="${waLink}" target="_blank" class="${buttonClass}" onclick="markAsSent('${lead.id}', '${lead.phone}', '${lead.name.replace(/'/g, "\\'")}')"><i class="fab fa-whatsapp"></i> Send WhatsApp</a>`;
+      
+      html += `
+        <div class="lead-item" data-sent="${isSent}">
+          <div class="lead-info">
+            <strong>🏫 ${lead.name}</strong><br>
+            <span>📞 ${lead.phone} | 📍 ${lead.city || 'Location not available'}</span>
+          </div>
+          ${buttonHtml}
+        </div>
+      `;
+    }
+    
+    container.innerHTML = html;
+  }
+
+  // Change page
+  window.changePage = (direction) => {
+    const totalPages = Math.ceil(allLeads.length / itemsPerPage);
+    const newPage = currentPage + direction;
+    if (newPage >= 1 && newPage <= totalPages) {
+      currentPage = newPage;
+      displayCurrentPage();
+    }
   };
 
-  window.loadLeads();
-  setInterval(loadLeads, 10000);
+  // Initial load
+  loadLeads();
+  
+  // Auto refresh every 15 seconds
+  setInterval(loadLeads, 15000);
 </script>
 </body>
 </html>
