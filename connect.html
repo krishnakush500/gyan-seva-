@@ -55,18 +55,69 @@
 </div>
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, addDoc, updateDoc, doc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, addDoc, updateDoc, doc, getDocs, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  
   let allLeads = [], currentPage = 1, itemsPerPage = 10;
   let sentLeads = JSON.parse(localStorage.getItem('whatsapp_sent_leads') || '{}');
+  
   function showToast(msg, isError=false){ let t=document.createElement('div'); t.className='toast'; t.style.background=isError?'#dc2626':'#10b981'; t.innerHTML=`<i class="fas ${isError?'fa-exclamation-triangle':'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
+  
   window.markAsSent = (leadId) => { sentLeads[leadId]=true; localStorage.setItem('whatsapp_sent_leads',JSON.stringify(sentLeads)); showToast('✅ Marked as sent. Lead will move to bottom.'); loadLeads(); };
+  
+  // ========== FAKE RESULTS FUNCTION ==========
+  async function addFakeResults(coachingId, coachingName) {
+    const fakeResults = [
+      { examName: "📘 Demo Exam 1 - Monthly Test", examDate: "2025-01-15", subjects: ["Mathematics", "Science", "English", "Social Science"], roll: "101", studentName: "Aryan Kumar", fatherName: "Rajesh Singh", marks: {"Mathematics":85, "Science":78, "English":82, "Social Science":88} },
+      { examName: "📙 Demo Exam 2 - Half Yearly", examDate: "2024-12-20", subjects: ["Mathematics", "Science", "English", "Hindi", "SST"], roll: "202", studentName: "Priya Singh", fatherName: "Mohan Singh", marks: {"Mathematics":92, "Science":88, "English":85, "Hindi":90, "SST":87} },
+      { examName: "📕 Demo Exam 3 - Pre-Board", examDate: "2025-02-10", subjects: ["Physics", "Chemistry", "Mathematics", "Biology"], roll: "303", studentName: "Rohan Verma", fatherName: "Suresh Verma", marks: {"Physics":75, "Chemistry":80, "Mathematics":88, "Biology":79} }
+    ];
+    
+    for (const exam of fakeResults) {
+      const resultsRef = collection(db, "coachings", coachingId, "results");
+      const newResult = await addDoc(resultsRef, {
+        examName: exam.examName,
+        examDate: exam.examDate,
+        subjects: exam.subjects,
+        publishedAt: new Date().toISOString(),
+        totalStudents: 1,
+        isDemo: true
+      });
+      
+      const total = Object.values(exam.marks).reduce((a,b)=>a+b,0);
+      const percentage = (total / (exam.subjects.length * 100)) * 100;
+      
+      await setDoc(doc(db, "coachings", coachingId, "results", newResult.id, "marks", exam.roll), {
+        name: exam.studentName,
+        fatherName: exam.fatherName,
+        marks: exam.marks,
+        total: total,
+        percentage: percentage.toFixed(2),
+        isDemo: true
+      });
+    }
+    showToast(`🎯 3 Demo results added for ${coachingName}! Show them to the client.`);
+  }
+  // ========================================
+  
   window.createDashboard = async (leadId, leadName, leadPhone, leadCity, btn) => {
     btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-pulse"></i>';
-    const coachingRef = await addDoc(collection(db, "coachings"), { name:leadName, phone:leadPhone, city:leadCity||"", director:"", location:leadCity||"", logo:"", createdAt:new Date().toISOString(), dashboardCreated:true });
-    await updateDoc(doc(db, "leads", leadId), { status:"connected", coachingId:coachingRef.id, connectedAt:new Date().toISOString() });
-    showToast(`✅ ${leadName} dashboard created!`);
-    loadLeads();
+    try {
+      const coachingRef = await addDoc(collection(db, "coachings"), { 
+        name: leadName, phone: leadPhone, city: leadCity||"", director: "", location: leadCity||"", logo: "", createdAt: new Date().toISOString(), dashboardCreated: true 
+      });
+      
+      // Add fake demo results
+      await addFakeResults(coachingRef.id, leadName);
+      
+      await updateDoc(doc(db, "leads", leadId), { status:"connected", coachingId:coachingRef.id, connectedAt:new Date().toISOString() });
+      showToast(`✅ ${leadName} dashboard created with 3 demo results!`);
+      loadLeads();
+    } catch(error) {
+      showToast(`❌ Failed: ${error.message}`, true);
+      btn.disabled=false; btn.innerHTML='<i class="fas fa-magic"></i> Make Dashboard';
+    }
   };
+  
   function renderPage(){
     const container=document.getElementById('leadsList'), totalPages=Math.ceil(allLeads.length/itemsPerPage);
     if(allLeads.length===0){ container.innerHTML='<div class="empty-state"><i class="fas fa-check-circle"></i><br>No pending leads!</div>'; document.getElementById('pagination').innerHTML=''; return; }
@@ -83,7 +134,9 @@
     else document.getElementById('pagination').innerHTML='';
     document.getElementById('leadCount').innerText=allLeads.length;
   }
+  
   window.goToPage=(page)=>{ currentPage=page; renderPage(); };
+  
   window.loadLeads=async()=>{
     const snap=await getDocs(query(collection(db,"leads"), where("status","==","pending")));
     let leads=[];
@@ -91,6 +144,7 @@
     allLeads=leads.sort((a,b)=>{ let aSent=sentLeads[a.id]===true, bSent=sentLeads[b.id]===true; return aSent===bSent?0:aSent?1:-1; });
     currentPage=1; renderPage();
   };
+  
   loadLeads(); setInterval(loadLeads,15000);
 </script>
 </body>
