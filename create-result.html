@@ -6,7 +6,7 @@
   <title>GYAN SEVA — Create Result</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', system-ui, sans-serif; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
     body { background:#f0f2f5; min-height:100vh; padding:40px 24px; }
     .container { max-width:800px; margin:0 auto; }
     .card { background:white; border-radius:32px; padding:32px; box-shadow:0 20px 40px -12px rgba(0,0,0,0.1); }
@@ -28,86 +28,58 @@
 <div class="container">
   <div class="card">
     <h2><i class="fas fa-plus-circle" style="color:#10b981;"></i> Create New Result</h2>
-    <p>Publish exam results for the coaching. Students can check using roll number.</p>
-    
+    <p>Publish exam results — stored directly under coaching</p>
     <label>Exam Name</label>
-    <input type="text" id="examName" placeholder="e.g., Annual Exam 2025, March Monthly Test">
-    
+    <input type="text" id="examName" placeholder="e.g., Annual Exam 2025">
     <label>Exam Date</label>
     <input type="date" id="examDate">
-    
     <label>Subjects (comma separated)</label>
-    <input type="text" id="subjects" placeholder="e.g., Mathematics, Science, English, Hindi">
-    
-    <label>Student Marks Data (JSON format)</label>
-    <textarea id="marksData" rows="8" placeholder='[
-  {"rollNo": "101", "name": "Aryan Kumar", "fatherName": "Rajesh Singh", "marks": {"Mathematics": 85, "Science": 90, "English": 78}},
-  {"rollNo": "102", "name": "Sneha Kumari", "fatherName": "Mohan Yadav", "marks": {"Mathematics": 92, "Science": 88, "English": 85}}
-]'></textarea>
-    <div class="example">
-      <strong>📋 Example Format:</strong><br>
-      [{"rollNo":"101","name":"Aryan Kumar","fatherName":"Rajesh Singh","marks":{"Mathematics":85,"Science":90,"English":78}}]
-    </div>
-    
+    <input type="text" id="subjects" placeholder="e.g., Mathematics, Science, English">
+    <label>Student Marks Data (JSON)</label>
+    <textarea id="marksData" rows="8" placeholder='[{"rollNo":"101","name":"Aryan","fatherName":"Rajesh","marks":{"Mathematics":85,"Science":90,"English":78}}]'></textarea>
+    <div class="example">📋 Format: [{"rollNo":"101","name":"Name","fatherName":"Father","marks":{"Subject1":85,"Subject2":90}}]</div>
     <button class="btn-publish" onclick="publishResult()"><i class="fas fa-cloud-upload-alt"></i> Publish Result</button>
     <div id="status"></div>
     <a href="connected.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Connected Customers</a>
   </div>
 </div>
-
 <script type="module">
   import { db } from './firebase-config.js';
   import { collection, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
-
   window.publishResult = async () => {
     const examName = document.getElementById('examName').value;
     const examDate = document.getElementById('examDate').value;
     const subjectsStr = document.getElementById('subjects').value;
     const marksJson = document.getElementById('marksData').value;
-    
-    if(!examName) { alert("Enter exam name"); return; }
-    if(!marksJson) { alert("Enter student marks data"); return; }
-    
+    if(!examName || !marksJson) { alert("Fill exam name and marks data"); return; }
     let students, subjects;
-    try {
-      students = JSON.parse(marksJson);
-      subjects = subjectsStr.split(',').map(s => s.trim());
-    } catch(e) { alert("Invalid JSON format"); return; }
-    
+    try { students = JSON.parse(marksJson); subjects = subjectsStr.split(',').map(s=>s.trim()); } catch(e) { alert("Invalid JSON"); return; }
     const statusDiv = document.getElementById('status');
-    statusDiv.innerHTML = '<div class="status"><i class="fas fa-spinner fa-spin"></i> Publishing result...</div>';
-    
+    statusDiv.innerHTML = '<div class="status"><i class="fas fa-spinner fa-pulse"></i> Publishing...</div>';
     try {
-      // Create result document
-      const resultRef = await addDoc(collection(db, "results"), {
-        coachingId: coachingId,
-        examName: examName,
-        examDate: examDate,
-        subjects: subjects,
-        publishedAt: new Date().toISOString()
-      });
-      
-      // Add marks for each student
-      for(let student of students) {
-        await setDoc(doc(db, "results", resultRef.id, "marks", student.rollNo), {
-          name: student.name,
-          fatherName: student.fatherName || '',
-          marks: student.marks
+      const resultsRef = collection(db, "coachings", coachingId, "results");
+      const newResult = await addDoc(resultsRef, { examName, examDate, subjects, publishedAt: new Date().toISOString(), totalStudents: students.length });
+      for(let s of students) {
+        const total = Object.values(s.marks).reduce((a,b)=>a+b,0);
+        const percentage = (total / (subjects.length * 100)) * 100;
+        await setDoc(doc(db, "coachings", coachingId, "results", newResult.id, "marks", s.rollNo), {
+          name: s.name,
+          fatherName: s.fatherName || '',
+          marks: s.marks,
+          total: total,
+          percentage: percentage.toFixed(2)
         });
       }
-      
-      statusDiv.innerHTML = `<div class="status success">✅ Result published successfully! <a href="dashboard.html?id=${coachingId}" target="_blank">View Dashboard</a></div>`;
+      statusDiv.innerHTML = `<div class="status success">✅ Result published! <a href="dashboard.html?id=${coachingId}" target="_blank">View Dashboard</a></div>`;
       document.getElementById('examName').value = '';
       document.getElementById('marksData').value = '';
-      
     } catch(error) {
-      console.error(error);
-      statusDiv.innerHTML = `<div class="status error">❌ Error publishing result: ${error.message}</div>`;
+      statusDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
     }
   };
+  if(!coachingId) document.body.innerHTML = '<h2 style="text-align:center; margin-top:50px;">Invalid coaching ID</h2>';
 </script>
 </body>
 </html>
