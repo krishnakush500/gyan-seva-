@@ -7,8 +7,147 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', 'Segoe UI', sans-serif; }
-    body { background:#ffffff; min-height:100vh; padding:40px 24px; }
+    body { background:#ffffff; min-height:100vh; padding:40px 24px; position:relative; }
     .container { max-width:1300px; margin:0 auto; }
+    
+    /* Template Button - Small, in corner */
+    .template-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #1a237e;
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+      z-index: 999;
+      border: none;
+    }
+    .template-btn:hover {
+      transform: scale(1.1);
+      background: #283593;
+    }
+    .template-btn i {
+      font-size: 1.3rem;
+    }
+    
+    /* Template Modal */
+    .template-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+    .template-modal-content {
+      background: white;
+      border-radius: 28px;
+      width: 90%;
+      max-width: 550px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    }
+    .template-modal-header {
+      background: linear-gradient(135deg, #1a237e, #283593);
+      color: white;
+      padding: 20px 25px;
+      border-radius: 28px 28px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .template-modal-header h3 {
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .close-modal {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      cursor: pointer;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+    .close-modal:hover {
+      background: rgba(255,255,255,0.4);
+    }
+    .template-body {
+      padding: 25px;
+    }
+    .template-item {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid #e2e8f0;
+    }
+    .template-label {
+      font-weight: 600;
+      color: #1a237e;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .template-label span {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+    .template-text {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      resize: vertical;
+      font-family: monospace;
+      background: white;
+    }
+    .template-text:focus {
+      outline: none;
+      border-color: #1a237e;
+    }
+    .btn-save-template {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .btn-save-template:hover {
+      background: #059669;
+    }
+    .info-note {
+      background: #eef2ff;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      color: #1e293b;
+      margin-top: 15px;
+      text-align: center;
+    }
+    
+    /* Rest of the original styles */
     .top-brand { text-align:center; margin-bottom:30px; }
     .brand-chip { display:inline-flex; align-items:center; gap:12px; background:#f8fafc; padding:10px 28px; border-radius:100px; margin-bottom:20px; }
     .brand-chip i { font-size:2rem; color:#0f172a; }
@@ -38,7 +177,7 @@
     .stats-line { display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin-bottom:35px; }
     .stat-badge { background:#f1f5f9; padding:6px 24px; border-radius:40px; font-weight:500; color:#0f172a; }
     footer { text-align:center; margin-top:55px; color:#94a3b8; font-size:0.8rem; }
-    @media (max-width:750px) { .action-card h3 { font-size:1.3rem; } }
+    @media (max-width:750px) { .action-card h3 { font-size:1.3rem; } .template-btn { width:45px; height:45px; bottom:20px; right:20px; } }
   </style>
 </head>
 <body>
@@ -75,9 +214,122 @@
   </div>
   <footer><i class="fas fa-heart" style="color:#dc2626;"></i> GYAN SEVA — Result ki seva, Gyan ki seva</footer>
 </div>
+
+<!-- Small Template Button (Bottom Right Corner) -->
+<button class="template-btn" id="templateBtn" title="WhatsApp Templates">
+  <i class="fas fa-comment-dots"></i>
+</button>
+
+<!-- Template Modal -->
+<div id="templateModal" class="template-modal">
+  <div class="template-modal-content">
+    <div class="template-modal-header">
+      <h3><i class="fab fa-whatsapp"></i> WhatsApp Message Templates</h3>
+      <button class="close-modal" onclick="closeTemplateModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="template-body">
+      <div class="template-item">
+        <div class="template-label">
+          <span><i class="fas fa-bullhorn"></i> Initial Outreach</span>
+          <button class="btn-save-template" onclick="saveTemplate('template1')">Save</button>
+        </div>
+        <textarea id="template1" class="template-text" rows="4">नमस्ते {name} sir,%0A%0AThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.%0A%0A✅ Online result system%0A✅ Students can check marks with roll number%0A✅ PDF download option%0A%0A🔰 Completely FREE trial for 1 month.%0A🔰 No technical knowledge required.%0A%0AInterested? Reply "YES" to get your demo portal.%0A%0AThank you%0AGYAN SEVA Team</textarea>
+      </div>
+      
+      <div class="template-item">
+        <div class="template-label">
+          <span><i class="fas fa-check-circle"></i> Follow-up (No Reply)</span>
+          <button class="btn-save-template" onclick="saveTemplate('template2')">Save</button>
+        </div>
+        <textarea id="template2" class="template-text" rows="4">नमस्ते {name} sir,%0A%0AJust a gentle reminder about the FREE DEMO result portal from GYAN SEVA.%0A%0A✅ Students can check marks online%0A✅ No technical knowledge needed%0A✅ 1 month free trial%0A%0AStill interested? Reply "YES" and I'll set it up for you.%0A%0AThank you%0AGYAN SEVA Team</textarea>
+      </div>
+      
+      <div class="template-item">
+        <div class="template-label">
+          <span><i class="fas fa-handshake"></i> Dashboard Created (Demo Ready)</span>
+          <button class="btn-save-template" onclick="saveTemplate('template3')">Save</button>
+        </div>
+        <textarea id="template3" class="template-text" rows="4">नमस्ते {name} sir,%0A%0AGreat news! Your coaching's result portal is ready for demo 🎉%0A%0A🔗 Dashboard Link: {link}%0A%0A📝 Demo Roll Numbers: 101, 202, 303%0A%0ATry it yourself and see how students can check their results.%0A%0ALet me know your feedback!%0A%0A-GYAN SEVA Team</textarea>
+      </div>
+      
+      <div class="template-item">
+        <div class="template-label">
+          <span><i class="fas fa-file-alt"></i> Result Published</span>
+          <button class="btn-save-template" onclick="saveTemplate('template4')">Save</button>
+        </div>
+        <textarea id="template4" class="template-text" rows="4">नमस्ते {name} sir,%0A%0A📢 Result published for {examName}!%0A%0A🔗 Student Result Link: {link}%0A%0AStudents can enter their roll number and check marks.%0A%0AShare this link with your students.%0A%0AThank you%0AGYAN SEVA Team</textarea>
+      </div>
+      
+      <div class="template-item">
+        <div class="template-label">
+          <span><i class="fas fa-star"></i> Custom Template</span>
+          <button class="btn-save-template" onclick="saveTemplate('template5')">Save</button>
+        </div>
+        <textarea id="template5" class="template-text" rows="4">Type your custom message here...%0A%0AUse {name} for coaching name, {link} for URL</textarea>
+      </div>
+      
+      <div class="info-note">
+        <i class="fas fa-info-circle"></i> <strong>Variables you can use:</strong><br>
+        <code>{name}</code> - Coaching Name &nbsp;|&nbsp; <code>{link}</code> - Dashboard/Result Link &nbsp;|&nbsp; <code>{examName}</code> - Exam Name<br>
+        Templates are saved in your browser. Edit any template and click "Save".
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { db } from './firebase-config.js';
   import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  
+  // Load saved templates from localStorage
+  function loadTemplates() {
+    const templates = ['template1', 'template2', 'template3', 'template4', 'template5'];
+    for(let id of templates) {
+      const saved = localStorage.getItem(`whatsapp_template_${id}`);
+      if(saved) {
+        document.getElementById(id).value = saved;
+      }
+    }
+  }
+  
+  window.saveTemplate = (templateId) => {
+    const textarea = document.getElementById(templateId);
+    const value = textarea.value;
+    localStorage.setItem(`whatsapp_template_${templateId}`, value);
+    // Show toast feedback
+    const toast = document.createElement('div');
+    toast.style.position = 'fixed';
+    toast.style.bottom = '80px';
+    toast.style.right = '25px';
+    toast.style.background = '#10b981';
+    toast.style.color = 'white';
+    toast.style.padding = '10px 20px';
+    toast.style.borderRadius = '40px';
+    toast.style.fontSize = '0.8rem';
+    toast.style.zIndex = '10001';
+    toast.innerHTML = '<i class="fas fa-check"></i> Template saved!';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  };
+  
+  window.closeTemplateModal = () => {
+    document.getElementById('templateModal').style.display = 'none';
+  };
+  
+  // Open modal
+  document.getElementById('templateBtn').onclick = () => {
+    loadTemplates();
+    document.getElementById('templateModal').style.display = 'flex';
+  };
+  
+  // Close modal on outside click
+  document.getElementById('templateModal').onclick = (e) => {
+    if(e.target === document.getElementById('templateModal')) {
+      closeTemplateModal();
+    }
+  };
+  
+  // Stats
   async function updateStats() {
     const leadsSnap = await getDocs(query(collection(db, "leads"), where("status", "==", "pending")));
     document.getElementById('pendingCount').innerText = leadsSnap.size;
