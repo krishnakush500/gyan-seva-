@@ -54,6 +54,8 @@
     .modal-buttons { display:flex; gap:12px; margin-top:20px; justify-content:flex-end; }
     .btn-close-modal { background:#94a3b8; color:white; padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
+    .toast { position:fixed; bottom:30px; right:30px; background:#1e293b; color:white; padding:12px 24px; border-radius:50px; font-size:0.85rem; z-index:1000; animation:fadeInOut 3s ease; }
+    @keyframes fadeInOut { 0%{opacity:0;transform:translateY(20px);}15%{opacity:1;transform:translateY(0);}85%{opacity:1;}100%{opacity:0;transform:translateY(20px);} }
     @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .result-item-modal{ flex-direction:column; align-items:flex-start; } .result-actions{ width:100%; justify-content:flex-start; } }
   </style>
 </head>
@@ -98,6 +100,8 @@
   let currentEditId = null, currentEditCoachingId = null, currentEditResultId = null;
   let templates = {};
   
+  function showToast(msg, isError=false){ let t=document.createElement('div'); t.className='toast'; t.style.background=isError?'#dc2626':'#10b981'; t.innerHTML=`<i class="fas ${isError?'fa-exclamation-triangle':'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
+  
   // Load templates from Firebase
   async function loadTemplates() {
     try {
@@ -111,7 +115,7 @@
     } catch(e) { console.error(e); }
   }
   
-  // Share result on WhatsApp
+  // Share result on WhatsApp (Direct Redirect)
   window.shareResult = async (coachingId, coachingName, resultId, examName) => {
     await loadTemplates();
     const resultLink = `${window.location.origin}/result-viewer.html?coaching=${coachingId}&result=${resultId}`;
@@ -126,8 +130,9 @@
     const phone = coachingDoc.exists() ? coachingDoc.data().phone : '';
     if(phone) {
       window.open(`https://wa.me/91${phone}?text=${encodedMsg}`, '_blank');
+      showToast(`📤 Opening WhatsApp for ${coachingName}`);
     } else {
-      alert("Phone number not found for this coaching");
+      showToast("Phone number not found for this coaching", true);
     }
   };
   
@@ -184,7 +189,7 @@
     const coachingName = coachingDoc.exists() ? coachingDoc.data().name : 'Coaching';
     showResults(currentEditCoachingId, coachingName);
     loadConnectedCoachings();
-    alert("✅ Result updated!");
+    showToast("✅ Result updated!");
   };
   
   window.deleteResult = async (coachingId, resultId) => {
@@ -192,7 +197,7 @@
       const marksSnap = await getDocs(collection(db, "coachings", coachingId, "results", resultId, "marks"));
       for(const m of marksSnap.docs) await deleteDoc(doc(db, "coachings", coachingId, "results", resultId, "marks", m.id));
       await deleteDoc(doc(db, "coachings", coachingId, "results", resultId));
-      alert("Result deleted!");
+      showToast("✅ Result deleted!");
       const coachingDoc = await getDoc(doc(db, "coachings", coachingId));
       const coachingName = coachingDoc.exists() ? coachingDoc.data().name : 'Coaching';
       showResults(coachingId, coachingName);
@@ -209,7 +214,7 @@
         await deleteDoc(doc(db, "coachings", id, "results", r.id));
       }
       await deleteDoc(doc(db, "coachings", id));
-      alert(`"${name}" deleted!`);
+      showToast(`✅ "${name}" deleted!`);
       loadConnectedCoachings();
     }
   };
@@ -237,7 +242,7 @@
     });
     closeEditModal();
     loadConnectedCoachings();
-    alert("✅ Updated!");
+    showToast("✅ Coaching updated!");
   };
   
   window.loadConnectedCoachings = async () => {
