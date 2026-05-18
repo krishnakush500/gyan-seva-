@@ -21,8 +21,14 @@
     .results-section { padding:25px; background:#f9f9f9; min-height:500px; }
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
-    .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
-    .demo-badge { background:#ffc107; color:#333; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:20px; margin-left:10px; }
+    .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+    .result-info { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .result-name { font-weight:600; color:#1a237e; }
+    .result-date { font-size:0.75rem; color:#666; }
+    .demo-badge { background:#ffc107; color:#333; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:20px; }
+    .result-actions { display:flex; gap:8px; }
+    .btn-view { background:#1a237e; color:white; padding:6px 14px; border-radius:20px; border:none; cursor:pointer; font-size:0.7rem; font-weight:500; }
+    .btn-share { background:#10b981; color:white; padding:6px 14px; border-radius:20px; border:none; cursor:pointer; font-size:0.7rem; font-weight:500; }
     .roll-input-section { background:white; padding:20px; border-radius:10px; margin-top:15px; text-align:center; display:none; }
     .input-group { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
     .input-group input { padding:10px; border-radius:8px; border:1px solid #ccc; width:200px; }
@@ -39,7 +45,9 @@
     .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
     footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
-    @media (max-width:768px){ .coaching-logo { width:90px; height:90px; } .school-name { font-size:1.5rem; } }
+    .toast { position:fixed; bottom:30px; right:30px; background:#1e293b; color:white; padding:10px 20px; border-radius:40px; font-size:0.8rem; z-index:1000; animation:fadeOut 2s ease; }
+    @keyframes fadeOut { 0%{opacity:1;}70%{opacity:1;}100%{opacity:0;visibility:hidden;} }
+    @media (max-width:768px){ .coaching-logo { width:90px; height:90px; } .school-name { font-size:1.5rem; } .result-item { flex-direction:column; align-items:flex-start; } }
     @media (max-width:550px){ .header-content { flex-direction:column; text-align:center; gap:15px; } }
   </style>
 </head>
@@ -51,15 +59,78 @@
   <div id="resultCard" class="result-card" style="display:none;"><div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div><div class="student-info"><div><strong>Student Name:</strong> <span id="studentName">-</span></div><div><strong>Roll Number:</strong> <span id="studentRoll">-</span></div></div><table class="marks-table"><thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>Percentage</th></tr></thead><tbody id="marksBody"></tbody>追赶<div class="percentage-display" id="totalPercent">Total: 0%</div><div class="action-buttons"><button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button><button class="back-btn" onclick="goBack()">⬅ Back</button></div></div></div>
   <footer>Powered by GYAN SEVA — Result ki seva, Gyan ki seva</footer>
 </div>
+
 <script type="module">
   import { db } from './firebase-config.js';
   import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
   let currentResultId = null, currentResultData = null;
   
+  function showToast(msg) {
+    let toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  }
+  
+  // Generate shareable link that opens roll input page directly
+  function getShareableLink(resultId, examName) {
+    // This link will open the roll input screen directly
+    const baseUrl = `${window.location.origin}${window.location.pathname}`;
+    return `${baseUrl}?id=${coachingId}&result=${resultId}&exam=${encodeURIComponent(examName)}`;
+  }
+  
+  // Share function
+  window.shareResult = async (resultId, examName) => {
+    const shareLink = getShareableLink(resultId, examName);
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      showToast(`🔗 Link copied! Share with students.`);
+    } catch(err) {
+      // Fallback
+      prompt("Copy this link:", shareLink);
+    }
+  };
+  
+  // View result (opens roll input page)
+  window.viewResult = (resultId, examName, isDemo) => {
+    const shareLink = getShareableLink(resultId, examName);
+    // Open in new tab with roll input mode
+    window.open(shareLink, '_blank');
+  };
+  
   async function loadCoaching() {
-    if(!coachingId) return;
+    if(!coachingId) {
+      // Check if result parameter is present (share link scenario)
+      const resultParam = urlParams.get('result');
+      if(resultParam) {
+        // Direct roll input mode
+        document.getElementById('resultsList').style.display = 'none';
+        document.getElementById('rollInputSection').style.display = 'block';
+        document.getElementById('selectedExamName').innerHTML = `Enter Roll Number`;
+        document.getElementById('rollHint').innerHTML = '';
+        currentResultId = resultParam;
+        const examNameParam = urlParams.get('exam') || 'Result';
+        document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${decodeURIComponent(examNameParam)}`;
+        
+        // Load coaching info for header
+        const snap = await getDoc(doc(db, "coachings", coachingId));
+        if(snap.exists()) {
+          const c = snap.data();
+          document.getElementById('coachingName').innerText = c.name || "GYAN SEVA";
+          document.getElementById('coachingLocation').innerText = c.location || "Bihar, India";
+          document.getElementById('directorName').innerText = c.director || 'Director';
+          document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
+          if(c.logo) document.getElementById('coachingLogo').src = c.logo;
+        }
+        return;
+      }
+      return;
+    }
+    
     const snap = await getDoc(doc(db, "coachings", coachingId));
     if(snap.exists()) {
       const c = snap.data();
@@ -86,36 +157,40 @@
       const r = d.data(); 
       const isDemo = r.isDemo === true;
       const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
-      html += `<div class="result-item" onclick="selectExam('${d.id}', '${r.examName}', '${r.examDate}', ${isDemo})"><div><strong>${r.examName} ${demoBadge}</strong><br>${r.examDate}</div><i class="fas fa-chevron-right"></i></div>`; 
+      html += `
+        <div class="result-item">
+          <div class="result-info">
+            <span class="result-name">📘 ${r.examName} ${demoBadge}</span>
+            <span class="result-date">📅 ${r.examDate || 'Date not set'}</span>
+          </div>
+          <div class="result-actions">
+            <button class="btn-view" onclick="viewResult('${d.id}', '${r.examName.replace(/'/g, "\\'")}', ${isDemo})"><i class="fas fa-eye"></i> View</button>
+            <button class="btn-share" onclick="shareResult('${d.id}', '${r.examName.replace(/'/g, "\\'")}')"><i class="fas fa-share-alt"></i> Share</button>
+          </div>
+        </div>
+      `; 
     }
     container.innerHTML = html;
   }
   
-  window.selectExam = (resultId, examName, examDate, isDemo) => {
-    currentResultId = resultId;
-    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
-    document.getElementById('resultsList').style.display = 'none';
-    document.getElementById('rollInputSection').style.display = 'block';
-    document.getElementById('resultCard').style.display = 'none';
-    document.getElementById('rollInput').value = '';
-    
-    // Set hint for demo exams
-    if(isDemo) {
-      if(examName.includes('Exam 1')) document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 101';
-      else if(examName.includes('Exam 2')) document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 202';
-      else if(examName.includes('Exam 3')) document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 303';
-      else document.getElementById('rollHint').innerHTML = '💡 Demo Roll Numbers: 101, 202, 303';
-    } else {
-      document.getElementById('rollHint').innerHTML = '';
-    }
-  };
+  // Check if we are in share link mode (no coachingId but has result)
+  if(!coachingId && urlParams.get('result')) {
+    // Already handled in loadCoaching
+    loadCoaching();
+  } else {
+    loadCoaching();
+  }
   
+  // Fetch result from roll input (when opened via share link)
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
+    
+    // Get result data
     const resultDoc = await getDoc(doc(db, "coachings", coachingId, "results", currentResultId));
     if(!resultDoc.exists()) { alert("Result not found"); return; }
     currentResultData = resultDoc.data();
+    
     const studentDoc = await getDoc(doc(db, "coachings", coachingId, "results", currentResultId, "marks", roll));
     if(!studentDoc.exists()) { alert("Roll number not found"); return; }
     const student = studentDoc.data();
@@ -126,14 +201,23 @@
     else if(totalPercent >= 45) division = 'SECOND DIVISION';
     else if(totalPercent >= 30) division = 'THIRD DIVISION';
     else division = 'FAIL';
+    
     const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(currentResultData.examName)}&date=${currentResultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
     window.open(resultUrl, '_blank');
-    goBack();
   };
   
-  window.goBack = () => { document.getElementById('resultsList').style.display = 'grid'; document.getElementById('rollInputSection').style.display = 'none'; document.getElementById('resultCard').style.display = 'none'; };
+  window.goBack = () => { 
+    if(urlParams.get('result')) {
+      // In share mode, just close or reload
+      window.location.href = `dashboard.html?id=${coachingId}`;
+    } else {
+      document.getElementById('resultsList').style.display = 'grid';
+      document.getElementById('rollInputSection').style.display = 'none';
+      document.getElementById('resultCard').style.display = 'none';
+    }
+  };
+  
   window.downloadPDF = () => { window.print(); };
-  loadCoaching();
 </script>
 </body>
 </html>
