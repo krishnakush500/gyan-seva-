@@ -21,7 +21,7 @@
     .coachings-container { max-height:550px; overflow-y:auto; }
     .coaching-card { background:#f8fafc; border-radius:24px; padding:20px; margin-bottom:16px; border:1px solid #e2e8f0; }
     .coaching-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
-    .coaching-name { font-size:1.2rem; font-weight:700; color:#1e293b; display:flex; align-items:center; gap:8px; }
+    .coaching-name { font-size:1.2rem; font-weight:700; color:#1e293b; }
     .status-badge { background:#dbeafe; color:#2563eb; padding:4px 12px; border-radius:30px; font-size:0.7rem; font-weight:600; }
     .coaching-details { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; font-size:0.85rem; color:#475569; }
     .coaching-details i { width:20px; color:#2563eb; }
@@ -31,7 +31,6 @@
     .btn-edit { background:#f59e0b; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-delete { background:#dc2626; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-whatsapp { background:#25D366; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
-    .btn-results { background:#8b5cf6; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     .add-new { margin-top:24px; text-align:center; }
     .add-new a { background:#1e293b; color:white; padding:10px 28px; border-radius:40px; text-decoration:none; font-weight:600; }
@@ -99,6 +98,7 @@
   let currentEditId = null, currentEditCoachingId = null, currentEditResultId = null;
   let templates = {};
   
+  // Load templates from Firebase
   async function loadTemplates() {
     try {
       const docRef = doc(db, "templates", "whatsapp_templates");
@@ -111,23 +111,31 @@
     } catch(e) { console.error(e); }
   }
   
-  // Share result - opens dashboard directly with result parameter
+  // Share result on WhatsApp - DIRECT REDIRECT
   window.shareResult = async (coachingId, coachingName, resultId, examName) => {
     await loadTemplates();
-    const resultLink = `${window.location.origin}/dashboard.html?coaching=${coachingId}&result=${resultId}`;
+    const resultLink = `${window.location.origin}/result-viewer.html?coaching=${coachingId}&result=${resultId}`;
     let template = templates.template4 || templates.template1;
     template = template.replace(/{name}/g, coachingName);
     template = template.replace(/{examName}/g, examName);
     template = template.replace(/{link}/g, resultLink);
     const encodedMsg = encodeURIComponent(template);
     
+    // Get coaching phone number
     const coachingDoc = await getDoc(doc(db, "coachings", coachingId));
     const phone = coachingDoc.exists() ? coachingDoc.data().phone : '';
     if(phone) {
+      // Direct WhatsApp redirect - same as connect customer
       window.open(`https://wa.me/91${phone}?text=${encodedMsg}`, '_blank');
     } else {
       alert("Phone number not found for this coaching");
     }
+  };
+  
+  // Direct result viewer link (roll number wala screen)
+  window.viewResultLink = (coachingId, resultId) => {
+    const url = `${window.location.origin}/result-viewer.html?coaching=${coachingId}&result=${resultId}`;
+    window.open(url, '_blank');
   };
   
   window.openCreateResult = (id) => { window.open(`create-result.html?id=${id}`, '_blank'); };
@@ -249,8 +257,8 @@
       const c = d.data();
       const id = d.id;
       const resultsSnap = await getDocs(collection(db, "coachings", id, "results"));
-      const logoHtml = c.logo ? `<img src="${c.logo}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; margin-right:6px;" onerror="this.style.display='none'">` : '';
-      html += `<div class="coaching-card"><div class="coaching-header"><div class="coaching-name">${logoHtml} 🎓 ${c.name}</div><span class="status-badge"><i class="fas fa-check-circle"></i> Active</span></div><div class="coaching-details"><div><i class="fas fa-user-tie"></i> ${c.director||'Director'}</div><div><i class="fas fa-phone"></i> ${c.phone}</div><div><i class="fas fa-location-dot"></i> ${c.location||'Location'}</div><div><i class="fas fa-chart-line"></i> ${resultsSnap.size} Results</div></div><div class="action-buttons"><a href="dashboard.html?id=${id}" class="btn-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a><button class="btn-create-result" onclick="openCreateResult('${id}')"><i class="fas fa-plus-circle"></i> Create Result</button><button class="btn-edit" onclick="openEditModal('${id}','${c.name.replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logo||'').replace(/'/g,"\\'")}')"><i class="fas fa-pen"></i> Edit</button><button class="btn-delete" onclick="deleteCoaching('${id}','${c.name.replace(/'/g,"\\'")}')"><i class="fas fa-trash-alt"></i> Delete</button><a href="https://wa.me/91${c.phone}?text=Namaste%20${c.name}%20team" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a><button class="btn-results" onclick="showResults('${id}','${c.name.replace(/'/g,"\\'")}')"><i class="fas fa-list"></i> Results</button></div></div>`;
+      const logoHtml = c.logo ? `<img src="${c.logo}" style="width:32px; height:32px; border-radius:50%; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none'">` : '';
+      html += `<div class="coaching-card"><div class="coaching-header"><div class="coaching-name">${logoHtml} 🎓 ${c.name}</div><span class="status-badge"><i class="fas fa-check-circle"></i> Active</span></div><div class="coaching-details"><div><i class="fas fa-user-tie"></i> ${c.director||'Director'}</div><div><i class="fas fa-phone"></i> ${c.phone}</div><div><i class="fas fa-location-dot"></i> ${c.location||'Location'}</div><div><i class="fas fa-chart-line"></i> ${resultsSnap.size} Results</div></div><div class="action-buttons"><a href="dashboard.html?id=${id}" class="btn-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a><button class="btn-create-result" onclick="openCreateResult('${id}')"><i class="fas fa-plus-circle"></i> Create Result</button><button class="btn-edit" onclick="openEditModal('${id}','${c.name.replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logo||'').replace(/'/g,"\\'")}')"><i class="fas fa-pen"></i> Edit</button><button class="btn-delete" onclick="deleteCoaching('${id}','${c.name.replace(/'/g,"\\'")}')"><i class="fas fa-trash-alt"></i> Delete</button><a href="https://wa.me/91${c.phone}?text=Namaste%20${c.name}%20team" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a><button class="btn-dashboard" style="background:#8b5cf6;" onclick="showResults('${id}','${c.name.replace(/'/g,"\\'")}')"><i class="fas fa-list"></i> Results</button></div></div>`;
     }
     container.innerHTML = html;
   };
