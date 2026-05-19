@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>GYAN SEVA - Check Result</title>
+  <title>GYAN SEVA - Result</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
@@ -17,75 +17,16 @@
     /* Main Container */
     .result-container {
       max-width: 750px;
-      width: 100%;
       margin: 0 auto;
     }
     
-    /* Roll Input Section */
-    .roll-input-section {
-      background: white;
-      border-radius: 20px;
-      padding: 35px 30px;
-      text-align: center;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      border: 1px solid #eef2ff;
-    }
-    .roll-input-section h2 {
-      color: #1a237e;
-      margin-bottom: 10px;
-      font-size: 1.5rem;
-    }
-    .roll-input-section p {
-      color: #666;
-      margin-bottom: 20px;
-    }
-    .input-group {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .input-group input {
-      padding: 14px 20px;
-      font-size: 1rem;
-      border-radius: 50px;
-      border: 1px solid #ddd;
-      width: 250px;
-      text-align: center;
-    }
-    .input-group input:focus {
-      outline: none;
-      border-color: #1a237e;
-    }
-    .get-result-btn {
-      padding: 14px 28px;
-      background: #1a237e;
-      color: white;
-      font-size: 1rem;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.2s;
-    }
-    .get-result-btn:hover {
-      background: #283593;
-    }
-    .error-msg {
-      color: #dc2626;
-      margin-top: 12px;
-      font-size: 0.85rem;
-    }
-    
-    /* 3 Buttons - Top Section (shown after result) */
+    /* 3 Buttons - Top Section */
     .action-buttons {
       display: flex;
       justify-content: center;
       gap: 15px;
       margin-bottom: 25px;
       flex-wrap: wrap;
-      display: none;
     }
     
     .action-btn {
@@ -99,12 +40,12 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
     .action-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     }
     
     .btn-download {
@@ -122,17 +63,15 @@
       color: white;
     }
     
-    /* Result Card (hidden initially) */
+    /* Result Card */
     .result-card {
       width: 100%;
       background: white;
-      border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 15px;
       position: relative;
       overflow-x: auto;
-      display: none;
-      border: 1px solid #eef2ff;
     }
     
     /* Result Card Header */
@@ -197,7 +136,7 @@
       margin-bottom: 6px;
       padding: 6px 10px;
       background: #f5f5f5;
-      border-radius: 8px;
+      border-radius: 5px;
     }
     
     .info-label {
@@ -212,7 +151,7 @@
       font-size: 0.9rem;
     }
     
-    /* Marks Table */
+    /* Marks Table - with Grade Column */
     .marks-table {
       width: 100%;
       border-collapse: collapse;
@@ -289,13 +228,6 @@
       font-size: 0.85rem;
     }
     
-    /* Loading State */
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: #666;
-    }
-    
     /* Mobile Responsive */
     @media (max-width: 600px) {
       body { padding: 15px; }
@@ -306,8 +238,6 @@
       .marks-table th, .marks-table td { padding: 6px; font-size: 0.75rem; }
       .action-btn { padding: 8px 16px; font-size: 0.75rem; }
       .percentage-display { font-size: 0.9rem; }
-      .input-group input { width: 100%; }
-      .roll-input-section { padding: 25px 20px; }
     }
     
     /* Print Styles */
@@ -317,9 +247,6 @@
         padding: 0;
         margin: 0;
       }
-      .roll-input-section {
-        display: none;
-      }
       .action-buttons {
         display: none;
       }
@@ -327,9 +254,12 @@
         box-shadow: none;
         border-radius: 0;
         padding: 0;
-        border: none;
       }
       .marks-table th {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .grade-a-plus, .grade-a, .grade-b-plus, .grade-b, .grade-c, .grade-d, .grade-f {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -339,21 +269,8 @@
 <body>
 
 <div class="result-container">
-  <!-- Roll Number Input Section -->
-  <div id="rollInputSection" class="roll-input-section">
-    <h2><i class="fas fa-graduation-cap"></i> Check Your Result</h2>
-    <p>Enter your roll number to see your marks</p>
-    <div class="input-group">
-      <input type="text" id="rollNumber" placeholder="Enter Roll Number" autocomplete="off">
-      <button class="get-result-btn" onclick="fetchResultByRoll()">
-        <i class="fas fa-search"></i> Get Result
-      </button>
-    </div>
-    <div id="rollError" class="error-msg"></div>
-  </div>
-  
-  <!-- 3 Buttons - Top Section (shown after result) -->
-  <div id="actionButtons" class="action-buttons">
+  <!-- 3 Buttons - Top Section -->
+  <div class="action-buttons">
     <button class="action-btn btn-download" onclick="downloadResultPDF()">
       <i class="fas fa-download"></i> Download PDF
     </button>
@@ -365,19 +282,21 @@
     </button>
   </div>
   
-  <!-- Result Card (hidden initially) -->
-  <div id="resultCard" class="result-card">
+  <!-- Result Card -->
+  <div class="result-card" id="resultCard">
+    <!-- Header with Logo and Title -->
     <div class="result-card-header">
       <div class="result-logo">
         <img id="coachingLogo" src="https://via.placeholder.com/80?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/80?text=Logo'">
       </div>
       <div class="result-title">
-        <h2 id="coachingName">GYAN SEVA</h2>
+        <h2 id="coachingName">MODERN ACADEMY BEGUSARAI</h2>
         <h3 id="examName">Exam Name</h3>
         <p>Under the guidance of <strong id="directorName">Director</strong></p>
       </div>
     </div>
     
+    <!-- Student Info -->
     <div class="student-info">
       <div class="info-row">
         <span class="info-label">Student Name:</span>
@@ -393,6 +312,7 @@
       </div>
     </div>
     
+    <!-- Marks Table with Grade Column (No Percentage Column) -->
     <table class="marks-table">
       <thead>
         <tr>
@@ -405,33 +325,25 @@
       <tbody id="marksTableBody"></tbody>
     </table>
     
+    <!-- Total Percentage Only (No individual subject percentage) -->
     <div class="percentage-display" id="totalPercentage">
       Total Percentage: 0%
     </div>
     
+    <!-- Division -->
     <div class="division-display" id="divisionBox">
       Division: -
     </div>
     
+    <!-- Coaching Mention -->
     <div class="coaching-mention" id="coachingMention">
-      <p>This result is published by GYAN SEVA</p>
+      <p>This result is published by MODERN ACADEMY, Begusarai | Director: RAMAN SIR</p>
+      <p>For queries: +91 8252658421</p>
     </div>
   </div>
 </div>
 
-<script type="module">
-  import { db } from './firebase-config.js';
-  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  
-  // Get data from URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const coachingId = urlParams.get('coaching');
-  const resultId = urlParams.get('result');
-  
-  let resultData = null;
-  let coachingData = null;
-  let currentStudent = null;
-  
+<script>
   // Function to calculate grade based on percentage
   function getGrade(percentage) {
     if(percentage >= 90) return { grade: "A+", className: "grade-a-plus" };
@@ -443,179 +355,127 @@
     return { grade: "F", className: "grade-f" };
   }
   
-  // Load coaching and result data
-  async function loadData() {
-    if(!coachingId || !resultId) {
-      document.getElementById('rollError').innerHTML = 'Invalid link. Please contact your institute.';
-      return;
-    }
-    
-    try {
-      // Load coaching data
-      const coachingDoc = await getDoc(doc(db, "coachings", coachingId));
-      if(coachingDoc.exists()) {
-        coachingData = coachingDoc.data();
-        document.getElementById('coachingLogo').src = coachingData.logo || 'https://via.placeholder.com/80?text=Logo';
-        document.getElementById('coachingName').innerText = coachingData.name || 'GYAN SEVA';
-        document.getElementById('directorName').innerText = coachingData.director || 'Director';
-        document.getElementById('coachingMention').innerHTML = `<p>This result is published by ${coachingData.name || 'GYAN SEVA'} | Director: ${coachingData.director || 'Director'}</p><p>For queries: ${coachingData.phone || 'Contact Institute'}</p>`;
-      }
-      
-      // Load result data
-      const resultDoc = await getDoc(doc(db, "coachings", coachingId, "results", resultId));
-      if(resultDoc.exists()) {
-        resultData = resultDoc.data();
-        document.getElementById('examName').innerHTML = resultData.examDate ? `${resultData.examName} | ${resultData.examDate}` : resultData.examName;
-      } else {
-        document.getElementById('rollError').innerHTML = 'Result not found.';
-      }
-    } catch(error) {
-      console.error("Error loading data:", error);
-      document.getElementById('rollError').innerHTML = 'Error loading result. Please try again.';
-    }
+  // Get data from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const studentName = decodeURIComponent(urlParams.get('name') || '-');
+  const studentRoll = decodeURIComponent(urlParams.get('roll') || '-');
+  const fatherName = decodeURIComponent(urlParams.get('father') || '-');
+  const examName = decodeURIComponent(urlParams.get('exam') || 'Examination');
+  const examDate = decodeURIComponent(urlParams.get('date') || '');
+  const subjects = JSON.parse(decodeURIComponent(urlParams.get('subjects') || '[]'));
+  const marks = JSON.parse(decodeURIComponent(urlParams.get('marks') || '{}'));
+  const totalPercent = decodeURIComponent(urlParams.get('percent') || '0');
+  const division = decodeURIComponent(urlParams.get('division') || '-');
+  
+  // Coaching info from localStorage
+  const coachingName = localStorage.getItem('coachingName') || 'MODERN ACADEMY BEGUSARAI';
+  const directorName = localStorage.getItem('directorName') || 'RAMAN SIR';
+  const coachingLogo = localStorage.getItem('coachingLogo') || 'https://i.ibb.co/d4ybLkFS/logo-modern.jpg';
+  const coachingPhone = localStorage.getItem('directorPhone') || '+91 8252658421';
+  
+  // Populate data
+  document.getElementById('coachingLogo').src = coachingLogo;
+  document.getElementById('coachingName').innerText = coachingName;
+  document.getElementById('directorName').innerText = directorName;
+  document.getElementById('examName').innerText = examDate ? `${examName} | ${examDate}` : examName;
+  document.getElementById('studentName').innerText = studentName;
+  document.getElementById('studentRoll').innerText = studentRoll;
+  document.getElementById('fatherName').innerText = fatherName;
+  document.getElementById('totalPercentage').innerHTML = `Total Percentage: ${totalPercent}%`;
+  document.getElementById('coachingMention').innerHTML = `<p>This result is published by ${coachingName} | Director: ${directorName}</p><p>For queries: ${coachingPhone}</p>`;
+  
+  // Division with color
+  const divisionBox = document.getElementById('divisionBox');
+  if(division === 'FIRST DIVISION') {
+    divisionBox.style.background = '#d4edda';
+    divisionBox.style.color = '#28a745';
+    divisionBox.style.border = '2px solid #28a745';
+  } else if(division === 'SECOND DIVISION') {
+    divisionBox.style.background = '#d1ecf1';
+    divisionBox.style.color = '#17a2b8';
+    divisionBox.style.border = '2px solid #17a2b8';
+  } else if(division === 'THIRD DIVISION') {
+    divisionBox.style.background = '#fff3cd';
+    divisionBox.style.color = '#ffc107';
+    divisionBox.style.border = '2px solid #ffc107';
+  } else {
+    divisionBox.style.background = '#f8d7da';
+    divisionBox.style.color = '#dc3545';
+    divisionBox.style.border = '2px solid #dc3545';
   }
+  divisionBox.innerHTML = `Division: ${division}`;
   
-  // Fetch result by roll number
-  window.fetchResultByRoll = async () => {
-    const roll = document.getElementById('rollNumber').value.trim();
-    if(!roll) {
-      document.getElementById('rollError').innerHTML = 'Please enter your roll number';
-      return;
-    }
-    
-    document.getElementById('rollError').innerHTML = '';
-    document.getElementById('rollInputSection').style.display = 'none';
-    
-    // Show loading in result card
-    document.getElementById('resultCard').style.display = 'block';
-    document.getElementById('marksTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
-    
-    try {
-      const studentDoc = await getDoc(doc(db, "coachings", coachingId, "results", resultId, "marks", roll));
-      
-      if(!studentDoc.exists()) {
-        document.getElementById('marksTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#dc2626;">Roll number not found. Please check and try again.</td></tr>';
-        document.getElementById('actionButtons').style.display = 'none';
-        return;
-      }
-      
-      currentStudent = studentDoc.data();
-      displayResult(currentStudent, roll);
-      
-    } catch(error) {
-      console.error("Error fetching result:", error);
-      document.getElementById('marksTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#dc2626;">Error loading result. Please try again.</td></tr>';
-      document.getElementById('actionButtons').style.display = 'none';
-    }
-  };
+  // Generate marks table with Grade column (NO percentage column)
+  let marksHtml = '';
+  let totalObtained = 0;
+  let totalMax = 0;
   
-  // Display result
-  function displayResult(student, roll) {
-    const subjects = resultData.subjects || [];
-    let marksHtml = '';
-    let totalObtained = 0;
-    let totalMax = subjects.length * 100;
-    
-    for(let i = 0; i < subjects.length; i++) {
-      const subj = subjects[i];
-      const mark = student.marks[subj] || 0;
-      const subPercent = (mark / 100) * 100;
-      const gradeInfo = getGrade(subPercent);
-      totalObtained += mark;
-      
-      marksHtml += `
-        <tr>
-          <td>${subj}</td>
-          <td>${mark}</td>
-          <td>100</td
-          <td><span class="${gradeInfo.className}">${gradeInfo.grade}</span></td>
-        </tr>
-      `;
-    }
-    
-    const totalPercent = ((totalObtained / totalMax) * 100).toFixed(2);
+  for(let i = 0; i < subjects.length; i++) {
+    const subj = subjects[i];
+    const mark = marks[subj] || 0;
+    const max = 100;
+    const subPercent = (mark / max) * 100;
+    const gradeInfo = getGrade(subPercent);
+    totalObtained += mark;
+    totalMax += max;
     
     marksHtml += `
-      <tr class="total-marks">
-        <td><strong>Total</strong></td
-        <td><strong>${totalObtained}</strong></td
-        <td><strong>${totalMax}</strong></td
-        <td></td
+      <tr>
+        <td>${subj}</td>
+        <td>${mark}</td>
+        <td>${max}</td>
+        <td><span class="${gradeInfo.className}">${gradeInfo.grade}</span></td>
       </tr>
     `;
-    
-    document.getElementById('marksTableBody').innerHTML = marksHtml;
-    document.getElementById('studentName').innerText = student.name || '-';
-    document.getElementById('fatherName').innerText = student.fatherName || '-';
-    document.getElementById('studentRoll').innerText = roll;
-    document.getElementById('totalPercentage').innerHTML = `Total Percentage: ${totalPercent}%`;
-    
-    // Calculate division
-    let division = '';
-    let divisionColor = '';
-    let divisionBg = '';
-    if(totalPercent >= 60) {
-      division = 'FIRST DIVISION';
-      divisionColor = '#28a745';
-      divisionBg = '#d4edda';
-    } else if(totalPercent >= 45) {
-      division = 'SECOND DIVISION';
-      divisionColor = '#17a2b8';
-      divisionBg = '#d1ecf1';
-    } else if(totalPercent >= 30) {
-      division = 'THIRD DIVISION';
-      divisionColor = '#ffc107';
-      divisionBg = '#fff3cd';
-    } else {
-      division = 'FAIL';
-      divisionColor = '#dc3545';
-      divisionBg = '#f8d7da';
-    }
-    
-    const divisionBox = document.getElementById('divisionBox');
-    divisionBox.innerHTML = `Division: ${division}`;
-    divisionBox.style.background = divisionBg;
-    divisionBox.style.color = divisionColor;
-    divisionBox.style.border = `2px solid ${divisionColor}`;
-    
-    // Show action buttons
-    document.getElementById('actionButtons').style.display = 'flex';
-    
-    // Store current student data for PDF and share
-    window.currentStudentData = {
-      name: student.name,
-      roll: roll,
-      fatherName: student.fatherName,
-      examName: resultData.examName,
-      totalPercent: totalPercent,
-      division: division
-    };
   }
   
-  // Download PDF
-  window.downloadResultPDF = () => {
+  // Add total row (only marks, no grade for total)
+  marksHtml += `
+    <tr class="total-marks">
+      <td><strong>Total</strong></td>
+      <td><strong>${totalObtained}</strong></td>
+      <td><strong>${totalMax}</strong></td>
+      <td></td>
+    </tr>
+  `;
+  
+  document.getElementById('marksTableBody').innerHTML = marksHtml;
+  
+  // Download PDF function
+  function downloadResultPDF() {
+    const btn = document.querySelector('.btn-download');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    btn.disabled = true;
+    
     const element = document.getElementById('resultCard');
     const opt = {
       margin: [10, 10, 10, 10],
-      filename: `${window.currentStudentData?.roll || 'result'}_Result.pdf`,
+      filename: `${studentRoll}_Result.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    html2pdf().set(opt).from(element).save();
-  };
+    
+    html2pdf().set(opt).from(element).save().then(() => {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }).catch(() => {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      alert('Error generating PDF');
+    });
+  }
   
-  // Share on WhatsApp
-  window.shareOnWhatsApp = () => {
-    if(!window.currentStudentData) return;
-    const student = window.currentStudentData;
-    const shareText = `📢 *Result Published* 📢\n\n🏫 *${coachingData?.name || 'GYAN SEVA'}*\n📚 *${student.examName}*\n\n👨‍🎓 Student: ${student.name}\n📝 Roll No: ${student.roll}\n📊 Percentage: ${student.totalPercent}%\n🎯 Division: ${student.division}\n\n📞 Contact: ${coachingData?.phone || 'Institute'}`;
+  // Share on WhatsApp function
+  function shareOnWhatsApp() {
+    const shareText = `📢 *Result Published* 📢\n\n🏫 *${coachingName}*\n📚 *${examName}*\n\n👨‍🎓 Student: ${studentName}\n📝 Roll No: ${studentRoll}\n📊 Percentage: ${totalPercent}%\n📞 Contact: ${coachingPhone}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappUrl, '_blank');
-  };
+  }
   
-  // Initialize
-  loadData();
+  // Set page title
+  document.title = `${studentName} - ${examName} Result | GYAN SEVA`;
 </script>
 </body>
 </html>
