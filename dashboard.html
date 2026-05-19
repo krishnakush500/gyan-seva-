@@ -54,8 +54,10 @@
 <script type="module">
   import { db } from './firebase-config.js';
   import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
+  const autoSelectResultId = urlParams.get('result');
   let currentResultId = null, currentResultData = null;
   
   async function loadCoaching() {
@@ -74,7 +76,27 @@
       localStorage.setItem('directorPhone', c.phone || 'Not provided');
       localStorage.setItem('coachingLogo', c.logo || 'https://via.placeholder.com/120?text=GYAN');
     }
-    loadResults();
+    await loadResults();
+    
+    // Auto select result if resultId is provided in URL
+    if(autoSelectResultId && autoSelectResultId !== 'null' && autoSelectResultId !== 'undefined') {
+      setTimeout(() => {
+        const resultItem = document.querySelector(`.result-item[data-result-id="${autoSelectResultId}"]`);
+        if(resultItem) {
+          resultItem.click();
+        } else {
+          // Fallback: find by onclick attribute
+          const allItems = document.querySelectorAll('.result-item');
+          for(let item of allItems) {
+            const onclick = item.getAttribute('onclick');
+            if(onclick && onclick.includes(autoSelectResultId)) {
+              item.click();
+              break;
+            }
+          }
+        }
+      }, 1500);
+    }
   }
   
   async function loadResults() {
@@ -86,7 +108,7 @@
       const r = d.data(); 
       const isDemo = r.isDemo === true;
       const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
-      html += `<div class="result-item" onclick="selectExam('${d.id}', '${r.examName}', '${r.examDate}', ${isDemo})"><div><strong>${r.examName} ${demoBadge}</strong><br>${r.examDate}</div><i class="fas fa-chevron-right"></i></div>`; 
+      html += `<div class="result-item" data-result-id="${d.id}" onclick="selectExam('${d.id}', '${r.examName.replace(/'/g, "\\'")}', '${r.examDate || ''}', ${isDemo})"><div><strong>${r.examName} ${demoBadge}</strong><br>${r.examDate || 'Date not set'}</div><i class="fas fa-chevron-right"></i></div>`; 
     }
     container.innerHTML = html;
   }
@@ -99,7 +121,6 @@
     document.getElementById('resultCard').style.display = 'none';
     document.getElementById('rollInput').value = '';
     
-    // Set hint for demo exams
     if(isDemo) {
       if(examName.includes('Exam 1')) document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 101';
       else if(examName.includes('Exam 2')) document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 202';
@@ -117,7 +138,7 @@
     if(!resultDoc.exists()) { alert("Result not found"); return; }
     currentResultData = resultDoc.data();
     const studentDoc = await getDoc(doc(db, "coachings", coachingId, "results", currentResultId, "marks", roll));
-    if(!studentDoc.exists()) { alert("Roll number not found"); return; }
+    if(!studentDoc.exists()) { alert("Roll number not found. Demo rolls: 101, 202, 303"); return; }
     const student = studentDoc.data();
     const subjects = currentResultData.subjects || [];
     const totalPercent = student.percentage || 0;
@@ -126,12 +147,28 @@
     else if(totalPercent >= 45) division = 'SECOND DIVISION';
     else if(totalPercent >= 30) division = 'THIRD DIVISION';
     else division = 'FAIL';
-    const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(currentResultData.examName)}&date=${currentResultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+    
+    // Get base URL properly
+    let baseUrl = window.location.origin;
+    if(window.location.pathname.includes('/gyan-seva-')) {
+      baseUrl = window.location.origin + '/gyan-seva-';
+    } else {
+      baseUrl = window.location.origin + '/';
+    }
+    
+    const resultUrl = `${baseUrl}result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(currentResultData.examName)}&date=${currentResultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+    
     window.open(resultUrl, '_blank');
     goBack();
   };
   
-  window.goBack = () => { document.getElementById('resultsList').style.display = 'grid'; document.getElementById('rollInputSection').style.display = 'none'; document.getElementById('resultCard').style.display = 'none'; };
+  window.goBack = () => { 
+    document.getElementById('resultsList').style.display = 'grid'; 
+    document.getElementById('rollInputSection').style.display = 'none'; 
+    document.getElementById('resultCard').style.display = 'none'; 
+    document.getElementById('rollInput').value = '';
+  };
+  
   window.downloadPDF = () => { window.print(); };
   loadCoaching();
 </script>
