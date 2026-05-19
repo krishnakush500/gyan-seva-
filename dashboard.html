@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>GYAN SEVA — Check Result</title>
+  <title>GYAN SEVA — Results</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background:linear-gradient(to bottom, #f5f5f5, #e0e7ff); min-height:100vh; padding:20px; }
     .container { max-width:1200px; margin:0 auto; background:white; border-radius:20px; box-shadow:0 5px 20px rgba(0,0,0,0.1); overflow:hidden; }
-    
     .header { background:linear-gradient(to right,#1a237e,#283593,#303f9f); color:white; padding:30px 25px; }
     .header-content { display:flex; align-items:center; justify-content:center; gap:30px; flex-wrap:wrap; }
     .coaching-logo { width:120px; height:120px; border-radius:50%; border:3px solid #ffc107; object-fit:cover; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
@@ -19,80 +18,48 @@
     .director-info { display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap; margin-top:5px; }
     .director-detail { display:inline-flex; align-items:center; gap:8px; font-size:0.9rem; background:rgba(255,255,255,0.12); padding:6px 18px; border-radius:40px; }
     .director-detail i { color:#ffc107; }
-    
     .results-section { padding:25px; background:#f9f9f9; min-height:500px; }
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
-    
-    .exam-list { display:grid; gap:12px; margin-bottom:20px; }
-    .exam-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .results-list { display:grid; gap:12px; margin-bottom:20px; }
+    .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
     .demo-badge { background:#ffc107; color:#333; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:20px; margin-left:10px; }
-    
-    .roll-input-section { background:white; padding:20px; border-radius:10px; margin-top:15px; text-align:center; }
+    .roll-input-section { background:white; padding:20px; border-radius:10px; margin-top:15px; text-align:center; display:none; }
     .input-group { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
     .input-group input { padding:10px; border-radius:8px; border:1px solid #ccc; width:200px; }
     .result-btn { padding:10px 20px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer; }
+    .result-card { display:none; background:white; border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 5px 15px rgba(0,0,0,0.1); overflow-x:auto; }
+    .student-info { background:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:15px; display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; }
+    .marks-table { width:100%; border-collapse:collapse; min-width:400px; }
+    .marks-table th { background:#1a237e; color:white; padding:8px; text-align:left; }
+    .marks-table td { padding:8px; border-bottom:1px solid #ddd; }
+    .total-marks { background:#e8f5e8 !important; font-weight:bold; }
+    .percentage-display { text-align:center; font-size:1.2rem; font-weight:bold; margin-top:15px; }
+    .action-buttons { display:flex; justify-content:center; gap:10px; margin-top:20px; flex-wrap:wrap; }
+    .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
+    .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
-    
     footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
-    
     @media (max-width:768px){ .coaching-logo { width:90px; height:90px; } .school-name { font-size:1.5rem; } }
     @media (max-width:550px){ .header-content { flex-direction:column; text-align:center; gap:15px; } }
   </style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <div class="header-content">
-      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
-      <div>
-        <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
-        <p class="location" id="coachingLocation">Loading...</p>
-        <div class="director-info">
-          <span class="director-detail"><i class="fas fa-user-tie"></i> <span id="directorName">Director</span></span>
-          <span class="director-detail"><i class="fas fa-phone"></i> <span id="directorPhone">---</span></span>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="results-section">
-    <h2 class="section-title"><i class="fas fa-history"></i> Select Exam</h2>
-    <div id="examList" class="exam-list">Loading exams...</div>
-    
-    <div id="rollInputSection" class="roll-input-section" style="display:none;">
-      <h3 id="selectedExamName">Enter Roll Number</h3>
-      <div class="input-group">
-        <input type="text" id="rollInput" placeholder="Enter Roll Number">
-        <button class="result-btn" onclick="fetchResult()">📑 Get Result</button>
-        <button class="result-btn" onclick="goBack()" style="background:#666;">⬅ Back</button>
-      </div>
-      <div class="hint-text" id="rollHint"></div>
-    </div>
-  </div>
-  
+  <div class="header"><div class="header-content"><img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" onerror="this.src='https://via.placeholder.com/120?text=GYAN'"><div><h1 class="school-name" id="coachingName">GYAN SEVA</h1><p class="location" id="coachingLocation">Loading...</p><div class="director-info"><span class="director-detail"><i class="fas fa-user-tie"></i> <span id="directorName">Director</span></span><span class="director-detail"><i class="fas fa-phone"></i> <span id="directorPhone">---</span></span></div></div></div></div>
+  <div class="results-section"><h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2><div id="resultsList" class="results-list">Loading results...</div>
+  <div id="rollInputSection" class="roll-input-section" style="display:none;"><h3 id="selectedExamName">Enter Roll Number</h3><div class="input-group"><input type="text" id="rollInput" placeholder="Enter Roll Number"><button class="result-btn" onclick="fetchResult()">📑 Get Result</button><button class="result-btn" onclick="goBack()" style="background:#666;">⬅ Back</button></div><div class="hint-text" id="rollHint"></div></div>
+  <div id="resultCard" class="result-card" style="display:none;"><div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div><div class="student-info"><div><strong>Student Name:</strong> <span id="studentName">-</span></div><div><strong>Roll Number:</strong> <span id="studentRoll">-</span></div></div><table class="marks-table"><thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>Percentage</th></tr></thead><tbody id="marksBody"></tbody>追赶<div class="percentage-display" id="totalPercent">Total: 0%</div><div class="action-buttons"><button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button><button class="back-btn" onclick="goBack()">⬅ Back</button></div></div></div>
   <footer>Powered by GYAN SEVA — Result ki seva, Gyan ki seva</footer>
 </div>
-
 <script type="module">
   import { db } from './firebase-config.js';
   import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  
   const urlParams = new URLSearchParams(window.location.search);
-  let coachingId = urlParams.get('coaching');
-  let directResultId = urlParams.get('result');
-  let currentResultId = null;
-  let currentResultData = null;
+  const coachingId = urlParams.get('id');
+  let currentResultId = null, currentResultData = null;
   
   async function loadCoaching() {
-    if(!coachingId) {
-      // Try to get from URL parameter 'id' (for backward compatibility)
-      coachingId = urlParams.get('id');
-      if(!coachingId) {
-        document.body.innerHTML = '<div style="text-align:center; padding:50px;">Invalid link. Please contact your coaching.</div>';
-        return;
-      }
-    }
-    
+    if(!coachingId) return;
     const snap = await getDoc(doc(db, "coachings", coachingId));
     if(snap.exists()) {
       const c = snap.data();
@@ -101,62 +68,43 @@
       document.getElementById('directorName').innerText = c.director || 'Director';
       document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
       if(c.logo) document.getElementById('coachingLogo').src = c.logo;
-      
       localStorage.setItem('coachingName', c.name || 'GYAN SEVA');
       localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
       localStorage.setItem('directorName', c.director || 'Director');
       localStorage.setItem('directorPhone', c.phone || 'Not provided');
       localStorage.setItem('coachingLogo', c.logo || 'https://via.placeholder.com/120?text=GYAN');
     }
-    
-    // If result parameter is present, go directly to roll input
-    if(directResultId) {
-      currentResultId = directResultId;
-      const resultDoc = await getDoc(doc(db, "coachings", coachingId, "results", directResultId));
-      if(resultDoc.exists()) {
-        currentResultData = resultDoc.data();
-        document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${currentResultData.examName}`;
-        document.getElementById('examList').style.display = 'none';
-        document.getElementById('rollInputSection').style.display = 'block';
-        
-        // Set hint for demo exams
-        if(currentResultData.isDemo) {
-          document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 101, 202, 303';
-        }
-      } else {
-        loadExams();
-      }
-    } else {
-      loadExams();
-    }
+    loadResults();
   }
   
-  async function loadExams() {
+  async function loadResults() {
     const snap = await getDocs(collection(db, "coachings", coachingId, "results"));
-    const container = document.getElementById('examList');
-    if(snap.empty) { 
-      container.innerHTML = '<p>No exams published yet.</p>'; 
-      return; 
-    }
+    const container = document.getElementById('resultsList');
+    if(snap.empty) { container.innerHTML = '<p>No results published yet.</p>'; return; }
     let html = '';
     for(const d of snap.docs) { 
       const r = d.data(); 
       const isDemo = r.isDemo === true;
       const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
-      html += `<div class="exam-item" onclick="selectExam('${d.id}', '${r.examName}', ${isDemo})"><div><strong>${r.examName} ${demoBadge}</strong><br>${r.examDate}</div><i class="fas fa-chevron-right"></i></div>`; 
+      html += `<div class="result-item" onclick="selectExam('${d.id}', '${r.examName}', '${r.examDate}', ${isDemo})"><div><strong>${r.examName} ${demoBadge}</strong><br>${r.examDate}</div><i class="fas fa-chevron-right"></i></div>`; 
     }
     container.innerHTML = html;
   }
   
-  window.selectExam = (resultId, examName, isDemo) => {
+  window.selectExam = (resultId, examName, examDate, isDemo) => {
     currentResultId = resultId;
     document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
-    document.getElementById('examList').style.display = 'none';
+    document.getElementById('resultsList').style.display = 'none';
     document.getElementById('rollInputSection').style.display = 'block';
+    document.getElementById('resultCard').style.display = 'none';
     document.getElementById('rollInput').value = '';
     
+    // Set hint for demo exams
     if(isDemo) {
-      document.getElementById('rollHint').innerHTML = '💡 Demo Roll Numbers: 101, 202, 303';
+      if(examName.includes('Exam 1')) document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 101';
+      else if(examName.includes('Exam 2')) document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 202';
+      else if(examName.includes('Exam 3')) document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 303';
+      else document.getElementById('rollHint').innerHTML = '💡 Demo Roll Numbers: 101, 202, 303';
     } else {
       document.getElementById('rollHint').innerHTML = '';
     }
@@ -165,11 +113,12 @@
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
-    
+    const resultDoc = await getDoc(doc(db, "coachings", coachingId, "results", currentResultId));
+    if(!resultDoc.exists()) { alert("Result not found"); return; }
+    currentResultData = resultDoc.data();
     const studentDoc = await getDoc(doc(db, "coachings", coachingId, "results", currentResultId, "marks", roll));
     if(!studentDoc.exists()) { alert("Roll number not found"); return; }
     const student = studentDoc.data();
-    
     const subjects = currentResultData.subjects || [];
     const totalPercent = student.percentage || 0;
     let division = '';
@@ -177,24 +126,13 @@
     else if(totalPercent >= 45) division = 'SECOND DIVISION';
     else if(totalPercent >= 30) division = 'THIRD DIVISION';
     else division = 'FAIL';
-    
-    // Store coaching info in localStorage before opening result-viewer
-    localStorage.setItem('coachingName', document.getElementById('coachingName').innerText);
-    localStorage.setItem('coachingLocation', document.getElementById('coachingLocation').innerText);
-    localStorage.setItem('directorName', document.getElementById('directorName').innerText);
-    localStorage.setItem('directorPhone', document.getElementById('directorPhone').innerText);
-    localStorage.setItem('coachingLogo', document.getElementById('coachingLogo').src);
-    
     const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(currentResultData.examName)}&date=${currentResultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
     window.open(resultUrl, '_blank');
+    goBack();
   };
   
-  window.goBack = () => { 
-    document.getElementById('examList').style.display = 'grid';
-    document.getElementById('rollInputSection').style.display = 'none';
-    document.getElementById('rollInput').value = '';
-  };
-  
+  window.goBack = () => { document.getElementById('resultsList').style.display = 'grid'; document.getElementById('rollInputSection').style.display = 'none'; document.getElementById('resultCard').style.display = 'none'; };
+  window.downloadPDF = () => { window.print(); };
   loadCoaching();
 </script>
 </body>
