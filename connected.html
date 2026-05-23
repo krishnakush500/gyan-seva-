@@ -35,8 +35,6 @@
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     .add-new { margin-top:24px; text-align:center; }
     .add-new a { background:#1e293b; color:white; padding:10px 28px; border-radius:40px; text-decoration:none; font-weight:600; }
-    
-    /* Modal Styles */
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
     .modal-content { background:white; border-radius:32px; padding:28px; max-width:650px; width:90%; max-height:85vh; overflow-y:auto; }
     .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #eef2ff; }
@@ -73,10 +71,7 @@
 <!-- Results Modal -->
 <div id="resultsModal" class="modal">
   <div class="modal-content">
-    <div class="modal-header">
-      <h3><i class="fas fa-file-alt"></i> All Results</h3>
-      <button class="close-modal-btn" onclick="closeResultsModal()"><i class="fas fa-times"></i></button>
-    </div>
+    <div class="modal-header"><h3><i class="fas fa-file-alt"></i> All Results</h3><button class="close-modal-btn" onclick="closeResultsModal()"><i class="fas fa-times"></i></button></div>
     <div id="resultsListModal" style="max-height:400px; overflow-y:auto;"></div>
     <div class="modal-buttons"><button class="btn-close-modal" onclick="closeResultsModal()">Close</button></div>
   </div>
@@ -91,6 +86,19 @@
     <label style="font-weight:600;">Exam Date</label>
     <input type="date" id="editExamDate" style="width:100%; padding:12px; margin:8px 0 16px; border:1px solid #ddd; border-radius:12px;">
     <div class="modal-buttons"><button class="btn-close-modal" onclick="closeEditResultModal()">Cancel</button><button class="btn-share-result" onclick="saveResultEdit()" style="background:#10b981;">Save Changes</button></div>
+  </div>
+</div>
+
+<!-- Edit Modal for Coaching -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3><i class="fas fa-edit"></i> Edit Coaching</h3><button class="close-modal-btn" onclick="closeEditModal()"><i class="fas fa-times"></i></button></div>
+    <input type="text" id="editName" placeholder="Coaching Name" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editDirector" placeholder="Director" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editPhone" placeholder="Phone" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editLocation" placeholder="Location" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <textarea id="editLogo" rows="2" placeholder="Logo URL" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;"></textarea>
+    <div class="modal-buttons"><button class="btn-close-modal" onclick="closeEditModal()">Cancel</button><button class="btn-share-result" onclick="saveCoachingEdit()" style="background:#10b981;">Save Changes</button></div>
   </div>
 </div>
 
@@ -109,7 +117,32 @@
     setTimeout(() => toast.remove(), 2500);
   }
   
-  // Load templates from Firebase
+  // Share Dashboard Link on WhatsApp (FIXED)
+  window.shareDashboardLink = async (coachingId, coachingName, coachingPhone) => {
+    const dashboardLink = `${window.location.origin}/dashboard.html?id=${coachingId}`;
+    const shareMessage = `Namaste ${coachingName} team,
+
+Your coaching dashboard is ready.
+
+🔗 Dashboard Link: ${dashboardLink}
+
+You can:
+✅ Publish exam results
+✅ Manage students
+✅ Share result links with students
+
+Thank you
+GYAN SEVA Team`;
+    
+    const encodedMsg = encodeURIComponent(shareMessage);
+    if(coachingPhone) {
+      window.open(`https://wa.me/91${coachingPhone}?text=${encodedMsg}`, '_blank');
+      showToast(`Opening WhatsApp for ${coachingName}`);
+    } else {
+      alert("Phone number not found for this coaching");
+    }
+  };
+  
   async function loadTemplates() {
     try {
       const docRef = doc(db, "templates", "whatsapp_templates");
@@ -122,22 +155,6 @@
     } catch(e) { console.error(e); }
   }
   
-  // Share Dashboard Link on WhatsApp
-  window.shareDashboardLink = async (coachingId, coachingName, coachingPhone) => {
-    await loadTemplates();
-    const dashboardLink = `${window.location.origin}/dashboard.html?id=${coachingId}`;
-    let shareMessage = `📢 GYAN SEVA\n\nHello ${coachingName} Team,\n\nYour coaching dashboard is ready.\n\n🔗 Dashboard Link: ${dashboardLink}\n\nYou can manage results, publish exams, and track students from here.\n\nThank you\nGYAN SEVA Team`;
-    
-    const encodedMsg = encodeURIComponent(shareMessage);
-    if(coachingPhone) {
-      window.open(`https://wa.me/91${coachingPhone}?text=${encodedMsg}`, '_blank');
-      showToast(`Opening WhatsApp for ${coachingName}`);
-    } else {
-      alert("Phone number not found for this coaching");
-    }
-  };
-  
-  // Share result on WhatsApp
   window.shareResult = async (coachingId, coachingName, resultId, examName) => {
     await loadTemplates();
     const resultLink = `${window.location.origin}/result-viewer.html?coaching=${coachingId}&result=${resultId}`;
@@ -146,14 +163,10 @@
     template = template.replace(/{examName}/g, examName);
     template = template.replace(/{link}/g, resultLink);
     const encodedMsg = encodeURIComponent(template);
-    
     const coachingDoc = await getDoc(doc(db, "coachings", coachingId));
     const phone = coachingDoc.exists() ? coachingDoc.data().phone : '';
-    if(phone) {
-      window.open(`https://wa.me/91${phone}?text=${encodedMsg}`, '_blank');
-    } else {
-      alert("Phone number not found for this coaching");
-    }
+    if(phone) window.open(`https://wa.me/91${phone}?text=${encodedMsg}`, '_blank');
+    else alert("Phone number not found");
   };
   
   window.openCreateResult = (id) => { window.open(`create-result.html?id=${id}`, '_blank'); };
@@ -169,19 +182,7 @@
       const r = d.data();
       const isDemo = r.isDemo === true;
       const demoBadge = isDemo ? '<span class="demo-badge">DEMO</span>' : '';
-      html += `
-        <div class="result-item-modal">
-          <div class="result-info">
-            <div class="result-name">📘 ${r.examName} ${demoBadge}</div>
-            <div class="result-date">📅 ${r.examDate || 'Date not set'} | Subjects: ${r.subjects?.length || 0}</div>
-          </div>
-          <div class="result-actions">
-            <button class="btn-share-result" onclick="shareResult('${coachingId}', '${coachingName.replace(/'/g, "\\'")}', '${d.id}', '${r.examName.replace(/'/g, "\\'")}')"><i class="fas fa-share-alt"></i> Share</button>
-            <button class="btn-edit-result" onclick="openEditResult('${d.id}', '${r.examName.replace(/'/g, "\\'")}', '${r.examDate || ''}')"><i class="fas fa-pen"></i> Edit</button>
-            <button class="btn-delete-result" onclick="deleteResult('${coachingId}','${d.id}')"><i class="fas fa-trash"></i> Delete</button>
-          </div>
-        </div>
-      `;
+      html += `<div class="result-item-modal"><div class="result-info"><div class="result-name">📘 ${r.examName} ${demoBadge}</div><div class="result-date">📅 ${r.examDate || 'Date not set'} | Subjects: ${r.subjects?.length || 0}</div></div><div class="result-actions"><button class="btn-share-result" onclick="shareResult('${coachingId}', '${coachingName.replace(/'/g,"\\'")}', '${d.id}', '${r.examName.replace(/'/g,"\\'")}')"><i class="fas fa-share-alt"></i> Share</button><button class="btn-edit-result" onclick="openEditResult('${d.id}', '${r.examName.replace(/'/g,"\\'")}', '${r.examDate || ''}')"><i class="fas fa-pen"></i> Edit</button><button class="btn-delete-result" onclick="deleteResult('${coachingId}','${d.id}')"><i class="fas fa-trash"></i> Delete</button></div></div>`;
     }
     container.innerHTML = html;
   };
@@ -283,18 +284,5 @@
   
   loadConnectedCoachings(); setInterval(loadConnectedCoachings,20000);
 </script>
-
-<!-- Edit Modal for Coaching -->
-<div id="editModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header"><h3><i class="fas fa-edit"></i> Edit Coaching</h3><button class="close-modal-btn" onclick="closeEditModal()"><i class="fas fa-times"></i></button></div>
-    <input type="text" id="editName" placeholder="Coaching Name" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
-    <input type="text" id="editDirector" placeholder="Director" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
-    <input type="text" id="editPhone" placeholder="Phone" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
-    <input type="text" id="editLocation" placeholder="Location" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
-    <textarea id="editLogo" rows="2" placeholder="Logo URL" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;"></textarea>
-    <div class="modal-buttons"><button class="btn-close-modal" onclick="closeEditModal()">Cancel</button><button class="btn-share-result" onclick="saveCoachingEdit()" style="background:#10b981;">Save Changes</button></div>
-  </div>
-</div>
 </body>
 </html>
