@@ -21,215 +21,161 @@
     .coachings-container { max-height:550px; overflow-y:auto; }
     .coaching-card { background:#f8fafc; border-radius:24px; padding:20px; margin-bottom:16px; border:1px solid #e2e8f0; }
     .coaching-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
-    .coaching-name { font-size:1.2rem; font-weight:700; color:#1e293b; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .coaching-name { font-size:1.2rem; font-weight:700; color:#1e293b; }
     .status-badge { background:#dbeafe; color:#2563eb; padding:4px 12px; border-radius:30px; font-size:0.7rem; font-weight:600; }
     .coaching-details { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; font-size:0.85rem; color:#475569; }
     .coaching-details i { width:20px; color:#2563eb; }
     .action-buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
     .btn-dashboard { background:#2563eb; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
     .btn-create-result { background:#10b981; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .btn-share { background:#8b5cf6; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-edit { background:#f59e0b; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-delete { background:#dc2626; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-whatsapp { background:#25D366; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
-    .btn-share-dashboard { background:#8b5cf6; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     .add-new { margin-top:24px; text-align:center; }
     .add-new a { background:#1e293b; color:white; padding:10px 28px; border-radius:40px; text-decoration:none; font-weight:600; }
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
-    .modal-content { background:white; border-radius:32px; padding:28px; max-width:650px; width:90%; max-height:85vh; overflow-y:auto; }
-    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #eef2ff; }
-    .modal-header h3 { font-size:1.3rem; color:#1e293b; display:flex; align-items:center; gap:10px; }
-    .close-modal-btn { background:#f1f5f9; border:none; width:35px; height:35px; border-radius:50%; cursor:pointer; font-size:1.1rem; }
-    .result-item-modal { display:flex; justify-content:space-between; align-items:center; padding:14px; border-bottom:1px solid #e2e8f0; flex-wrap:wrap; gap:10px; }
-    .result-info { flex:2; }
-    .result-name { font-weight:600; color:#1e293b; }
-    .result-date { font-size:0.7rem; color:#64748b; margin-top:4px; }
-    .result-actions { display:flex; gap:8px; flex-wrap:wrap; }
-    .result-actions button { padding:6px 14px; border-radius:30px; border:none; font-size:0.7rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
-    .btn-share-result { background:#10b981; color:white; }
-    .btn-edit-result { background:#f59e0b; color:white; }
-    .btn-delete-result { background:#dc2626; color:white; }
-    .demo-badge { background:#ffc107; color:#333; font-size:0.6rem; padding:2px 8px; border-radius:20px; margin-left:8px; }
-    .modal-buttons { display:flex; gap:12px; margin-top:20px; justify-content:flex-end; }
-    .btn-close-modal { background:#94a3b8; color:white; padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; }
+    .modal-content { background:white; border-radius:32px; padding:28px; max-width:500px; width:90%; }
+    .modal-content h3 { margin-bottom:10px; color:#1e293b; display:flex; align-items:center; gap:10px; }
+    .share-link-box { background:#f1f5f9; padding:12px; border-radius:16px; margin:15px 0; word-break:break-all; font-family:monospace; font-size:0.85rem; }
+    .btn-copy { background:#2563eb; color:white; padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; width:100%; }
+    .btn-copy:hover { background:#1d4ed8; }
+    .close-modal-btn { background:#94a3b8; color:white; padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; margin-top:10px; width:100%; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
-    .toast { position:fixed; bottom:30px; right:30px; background:#10b981; color:white; padding:12px 20px; border-radius:40px; font-size:0.8rem; z-index:1001; animation:toastFade 2s ease; }
-    @keyframes toastFade { 0%{opacity:0;transform:translateX(20px);} 20%{opacity:1;transform:translateX(0);} 80%{opacity:1;} 100%{opacity:0;transform:translateX(20px);} }
-    @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .result-item-modal{ flex-direction:column; align-items:flex-start; } .result-actions{ width:100%; justify-content:flex-start; } }
+    @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .btn-dashboard,.btn-create-result,.btn-share,.btn-edit,.btn-delete,.btn-whatsapp{ text-align:center; justify-content:center; } }
   </style>
 </head>
 <body>
+
 <div class="container">
-  <div class="nav-links"><a href="index.html"><i class="fas fa-home"></i> Home</a><a href="save-customer.html"><i class="fas fa-save"></i> Save Customer</a><a href="connect.html"><i class="fab fa-whatsapp"></i> Connect to Customer</a></div>
-  <div class="connected-card"><div class="connected-header"><h2><i class="fas fa-handshake"></i> CONNECTED CUSTOMER</h2><p>Active coachings that have joined GYAN SEVA</p></div>
-  <div class="connected-body"><div class="stats-bar"><span><i class="fas fa-users"></i> <strong>Active Coachings</strong></span><span class="stat-count" id="coachingCount">0</span><button class="refresh-btn" onclick="loadConnectedCoachings()"><i class="fas fa-sync-alt"></i> Refresh</button></div>
-  <div id="coachingsList" class="coachings-container"><div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading...</div></div>
-  <div class="add-new"><a href="admin.html"><i class="fas fa-plus-circle"></i> Add New Coaching</a></div></div></div>
+  <div class="nav-links">
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="save-customer.html"><i class="fas fa-save"></i> Save Customer</a>
+    <a href="connect.html"><i class="fab fa-whatsapp"></i> Connect to Customer</a>
+  </div>
+
+  <div class="connected-card">
+    <div class="connected-header">
+      <h2><i class="fas fa-handshake"></i> CONNECTED CUSTOMER</h2>
+      <p>Active coachings that have joined GYAN SEVA</p>
+    </div>
+    <div class="connected-body">
+      <div class="stats-bar">
+        <span><i class="fas fa-users"></i> <strong>Active Coachings</strong></span>
+        <span class="stat-count" id="coachingCount">0</span>
+        <button class="refresh-btn" onclick="loadConnectedCoachings()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+
+      <div id="coachingsList" class="coachings-container">
+        <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>
+      </div>
+
+      <div class="add-new">
+        <a href="admin.html"><i class="fas fa-plus-circle"></i> Add New Coaching</a>
+      </div>
+    </div>
+  </div>
   <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
 </div>
 
-<!-- Results Modal -->
-<div id="resultsModal" class="modal">
+<!-- Share Modal -->
+<div id="shareModal" class="modal">
   <div class="modal-content">
-    <div class="modal-header"><h3><i class="fas fa-file-alt"></i> All Results</h3><button class="close-modal-btn" onclick="closeResultsModal()"><i class="fas fa-times"></i></button></div>
-    <div id="resultsListModal" style="max-height:400px; overflow-y:auto;"></div>
-    <div class="modal-buttons"><button class="btn-close-modal" onclick="closeResultsModal()">Close</button></div>
+    <h3><i class="fas fa-share-alt" style="color:#8b5cf6;"></i> Share Dashboard Link</h3>
+    <p>Anyone with this link can check results:</p>
+    <div class="share-link-box" id="shareLink">Loading...</div>
+    <button class="btn-copy" onclick="copyShareLink()"><i class="fas fa-copy"></i> Copy Link</button>
+    <button class="close-modal-btn" onclick="closeShareModal()"><i class="fas fa-times"></i> Close</button>
   </div>
 </div>
 
-<!-- Edit Result Modal -->
-<div id="editResultModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header"><h3><i class="fas fa-edit"></i> Edit Result</h3><button class="close-modal-btn" onclick="closeEditResultModal()"><i class="fas fa-times"></i></button></div>
-    <label style="font-weight:600;">Exam Name</label>
-    <input type="text" id="editExamName" style="width:100%; padding:12px; margin:8px 0 16px; border:1px solid #ddd; border-radius:12px;">
-    <label style="font-weight:600;">Exam Date</label>
-    <input type="date" id="editExamDate" style="width:100%; padding:12px; margin:8px 0 16px; border:1px solid #ddd; border-radius:12px;">
-    <div class="modal-buttons"><button class="btn-close-modal" onclick="closeEditResultModal()">Cancel</button><button class="btn-share-result" onclick="saveResultEdit()" style="background:#10b981;">Save Changes</button></div>
-  </div>
-</div>
-
-<!-- Edit Modal for Coaching -->
+<!-- Edit Modal -->
 <div id="editModal" class="modal">
   <div class="modal-content">
-    <div class="modal-header"><h3><i class="fas fa-edit"></i> Edit Coaching</h3><button class="close-modal-btn" onclick="closeEditModal()"><i class="fas fa-times"></i></button></div>
+    <h3><i class="fas fa-edit"></i> Edit Coaching</h3>
     <input type="text" id="editName" placeholder="Coaching Name" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
     <input type="text" id="editDirector" placeholder="Director" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
     <input type="text" id="editPhone" placeholder="Phone" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
     <input type="text" id="editLocation" placeholder="Location" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
     <textarea id="editLogo" rows="2" placeholder="Logo URL" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;"></textarea>
-    <div class="modal-buttons"><button class="btn-close-modal" onclick="closeEditModal()">Cancel</button><button class="btn-share-result" onclick="saveCoachingEdit()" style="background:#10b981;">Save Changes</button></div>
+    <div style="display:flex; gap:12px; margin-top:20px;">
+      <button class="close-modal-btn" onclick="closeEditModal()" style="background:#94a3b8; flex:1;">Cancel</button>
+      <button class="btn-copy" onclick="saveCoachingEdit()" style="background:#10b981; flex:1;">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Results Modal -->
+<div id="resultsModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-file-alt"></i> All Results</h3>
+    <p id="modalCoachingName" style="margin-bottom:15px;"></p>
+    <div id="resultsListModal" style="max-height:350px; overflow-y:auto;"></div>
+    <button class="close-modal-btn" onclick="closeResultsModal()" style="margin-top:15px;">Close</button>
   </div>
 </div>
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   
-  let currentEditId = null, currentEditCoachingId = null, currentEditResultId = null;
-  let templates = {};
+  let currentEditId = null;
+  let currentShareLink = '';
   
-  function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
-  }
-  
-  // Share Dashboard Link on WhatsApp (FIXED)
-  window.shareDashboardLink = async (coachingId, coachingName, coachingPhone) => {
-    const dashboardLink = `${window.location.origin}/dashboard.html?id=${coachingId}`;
-    const shareMessage = `Namaste ${coachingName} team,
-
-Your coaching dashboard is ready.
-
-🔗 Dashboard Link: ${dashboardLink}
-
-You can:
-✅ Publish exam results
-✅ Manage students
-✅ Share result links with students
-
-Thank you
-GYAN SEVA Team`;
-    
-    const encodedMsg = encodeURIComponent(shareMessage);
-    if(coachingPhone) {
-      window.open(`https://wa.me/91${coachingPhone}?text=${encodedMsg}`, '_blank');
-      showToast(`Opening WhatsApp for ${coachingName}`);
-    } else {
-      alert("Phone number not found for this coaching");
-    }
+  // Share Dashboard function
+  window.shareDashboard = (coachingId) => {
+    const baseUrl = window.location.origin;
+    const shareUrl = `${baseUrl}/dashboard.html?id=${coachingId}`;
+    currentShareLink = shareUrl;
+    document.getElementById('shareLink').innerText = shareUrl;
+    document.getElementById('shareModal').style.display = 'flex';
   };
   
-  async function loadTemplates() {
-    try {
-      const docRef = doc(db, "templates", "whatsapp_templates");
-      const docSnap = await getDoc(docRef);
-      if(docSnap.exists()) {
-        templates = docSnap.data();
-      } else {
-        templates = { template4: "📢 GYAN SEVA\n\nHello {name},\n\nOnline result has been published.\n\n📚 Exam: {examName}\n🔗 Student Link: {link}\n\nShare this link with your students.\n\nThank you\nGYAN SEVA" };
-      }
-    } catch(e) { console.error(e); }
-  }
+  window.copyShareLink = () => {
+    navigator.clipboard.writeText(currentShareLink);
+    alert('✅ Link copied to clipboard!');
+  };
   
-  window.shareResult = async (coachingId, coachingName, resultId, examName) => {
-    await loadTemplates();
-    const resultLink = `${window.location.origin}/result-viewer.html?coaching=${coachingId}&result=${resultId}`;
-    let template = templates.template4 || templates.template1;
-    template = template.replace(/{name}/g, coachingName);
-    template = template.replace(/{examName}/g, examName);
-    template = template.replace(/{link}/g, resultLink);
-    const encodedMsg = encodeURIComponent(template);
-    const coachingDoc = await getDoc(doc(db, "coachings", coachingId));
-    const phone = coachingDoc.exists() ? coachingDoc.data().phone : '';
-    if(phone) window.open(`https://wa.me/91${phone}?text=${encodedMsg}`, '_blank');
-    else alert("Phone number not found");
+  window.closeShareModal = () => {
+    document.getElementById('shareModal').style.display = 'none';
   };
   
   window.openCreateResult = (id) => { window.open(`create-result.html?id=${id}`, '_blank'); };
   
   window.showResults = async (coachingId, coachingName) => {
+    document.getElementById('modalCoachingName').innerHTML = `🏫 ${coachingName}`;
     document.getElementById('resultsModal').style.display = 'flex';
-    currentEditCoachingId = coachingId;
     const snap = await getDocs(collection(db, "coachings", coachingId, "results"));
     const container = document.getElementById('resultsListModal');
-    if(snap.empty) { container.innerHTML = '<p style="text-align:center; padding:20px;">No results published yet.</p>'; return; }
+    if(snap.empty) { container.innerHTML = '<p style="text-align:center; padding:20px;">No results published.</p>'; return; }
     let html = '';
     for(const d of snap.docs) {
       const r = d.data();
       const isDemo = r.isDemo === true;
-      const demoBadge = isDemo ? '<span class="demo-badge">DEMO</span>' : '';
-      html += `<div class="result-item-modal"><div class="result-info"><div class="result-name">📘 ${r.examName} ${demoBadge}</div><div class="result-date">📅 ${r.examDate || 'Date not set'} | Subjects: ${r.subjects?.length || 0}</div></div><div class="result-actions"><button class="btn-share-result" onclick="shareResult('${coachingId}', '${coachingName.replace(/'/g,"\\'")}', '${d.id}', '${r.examName.replace(/'/g,"\\'")}')"><i class="fas fa-share-alt"></i> Share</button><button class="btn-edit-result" onclick="openEditResult('${d.id}', '${r.examName.replace(/'/g,"\\'")}', '${r.examDate || ''}')"><i class="fas fa-pen"></i> Edit</button><button class="btn-delete-result" onclick="deleteResult('${coachingId}','${d.id}')"><i class="fas fa-trash"></i> Delete</button></div></div>`;
+      const demoBadge = isDemo ? '<span style="background:#ffc107; color:#333; padding:2px 8px; border-radius:20px; font-size:0.65rem; margin-left:8px;">DEMO</span>' : '';
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #e2e8f0;"><div><strong>📘 ${r.examName}</strong> ${demoBadge}<br><span style="font-size:0.7rem; color:#64748b;">📅 ${r.examDate || 'No date'}</span></div><div><button class="btn-edit" onclick="deleteResult('${coachingId}','${d.id}')" style="background:#dc2626; padding:4px 12px;">Delete</button></div></div>`;
     }
     container.innerHTML = html;
   };
   
   window.closeResultsModal = () => { document.getElementById('resultsModal').style.display = 'none'; };
   
-  window.openEditResult = (resultId, examName, examDate) => {
-    currentEditResultId = resultId;
-    document.getElementById('editExamName').value = examName;
-    document.getElementById('editExamDate').value = examDate;
-    document.getElementById('editResultModal').style.display = 'flex';
-    closeResultsModal();
-  };
-  
-  window.closeEditResultModal = () => { document.getElementById('editResultModal').style.display = 'none'; currentEditResultId = null; };
-  
-  window.saveResultEdit = async () => {
-    if(!currentEditResultId || !currentEditCoachingId) return;
-    await updateDoc(doc(db, "coachings", currentEditCoachingId, "results", currentEditResultId), {
-      examName: document.getElementById('editExamName').value,
-      examDate: document.getElementById('editExamDate').value
-    });
-    closeEditResultModal();
-    const coachingDoc = await getDoc(doc(db, "coachings", currentEditCoachingId));
-    const coachingName = coachingDoc.exists() ? coachingDoc.data().name : 'Coaching';
-    showResults(currentEditCoachingId, coachingName);
-    loadConnectedCoachings();
-    alert("✅ Result updated!");
-  };
-  
-  window.deleteResult = async (coachingId, resultId) => {
-    if(confirm("Delete this result permanently?")){
+  window.deleteResult = async(coachingId, resultId) => {
+    if(confirm("Delete this result permanently?")) {
       const marksSnap = await getDocs(collection(db, "coachings", coachingId, "results", resultId, "marks"));
       for(const m of marksSnap.docs) await deleteDoc(doc(db, "coachings", coachingId, "results", resultId, "marks", m.id));
       await deleteDoc(doc(db, "coachings", coachingId, "results", resultId));
       alert("Result deleted!");
-      const coachingDoc = await getDoc(doc(db, "coachings", coachingId));
-      const coachingName = coachingDoc.exists() ? coachingDoc.data().name : 'Coaching';
-      showResults(coachingId, coachingName);
       loadConnectedCoachings();
+      closeResultsModal();
     }
   };
   
-  window.deleteCoaching = async (id, name) => {
-    if(confirm(`Delete "${name}" permanently? This deletes ALL results!`)){
+  window.deleteCoaching = async(id, name) => {
+    if(confirm(`Delete "${name}" permanently? This deletes ALL results!`)) {
       const resultsSnap = await getDocs(collection(db, "coachings", id, "results"));
-      for(const r of resultsSnap.docs){
+      for(const r of resultsSnap.docs) {
         const marksSnap = await getDocs(collection(db, "coachings", id, "results", r.id, "marks"));
         for(const m of marksSnap.docs) await deleteDoc(doc(db, "coachings", id, "results", r.id, "marks", m.id));
         await deleteDoc(doc(db, "coachings", id, "results", r.id));
@@ -240,7 +186,7 @@ GYAN SEVA Team`;
     }
   };
   
-  window.openEditModal = (id,name,dir,phone,loc,logo) => {
+  window.openEditModal = (id, name, dir, phone, loc, logo) => {
     currentEditId = id;
     document.getElementById('editName').value = name;
     document.getElementById('editDirector').value = dir;
@@ -252,7 +198,7 @@ GYAN SEVA Team`;
   
   window.closeEditModal = () => { document.getElementById('editModal').style.display = 'none'; };
   
-  window.saveCoachingEdit = async () => {
+  window.saveCoachingEdit = async() => {
     if(!currentEditId) return;
     await updateDoc(doc(db, "coachings", currentEditId), {
       name: document.getElementById('editName').value,
@@ -266,23 +212,52 @@ GYAN SEVA Team`;
     alert("✅ Updated!");
   };
   
-  window.loadConnectedCoachings = async () => {
+  window.loadConnectedCoachings = async() => {
     const snap = await getDocs(collection(db, "coachings"));
     const container = document.getElementById('coachingsList');
     document.getElementById('coachingCount').innerText = snap.size;
-    if(snap.empty){ container.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><br>No connected coachings.</div>'; return; }
+    if(snap.empty) { container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><br>No connected coachings.</div>'; return; }
     let html = '';
-    for(const d of snap.docs){
+    for(const d of snap.docs) {
       const c = d.data();
       const id = d.id;
       const resultsSnap = await getDocs(collection(db, "coachings", id, "results"));
       const logoHtml = c.logo ? `<img src="${c.logo}" style="width:32px; height:32px; border-radius:50%; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none'">` : '';
-      html += `<div class="coaching-card"><div class="coaching-header"><div class="coaching-name">${logoHtml} 🎓 ${c.name}</div><span class="status-badge"><i class="fas fa-check-circle"></i> Active</span></div><div class="coaching-details"><div><i class="fas fa-user-tie"></i> ${c.director||'Director'}</div><div><i class="fas fa-phone"></i> ${c.phone}</div><div><i class="fas fa-location-dot"></i> ${c.location||'Location'}</div><div><i class="fas fa-chart-line"></i> ${resultsSnap.size} Results</div></div><div class="action-buttons"><a href="dashboard.html?id=${id}" class="btn-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a><button class="btn-share-dashboard" onclick="shareDashboardLink('${id}','${c.name.replace(/'/g,"\\'")}','${c.phone}')"><i class="fas fa-share-alt"></i> Share</button><button class="btn-create-result" onclick="openCreateResult('${id}')"><i class="fas fa-plus-circle"></i> Create Result</button><button class="btn-edit" onclick="openEditModal('${id}','${c.name.replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logo||'').replace(/'/g,"\\'")}')"><i class="fas fa-pen"></i> Edit</button><button class="btn-delete" onclick="deleteCoaching('${id}','${c.name.replace(/'/g,"\\'")}')"><i class="fas fa-trash-alt"></i> Delete</button><a href="https://wa.me/91${c.phone}?text=Namaste%20${c.name}%20team" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a><button class="btn-dashboard" style="background:#8b5cf6;" onclick="showResults('${id}','${c.name.replace(/'/g,"\\'")}')"><i class="fas fa-list"></i> Results</button></div></div>`;
+      html += `
+        <div class="coaching-card">
+          <div class="coaching-header">
+            <div class="coaching-name">${logoHtml} 🎓 ${c.name}</div>
+            <span class="status-badge"><i class="fas fa-check-circle"></i> Active</span>
+          </div>
+          <div class="coaching-details">
+            <div><i class="fas fa-user-tie"></i> ${c.director || 'Director'}</div>
+            <div><i class="fas fa-phone"></i> ${c.phone}</div>
+            <div><i class="fas fa-location-dot"></i> ${c.location || 'Location'}</div>
+            <div><i class="fas fa-chart-line"></i> ${resultsSnap.size} Results</div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn-share" onclick="shareDashboard('${id}')"><i class="fas fa-share-alt"></i> Share Dashboard</button>
+            <a href="dashboard.html?id=${id}" class="btn-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <button class="btn-create-result" onclick="openCreateResult('${id}')"><i class="fas fa-plus-circle"></i> Create Result</button>
+            <button class="btn-edit" onclick="openEditModal('${id}','${c.name.replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logo||'').replace(/'/g,"\\'")}')"><i class="fas fa-pen"></i> Edit</button>
+            <button class="btn-delete" onclick="deleteCoaching('${id}','${c.name.replace(/'/g,"\\'")}')"><i class="fas fa-trash-alt"></i> Delete</button>
+            <a href="https://wa.me/91${c.phone}?text=Namaste%20${c.name}%20team" target="_blank" class="btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          </div>
+        </div>
+      `;
     }
     container.innerHTML = html;
   };
   
-  loadConnectedCoachings(); setInterval(loadConnectedCoachings,20000);
+  // Close modals on outside click
+  window.onclick = (e) => {
+    if(e.target.classList.contains('modal')) {
+      e.target.style.display = 'none';
+    }
+  };
+  
+  loadConnectedCoachings();
+  setInterval(loadConnectedCoachings, 20000);
 </script>
 </body>
 </html>
