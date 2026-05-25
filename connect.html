@@ -60,37 +60,53 @@
   import { collection, addDoc, updateDoc, doc, getDocs, query, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   
   let allLeads = [], currentPage = 1, itemsPerPage = 10;
-  let leadStatus = JSON.parse(localStorage.getItem('lead_status') || '{}'); // { leadId: 'sent' or 'reminder_sent' }
+  let leadStatus = JSON.parse(localStorage.getItem('lead_status') || '{}');
   let templates = {};
   
   function showToast(msg, isError=false){ let t=document.createElement('div'); t.className='toast'; t.style.background=isError?'#dc2626':'#10b981'; t.innerHTML=`<i class="fas ${isError?'fa-exclamation-triangle':'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
   
-  // Load templates from Firebase
+  // URL Encode emoji message properly
+  function encodeMessage(text) {
+    return encodeURIComponent(text);
+  }
+  
+  // Get emoji-rich message template
+  function getMessageTemplate(type, leadName) {
+    if (type === 'reminder') {
+      return `👋 GYAN SEVA\n\nHello ${leadName},\n\nJust a gentle reminder about FREE DEMO for your institute.\n\n🎁 Your students can check online result with roll number.\n\n✅ No phone calls\n✅ Save your time\n✅ Parents happy\n\nReply YES to get your free demo link.\n\nThank you\nGYAN SEVA`;
+    } else {
+      return `📢 GYAN SEVA\n\nHello ${leadName},\n\nWe provide online result system for institutes.\n\n🎁 FREE DEMO for your institute.\n\n🔰 BENEFITS:\n✅ Students check marks online with roll number\n✅ Parents happy with digital system\n✅ Save your time\n✅ Easy to share with one link\n\n📱 HOW IT WORKS:\nStudents open link → enter roll number → see result\n\nDEMO is free. No payment for demo.\n\nInterested? Reply YES.\n\nThank you\nGYAN SEVA`;
+    }
+  }
+  
+  // Load templates from Firebase (optional, fallback to emoji ones)
   async function loadTemplates() {
     try {
       const docRef = doc(db, "templates", "whatsapp_templates");
       const docSnap = await getDoc(docRef);
       if(docSnap.exists()) {
         templates = docSnap.data();
-      } else {
-        // Default templates if not exists
-        templates = {
-          template1: "📢 GYAN SEVA\n\nHello {name},\n\nWe provide online result system for institutes.\n\n🎁 FREE DEMO for your institute.\n\n✅ Students check marks online with roll number\n✅ No phone calls for result\n✅ Save your time\n\nInterested? Reply YES.\n\nThank you\nGYAN SEVA",
-          template2: "👋 GYAN SEVA\n\nHello {name},\n\nJust a gentle reminder about FREE DEMO for your institute.\n\nYour students can check online result with roll number.\n\nReply YES to get your free demo link.\n\nThank you\nGYAN SEVA"
-        };
       }
     } catch(e) {
       console.error("Error loading templates:", e);
     }
   }
   
-  // Get message based on type
   function getMessage(leadName, type) {
-    const template = type === 'reminder' ? (templates.template2 || templates.template1) : (templates.template1 || templates.template2);
-    return template.replace(/{name}/g, leadName);
+    // Use Firebase template if available, otherwise use emoji template
+    if (type === 'reminder') {
+      if (templates.template2) {
+        return templates.template2.replace(/{name}/g, leadName);
+      }
+      return getMessageTemplate('reminder', leadName);
+    } else {
+      if (templates.template1) {
+        return templates.template1.replace(/{name}/g, leadName);
+      }
+      return getMessageTemplate('first', leadName);
+    }
   }
   
-  // Mark lead action (sent or reminder)
   window.markLeadAction = async (leadId, leadName, leadPhone, action) => {
     if(action === 'sent') {
       leadStatus[leadId] = 'sent';
@@ -104,21 +120,18 @@
     loadLeads();
   };
   
-  // Get WhatsApp link with template
   function getWhatsAppLink(leadId, leadName, leadPhone, currentStatus) {
     let template, actionType;
     
     if(currentStatus === 'sent') {
-      // Send reminder
       template = getMessage(leadName, 'reminder');
       actionType = 'reminder';
     } else {
-      // Send first message
       template = getMessage(leadName, 'first');
       actionType = 'sent';
     }
     
-    const encodedMsg = encodeURIComponent(template);
+    const encodedMsg = encodeMessage(template);
     const waLink = `https://wa.me/91${leadPhone}?text=${encodedMsg}`;
     
     return { waLink, actionType };
@@ -131,7 +144,6 @@
         name: leadName, phone: leadPhone, city: leadCity||"", director: "", location: leadCity||"", logo: "", createdAt: new Date().toISOString(), dashboardCreated: true 
       });
       
-      // Add fake demo results
       const fakeResults = [
         { examName: "📘 Demo Exam 1 - Monthly Test", examDate: "2025-01-15", subjects: ["Mathematics", "Science", "English", "Social Science"], roll: "101", studentName: "Aryan Kumar", fatherName: "Rajesh Singh", marks: {"Mathematics":85, "Science":78, "English":82, "Social Science":88} },
         { examName: "📙 Demo Exam 2 - Half Yearly", examDate: "2024-12-20", subjects: ["Mathematics", "Science", "English", "Hindi", "SST"], roll: "202", studentName: "Priya Singh", fatherName: "Mohan Singh", marks: {"Mathematics":92, "Science":88, "English":85, "Hindi":90, "SST":87} },
@@ -213,7 +225,6 @@
     const snap=await getDocs(query(collection(db,"leads"), where("status","==","pending")));
     let leads=[];
     snap.forEach(d=>leads.push({id:d.id,...d.data()}));
-    // Sort: unsent first, then sent, then reminder_sent
     allLeads=leads.sort((a,b)=>{ 
       const aStatus = leadStatus[a.id] || 'unsent';
       const bStatus = leadStatus[b.id] || 'unsent';
