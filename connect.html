@@ -3,270 +3,367 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>GYAN SEVA — Connect to Customer</title>
+  <title>GYAN SEVA — Connected Customers</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', system-ui, sans-serif; }
-    body { background:#ffffff; min-height:100vh; padding:40px 24px; }
-    .container { max-width:1100px; margin:0 auto; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+    body { background:#ffffff; padding:40px 24px; }
+    .container { max-width:1200px; margin:0 auto; }
     .nav-links { text-align:center; margin-bottom:30px; }
-    .nav-links a { text-decoration:none; background:#f1f5f9; padding:8px 24px; border-radius:40px; margin:0 8px; color:#1e293b; font-weight:500; font-size:0.85rem; }
-    .connect-card { background:#ffffff; border-radius:48px; box-shadow:0 20px 40px -12px rgba(0,0,0,0.08); border:1px solid #d1fae5; overflow:hidden; }
-    .connect-header { background:#10b981; padding:28px 32px; text-align:center; }
-    .connect-header h2 { color:white; font-size:2rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:12px; }
-    .connect-header p { color:#ecfdf5; margin-top:8px; font-size:0.9rem; }
-    .connect-body { padding:32px; }
-    .stats-bar { background:#ecfdf5; border-radius:24px; padding:16px 20px; margin-bottom:28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
-    .stat-count { background:#10b981; color:white; padding:6px 16px; border-radius:40px; font-weight:600; }
+    .nav-links a { text-decoration:none; background:#f1f5f9; padding:8px 24px; border-radius:40px; margin:0 8px; color:#1e293b; font-weight:500; font-size:0.85rem; display:inline-block; }
+    .connected-card { background:#fff; border-radius:48px; box-shadow:0 20px 40px -12px rgba(0,0,0,0.08); border:1px solid #dbeafe; overflow:hidden; }
+    .connected-header { background:#2563eb; padding:28px 32px; text-align:center; }
+    .connected-header h2 { color:white; font-size:2rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:12px; }
+    .connected-header p { color:#dbeafe; margin-top:8px; font-size:0.9rem; }
+    .connected-body { padding:32px; }
+    
+    /* Stats Section - Enhanced */
+    .stats-grid {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: #eef2ff;
+      border-radius: 24px;
+      padding: 16px 24px;
+      flex: 1;
+      min-width: 150px;
+      text-align: center;
+    }
+    .stat-card i {
+      font-size: 1.8rem;
+      color: #2563eb;
+      margin-bottom: 8px;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: #475569;
+      margin-top: 4px;
+    }
     .refresh-btn { background:#f1f5f9; border:none; padding:8px 20px; border-radius:40px; cursor:pointer; font-weight:500; }
-    .leads-container { max-height:550px; overflow-y:auto; }
-    .lead-item { display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid #e2e8f0; flex-wrap:wrap; gap:12px; }
-    .lead-info strong { font-size:1rem; color:#1e293b; }
-    .lead-info span { font-size:0.75rem; color:#64748b; }
-    .btn-make-dashboard { background:#2563eb; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
-    .whatsapp-btn { background:#25D366; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; transition:0.2s; }
-    .whatsapp-sent { background:#94a3b8; pointer-events:none; }
-    .whatsapp-reminder { background:#f59e0b; }
+    
+    .coachings-container { max-height:550px; overflow-y:auto; }
+    .coaching-card { background:#f8fafc; border-radius:24px; padding:20px; margin-bottom:16px; border:1px solid #e2e8f0; transition:0.2s; }
+    .coaching-card:hover { border-color:#2563eb; box-shadow:0 4px 12px rgba(37,99,235,0.1); }
+    .coaching-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
+    .coaching-name { font-size:1.2rem; font-weight:700; color:#1e293b; }
+    .status-badge { background:#dbeafe; color:#2563eb; padding:4px 12px; border-radius:30px; font-size:0.7rem; font-weight:600; }
+    .coaching-details { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; font-size:0.85rem; color:#475569; }
+    .coaching-details i { width:20px; color:#2563eb; }
+    .action-buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+    .btn-dashboard { background:#2563eb; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .btn-create-result { background:#10b981; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .btn-share { background:#8b5cf6; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .btn-edit { background:#f59e0b; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .btn-delete { background:#dc2626; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .btn-remove { background:#ef4444; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .btn-whatsapp { background:#25D366; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
-    .pagination { display:flex; justify-content:center; gap:10px; margin-top:25px; flex-wrap:wrap; }
-    .page-btn { background:#f1f5f9; border:none; padding:8px 14px; border-radius:30px; cursor:pointer; font-weight:500; }
-    .page-btn.active { background:#10b981; color:white; }
-    .toast { position:fixed; bottom:30px; right:30px; background:#1e293b; color:white; padding:12px 24px; border-radius:50px; font-size:0.85rem; z-index:1000; animation:fadeInOut 3s ease; }
-    @keyframes fadeInOut { 0%{opacity:0;transform:translateY(20px);}15%{opacity:1;transform:translateY(0);}85%{opacity:1;}100%{opacity:0;transform:translateY(20px);} }
+    .add-new { margin-top:24px; text-align:center; }
+    .add-new a { background:#1e293b; color:white; padding:10px 28px; border-radius:40px; text-decoration:none; font-weight:600; display:inline-block; }
+    
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
+    .modal-content { background:white; border-radius:32px; padding:28px; max-width:500px; width:90%; }
+    .modal-content h3 { margin-bottom:10px; color:#1e293b; display:flex; align-items:center; gap:10px; }
+    .modal-buttons { display:flex; gap:12px; margin-top:20px; }
+    .modal-buttons button { flex:1; padding:12px; border-radius:40px; border:none; cursor:pointer; font-weight:600; }
+    .btn-copy { background:#2563eb; color:white; }
+    .btn-close-modal { background:#94a3b8; color:white; }
+    .share-link-box { background:#f1f5f9; padding:12px; border-radius:16px; margin:15px 0; word-break:break-all; font-family:monospace; font-size:0.8rem; }
+    
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
-    @media (max-width:640px){ .lead-item{ flex-direction:column; align-items:flex-start; } .btn-make-dashboard,.whatsapp-btn{ width:100%; justify-content:center; } }
+    
+    @media (max-width:640px){ 
+      .coaching-details{ flex-direction:column; gap:8px; } 
+      .action-buttons{ flex-direction:column; } 
+      .stats-grid { flex-direction: column; }
+      .btn-dashboard,.btn-create-result,.btn-share,.btn-edit,.btn-delete,.btn-remove,.btn-whatsapp{ text-align:center; justify-content:center; }
+      .nav-links a { display:inline-block; margin-bottom:8px; }
+    }
   </style>
 </head>
 <body>
+
 <div class="container">
   <div class="nav-links">
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
     <a href="save-customer.html"><i class="fas fa-save"></i> Save Customer</a>
-    <a href="connected.html"><i class="fas fa-handshake"></i> Connected Customers</a>
+    <a href="connect.html"><i class="fab fa-whatsapp"></i> Connect to Customer</a>
   </div>
-  <div class="connect-card">
-    <div class="connect-header"><h2><i class="fab fa-whatsapp"></i> CONNECT TO CUSTOMER</h2><p>Send messages — first message then reminder</p></div>
-    <div class="connect-body">
-      <div class="stats-bar"><span><i class="fas fa-users"></i> <strong>Pending Leads</strong></span><span class="stat-count" id="leadCount">0</span><button class="refresh-btn" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh</button></div>
-      <div id="leadsList" class="leads-container"><div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading leads...</div></div>
-      <div id="pagination" class="pagination"></div>
+
+  <div class="connected-card">
+    <div class="connected-header">
+      <h2><i class="fas fa-handshake"></i> CONNECTED CUSTOMER</h2>
+      <p>Active coachings that have joined GYAN SEVA</p>
+    </div>
+    <div class="connected-body">
+      <!-- Enhanced Stats Section -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <div class="stat-number" id="totalCoachings">0</div>
+          <div class="stat-label">Total Connected</div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-envelope"></i>
+          <div class="stat-number" id="messagedCount">0</div>
+          <div class="stat-label">Message Sent</div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-chart-line"></i>
+          <div class="stat-number" id="resultsCount">0</div>
+          <div class="stat-label">Total Results</div>
+        </div>
+      </div>
+      
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+        <button class="refresh-btn" onclick="loadConnectedCoachings()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+
+      <div id="coachingsList" class="coachings-container">
+        <div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>
+      </div>
+
+      <div class="add-new">
+        <a href="admin.html"><i class="fas fa-plus-circle"></i> Add New Coaching</a>
+      </div>
     </div>
   </div>
-  <footer><i class="fas fa-heart" style="color:#10b981;"></i> GYAN SEVA — Connect, Convert, Serve</footer>
+  <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-edit"></i> Edit Coaching Details</h3>
+    <input type="text" id="editName" placeholder="Coaching Name" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editDirector" placeholder="Director Name" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editPhone" placeholder="Phone Number" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editLocation" placeholder="Location" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <textarea id="editLogo" rows="2" placeholder="Logo Image URL" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;"></textarea>
+    <div class="modal-buttons">
+      <button class="btn-close-modal" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-copy" onclick="saveCoachingEdit()" style="background:#10b981;">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Results Modal -->
+<div id="resultsModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-file-alt"></i> All Results</h3>
+    <p id="modalCoachingName" style="margin-bottom:15px;"></p>
+    <div id="resultsListModal" style="max-height:350px; overflow-y:auto;"></div>
+    <button class="btn-close-modal" onclick="closeResultsModal()" style="margin-top:15px; width:100%;">Close</button>
+  </div>
 </div>
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, addDoc, updateDoc, doc, getDocs, query, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   
-  let allLeads = [], currentPage = 1, itemsPerPage = 10;
-  let leadStatus = JSON.parse(localStorage.getItem('lead_status') || '{}');
-  let templates = {};
+  let currentEditId = null;
   
-  function showToast(msg, isError=false){ let t=document.createElement('div'); t.className='toast'; t.style.background=isError?'#dc2626':'#10b981'; t.innerHTML=`<i class="fas ${isError?'fa-exclamation-triangle':'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
+  // Base URL for GitHub Pages
+  const BASE_URL = 'https://krishnakush500.github.io/gyan-seva-';
   
-  // Emoji-rich message templates
-  function getMessageTemplate(type, leadName) {
-    if (type === 'reminder') {
-      return `📢 GYAN SEVA
-
-Hello ${leadName},
-
-Just a gentle reminder about FREE DEMO for your institute.
-
-🎁 Your students can check online result with roll number.
-
-✅ No phone calls
-✅ Save your time
-✅ Parents happy
-
-Reply YES to get your free demo link.
-
-Thank you
-GYAN SEVA`;
-    } else {
-      return `📢 GYAN SEVA
-
-Hello ${leadName},
-
-We provide online result system for institutes.
-
-🎁 FREE DEMO for your institute.
-
-🔰 BENEFITS:
-✅ Students check marks online with roll number
-✅ Parents happy with digital system
-✅ Save your time
-✅ Easy to share with one link
-
-📱 HOW IT WORKS:
-Students open link 🔗 → enter roll number → see result
-
-DEMO is free. No payment for demo.
-
-Interested? Reply YES.
-
-Thank you
-GYAN SEVA`;
-    }
-  }
-  
-  async function loadTemplates() {
-    try {
-      const docRef = doc(db, "templates", "whatsapp_templates");
-      const docSnap = await getDoc(docRef);
-      if(docSnap.exists()) {
-        templates = docSnap.data();
-      }
-    } catch(e) {
-      console.error("Error loading templates:", e);
-    }
-  }
-  
-  function getMessage(leadName, type) {
-    if (type === 'reminder') {
-      if (templates.template2) {
-        return templates.template2.replace(/{name}/g, leadName);
-      }
-      return getMessageTemplate('reminder', leadName);
-    } else {
-      if (templates.template1) {
-        return templates.template1.replace(/{name}/g, leadName);
-      }
-      return getMessageTemplate('first', leadName);
-    }
-  }
-  
-  window.markLeadAction = async (leadId, leadName, leadPhone, action) => {
-    if(action === 'sent') {
-      leadStatus[leadId] = 'sent';
-      localStorage.setItem('lead_status', JSON.stringify(leadStatus));
-      showToast('✅ First message sent! Now you can send reminder.');
-    } else if(action === 'reminder') {
-      leadStatus[leadId] = 'reminder_sent';
-      localStorage.setItem('lead_status', JSON.stringify(leadStatus));
-      showToast('📢 Reminder sent!');
-    }
-    loadLeads();
+  // Share Dashboard via WhatsApp
+  window.shareDashboardOnWhatsApp = (coachingId, coachingName, phoneNumber) => {
+    const dashboardLink = `${BASE_URL}/dashboard.html?id=${coachingId}`;
+    const message = `GYAN SEVA\n\nHello ${coachingName},\n\nYour online result portal is ready.\n\n🔗 Dashboard Link: ${dashboardLink}\n\nStudents can check their marks by entering roll number.\n\nShare this link with your students.\n\nThank you\nGYAN SEVA Team`;
+    const encodedMsg = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/91${phoneNumber}?text=${encodedMsg}`;
+    window.open(whatsappUrl, '_blank');
   };
   
-  // ✅ CRITICAL: Using api.whatsapp.com/send instead of wa.me for emoji support
-  function getWhatsAppLink(leadId, leadName, leadPhone, currentStatus) {
-    let template, actionType;
-    
-    if(currentStatus === 'sent') {
-      template = getMessage(leadName, 'reminder');
-      actionType = 'reminder';
-    } else {
-      template = getMessage(leadName, 'first');
-      actionType = 'sent';
-    }
-    
-    const encodedMsg = encodeURIComponent(template);
-    // ✅ Fixed: api.whatsapp.com/send works perfectly with emojis
-    const waLink = `https://api.whatsapp.com/send/?phone=91${leadPhone}&text=${encodedMsg}`;
-    
-    return { waLink, actionType };
-  }
-  
-  window.createDashboard = async (leadId, leadName, leadPhone, leadCity, btn) => {
-    btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-pulse"></i>';
-    try {
-      const coachingRef = await addDoc(collection(db, "coachings"), { 
-        name: leadName, phone: leadPhone, city: leadCity||"", director: "", location: leadCity||"", logo: "", createdAt: new Date().toISOString(), dashboardCreated: true 
-      });
-      
-      const fakeResults = [
-        { examName: "📘 Demo Exam 1 - Monthly Test", examDate: "2025-01-15", subjects: ["Mathematics", "Science", "English", "Social Science"], roll: "101", studentName: "Aryan Kumar", fatherName: "Rajesh Singh", marks: {"Mathematics":85, "Science":78, "English":82, "Social Science":88} },
-        { examName: "📙 Demo Exam 2 - Half Yearly", examDate: "2024-12-20", subjects: ["Mathematics", "Science", "English", "Hindi", "SST"], roll: "202", studentName: "Priya Singh", fatherName: "Mohan Singh", marks: {"Mathematics":92, "Science":88, "English":85, "Hindi":90, "SST":87} },
-        { examName: "📕 Demo Exam 3 - Pre-Board", examDate: "2025-02-10", subjects: ["Physics", "Chemistry", "Mathematics", "Biology"], roll: "303", studentName: "Rohan Verma", fatherName: "Suresh Verma", marks: {"Physics":75, "Chemistry":80, "Mathematics":88, "Biology":79} }
-      ];
-      
-      for (const exam of fakeResults) {
-        const resultsRef = collection(db, "coachings", coachingRef.id, "results");
-        const newResult = await addDoc(resultsRef, {
-          examName: exam.examName,
-          examDate: exam.examDate,
-          subjects: exam.subjects,
-          publishedAt: new Date().toISOString(),
-          totalStudents: 1,
-          isDemo: true
-        });
-        
-        const total = Object.values(exam.marks).reduce((a,b)=>a+b,0);
-        const percentage = (total / (exam.subjects.length * 100)) * 100;
-        
-        await setDoc(doc(db, "coachings", coachingRef.id, "results", newResult.id, "marks", exam.roll), {
-          name: exam.studentName,
-          fatherName: exam.fatherName,
-          marks: exam.marks,
-          total: total,
-          percentage: percentage.toFixed(2),
-          isDemo: true
-        });
+  // Remove coaching from list (Delete)
+  window.removeCoaching = async (id, name) => {
+    if(confirm(`Remove "${name}" from connected list? This will NOT delete results, just remove from this view.`)) {
+      // Option 1: Actually delete from database
+      // Option 2: Just mark as inactive (soft delete)
+      // Doing hard delete for now
+      const resultsSnap = await getDocs(collection(db, "coachings", id, "results"));
+      for(const r of resultsSnap.docs) {
+        const marksSnap = await getDocs(collection(db, "coachings", id, "results", r.id, "marks"));
+        for(const m of marksSnap.docs) {
+          await deleteDoc(doc(db, "coachings", id, "results", r.id, "marks", m.id));
+        }
+        await deleteDoc(doc(db, "coachings", id, "results", r.id));
       }
-      
-      await updateDoc(doc(db, "leads", leadId), { status:"connected", coachingId:coachingRef.id, connectedAt:new Date().toISOString() });
-      showToast(`✅ ${leadName} dashboard created with 3 demo results!`);
-      loadLeads();
-    } catch(error) {
-      showToast(`❌ Failed: ${error.message}`, true);
-      btn.disabled=false; btn.innerHTML='<i class="fas fa-magic"></i> Make Dashboard';
+      await deleteDoc(doc(db, "coachings", id));
+      alert(`"${name}" removed successfully!`);
+      loadConnectedCoachings();
     }
   };
   
-  function renderPage(){
-    const container=document.getElementById('leadsList'), totalPages=Math.ceil(allLeads.length/itemsPerPage);
-    if(allLeads.length===0){ container.innerHTML='<div class="empty-state"><i class="fas fa-check-circle"></i><br>No pending leads!</div>'; document.getElementById('pagination').innerHTML=''; return; }
-    const start=(currentPage-1)*itemsPerPage, end=start+itemsPerPage, pageLeads=allLeads.slice(start,end);
-    let html='';
-    for(const lead of pageLeads){
-      const currentStatus = leadStatus[lead.id];
-      let btnClass = 'whatsapp-btn';
-      let btnText = 'Message';
-      let action = 'sent';
-      
-      if(currentStatus === 'sent') {
-        btnClass = 'whatsapp-btn whatsapp-reminder';
-        btnText = 'Reminder';
-        action = 'reminder';
-      } else if(currentStatus === 'reminder_sent') {
-        btnClass = 'whatsapp-btn whatsapp-sent';
-        btnText = 'Sent';
-        action = null;
-      }
-      
-      const { waLink, actionType } = currentStatus === 'reminder_sent' ? 
-        { waLink: '#', actionType: null } : 
-        getWhatsAppLink(lead.id, lead.name, lead.phone, currentStatus);
-      
-      const isDisabled = currentStatus === 'reminder_sent';
-      
-      html+=`<div class="lead-item"><div class="lead-info"><strong>🏫 ${lead.name}</strong><br><span>📞 ${lead.phone} | 📍 ${lead.city||''}</span></div><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn-make-dashboard" onclick="createDashboard('${lead.id}','${lead.name.replace(/'/g,"\\'")}','${lead.phone}','${lead.city||''}',this)"><i class="fas fa-magic"></i> Make Dashboard</button>${isDisabled ? `<span class="whatsapp-btn whatsapp-sent"><i class="fas fa-check"></i> Done</span>` : `<a href="${waLink}" target="_blank" class="${btnClass}" onclick="markLeadAction('${lead.id}','${lead.name.replace(/'/g,"\\'")}','${lead.phone}','${actionType}')"><i class="fab fa-whatsapp"></i> ${btnText}</a>`}</div></div>`;
+  window.openCreateResult = (id) => { 
+    window.open(`create-result.html?id=${id}`, '_blank'); 
+  };
+  
+  window.showResults = async (coachingId, coachingName) => {
+    document.getElementById('modalCoachingName').innerHTML = `🏫 ${coachingName}`;
+    document.getElementById('resultsModal').style.display = 'flex';
+    const snap = await getDocs(collection(db, "coachings", coachingId, "results"));
+    const container = document.getElementById('resultsListModal');
+    if(snap.empty) { 
+      container.innerHTML = '<p style="text-align:center; padding:20px;">No results published yet.</p>'; 
+      return; 
     }
-    container.innerHTML=html;
-    if(totalPages>1){ let pgHtml=''; for(let i=1;i<=totalPages;i++) pgHtml+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`; document.getElementById('pagination').innerHTML=pgHtml; }
-    else document.getElementById('pagination').innerHTML='';
-    document.getElementById('leadCount').innerText=allLeads.length;
-  }
+    let html = '';
+    for(const d of snap.docs) {
+      const r = d.data();
+      const isDemo = r.isDemo === true;
+      const demoBadge = isDemo ? '<span style="background:#ffc107; color:#333; padding:2px 8px; border-radius:20px; font-size:0.65rem; margin-left:8px;">DEMO</span>' : '';
+      html += `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #e2e8f0;">
+          <div>
+            <strong>📘 ${r.examName}</strong> ${demoBadge}<br>
+            <span style="font-size:0.7rem; color:#64748b;">📅 ${r.examDate || 'No date'}</span>
+          </div>
+          <button class="btn-edit" onclick="deleteResult('${coachingId}','${d.id}')" style="background:#dc2626; color:white; padding:4px 12px; border-radius:20px; border:none; cursor:pointer;">Delete</button>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+  };
   
-  window.goToPage=(page)=>{ currentPage=page; renderPage(); };
+  window.closeResultsModal = () => { 
+    document.getElementById('resultsModal').style.display = 'none'; 
+  };
   
-  window.loadLeads=async()=>{
-    await loadTemplates();
-    const snap=await getDocs(query(collection(db,"leads"), where("status","==","pending")));
-    let leads=[];
-    snap.forEach(d=>leads.push({id:d.id,...d.data()}));
-    allLeads=leads.sort((a,b)=>{ 
-      const aStatus = leadStatus[a.id] || 'unsent';
-      const bStatus = leadStatus[b.id] || 'unsent';
-      const order = { unsent: 0, sent: 1, reminder_sent: 2 };
-      return (order[aStatus] || 0) - (order[bStatus] || 0);
+  window.deleteResult = async(coachingId, resultId) => {
+    if(confirm("Delete this result permanently?")) {
+      const marksSnap = await getDocs(collection(db, "coachings", coachingId, "results", resultId, "marks"));
+      for(const m of marksSnap.docs) {
+        await deleteDoc(doc(db, "coachings", coachingId, "results", resultId, "marks", m.id));
+      }
+      await deleteDoc(doc(db, "coachings", coachingId, "results", resultId));
+      alert("Result deleted!");
+      loadConnectedCoachings();
+      closeResultsModal();
+    }
+  };
+  
+  window.openEditModal = (id, name, dir, phone, loc, logo) => {
+    currentEditId = id;
+    document.getElementById('editName').value = name;
+    document.getElementById('editDirector').value = dir;
+    document.getElementById('editPhone').value = phone;
+    document.getElementById('editLocation').value = loc;
+    document.getElementById('editLogo').value = logo;
+    document.getElementById('editModal').style.display = 'flex';
+  };
+  
+  window.closeEditModal = () => { 
+    document.getElementById('editModal').style.display = 'none'; 
+  };
+  
+  window.saveCoachingEdit = async() => {
+    if(!currentEditId) return;
+    await updateDoc(doc(db, "coachings", currentEditId), {
+      name: document.getElementById('editName').value,
+      director: document.getElementById('editDirector').value,
+      phone: document.getElementById('editPhone').value,
+      location: document.getElementById('editLocation').value,
+      logo: document.getElementById('editLogo').value
     });
-    currentPage=1; renderPage();
+    closeEditModal();
+    loadConnectedCoachings();
+    alert("✅ Coaching details updated!");
   };
   
-  loadLeads(); setInterval(loadLeads,15000);
+  // Count message sent (from leads status)
+  async function getMessageSentCount() {
+    const leadsRef = collection(db, "leads");
+    const snapshot = await getDocs(leadsRef);
+    let sentCount = 0;
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if(data.status === 'connected' || data.status === 'sent' || data.status === 'reminder_sent') {
+        sentCount++;
+      }
+    });
+    return sentCount;
+  }
+  
+  window.loadConnectedCoachings = async() => {
+    const snap = await getDocs(collection(db, "coachings"));
+    const container = document.getElementById('coachingsList');
+    const totalCoachings = snap.size;
+    document.getElementById('totalCoachings').innerText = totalCoachings;
+    
+    // Get message sent count
+    const msgSentCount = await getMessageSentCount();
+    document.getElementById('messagedCount').innerText = msgSentCount;
+    
+    // Get total results count
+    let totalResults = 0;
+    for(const d of snap.docs) {
+      const resultsSnap = await getDocs(collection(db, "coachings", d.id, "results"));
+      totalResults += resultsSnap.size;
+    }
+    document.getElementById('resultsCount').innerText = totalResults;
+    
+    if(snap.empty) { 
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><br>No connected coachings yet.</div>'; 
+      return; 
+    }
+    let html = '';
+    for(const d of snap.docs) {
+      const c = d.data();
+      const id = d.id;
+      const resultsSnap = await getDocs(collection(db, "coachings", id, "results"));
+      const logoHtml = c.logo ? `<img src="${c.logo}" style="width:32px; height:32px; border-radius:50%; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none'">` : '';
+      html += `
+        <div class="coaching-card">
+          <div class="coaching-header">
+            <div class="coaching-name">${logoHtml} 🎓 ${c.name}</div>
+            <span class="status-badge"><i class="fas fa-check-circle"></i> Active</span>
+          </div>
+          <div class="coaching-details">
+            <div><i class="fas fa-user-tie"></i> ${c.director || 'Director not set'}</div>
+            <div><i class="fas fa-phone"></i> ${c.phone}</div>
+            <div><i class="fas fa-location-dot"></i> ${c.location || 'Location not set'}</div>
+            <div><i class="fas fa-chart-line"></i> ${resultsSnap.size} Results</div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn-share" onclick="shareDashboardOnWhatsApp('${id}', '${c.name.replace(/'/g, "\\'")}', '${c.phone}')">
+              <i class="fab fa-whatsapp"></i> Share
+            </button>
+            <a href="dashboard.html?id=${id}" class="btn-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <button class="btn-create-result" onclick="openCreateResult('${id}')"><i class="fas fa-plus-circle"></i> Create Result</button>
+            <button class="btn-edit" onclick="openEditModal('${id}','${c.name.replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logo||'').replace(/'/g,"\\'")}')">
+              <i class="fas fa-pen"></i> Edit
+            </button>
+            <button class="btn-remove" onclick="removeCoaching('${id}', '${c.name.replace(/'/g, "\\'")}')">
+              <i class="fas fa-trash-alt"></i> Remove
+            </button>
+            <a href="https://wa.me/91${c.phone}?text=Namaste%20${c.name}%20team" target="_blank" class="btn-whatsapp">
+              <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+          </div>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+  };
+  
+  window.onclick = (e) => {
+    if(e.target.classList.contains('modal')) {
+      e.target.style.display = 'none';
+    }
+  };
+  
+  loadConnectedCoachings();
+  setInterval(loadConnectedCoachings, 20000);
 </script>
 </body>
 </html>
