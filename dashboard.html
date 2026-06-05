@@ -171,86 +171,6 @@
       50% { opacity: 0.6; transform: scale(0.95); }
     }
     
-    /* Progress Bar Styles */
-    .progress-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      visibility: hidden;
-      opacity: 0;
-      transition: 0.3s;
-    }
-    .progress-overlay.active {
-      visibility: visible;
-      opacity: 1;
-    }
-    .progress-card {
-      background: white;
-      padding: 30px 40px;
-      border-radius: 28px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      min-width: 280px;
-    }
-    .progress-card i {
-      font-size: 3rem;
-      color: #1a237e;
-      margin-bottom: 15px;
-    }
-    .progress-card h3 {
-      color: #1a237e;
-      margin-bottom: 20px;
-      font-size: 1.2rem;
-    }
-    .progress-bar-container {
-      width: 100%;
-      height: 8px;
-      background: #e0e0e0;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-    .progress-bar-fill {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #1a237e, #283593, #10b981);
-      border-radius: 10px;
-      transition: width 0.3s ease;
-      animation: loading 1.5s infinite;
-    }
-    @keyframes loading {
-      0% { width: 0%; }
-      30% { width: 40%; }
-      60% { width: 70%; }
-      100% { width: 100%; }
-    }
-    .progress-text {
-      font-size: 0.8rem;
-      color: #666;
-      margin-top: 10px;
-    }
-    .progress-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid #e0e0e0;
-      border-top: 4px solid #1a237e;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 15px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
     .roll-input-section { 
       background: white; 
       padding: 20px; 
@@ -449,18 +369,6 @@
   <footer>Powered by GYAN SEVA — Result ki seva, Gyan ki seva</footer>
 </div>
 
-<!-- Progress Bar Overlay -->
-<div id="progressOverlay" class="progress-overlay">
-  <div class="progress-card">
-    <div class="progress-spinner"></div>
-    <h3>Fetching Result...</h3>
-    <div class="progress-bar-container">
-      <div class="progress-bar-fill"></div>
-    </div>
-    <p class="progress-text">Please wait while we load your result</p>
-  </div>
-</div>
-
 <script type="module">
   import { db } from './firebase-config.js';
   import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -481,16 +389,6 @@
   
   function isResultNew(resultId) {
     return !viewedResults.includes(resultId);
-  }
-  
-  function showProgressBar() {
-    const overlay = document.getElementById('progressOverlay');
-    overlay.classList.add('active');
-  }
-  
-  function hideProgressBar() {
-    const overlay = document.getElementById('progressOverlay');
-    overlay.classList.remove('active');
   }
   
   async function loadCoaching() {
@@ -550,19 +448,15 @@
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
     
-    showProgressBar();
-    
     try {
       const resultDoc = await getDoc(doc(db, "coachings", coachingId, "results", currentResultId));
       if(!resultDoc.exists()) { 
-        hideProgressBar();
         alert("Result not found"); 
         return; 
       }
       currentResultData = resultDoc.data();
       const studentDoc = await getDoc(doc(db, "coachings", coachingId, "results", currentResultId, "marks", roll));
       if(!studentDoc.exists()) { 
-        hideProgressBar();
         alert("Roll number not found"); 
         return; 
       }
@@ -588,12 +482,10 @@
       
       const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(currentResultData.examName)}&date=${currentResultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       
-      hideProgressBar();
       window.open(resultUrl, '_blank');
       goBack();
       
     } catch(error) {
-      hideProgressBar();
       alert("Error fetching result. Please try again.");
       console.error(error);
     }
