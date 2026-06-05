@@ -3,28 +3,175 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>GYAN SEVA — Results</title>
+  <title>GYAN SEVA — Results Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background:linear-gradient(to bottom, #f5f5f5, #e0e7ff); min-height:100vh; padding:20px; }
-    .container { max-width:1200px; margin:0 auto; background:white; border-radius:20px; box-shadow:0 5px 20px rgba(0,0,0,0.1); overflow:hidden; }
-    .header { background:linear-gradient(to right,#1a237e,#283593,#303f9f); color:white; padding:30px 25px; }
-    .header-content { display:flex; align-items:center; justify-content:center; gap:30px; flex-wrap:wrap; }
-    .coaching-logo { width:120px; height:120px; border-radius:50%; border:3px solid #ffc107; object-fit:cover; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
-    .school-name { font-size:2rem; font-weight:700; margin-bottom:6px; }
-    .location { font-size:0.9rem; opacity:0.85; margin-bottom:12px; }
-    .director-info { display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap; margin-top:5px; }
-    .director-detail { display:inline-flex; align-items:center; gap:8px; font-size:0.9rem; background:rgba(255,255,255,0.12); padding:6px 18px; border-radius:40px; }
-    .director-detail i { color:#ffc107; }
-    .results-section { padding:25px; background:#f9f9f9; min-height:500px; }
-    .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
-    .results-list { display:grid; gap:12px; margin-bottom:20px; }
-    .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; }
-    .demo-badge { background:#ffc107; color:#333; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:20px; margin-left:10px; }
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    }
     
-    /* Blinking NEW Sticker */
+    body { 
+      background: linear-gradient(to bottom, #f5f5f5, #e0e7ff); 
+      min-height: 100vh; 
+      padding: 0;
+    }
+    
+    /* Full width container - like QUEST COACHING */
+    .container { 
+      width: 100%; 
+      max-width: 1200px; 
+      margin: 0 auto;
+      background: rgba(255,255,255,0.98); 
+      border-radius: 0;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
+      overflow: hidden; 
+      min-height: 100vh;
+    }
+    
+    /* Header - Same as QUEST */
+    .header { 
+      background: linear-gradient(to right, #1a237e, #283593, #303f9f); 
+      color: white; 
+      padding: 20px 15px;
+      text-align: center; 
+      position: relative; 
+      overflow: hidden; 
+    }
+    
+    .school-name { 
+      font-size: 1.8rem;
+      font-weight: 700; 
+      line-height: 1.2; 
+    }
+    
+    .location { 
+      font-size: 0.95rem; 
+      margin-bottom: 10px; 
+    }
+    
+    .director-info { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin-top: 15px; 
+      flex-wrap: wrap; 
+      gap: 15px;
+    }
+    
+    .director-detail { 
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.15);
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+    }
+    
+    .director-detail i { 
+      color: #ffc107; 
+    }
+    
+    .coaching-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid white;
+      object-fit: cover;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+    
+    /* Moving Text */
+    .marquee-container {
+      background: #ffc107;
+      overflow: hidden;
+      position: relative;
+      height: 45px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .marquee-content {
+      display: flex;
+      animation: marquee 20s linear infinite;
+      white-space: nowrap;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #333;
+    }
+    
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    
+    /* Results Section */
+    .results-section { 
+      padding: 20px 15px; 
+      background: #f9f9f9; 
+      min-height: 500px;
+    }
+    
+    .section-title { 
+      font-size: 1.4rem; 
+      color: #1a237e; 
+      text-align: center; 
+      margin-bottom: 20px; 
+      padding-bottom: 8px; 
+      border-bottom: 2px solid #1a237e; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 8px; 
+    }
+    
+    .section-title i { 
+      color: #ffc107; 
+    }
+    
+    .results-list { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+      gap: 12px; 
+      margin-bottom: 20px;
+    }
+    
+    .result-item { 
+      background: white; 
+      padding: 15px; 
+      border-radius: 10px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+      cursor: pointer; 
+      border-left: 4px solid #1a237e; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      flex-wrap: wrap; 
+      position: relative; 
+      transition: all 0.3s;
+    }
+    
+    .result-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .demo-badge { 
+      background: #ffc107; 
+      color: #333; 
+      font-size: 0.65rem; 
+      font-weight: bold; 
+      padding: 2px 8px; 
+      border-radius: 20px; 
+      margin-left: 10px; 
+    }
+    
+    /* NEW Sticker */
     .new-sticker {
       position: absolute;
       top: -8px;
@@ -39,77 +186,43 @@
       box-shadow: 0 2px 8px rgba(255,71,87,0.4);
       z-index: 10;
     }
+    
     @keyframes blink {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.6; transform: scale(0.95); }
     }
     
-    /* Progress Bar Styles */
+    /* Progress Bar Overlay */
     .progress-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.8);
       z-index: 1000;
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
       visibility: hidden;
       opacity: 0;
       transition: 0.3s;
     }
+    
     .progress-overlay.active {
       visibility: visible;
       opacity: 1;
     }
+    
     .progress-card {
       background: white;
       padding: 30px 40px;
-      border-radius: 28px;
+      border-radius: 20px;
       text-align: center;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
       min-width: 280px;
     }
-    .progress-card i {
-      font-size: 3rem;
-      color: #1a237e;
-      margin-bottom: 15px;
-    }
-    .progress-card h3 {
-      color: #1a237e;
-      margin-bottom: 20px;
-      font-size: 1.2rem;
-    }
-    .progress-bar-container {
-      width: 100%;
-      height: 8px;
-      background: #e0e0e0;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-    .progress-bar-fill {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #1a237e, #283593, #10b981);
-      border-radius: 10px;
-      transition: width 0.3s ease;
-      animation: loading 1.5s infinite;
-    }
-    @keyframes loading {
-      0% { width: 0%; }
-      30% { width: 40%; }
-      60% { width: 70%; }
-      100% { width: 100%; }
-    }
-    .progress-text {
-      font-size: 0.8rem;
-      color: #666;
-      margin-top: 10px;
-    }
+    
     .progress-spinner {
       width: 50px;
       height: 50px;
@@ -119,38 +232,223 @@
       animation: spin 1s linear infinite;
       margin: 0 auto 15px;
     }
+    
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
     
-    .roll-input-section { background:white; padding:20px; border-radius:10px; margin-top:15px; text-align:center; display:none; }
-    .input-group { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
-    .input-group input { padding:10px; border-radius:8px; border:1px solid #ccc; width:200px; }
-    .result-btn { padding:10px 20px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer; }
-    .result-card { display:none; background:white; border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 5px 15px rgba(0,0,0,0.1); overflow-x:auto; }
-    .student-info { background:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:15px; display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; }
-    .marks-table { width:100%; border-collapse:collapse; min-width:400px; }
-    .marks-table th { background:#1a237e; color:white; padding:8px; text-align:left; }
-    .marks-table td { padding:8px; border-bottom:1px solid #ddd; }
-    .total-marks { background:#e8f5e8 !important; font-weight:bold; }
-    .percentage-display { text-align:center; font-size:1.2rem; font-weight:bold; margin-top:15px; }
-    .action-buttons { display:flex; justify-content:center; gap:10px; margin-top:20px; flex-wrap:wrap; }
-    .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
-    .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
-    .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
-    footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
-    @media (max-width:768px){ .coaching-logo { width:90px; height:90px; } .school-name { font-size:1.5rem; } }
-    @media (max-width:550px){ .header-content { flex-direction:column; text-align:center; gap:15px; } }
+    .progress-card h3 {
+      color: #1a237e;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 15px;
+    }
+    
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #1a237e, #283593, #10b981);
+      border-radius: 10px;
+      animation: loading 1.5s infinite;
+    }
+    
+    @keyframes loading {
+      0% { width: 0%; }
+      30% { width: 40%; }
+      60% { width: 70%; }
+      100% { width: 100%; }
+    }
+    
+    .progress-text {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 10px;
+    }
+    
+    /* Roll Input Section */
+    .roll-input-section { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 10px; 
+      margin-top: 15px; 
+      text-align: center; 
+      display: none; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .roll-input-section h3 {
+      color: #1a237e;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    
+    .input-group { 
+      display: flex; 
+      justify-content: center; 
+      gap: 10px; 
+      flex-wrap: wrap; 
+      margin-top: 10px; 
+    }
+    
+    .input-group input { 
+      padding: 10px 15px; 
+      border-radius: 8px; 
+      border: 1px solid #ccc; 
+      width: 220px; 
+      font-size: 0.95rem;
+    }
+    
+    .result-btn { 
+      padding: 10px 20px; 
+      background: #1a237e; 
+      color: white; 
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      transition: background 0.3s;
+    }
+    
+    .result-btn:hover {
+      background: #283593;
+    }
+    
+    .hint-text { 
+      font-size: 0.75rem; 
+      color: #888; 
+      margin-top: 10px; 
+      text-align: center; 
+    }
+    
+    /* Footer */
+    footer { 
+      text-align: center; 
+      padding: 15px; 
+      color: #666; 
+      font-size: 0.8rem; 
+      background: #f5f5f5;
+      border-top: 1px solid #ddd;
+    }
+    
+    /* Loading text */
+    .loading-text {
+      text-align: center;
+      padding: 40px;
+      color: #1a237e;
+      font-size: 1rem;
+    }
+    
+    /* Mobile Responsive - Full width */
+    @media (max-width: 768px) {
+      body {
+        padding: 0;
+      }
+      
+      .container {
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+      }
+      
+      .school-name {
+        font-size: 1.5rem;
+      }
+      
+      .header {
+        padding: 15px 10px;
+      }
+      
+      .coaching-logo {
+        width: 70px;
+        height: 70px;
+      }
+      
+      .results-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .result-item {
+        padding: 12px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .school-name {
+        font-size: 1.3rem;
+      }
+      
+      .section-title {
+        font-size: 1.2rem;
+      }
+      
+      .director-detail {
+        padding: 4px 12px;
+        font-size: 0.75rem;
+      }
+    }
   </style>
 </head>
 <body>
+
 <div class="container">
-  <div class="header"><div class="header-content"><img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" onerror="this.src='https://via.placeholder.com/120?text=GYAN'"><div><h1 class="school-name" id="coachingName">GYAN SEVA</h1><p class="location" id="coachingLocation">Loading...</p><div class="director-info"><span class="director-detail"><i class="fas fa-user-tie"></i> <span id="directorName">Director</span></span><span class="director-detail"><i class="fas fa-phone"></i> <span id="directorPhone">---</span></span></div></div></div></div>
-  <div class="results-section"><h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2><div id="resultsList" class="results-list">Loading results...</div>
-  <div id="rollInputSection" class="roll-input-section" style="display:none;"><h3 id="selectedExamName">Enter Roll Number</h3><div class="input-group"><input type="text" id="rollInput" placeholder="Enter Roll Number"><button class="result-btn" onclick="fetchResult()">📑 Get Result</button><button class="result-btn" onclick="goBack()" style="background:#666;">⬅ Back</button></div><div class="hint-text" id="rollHint"></div></div>
-  <div id="resultCard" class="result-card" style="display:none;"><div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div><div class="student-info"><div><strong>Student Name:</strong> <span id="studentName">-</span></div><div><strong>Roll Number:</strong> <span id="studentRoll">-</span></div></div><table class="marks-table"><thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>Percentage</th></tr></thead><tbody id="marksBody"></tbody>追赶<div class="percentage-display" id="totalPercent">Total: 0%</div><div class="action-buttons"><button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button><button class="back-btn" onclick="goBack()">⬅ Back</button></div></div></div>
-  <footer>Powered by GYAN SEVA — Result ki seva, Gyan ki seva</footer>
+  <!-- Header -->
+  <div class="header">
+    <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/90?text=GYAN" onerror="this.src='https://via.placeholder.com/90?text=GYAN'">
+    <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
+    <p class="location" id="coachingLocation">Loading...</p>
+    <div class="director-info">
+      <span class="director-detail"><i class="fas fa-user-tie"></i> <span id="directorName">Director</span></span>
+      <span class="director-detail"><i class="fas fa-phone"></i> <span id="directorPhone">---</span></span>
+    </div>
+  </div>
+  
+  <!-- Moving Text -->
+  <div class="marquee-container">
+    <div class="marquee-content">
+      <span>📚 परिणाम देखने के लिए नीचे दिए गए परीक्षा पर क्लिक करें &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <span>📚 रोल नंबर डालकर अपना परिणाम देखें &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <span>📚 GYAN SEVA - Result ki seva, Gyan ki seva &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    </div>
+  </div>
+  
+  <!-- Results Section -->
+  <div class="results-section">
+    <h2 class="section-title">
+      <i class="fas fa-history"></i> Published Results
+    </h2>
+    
+    <div id="resultsList" class="results-list">
+      <div class="loading-text">
+        <i class="fas fa-spinner fa-spin"></i> Loading results...
+      </div>
+    </div>
+    
+    <!-- Roll Input Section -->
+    <div id="rollInputSection" class="roll-input-section" style="display:none;">
+      <h3 id="selectedExamName">Enter Roll Number</h3>
+      <div class="input-group">
+        <input type="text" id="rollInput" placeholder="Enter Roll Number">
+        <button class="result-btn" onclick="fetchResult()">📑 Get Result</button>
+        <button class="result-btn" onclick="goBack()" style="background:#666;">⬅ Back</button>
+      </div>
+      <div class="hint-text" id="rollHint"></div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer>
+    <p>Powered by GYAN SEVA — Result ki seva, Gyan ki seva</p>
+    <p style="margin-top: 5px; font-size: 0.7rem;">&copy; 2024 GYAN SEVA. All Rights Reserved.</p>
+  </footer>
 </div>
 
 <!-- Progress Bar Overlay -->
@@ -198,46 +496,85 @@
   }
   
   async function loadCoaching() {
-    if(!coachingId) return;
-    const snap = await getDoc(doc(db, "coachings", coachingId));
-    if(snap.exists()) {
-      const c = snap.data();
-      document.getElementById('coachingName').innerText = c.name || "GYAN SEVA";
-      document.getElementById('coachingLocation').innerText = c.location || "Bihar, India";
-      document.getElementById('directorName').innerText = c.director || 'Director';
-      document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
-      if(c.logo) document.getElementById('coachingLogo').src = c.logo;
-      localStorage.setItem('coachingName', c.name || 'GYAN SEVA');
-      localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
-      localStorage.setItem('directorName', c.director || 'Director');
-      localStorage.setItem('directorPhone', c.phone || 'Not provided');
-      localStorage.setItem('coachingLogo', c.logo || 'https://via.placeholder.com/120?text=GYAN');
+    if(!coachingId) {
+      document.getElementById('resultsList').innerHTML = '<p class="loading-text">❌ Invalid coaching ID</p>';
+      return;
     }
-    loadResults();
+    
+    try {
+      const snap = await getDoc(doc(db, "coachings", coachingId));
+      if(snap.exists()) {
+        const c = snap.data();
+        document.getElementById('coachingName').innerText = c.name || "GYAN SEVA";
+        document.getElementById('coachingLocation').innerText = c.location || "Bihar, India";
+        document.getElementById('directorName').innerText = c.director || 'Director';
+        document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
+        if(c.logo) document.getElementById('coachingLogo').src = c.logo;
+        
+        // Store in localStorage for result page
+        localStorage.setItem('coachingName', c.name || 'GYAN SEVA');
+        localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
+        localStorage.setItem('directorName', c.director || 'Director');
+        localStorage.setItem('directorPhone', c.phone || 'Not provided');
+        localStorage.setItem('coachingLogo', c.logo || 'https://via.placeholder.com/90?text=GYAN');
+      }
+      loadResults();
+    } catch(error) {
+      console.error("Error loading coaching:", error);
+      document.getElementById('resultsList').innerHTML = '<p class="loading-text">❌ Error loading data. Please refresh.</p>';
+    }
   }
   
   async function loadResults() {
-    const snap = await getDocs(collection(db, "coachings", coachingId, "results"));
-    const container = document.getElementById('resultsList');
-    if(snap.empty) { container.innerHTML = '<p>No results published yet.</p>'; return; }
-    let html = '';
-    for(const d of snap.docs) { 
-      const r = d.data(); 
-      const isDemo = r.isDemo === true;
-      const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
-      const isNew = isResultNew(d.id);
-      const newSticker = isNew ? '<span class="new-sticker">NEW</span>' : '';
-      html += `<div class="result-item" onclick="selectExam('${d.id}', '${r.examName}', '${r.examDate}', ${isDemo})">${newSticker}<div><strong>${r.examName} ${demoBadge}</strong><br>${r.examDate}</div><i class="fas fa-chevron-right"></i></div>`; 
+    try {
+      const snap = await getDocs(collection(db, "coachings", coachingId, "results"));
+      const container = document.getElementById('resultsList');
+      
+      if(snap.empty) { 
+        container.innerHTML = '<p class="loading-text">No results published yet.</p>'; 
+        return; 
+      }
+      
+      let html = '';
+      const results = [];
+      
+      for(const d of snap.docs) { 
+        const r = d.data(); 
+        const isDemo = r.isDemo === true;
+        const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
+        const isNew = isResultNew(d.id);
+        const newSticker = isNew ? '<span class="new-sticker">NEW</span>' : '';
+        const examDate = r.examDate || '';
+        
+        results.push({
+          id: d.id,
+          examName: r.examName,
+          examDate: examDate,
+          isDemo: isDemo,
+          html: `<div class="result-item" onclick="selectExam('${d.id}', '${r.examName.replace(/'/g, "\\'")}', '${examDate}', ${isDemo})">${newSticker}<div><strong>${r.examName}</strong> ${demoBadge}<br><small>📅 ${examDate || 'Date not set'}</small></div><i class="fas fa-chevron-right"></i></div>`
+        });
+      }
+      
+      // Sort by newest first (assuming examDate or by name)
+      results.sort((a,b) => b.examName.localeCompare(a.examName));
+      
+      for(const result of results) {
+        html += result.html;
+      }
+      
+      container.innerHTML = html;
+      
+    } catch(error) {
+      console.error("Error loading results:", error);
+      document.getElementById('resultsList').innerHTML = '<p class="loading-text">❌ Error loading results. Please refresh.</p>';
     }
-    container.innerHTML = html;
   }
   
   window.selectExam = (resultId, examName, examDate, isDemo) => {
     currentResultId = resultId;
-    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
+    document.getElementById('selectedExamName').innerHTML = `🔍 Enter Roll Number for: ${examName}`;
     document.getElementById('resultsList').style.display = 'none';
     document.getElementById('rollInputSection').style.display = 'block';
-    document.getElementById('resultCard').style.display = 'none';
     document.getElementById('rollInput').value = '';
     
     if(isDemo) {
@@ -246,15 +583,14 @@
       else if(examName.includes('Exam 3')) document.getElementById('rollHint').innerHTML = '💡 Demo Roll Number: 303';
       else document.getElementById('rollHint').innerHTML = '💡 Demo Roll Numbers: 101, 202, 303';
     } else {
-      document.getElementById('rollHint').innerHTML = '';
+      document.getElementById('rollHint').innerHTML = '📝 Enter your roll number as provided by your teacher';
     }
   };
   
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
-    if(!roll){ alert("Enter roll number"); return; }
+    if(!roll){ alert("Please enter your roll number"); return; }
     
-    // Show progress bar
     showProgressBar();
     
     try {
@@ -264,20 +600,33 @@
         alert("Result not found"); 
         return; 
       }
+      
       currentResultData = resultDoc.data();
       const studentDoc = await getDoc(doc(db, "coachings", coachingId, "results", currentResultId, "marks", roll));
+      
       if(!studentDoc.exists()) { 
         hideProgressBar();
-        alert("Roll number not found"); 
+        alert("Roll number not found in this exam. Please check and try again."); 
         return; 
       }
+      
       const student = studentDoc.data();
       const subjects = currentResultData.subjects || [];
-      const totalPercent = student.percentage || 0;
+      let totalObtained = 0;
+      let totalMax = 0;
+      
+      for(const subject of subjects) {
+        const mark = student.marks[subject] || 0;
+        totalObtained += mark;
+        totalMax += 100;
+      }
+      
+      const totalPercent = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(2) : 0;
       let division = '';
-      if(totalPercent >= 60) division = 'FIRST DIVISION';
-      else if(totalPercent >= 45) division = 'SECOND DIVISION';
-      else if(totalPercent >= 30) division = 'THIRD DIVISION';
+      const percentNum = parseFloat(totalPercent);
+      if(percentNum >= 60) division = 'FIRST DIVISION';
+      else if(percentNum >= 45) division = 'SECOND DIVISION';
+      else if(percentNum >= 30) division = 'THIRD DIVISION';
       else division = 'FAIL';
       
       // Mark this result as viewed (remove NEW sticker)
@@ -293,7 +642,7 @@
         }
       }
       
-      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(currentResultData.examName)}&date=${currentResultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+      const resultUrl = `gyanseva-result.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(currentResultData.examName)}&date=${currentResultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       
       hideProgressBar();
       window.open(resultUrl, '_blank');
@@ -301,17 +650,18 @@
       
     } catch(error) {
       hideProgressBar();
+      console.error("Error fetching result:", error);
       alert("Error fetching result. Please try again.");
-      console.error(error);
     }
   };
   
   window.goBack = () => { 
     document.getElementById('resultsList').style.display = 'grid'; 
     document.getElementById('rollInputSection').style.display = 'none'; 
-    document.getElementById('resultCard').style.display = 'none'; 
+    document.getElementById('rollInput').value = '';
   };
-  window.downloadPDF = () => { window.print(); };
+  
+  // Load everything
   loadCoaching();
 </script>
 </body>
