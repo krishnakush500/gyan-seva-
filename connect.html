@@ -46,7 +46,21 @@
     .modal-content { background:white; border-radius:32px; padding:28px; max-width:550px; width:90%; max-height:90vh; overflow-y:auto; }
     .modal-content h3 { margin-bottom:10px; color:#1e293b; display:flex; align-items:center; gap:10px; }
     .modal-content label { display:block; font-weight:600; margin-top:15px; color:#1e293b; }
-    .modal-content input, .modal-content textarea { width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px; font-size:0.9rem; }
+    .modal-content input { width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px; font-size:0.9rem; }
+    .logo-upload-area {
+      border: 2px dashed #ddd;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      margin: 8px 0;
+      background: #fafafa;
+    }
+    .logo-upload-area:hover { border-color: #10b981; background: #f0fdf4; }
+    .logo-upload-area img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 10px auto; display: block; }
+    .logo-upload-area p { color: #888; font-size: 0.85rem; }
+    
     .modal-buttons { display:flex; gap:12px; margin-top:20px; justify-content:flex-end; }
     .modal-buttons button { padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; }
     .btn-cancel { background:#94a3b8; color:white; }
@@ -67,8 +81,6 @@
   <div class="connect-card">
     <div class="connect-header"><h2><i class="fab fa-whatsapp"></i> CONNECT TO CUSTOMER</h2><p>Send messages — sent leads move to bottom</p></div>
     <div class="connect-body">
-      
-      <!-- ✅ Add School/Coaching Button -->
       <button class="btn-add-school" onclick="openAddSchoolModal()">
         <i class="fas fa-plus-circle"></i> Add School / Coaching
       </button>
@@ -81,11 +93,11 @@
   <footer><i class="fas fa-heart" style="color:#10b981;"></i> GYAN SEVA — Connect, Convert, Serve</footer>
 </div>
 
-<!-- ✅ Add School/Coaching Modal -->
+<!-- ✅ Add School/Coaching Modal with Logo Upload -->
 <div id="addSchoolModal" class="modal">
   <div class="modal-content">
     <h3><i class="fas fa-school" style="color:#10b981;"></i> Add School / Coaching</h3>
-    <p style="color:#666; font-size:0.85rem;">Enter details — will be saved in "schools" collection</p>
+    <p style="color:#666; font-size:0.85rem;">Enter details — logo will be uploaded to cloud</p>
     
     <label>🏫 Coaching / School Name</label>
     <input type="text" id="addSchoolName" placeholder="e.g., Modern Academy" maxlength="25">
@@ -99,8 +111,13 @@
     <label>📞 Phone Number</label>
     <input type="text" id="addSchoolPhone" placeholder="e.g., 9123456789">
     
-    <label>🔗 Logo URL (Optional)</label>
-    <input type="text" id="addSchoolLogo" placeholder="https://example.com/logo.png">
+    <!-- ✅ Logo Upload Section -->
+    <label>🖼️ Logo</label>
+    <div class="logo-upload-area" id="logoUploadArea" onclick="document.getElementById('logoInput').click()">
+      <img id="logoPreview" src="https://via.placeholder.com/80?text=Logo" alt="Logo Preview">
+      <p><i class="fas fa-cloud-upload-alt"></i> Click to upload logo</p>
+      <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="previewLogo(event)">
+    </div>
     
     <label>🔑 Search Code</label>
     <div style="display:flex; gap:10px; align-items:center;">
@@ -120,10 +137,57 @@
   import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   
+  // Supabase Config (same as mobile app)
+  const SUPABASE_URL = "https://qfmmgeodabytpuzkarrb.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbW1nZW9kYWJ5dHB1emthcnJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNzQyMDEsImV4cCI6MjA4Njg1MDIwMX0._NxbC8_P3GQWRMyqNZgneC7lYWDTvEpekt40ZFRmtJk";
+  
   let allLeads = [], currentPage = 1, itemsPerPage = 10;
   let leadStatus = JSON.parse(localStorage.getItem('lead_status') || '{}');
   let templates = {};
   let generatedCode = null;
+  let selectedLogoFile = null;
+
+  // ===== LOGO UPLOAD FUNCTIONS =====
+  window.previewLogo = (event) => {
+    const file = event.target.files[0];
+    if(file) {
+      selectedLogoFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('logoPreview').src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Upload to Supabase
+  async function uploadToSupabase(file) {
+    const fileName = `logo_${Date.now()}_${Math.random().toString(36).substr(2, 6)}.jpg`;
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await fetch(`${SUPABASE_URL}/storage/v1/object/logos/${fileName}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'apikey': SUPABASE_KEY
+        },
+        body: formData
+      });
+      
+      if(!response.ok) {
+        const err = await response.text();
+        throw new Error(err || 'Upload failed');
+      }
+      
+      const imageUrl = `${SUPABASE_URL}/storage/v1/object/public/logos/${fileName}`;
+      return imageUrl;
+    } catch(error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
+  }
 
   // ===== SCHOOL ADD FUNCTIONS =====
   window.openAddSchoolModal = () => {
@@ -132,8 +196,10 @@
     document.getElementById('addSchoolLocation').value = '';
     document.getElementById('addSchoolDirector').value = '';
     document.getElementById('addSchoolPhone').value = '';
-    document.getElementById('addSchoolLogo').value = '';
+    document.getElementById('logoPreview').src = 'https://via.placeholder.com/80?text=Logo';
     document.getElementById('searchCodeBox').style.display = 'none';
+    document.getElementById('logoInput').value = '';
+    selectedLogoFile = null;
     generatedCode = null;
   };
 
@@ -154,7 +220,6 @@
     const location = document.getElementById('addSchoolLocation').value.trim();
     const director = document.getElementById('addSchoolDirector').value.trim();
     const phone = document.getElementById('addSchoolPhone').value.trim();
-    const logo = document.getElementById('addSchoolLogo').value.trim();
 
     if(!name || !location || !director || !phone) {
       alert('Please fill all required fields');
@@ -173,13 +238,24 @@
     }
 
     const userId = user.uid;
+    let logoUrl = '';
+
+    if(selectedLogoFile) {
+      try {
+        logoUrl = await uploadToSupabase(selectedLogoFile);
+        alert('✅ Logo uploaded successfully!');
+      } catch(error) {
+        alert('Logo upload failed: ' + error.message);
+        return;
+      }
+    }
 
     const schoolData = {
       coachingName: name,
       location: location,
       director: director,
       phone: phone,
-      logoUrl: logo || '',
+      logoUrl: logoUrl,
       searchCode: generatedCode,
       createdBy: userId,
       createdAt: Date.now(),
@@ -199,7 +275,7 @@
       alert('✅ Institute created successfully!\nSearch Code: ' + generatedCode);
       closeAddSchoolModal();
     } catch(error) {
-      alert('Error: ' + error.message);
+      alert('Error saving: ' + error.message);
     }
   };
 
