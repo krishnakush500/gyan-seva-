@@ -17,36 +17,8 @@
     .connect-header p { color:#ecfdf5; margin-top:8px; font-size:0.9rem; }
     .connect-body { padding:32px; }
     
-    /* Stats Bar - New */
-    .stats-grid {
-      background: linear-gradient(135deg, #1a237e, #283593);
-      border-radius: 24px;
-      padding: 20px;
-      margin-bottom: 28px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      color: white;
-    }
-    .stat-card {
-      text-align: center;
-      flex: 1;
-      min-width: 100px;
-    }
-    .stat-card .stat-number {
-      font-size: 2rem;
-      font-weight: 800;
-    }
-    .stat-card .stat-label {
-      font-size: 0.7rem;
-      opacity: 0.8;
-      margin-top: 5px;
-    }
-    .stat-card.total .stat-number { color: #ffc107; }
-    .stat-card.sent .stat-number { color: #10b981; }
-    .stat-card.pending .stat-number { color: #f59e0b; }
+    .btn-add-school { background:#10b981; color:white; padding:12px 24px; border-radius:40px; border:none; font-size:0.9rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:8px; margin-bottom:20px; }
+    .btn-add-school:hover { background:#059669; }
     
     .stats-bar { background:#ecfdf5; border-radius:24px; padding:16px 20px; margin-bottom:28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
     .stat-count { background:#10b981; color:white; padding:6px 16px; border-radius:40px; font-weight:600; }
@@ -67,10 +39,25 @@
     .toast { position:fixed; bottom:30px; right:30px; background:#1e293b; color:white; padding:12px 24px; border-radius:50px; font-size:0.85rem; z-index:1000; animation:fadeInOut 3s ease; }
     @keyframes fadeInOut { 0%{opacity:0;transform:translateY(20px);}15%{opacity:1;transform:translateY(0);}85%{opacity:1;}100%{opacity:0;transform:translateY(20px);} }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
-    @media (max-width:640px){ .lead-item{ flex-direction:column; align-items:flex-start; } .btn-make-dashboard,.whatsapp-btn,.btn-remove{ width:100%; justify-content:center; } .stats-grid{ flex-direction:column; gap:10px; } }
+    @media (max-width:640px){ .lead-item{ flex-direction:column; align-items:flex-start; } .btn-make-dashboard,.whatsapp-btn,.btn-remove{ width:100%; justify-content:center; } }
+    
+    /* Modal Styles */
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center; }
+    .modal-content { background:white; border-radius:32px; padding:28px; max-width:550px; width:90%; max-height:90vh; overflow-y:auto; }
+    .modal-content h3 { margin-bottom:10px; color:#1e293b; display:flex; align-items:center; gap:10px; }
+    .modal-content label { display:block; font-weight:600; margin-top:15px; color:#1e293b; }
+    .modal-content input, .modal-content textarea { width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px; font-size:0.9rem; }
+    .modal-buttons { display:flex; gap:12px; margin-top:20px; justify-content:flex-end; }
+    .modal-buttons button { padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; }
+    .btn-cancel { background:#94a3b8; color:white; }
+    .btn-submit { background:#10b981; color:white; }
+    .btn-submit:hover { background:#059669; }
+    .btn-generate { background:#f59e0b; color:white; padding:8px 16px; border-radius:30px; border:none; cursor:pointer; font-weight:600; }
+    .search-code-box { background:#f1f5f9; padding:12px; border-radius:12px; text-align:center; font-size:1.3rem; font-weight:700; color:#1a237e; margin:10px 0; display:none; }
   </style>
 </head>
 <body>
+
 <div class="container">
   <div class="nav-links">
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
@@ -80,22 +67,12 @@
   <div class="connect-card">
     <div class="connect-header"><h2><i class="fab fa-whatsapp"></i> CONNECT TO CUSTOMER</h2><p>Send messages — sent leads move to bottom</p></div>
     <div class="connect-body">
-      <!-- New Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-card total">
-          <div class="stat-number" id="totalCount">0</div>
-          <div class="stat-label">Total Leads</div>
-        </div>
-        <div class="stat-card sent">
-          <div class="stat-number" id="sentCount">0</div>
-          <div class="stat-label">Message Sent</div>
-        </div>
-        <div class="stat-card pending">
-          <div class="stat-number" id="pendingCount">0</div>
-          <div class="stat-label">Pending</div>
-        </div>
-      </div>
       
+      <!-- ✅ Add School/Coaching Button -->
+      <button class="btn-add-school" onclick="openAddSchoolModal()">
+        <i class="fas fa-plus-circle"></i> Add School / Coaching
+      </button>
+
       <div class="stats-bar"><span><i class="fas fa-users"></i> <strong>Pending Leads</strong></span><span class="stat-count" id="leadCount">0</span><button class="refresh-btn" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh</button></div>
       <div id="leadsList" class="leads-container"><div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading leads...</div></div>
       <div id="pagination" class="pagination"></div>
@@ -104,29 +81,141 @@
   <footer><i class="fas fa-heart" style="color:#10b981;"></i> GYAN SEVA — Connect, Convert, Serve</footer>
 </div>
 
+<!-- ✅ Add School/Coaching Modal -->
+<div id="addSchoolModal" class="modal">
+  <div class="modal-content">
+    <h3><i class="fas fa-school" style="color:#10b981;"></i> Add School / Coaching</h3>
+    <p style="color:#666; font-size:0.85rem;">Enter details — will be saved in "schools" collection</p>
+    
+    <label>🏫 Coaching / School Name</label>
+    <input type="text" id="addSchoolName" placeholder="e.g., Modern Academy" maxlength="25">
+    
+    <label>📍 Location</label>
+    <input type="text" id="addSchoolLocation" placeholder="e.g., Begusarai, Bihar" maxlength="30">
+    
+    <label>👤 Director Name</label>
+    <input type="text" id="addSchoolDirector" placeholder="e.g., Raman Sir" maxlength="20">
+    
+    <label>📞 Phone Number</label>
+    <input type="text" id="addSchoolPhone" placeholder="e.g., 9123456789">
+    
+    <label>🔗 Logo URL (Optional)</label>
+    <input type="text" id="addSchoolLogo" placeholder="https://example.com/logo.png">
+    
+    <label>🔑 Search Code</label>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <div class="search-code-box" id="searchCodeBox" style="flex:1;">—</div>
+      <button class="btn-generate" onclick="generateCodeForSchool()"><i class="fas fa-sync-alt"></i> Generate</button>
+    </div>
+    
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeAddSchoolModal()">Cancel</button>
+      <button class="btn-submit" onclick="saveSchoolToFirebase()"><i class="fas fa-save"></i> Save Institute</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
-  import { db } from './firebase-config.js';
-  import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { db, auth } from './firebase-config.js';
+  import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   
   let allLeads = [], currentPage = 1, itemsPerPage = 10;
   let leadStatus = JSON.parse(localStorage.getItem('lead_status') || '{}');
   let templates = {};
-  
+  let generatedCode = null;
+
+  // ===== SCHOOL ADD FUNCTIONS =====
+  window.openAddSchoolModal = () => {
+    document.getElementById('addSchoolModal').style.display = 'flex';
+    document.getElementById('addSchoolName').value = '';
+    document.getElementById('addSchoolLocation').value = '';
+    document.getElementById('addSchoolDirector').value = '';
+    document.getElementById('addSchoolPhone').value = '';
+    document.getElementById('addSchoolLogo').value = '';
+    document.getElementById('searchCodeBox').style.display = 'none';
+    generatedCode = null;
+  };
+
+  window.closeAddSchoolModal = () => {
+    document.getElementById('addSchoolModal').style.display = 'none';
+  };
+
+  window.generateCodeForSchool = () => {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    generatedCode = code;
+    const box = document.getElementById('searchCodeBox');
+    box.textContent = code;
+    box.style.display = 'block';
+  };
+
+  window.saveSchoolToFirebase = async () => {
+    const name = document.getElementById('addSchoolName').value.trim();
+    const location = document.getElementById('addSchoolLocation').value.trim();
+    const director = document.getElementById('addSchoolDirector').value.trim();
+    const phone = document.getElementById('addSchoolPhone').value.trim();
+    const logo = document.getElementById('addSchoolLogo').value.trim();
+
+    if(!name || !location || !director || !phone) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    if(!generatedCode) {
+      alert('Please generate a search code first');
+      return;
+    }
+
+    const user = auth.currentUser;
+    if(!user) {
+      alert('Please login first');
+      return;
+    }
+
+    const userId = user.uid;
+
+    const schoolData = {
+      coachingName: name,
+      location: location,
+      director: director,
+      phone: phone,
+      logoUrl: logo || '',
+      searchCode: generatedCode,
+      createdBy: userId,
+      createdAt: Date.now(),
+      subscriptionStatus: 'active',
+      subscriptionPlan: 'free_trial'
+    };
+
+    try {
+      await setDoc(doc(db, "schools", userId), schoolData);
+      await setDoc(doc(db, "schools", userId, "teachers", userId), {
+        name: director,
+        email: user.email || '',
+        role: 'director',
+        joinedAt: Date.now(),
+        isActive: true
+      });
+      alert('✅ Institute created successfully!\nSearch Code: ' + generatedCode);
+      closeAddSchoolModal();
+    } catch(error) {
+      alert('Error: ' + error.message);
+    }
+  };
+
+  // ===== ORIGINAL CONNECT FUNCTIONS =====
   function showToast(msg, isError=false){ let t=document.createElement('div'); t.className='toast'; t.style.background=isError?'#dc2626':'#10b981'; t.innerHTML=`<i class="fas ${isError?'fa-exclamation-triangle':'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
-  
-  // Remove lead from Firebase
+
   window.removeLead = async (leadId, leadName) => {
     if(confirm(`Remove "${leadName}" from pending leads?`)) {
       await deleteDoc(doc(db, "leads", leadId));
-      // Also remove from localStorage status
       delete leadStatus[leadId];
       localStorage.setItem('lead_status', JSON.stringify(leadStatus));
-      showToast(`✅ "${leadName}" removed from list`);
+      showToast(`✅ "${leadName}" removed`);
       loadLeads();
     }
   };
-  
-  // Load templates from Firebase
+
   async function loadTemplates() {
     try {
       const docRef = doc(db, "templates", "whatsapp_templates");
@@ -141,7 +230,7 @@
       }
     } catch(e) { console.error("Error loading templates:", e); }
   }
-  
+
   function getMessage(leadName, type) {
     if (type === 'reminder') {
       return (templates.template2 || templates.template1).replace(/{name}/g, leadName);
@@ -149,7 +238,7 @@
       return (templates.template1 || templates.template2).replace(/{name}/g, leadName);
     }
   }
-  
+
   window.markLeadAction = async (leadId, leadName, leadPhone, action) => {
     if(action === 'sent') {
       leadStatus[leadId] = 'sent';
@@ -162,7 +251,7 @@
     }
     loadLeads();
   };
-  
+
   function getWhatsAppLink(leadId, leadName, leadPhone, currentStatus) {
     let template, actionType;
     if(currentStatus === 'sent') {
@@ -176,7 +265,8 @@
     const waLink = `https://api.whatsapp.com/send/?phone=91${leadPhone}&text=${encodedMsg}`;
     return { waLink, actionType };
   }
-  
+
+  // ===== CREATE DASHBOARD (WITH FAKE RESULTS) =====
   window.createDashboard = async (leadId, leadName, leadPhone, leadCity, btn) => {
     btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-pulse"></i>';
     try {
@@ -220,16 +310,7 @@
       btn.disabled=false; btn.innerHTML='<i class="fas fa-magic"></i> Make Dashboard';
     }
   };
-  
-  function updateStats(leads) {
-    const total = leads.length;
-    const sent = leads.filter(l => leadStatus[l.id] === 'sent' || leadStatus[l.id] === 'reminder_sent').length;
-    const pending = total - sent;
-    document.getElementById('totalCount').innerText = total;
-    document.getElementById('sentCount').innerText = sent;
-    document.getElementById('pendingCount').innerText = pending;
-  }
-  
+
   function renderPage(){
     const container=document.getElementById('leadsList'), totalPages=Math.ceil(allLeads.length/itemsPerPage);
     if(allLeads.length===0){ container.innerHTML='<div class="empty-state"><i class="fas fa-check-circle"></i><br>No pending leads!</div>'; document.getElementById('pagination').innerHTML=''; return; }
@@ -263,11 +344,10 @@
     if(totalPages>1){ let pgHtml=''; for(let i=1;i<=totalPages;i++) pgHtml+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`; document.getElementById('pagination').innerHTML=pgHtml; }
     else document.getElementById('pagination').innerHTML='';
     document.getElementById('leadCount').innerText=allLeads.length;
-    updateStats(allLeads);
   }
-  
+
   window.goToPage=(page)=>{ currentPage=page; renderPage(); };
-  
+
   window.loadLeads=async()=>{
     await loadTemplates();
     const snap=await getDocs(query(collection(db,"leads"), where("status","==","pending")));
@@ -281,8 +361,18 @@
     });
     currentPage=1; renderPage();
   };
-  
-  loadLeads(); setInterval(loadLeads,15000);
+
+  // Auto login check
+  onAuthStateChanged(auth, (user) => {
+    if(user) {
+      console.log('Logged in:', user.uid);
+    } else {
+      console.log('Not logged in');
+    }
+  });
+
+  loadLeads(); 
+  setInterval(loadLeads, 15000);
 </script>
 </body>
 </html>
