@@ -11,7 +11,6 @@
     body { background:linear-gradient(to bottom, #f5f5f5, #e0e7ff); min-height:100vh; padding:20px; }
     .container { max-width:1200px; margin:0 auto; background:white; border-radius:20px; box-shadow:0 5px 20px rgba(0,0,0,0.1); overflow:hidden; }
     
-    /* ===== HEADER ===== */
     .header { background:linear-gradient(to right,#1a237e,#283593,#303f9f); color:white; padding:30px 25px; }
     .header-content { display:flex; align-items:center; justify-content:center; gap:30px; flex-wrap:wrap; }
     .coaching-logo { width:120px; height:120px; border-radius:50%; border:3px solid #ffc107; object-fit:cover; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
@@ -21,7 +20,6 @@
     .director-detail { display:inline-flex; align-items:center; gap:8px; font-size:0.9rem; background:rgba(255,255,255,0.12); padding:6px 18px; border-radius:40px; }
     .director-detail i { color:#ffc107; }
     
-    /* ===== RESULTS SECTION ===== */
     .results-section { padding:25px; background:#f9f9f9; min-height:500px; }
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
@@ -46,7 +44,6 @@
     
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
     
-    /* ===== CREATE RESULT ===== */
     .create-result-form { background:white; padding:20px; border-radius:12px; margin-top:30px; padding-top:20px; border-top:2px solid #ddd; }
     .create-result-form input, .create-result-form textarea { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px; }
     .btn-publish { background:#10b981; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
@@ -59,10 +56,11 @@
 </head>
 <body>
 <div class="container">
-  <!-- ===== HEADER ===== -->
+  <!-- HEADER -->
   <div class="header">
     <div class="header-content">
-      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
+      <!-- ✅ LOGO: onerror hata diya, direct src set karega -->
+      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=Loading..." alt="Logo">
       <div>
         <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
         <p class="location" id="coachingLocation">Loading...</p>
@@ -74,12 +72,11 @@
     </div>
   </div>
 
-  <!-- ===== RESULTS SECTION ===== -->
+  <!-- RESULTS SECTION -->
   <div class="results-section">
     <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
     <div id="resultsList" class="results-list">Loading results...</div>
     
-    <!-- Roll Input -->
     <div id="rollInputSection" class="roll-input-section" style="display:none;">
       <h3 id="selectedExamName">Enter Roll Number</h3>
       <div class="input-group">
@@ -90,7 +87,6 @@
       <div class="hint-text" id="rollHint"></div>
     </div>
     
-    <!-- Result Card -->
     <div id="resultCard" class="result-card" style="display:none;">
       <div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div>
       <div class="student-info">
@@ -108,7 +104,6 @@
       </div>
     </div>
     
-    <!-- Create Result -->
     <div class="create-result-form">
       <h3><i class="fas fa-plus-circle"></i> Create New Result</h3>
       <input type="text" id="examName" placeholder="Exam Name">
@@ -131,7 +126,6 @@
   const coachingId = urlParams.get('id');
   let currentResultId = null;
 
-  // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
     if(!coachingId) return;
 
@@ -146,15 +140,25 @@
         document.getElementById('directorName').innerText = c.director || 'Director';
         document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
         
-        if(c.logoUrl && c.logoUrl !== '') {
-          document.getElementById('coachingLogo').src = c.logoUrl;
+        // ✅ LOGO FIX: Directly set src, no onerror
+        const logoImg = document.getElementById('coachingLogo');
+        if(c.logoUrl && c.logoUrl !== '' && c.logoUrl !== 'null') {
+          console.log('Setting logo URL:', c.logoUrl);
+          logoImg.src = c.logoUrl;
+          // Agar image load na ho toh placeholder dikhao
+          logoImg.onerror = function() {
+            console.log('Logo load failed, using placeholder');
+            this.src = 'https://via.placeholder.com/120?text=Logo';
+          };
+        } else {
+          logoImg.src = 'https://via.placeholder.com/120?text=Logo';
         }
         
         localStorage.setItem('coachingName', c.coachingName || 'GYAN SEVA');
         localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
         localStorage.setItem('directorName', c.director || 'Director');
         localStorage.setItem('directorPhone', c.phone || 'Not provided');
-        localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
+        localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=Logo');
         
         loadResults();
       } else {
@@ -166,7 +170,6 @@
     }
   }
 
-  // ===== LOAD RESULTS =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     const resultsRef = collection(db, "schools", coachingId, "results");
@@ -185,7 +188,6 @@
     container.innerHTML = html;
   }
 
-  // ===== SELECT EXAM =====
   window.selectExam = (resultId, examName, examDate) => {
     currentResultId = resultId;
     document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
@@ -196,7 +198,6 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
-  // ===== FETCH RESULT =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
@@ -232,7 +233,6 @@
     }
   };
 
-  // ===== PUBLISH RESULT =====
   window.publishResult = async () => {
     const examName = document.getElementById('examName').value;
     const examDate = document.getElementById('examDate').value;
@@ -274,17 +274,14 @@
     }
   };
 
-  // ===== GO BACK =====
   window.goBack = () => {
     document.getElementById('resultsList').style.display = 'grid';
     document.getElementById('rollInputSection').style.display = 'none';
     document.getElementById('resultCard').style.display = 'none';
   };
 
-  // ===== DOWNLOAD PDF =====
   window.downloadPDF = () => { window.print(); };
 
-  // ===== LOAD =====
   loadCoaching();
 </script>
 </body>
