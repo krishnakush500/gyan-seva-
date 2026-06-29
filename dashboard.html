@@ -43,7 +43,6 @@
     .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
-    
     .create-result-form { background:white; padding:20px; border-radius:12px; margin-top:30px; padding-top:20px; border-top:2px solid #ddd; }
     .create-result-form input, .create-result-form textarea { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px; }
     .btn-publish { background:#10b981; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
@@ -59,8 +58,7 @@
   <!-- HEADER -->
   <div class="header">
     <div class="header-content">
-      <!-- ✅ LOGO: onerror hata diya, direct src set karega -->
-      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=Loading..." alt="Logo">
+      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
       <div>
         <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
         <p class="location" id="coachingLocation">Loading...</p>
@@ -126,6 +124,7 @@
   const coachingId = urlParams.get('id');
   let currentResultId = null;
 
+  // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
     if(!coachingId) return;
 
@@ -135,48 +134,50 @@
       
       if(snap.exists()) {
         const c = snap.data();
+        
+        // Set text data
         document.getElementById('coachingName').innerText = c.coachingName || 'GYAN SEVA';
         document.getElementById('coachingLocation').innerText = c.location || 'Bihar, India';
         document.getElementById('directorName').innerText = c.director || 'Director';
         document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
         
-        // ✅ LOGO FIX: Directly set src, no onerror
-        const logoImg = document.getElementById('coachingLogo');
-        if(c.logoUrl && c.logoUrl !== '' && c.logoUrl !== 'null') {
-          console.log('Setting logo URL:', c.logoUrl);
-          logoImg.src = c.logoUrl;
-          // Agar image load na ho toh placeholder dikhao
-          logoImg.onerror = function() {
-            console.log('Logo load failed, using placeholder');
-            this.src = 'https://via.placeholder.com/120?text=Logo';
+        // ✅ LOGO FIX: logoUrl se image set karo
+        const logoElement = document.getElementById('coachingLogo');
+        if(c.logoUrl && c.logoUrl.trim() !== '' && c.logoUrl !== 'null') {
+          logoElement.src = c.logoUrl;
+          logoElement.onerror = function() {
+            this.src = 'https://via.placeholder.com/120?text=GYAN';
           };
         } else {
-          logoImg.src = 'https://via.placeholder.com/120?text=Logo';
+          logoElement.src = 'https://via.placeholder.com/120?text=GYAN';
         }
         
+        // Store in localStorage for result-viewer
         localStorage.setItem('coachingName', c.coachingName || 'GYAN SEVA');
         localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
         localStorage.setItem('directorName', c.director || 'Director');
         localStorage.setItem('directorPhone', c.phone || 'Not provided');
-        localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=Logo');
+        localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
         
         loadResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
-        document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
+        document.getElementById('resultsList').innerHTML = '<p>Coaching not found. Please check the link.</p>';
       }
     } catch(error) {
-      console.error('Error:', error);
+      console.error('Error loading coaching:', error);
+      document.getElementById('coachingName').innerText = 'Error Loading';
     }
   }
 
+  // ===== LOAD RESULTS =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     const resultsRef = collection(db, "schools", coachingId, "results");
     const snap = await getDocs(resultsRef);
     
     if(snap.empty) {
-      container.innerHTML = '<p>No results published yet.</p>';
+      container.innerHTML = '<p>No results published yet. Create your first result below.</p>';
       return;
     }
     
@@ -188,6 +189,7 @@
     container.innerHTML = html;
   }
 
+  // ===== SELECT EXAM =====
   window.selectExam = (resultId, examName, examDate) => {
     currentResultId = resultId;
     document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
@@ -198,6 +200,7 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
+  // ===== FETCH RESULT =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
@@ -233,6 +236,7 @@
     }
   };
 
+  // ===== PUBLISH RESULT =====
   window.publishResult = async () => {
     const examName = document.getElementById('examName').value;
     const examDate = document.getElementById('examDate').value;
@@ -274,14 +278,17 @@
     }
   };
 
+  // ===== GO BACK =====
   window.goBack = () => {
     document.getElementById('resultsList').style.display = 'grid';
     document.getElementById('rollInputSection').style.display = 'none';
     document.getElementById('resultCard').style.display = 'none';
   };
 
+  // ===== DOWNLOAD PDF =====
   window.downloadPDF = () => { window.print(); };
 
+  // ===== LOAD =====
   loadCoaching();
 </script>
 </body>
