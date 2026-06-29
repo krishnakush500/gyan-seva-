@@ -11,6 +11,7 @@
     body { background:linear-gradient(to bottom, #f5f5f5, #e0e7ff); min-height:100vh; padding:20px; }
     .container { max-width:1200px; margin:0 auto; background:white; border-radius:20px; box-shadow:0 5px 20px rgba(0,0,0,0.1); overflow:hidden; }
     
+    /* ===== HEADER ===== */
     .header { background:linear-gradient(to right,#1a237e,#283593,#303f9f); color:white; padding:30px 25px; }
     .header-content { display:flex; align-items:center; justify-content:center; gap:30px; flex-wrap:wrap; }
     .coaching-logo { width:120px; height:120px; border-radius:50%; border:3px solid #ffc107; object-fit:cover; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
@@ -20,6 +21,7 @@
     .director-detail { display:inline-flex; align-items:center; gap:8px; font-size:0.9rem; background:rgba(255,255,255,0.12); padding:6px 18px; border-radius:40px; }
     .director-detail i { color:#ffc107; }
     
+    /* ===== RESULTS SECTION ===== */
     .results-section { padding:25px; background:#f9f9f9; min-height:500px; }
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
@@ -43,9 +45,12 @@
     .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
+    
+    /* ===== CREATE RESULT ===== */
     .create-result-form { background:white; padding:20px; border-radius:12px; margin-top:30px; padding-top:20px; border-top:2px solid #ddd; }
     .create-result-form input, .create-result-form textarea { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px; }
     .btn-publish { background:#10b981; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
+    .btn-publish:hover { background:#059669; }
     
     footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
     
@@ -54,7 +59,7 @@
 </head>
 <body>
 <div class="container">
-  <!-- Header -->
+  <!-- ===== HEADER ===== -->
   <div class="header">
     <div class="header-content">
       <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
@@ -69,27 +74,38 @@
     </div>
   </div>
 
-  <!-- Results Section -->
+  <!-- ===== RESULTS SECTION ===== -->
   <div class="results-section">
     <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
     <div id="resultsList" class="results-list">Loading results...</div>
     
+    <!-- Roll Input -->
     <div id="rollInputSection" class="roll-input-section" style="display:none;">
       <h3 id="selectedExamName">Enter Roll Number</h3>
       <div class="input-group">
         <input type="text" id="rollInput" placeholder="Enter Roll Number">
         <button class="result-btn" onclick="fetchResult()">📑 Get Result</button>
-        <button class="result-btn" onclick="goBack()" style="background:#666;">⬅ Back</button>
+        <button class="result-btn" onclick="goBack()" style="background:#6c757d;">⬅ Back</button>
       </div>
       <div class="hint-text" id="rollHint"></div>
     </div>
     
+    <!-- Result Card -->
     <div id="resultCard" class="result-card" style="display:none;">
       <div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div>
-      <div class="student-info"><div><strong>Student Name:</strong> <span id="studentName">-</span></div><div><strong>Roll Number:</strong> <span id="studentRoll">-</span></div></div>
-      <table class="marks-table"><thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>Percentage</th></tr></thead><tbody id="marksBody"></tbody></table>
+      <div class="student-info">
+        <div><strong>Student Name:</strong> <span id="studentName">-</span></div>
+        <div><strong>Roll Number:</strong> <span id="studentRoll">-</span></div>
+      </div>
+      <table class="marks-table">
+        <thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>Percentage</th></tr></thead>
+        <tbody id="marksBody"></tbody>
+      </table>
       <div class="percentage-display" id="totalPercent">Total: 0%</div>
-      <div class="action-buttons"><button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button><button class="result-btn" onclick="goBack()" style="background:#6c757d;">⬅ Back</button></div>
+      <div class="action-buttons">
+        <button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button>
+        <button class="result-btn" onclick="goBack()" style="background:#6c757d;">⬅ Back</button>
+      </div>
     </div>
     
     <!-- Create Result -->
@@ -110,7 +126,6 @@
 <script type="module">
   import { db } from './firebase-config.js';
   import { collection, getDocs, doc, getDoc, addDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
@@ -131,14 +146,10 @@
         document.getElementById('directorName').innerText = c.director || 'Director';
         document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
         
-        // ✅ LOGO FIX: logoUrl se image set karo
         if(c.logoUrl && c.logoUrl !== '') {
           document.getElementById('coachingLogo').src = c.logoUrl;
-        } else {
-          document.getElementById('coachingLogo').src = 'https://via.placeholder.com/120?text=GYAN';
         }
         
-        // Store in localStorage for result-viewer
         localStorage.setItem('coachingName', c.coachingName || 'GYAN SEVA');
         localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
         localStorage.setItem('directorName', c.director || 'Director');
@@ -148,11 +159,10 @@
         loadResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
-        document.getElementById('resultsList').innerHTML = '<p>Coaching not found. Please check the link.</p>';
+        document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
       }
     } catch(error) {
-      console.error('Error loading coaching:', error);
-      document.getElementById('coachingName').innerText = 'Error Loading';
+      console.error('Error:', error);
     }
   }
 
@@ -163,7 +173,7 @@
     const snap = await getDocs(resultsRef);
     
     if(snap.empty) {
-      container.innerHTML = '<p>No results published yet. Create your first result below.</p>';
+      container.innerHTML = '<p>No results published yet.</p>';
       return;
     }
     
@@ -255,12 +265,12 @@
         });
       }
       
-      document.getElementById('publishStatus').innerHTML = '<p style="color:green;">✅ Result published successfully!</p>';
+      document.getElementById('publishStatus').innerHTML = '<p style="color:green;">✅ Result published!</p>';
       document.getElementById('examName').value = '';
       document.getElementById('marksData').value = '';
       loadResults();
     } catch(error) {
-      alert('Error publishing: ' + error.message);
+      alert('Error: ' + error.message);
     }
   };
 
@@ -274,7 +284,7 @@
   // ===== DOWNLOAD PDF =====
   window.downloadPDF = () => { window.print(); };
 
-  // ===== LOAD ON START =====
+  // ===== LOAD =====
   loadCoaching();
 </script>
 </body>
