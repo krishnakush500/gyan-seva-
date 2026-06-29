@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>GYAN SEVA — Dashboard</title>
+  <title>GYAN SEVA — Results</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
@@ -29,6 +29,7 @@
     .input-group { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
     .input-group input { padding:10px; border-radius:8px; border:1px solid #ccc; width:200px; }
     .result-btn { padding:10px 20px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer; }
+    .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     
     .result-card { display:none; background:white; border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 5px 15px rgba(0,0,0,0.1); overflow-x:auto; }
     .student-info { background:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:15px; display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; }
@@ -40,28 +41,23 @@
     
     .action-buttons { display:flex; justify-content:center; gap:10px; margin-top:20px; flex-wrap:wrap; }
     .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
-    .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
-    .create-result-form { background:white; padding:20px; border-radius:12px; }
+    .create-result-form { background:white; padding:20px; border-radius:12px; margin-top:30px; padding-top:20px; border-top:2px solid #ddd; }
     .create-result-form input, .create-result-form textarea { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px; }
     .btn-publish { background:#10b981; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
     
     footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
-    
-    .login-section { padding:30px; text-align:center; background:#f9f9f9; }
-    .login-section input { padding:12px; margin:8px; border-radius:8px; border:1px solid #ddd; width:250px; }
-    .login-section button { padding:12px 30px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600; }
-    .login-section .error { color:red; margin-top:10px; }
     
     @media (max-width:768px){ .coaching-logo{ width:90px; height:90px; } .school-name{ font-size:1.5rem; } }
   </style>
 </head>
 <body>
 <div class="container">
+  <!-- Header -->
   <div class="header">
     <div class="header-content">
-      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
+      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
       <div>
         <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
         <p class="location" id="coachingLocation">Loading...</p>
@@ -73,51 +69,38 @@
     </div>
   </div>
 
-  <!-- Login Section -->
-  <div id="loginSection" class="login-section">
-    <h3>🔐 Login to GYAN SEVA</h3>
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPassword" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <div id="loginError" class="error"></div>
-  </div>
-
-  <!-- Dashboard Section -->
-  <div id="dashboardSection" style="display:none;">
-    <div class="results-section">
-      <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
-      <div id="resultsList" class="results-list">Loading results...</div>
-      
-      <div id="rollInputSection" class="roll-input-section" style="display:none;">
-        <h3 id="selectedExamName">Enter Roll Number</h3>
-        <div class="input-group">
-          <input type="text" id="rollInput" placeholder="Enter Roll Number">
-          <button class="result-btn" onclick="fetchResult()">📑 Get Result</button>
-          <button class="result-btn" onclick="goBack()" style="background:#666;">⬅ Back</button>
-        </div>
-        <div class="hint-text" id="rollHint"></div>
+  <!-- Results Section -->
+  <div class="results-section">
+    <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
+    <div id="resultsList" class="results-list">Loading results...</div>
+    
+    <div id="rollInputSection" class="roll-input-section" style="display:none;">
+      <h3 id="selectedExamName">Enter Roll Number</h3>
+      <div class="input-group">
+        <input type="text" id="rollInput" placeholder="Enter Roll Number">
+        <button class="result-btn" onclick="fetchResult()">📑 Get Result</button>
+        <button class="result-btn" onclick="goBack()" style="background:#666;">⬅ Back</button>
       </div>
-      
-      <div id="resultCard" class="result-card" style="display:none;">
-        <div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div>
-        <div class="student-info"><div><strong>Student Name:</strong> <span id="studentName">-</span></div><div><strong>Roll Number:</strong> <span id="studentRoll">-</span></div></div>
-        <table class="marks-table"><thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>Percentage</th></tr></thead><tbody id="marksBody"></tbody></table>
-        <div class="percentage-display" id="totalPercent">Total: 0%</div>
-        <div class="action-buttons"><button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button><button class="back-btn" onclick="goBack()">⬅ Back</button></div>
-      </div>
-      
-      <!-- Create Result -->
-      <div style="margin-top:30px; padding-top:20px; border-top:2px solid #ddd;">
-        <h3><i class="fas fa-plus-circle"></i> Create New Result</h3>
-        <div class="create-result-form">
-          <input type="text" id="examName" placeholder="Exam Name">
-          <input type="date" id="examDate">
-          <input type="text" id="subjects" placeholder="Subjects (comma separated)">
-          <textarea id="marksData" rows="6" placeholder='[{"rollNo":"101","name":"Ram","marks":{"Hindi":85,"English":90}}]'></textarea>
-          <button class="btn-publish" onclick="publishResult()"><i class="fas fa-cloud-upload-alt"></i> Publish Result</button>
-          <div id="publishStatus"></div>
-        </div>
-      </div>
+      <div class="hint-text" id="rollHint"></div>
+    </div>
+    
+    <div id="resultCard" class="result-card" style="display:none;">
+      <div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div>
+      <div class="student-info"><div><strong>Student Name:</strong> <span id="studentName">-</span></div><div><strong>Roll Number:</strong> <span id="studentRoll">-</span></div></div>
+      <table class="marks-table"><thead><tr><th>Subject</th><th>Marks</th><th>Total</th><th>Percentage</th></tr></thead><tbody id="marksBody"></tbody></table>
+      <div class="percentage-display" id="totalPercent">Total: 0%</div>
+      <div class="action-buttons"><button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button><button class="result-btn" onclick="goBack()" style="background:#6c757d;">⬅ Back</button></div>
+    </div>
+    
+    <!-- Create Result -->
+    <div class="create-result-form">
+      <h3><i class="fas fa-plus-circle"></i> Create New Result</h3>
+      <input type="text" id="examName" placeholder="Exam Name">
+      <input type="date" id="examDate">
+      <input type="text" id="subjects" placeholder="Subjects (comma separated)">
+      <textarea id="marksData" rows="6" placeholder='[{"rollNo":"101","name":"Ram","marks":{"Hindi":85,"English":90}}]'></textarea>
+      <button class="btn-publish" onclick="publishResult()"><i class="fas fa-cloud-upload-alt"></i> Publish Result</button>
+      <div id="publishStatus"></div>
     </div>
   </div>
   
@@ -125,107 +108,65 @@
 </div>
 
 <script type="module">
-  import { db, auth } from './firebase-config.js';
-  import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { collection, getDocs, query, where, doc, getDoc, addDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { db } from './firebase-config.js';
+  import { collection, getDocs, doc, getDoc, addDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  let coachingId = null;
+  const urlParams = new URLSearchParams(window.location.search);
+  const coachingId = urlParams.get('id');
   let currentResultId = null;
-  let currentUserId = null;
 
-  // --- Show/hide sections ---
-  function showDashboard() {
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('dashboardSection').style.display = 'block';
-  }
-
-  function showLogin() {
-    document.getElementById('loginSection').style.display = 'block';
-    document.getElementById('dashboardSection').style.display = 'none';
-  }
-
-  // --- Login ---
-  window.login = async () => {
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
-    const errorDiv = document.getElementById('loginError');
-    
-    if(!email || !password) {
-      errorDiv.innerText = 'Please enter email and password';
-      return;
-    }
+  // ===== LOAD COACHING DATA =====
+  async function loadCoaching() {
+    if(!coachingId) return;
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      currentUserId = user.uid;
+      const docRef = doc(db, "schools", coachingId);
+      const snap = await getDoc(docRef);
       
-      // Check if this user has a school document
-      const schoolDoc = await getDoc(doc(db, "schools", user.uid));
-      if(!schoolDoc.exists()) {
-        errorDiv.innerText = 'No institute found for this account. Please create one from mobile app.';
-        return;
-      }
-      
-      coachingId = user.uid;
-      
-      // Load coaching data
-      const data = schoolDoc.data();
-      document.getElementById('coachingName').innerText = data.coachingName || 'GYAN SEVA';
-      document.getElementById('coachingLocation').innerText = data.location || 'Loading...';
-      document.getElementById('directorName').innerText = data.director || 'Director';
-      document.getElementById('directorPhone').innerText = data.phone || '---';
-      if(data.logoUrl) {
-        document.getElementById('coachingLogo').src = data.logoUrl;
-      }
-      
-      showDashboard();
-      loadResults();
-      
-    } catch(error) {
-      errorDiv.innerText = 'Invalid email or password';
-      console.error(error);
-    }
-  };
-
-  // --- Logout ---
-  window.logout = async () => {
-    await signOut(auth);
-    showLogin();
-  };
-
-  // --- Check existing session ---
-  onAuthStateChanged(auth, async (user) => {
-    if(user) {
-      const schoolDoc = await getDoc(doc(db, "schools", user.uid));
-      if(schoolDoc.exists()) {
-        currentUserId = user.uid;
-        coachingId = user.uid;
-        const data = schoolDoc.data();
-        document.getElementById('coachingName').innerText = data.coachingName || 'GYAN SEVA';
-        document.getElementById('coachingLocation').innerText = data.location || 'Loading...';
-        document.getElementById('directorName').innerText = data.director || 'Director';
-        document.getElementById('directorPhone').innerText = data.phone || '---';
-        if(data.logoUrl) {
-          document.getElementById('coachingLogo').src = data.logoUrl;
+      if(snap.exists()) {
+        const c = snap.data();
+        document.getElementById('coachingName').innerText = c.coachingName || 'GYAN SEVA';
+        document.getElementById('coachingLocation').innerText = c.location || 'Bihar, India';
+        document.getElementById('directorName').innerText = c.director || 'Director';
+        document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
+        
+        // ✅ LOGO FIX: logoUrl se image set karo
+        if(c.logoUrl && c.logoUrl !== '') {
+          document.getElementById('coachingLogo').src = c.logoUrl;
+        } else {
+          document.getElementById('coachingLogo').src = 'https://via.placeholder.com/120?text=GYAN';
         }
-        showDashboard();
+        
+        // Store in localStorage for result-viewer
+        localStorage.setItem('coachingName', c.coachingName || 'GYAN SEVA');
+        localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
+        localStorage.setItem('directorName', c.director || 'Director');
+        localStorage.setItem('directorPhone', c.phone || 'Not provided');
+        localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
+        
         loadResults();
       } else {
-        showLogin();
+        document.getElementById('coachingName').innerText = 'Coaching Not Found';
+        document.getElementById('resultsList').innerHTML = '<p>Coaching not found. Please check the link.</p>';
       }
-    } else {
-      showLogin();
+    } catch(error) {
+      console.error('Error loading coaching:', error);
+      document.getElementById('coachingName').innerText = 'Error Loading';
     }
-  });
+  }
 
-  // --- Load Results from schools/{userId}/results ---
+  // ===== LOAD RESULTS =====
   async function loadResults() {
-    if(!coachingId) return;
     const container = document.getElementById('resultsList');
     const resultsRef = collection(db, "schools", coachingId, "results");
     const snap = await getDocs(resultsRef);
-    if(snap.empty) { container.innerHTML = '<p>No results published yet.</p>'; return; }
+    
+    if(snap.empty) {
+      container.innerHTML = '<p>No results published yet. Create your first result below.</p>';
+      return;
+    }
+    
     let html = '';
     snap.forEach(d => {
       const r = d.data();
@@ -234,7 +175,7 @@
     container.innerHTML = html;
   }
 
-  // --- Select Exam ---
+  // ===== SELECT EXAM =====
   window.selectExam = (resultId, examName, examDate) => {
     currentResultId = resultId;
     document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
@@ -245,81 +186,96 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
-  // --- Fetch Result ---
+  // ===== FETCH RESULT =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
     
-    const studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "marks", roll));
-    if(!studentDoc.exists()) { alert("Roll number not found"); return; }
-    const student = studentDoc.data();
-    
-    // Get subjects from result
-    const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
-    const resultData = resultDoc.data();
-    const subjects = resultData.subjects || [];
-    
-    let totalObtained = 0;
-    let totalMax = 0;
-    for(let sub of subjects) {
-      totalObtained += student.marks[sub] || 0;
-      totalMax += 100;
+    try {
+      const studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "marks", roll));
+      if(!studentDoc.exists()) { alert("Roll number not found"); return; }
+      const student = studentDoc.data();
+      
+      const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+      const resultData = resultDoc.data();
+      const subjects = resultData.subjects || [];
+      
+      let totalObtained = 0;
+      let totalMax = 0;
+      for(let sub of subjects) {
+        totalObtained += student.marks[sub] || 0;
+        totalMax += 100;
+      }
+      const totalPercent = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(2) : 0;
+      
+      let division = '';
+      if(totalPercent >= 60) division = 'FIRST DIVISION';
+      else if(totalPercent >= 45) division = 'SECOND DIVISION';
+      else if(totalPercent >= 30) division = 'THIRD DIVISION';
+      else division = 'FAIL';
+      
+      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(resultData.examName)}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+      window.open(resultUrl, '_blank');
+      goBack();
+    } catch(error) {
+      alert('Error: ' + error.message);
     }
-    const totalPercent = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(2) : 0;
-    let division = '';
-    if(totalPercent >= 60) division = 'FIRST DIVISION';
-    else if(totalPercent >= 45) division = 'SECOND DIVISION';
-    else if(totalPercent >= 30) division = 'THIRD DIVISION';
-    else division = 'FAIL';
-    
-    // Open result viewer
-    const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(resultData.examName)}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
-    window.open(resultUrl, '_blank');
-    goBack();
   };
 
-  // --- Publish Result ---
+  // ===== PUBLISH RESULT =====
   window.publishResult = async () => {
     const examName = document.getElementById('examName').value;
     const examDate = document.getElementById('examDate').value;
     const subjectsStr = document.getElementById('subjects').value;
     const marksJson = document.getElementById('marksData').value;
+    
     if(!examName || !marksJson) { alert("Fill exam name and marks data"); return; }
     
     let students; 
     try { students = JSON.parse(marksJson); } catch(e) { alert("Invalid JSON"); return; }
     const subjects = subjectsStr.split(',').map(s => s.trim());
     
-    const resultsRef = collection(db, "schools", coachingId, "results");
-    const newResult = await addDoc(resultsRef, {
-      examName, examDate, subjects,
-      publishedAt: new Date().toISOString(),
-      totalStudents: students.length
-    });
-    
-    for(let s of students) {
-      await setDoc(doc(db, "schools", coachingId, "results", newResult.id, "marks", s.rollNo), {
-        name: s.name,
-        fatherName: s.fatherName || '',
-        marks: s.marks,
-        total: Object.values(s.marks).reduce((a,b)=>a+b,0),
-        percentage: (Object.values(s.marks).reduce((a,b)=>a+b,0) / (subjects.length * 100)) * 100
+    try {
+      const resultsRef = collection(db, "schools", coachingId, "results");
+      const newResult = await addDoc(resultsRef, {
+        examName, examDate, subjects,
+        publishedAt: new Date().toISOString(),
+        totalStudents: students.length
       });
+      
+      for(let s of students) {
+        const total = Object.values(s.marks).reduce((a,b)=>a+b,0);
+        const percentage = total > 0 ? (total / (subjects.length * 100)) * 100 : 0;
+        await setDoc(doc(db, "schools", coachingId, "results", newResult.id, "marks", s.rollNo), {
+          name: s.name,
+          fatherName: s.fatherName || '',
+          marks: s.marks,
+          total: total,
+          percentage: percentage.toFixed(2)
+        });
+      }
+      
+      document.getElementById('publishStatus').innerHTML = '<p style="color:green;">✅ Result published successfully!</p>';
+      document.getElementById('examName').value = '';
+      document.getElementById('marksData').value = '';
+      loadResults();
+    } catch(error) {
+      alert('Error publishing: ' + error.message);
     }
-    
-    document.getElementById('publishStatus').innerHTML = '<p style="color:green;">✅ Result published!</p>';
-    loadResults();
   };
 
-  // --- Go Back ---
+  // ===== GO BACK =====
   window.goBack = () => {
     document.getElementById('resultsList').style.display = 'grid';
     document.getElementById('rollInputSection').style.display = 'none';
     document.getElementById('resultCard').style.display = 'none';
   };
 
-  // --- Download PDF ---
+  // ===== DOWNLOAD PDF =====
   window.downloadPDF = () => { window.print(); };
+
+  // ===== LOAD ON START =====
+  loadCoaching();
 </script>
 </body>
 </html>
