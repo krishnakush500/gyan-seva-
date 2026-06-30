@@ -113,6 +113,7 @@
   const coachingId = urlParams.get('id');
   let currentResultId = null;
   let currentClassId = null;
+  let currentResultData = null;
 
   // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
@@ -146,7 +147,6 @@
         localStorage.setItem('directorPhone', c.phone || 'Not provided');
         localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
         
-        // ✅ Load published results
         loadPublishedResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
@@ -158,78 +158,103 @@
     }
   }
 
-  // ===== LOAD ONLY PUBLISHED RESULTS (Mobile App Structure) =====
+  // ===== LOAD PUBLISHED RESULTS (Direct + Classes) =====
   async function loadPublishedResults() {
     const container = document.getElementById('resultsList');
     container.innerHTML = '<p>Loading results...</p>';
     
     try {
-      // 🎯 STEP 1: Check if there are any classes
-      const classesRef = collection(db, "schools", coachingId, "classes");
-      const classesSnap = await getDocs(classesRef);
+      let allResults = [];
       
-      let allPublishedResults = [];
-      
-      if(!classesSnap.empty) {
-        // ✅ Go through each class
-        for(const classDoc of classesSnap.docs) {
-          const className = classDoc.id;
-          const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
-          const resultsSnap = await getDocs(resultsRef);
-          
-          for(const resultDoc of resultsSnap.docs) {
-            const resultData = resultDoc.data();
-            // ✅ ONLY SHOW PUBLISHED RESULTS
-            if(resultData.status === "published") {
-              allPublishedResults.push({
-                id: resultDoc.id,
-                classId: className,
-                examName: resultData.examName || "Unnamed Exam",
-                examDate: resultData.examDate || "",
-                status: resultData.status,
-                createdAt: resultData.createdAt || 0
-              });
-            }
-          }
-        }
-      }
-      
-      // 🎯 STEP 2: Also check direct results collection (if any)
+      // 🎯 PATH 1: Direct results collection (schools/{id}/results)
       try {
         const directResultsRef = collection(db, "schools", coachingId, "results");
-        const directResultsSnap = await getDocs(directResultsRef);
-        for(const docSnap of directResultsSnap.docs) {
+        const directSnap = await getDocs(directResultsRef);
+        for(const docSnap of directSnap.docs) {
           const data = docSnap.data();
+          // Include if status is "published" OR status not set (for backward compatibility)
           if(data.status === "published" || !data.status) {
-            allPublishedResults.push({
+            allResults.push({
               id: docSnap.id,
               classId: null,
               examName: data.examName || "Unnamed Exam",
               examDate: data.examDate || "",
               status: data.status || "published",
-              createdAt: data.createdAt || 0
+              createdAt: data.createdAt || 0,
+              path: "direct"
             });
           }
         }
-      } catch(e) { /* ignore if direct collection doesn't exist */ }
+      } catch(e) { /* ignore */ }
+      
+      // 🎯 PATH 2: Classes structure (schools/{id}/classes/{classId}/results)
+      try {
+        const classesRef = collection(db, "schools", coachingId, "classes");
+        const classesSnap = await getDocs(classesRef);
+        for(const classDoc of classesSnap.docs) {
+          const resultsRef = collection(db, "schools", coachingId, "classes", classDoc.id, "results");
+          const resultsSnap = await getDocs(resultsRef);
+          for(const resultDoc of resultsSnap.docs) {
+            const data = resultDoc.data();
+            if(data.status === "published") {
+              allResults.push({
+                id: resultDoc.id,
+                classId: classDoc.id,
+                examName: data.examName || "Unnamed Exam",
+                examDate: data.examDate || "",
+                status: data.status || "published",
+                createdAt: data.createdAt || 0,
+                path: "classes"
+              });
+            }
+          }
+        }
+      } catch(e) { /* ignore */ }
+      
+      // 🎯 PATH 3: Check if there are ANY results without status filter (just in case)
+      if(allResults.length === 0) {
+        try {
+          const resultsRef = collection(db, "schools", coachingId, "results");
+          const snap = await getDocs(resultsRef);
+          for(const docSnap of snap.docs) {
+            const data = docSnap.data();
+            allResults.push({
+              id: docSnap.id,
+              classId: null,
+              examName: data.examName || "Unnamed Exam",
+              examDate: data.examDate || "",
+              status: data.status || "published",
+              createdAt: data.createdAt || 0,
+              path: "direct"
+            });
+          }
+        } catch(e) { /* ignore */ }
+      }
       
       // Sort by date (newest first)
-      allPublishedResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      allResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       
-      if(allPublishedResults.length === 0) {
-        container.innerHTML = '<p>No published results yet.</p>';
+      if(allResults.length === 0) {
+        container.innerHTML = `
+          <p style="text-align:center; color:#888; padding:30px;">
+            <i class="fas fa-info-circle"></i><br>
+            No published results yet.<br>
+            <small>Create a result from the mobile app and publish it.</small>
+          </p>
+        `;
         return;
       }
       
-      // ✅ Display results
+      // Display results
       let html = '';
-      for(const r of allPublishedResults) {
+      for(const r of allResults) {
         const dateDisplay = r.examDate ? r.examDate : 'Date not available';
+        const classTag = r.classId ? `<span style="font-size:0.7rem; background:#eef2ff; padding:2px 10px; border-radius:12px; margin-left:8px;">${r.classId}</span>` : '';
         html += `
-          <div class="result-item" onclick="selectExam('${r.id}', '${r.examName.replace(/'/g, "\\'")}', '${r.examDate || ''}', '${r.classId || ''}')">
+          <div class="result-item" onclick="selectExam('${r.id}', '${r.examName.replace(/'/g, "\\'")}', '${r.examDate || ''}', '${r.classId || ''}', '${r.path}')">
             <div>
               <strong>${r.examName}</strong>
-              ${r.classId ? `<span style="font-size:0.7rem; color:#888; margin-left:8px;">(${r.classId})</span>` : ''}
+              ${classTag}
               <br><span style="font-size:0.75rem; color:#888;">${dateDisplay}</span>
             </div>
             <i class="fas fa-chevron-right" style="color:#1a237e;"></i>
@@ -246,7 +271,7 @@
   }
 
   // ===== SELECT EXAM =====
-  window.selectExam = (resultId, examName, examDate, classId) => {
+  window.selectExam = (resultId, examName, examDate, classId, path) => {
     currentResultId = resultId;
     currentClassId = classId;
     document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
@@ -265,8 +290,9 @@
     try {
       let studentDoc = null;
       let resultData = null;
+      let marksData = null;
       
-      // 🎯 Try different possible paths
+      // 🎯 TRY ALL POSSIBLE PATHS
       
       // Path 1: classes/{classId}/results/{resultId}/studentResults/{roll}
       if(currentClassId) {
@@ -277,7 +303,7 @@
         }
       }
       
-      // Path 2: results/{resultId}/studentResults/{roll} (direct)
+      // Path 2: results/{resultId}/studentResults/{roll}
       if(!studentDoc || !studentDoc.exists()) {
         studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "studentResults", roll));
         if(studentDoc.exists()) {
@@ -286,11 +312,20 @@
         }
       }
       
-      // Path 3: results/{resultId}/marks/{roll} (alternative structure)
+      // Path 3: results/{resultId}/marks/{roll}
       if(!studentDoc || !studentDoc.exists()) {
         studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "marks", roll));
         if(studentDoc.exists()) {
           const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+          resultData = resultDoc.data();
+        }
+      }
+      
+      // Path 4: classes/{classId}/results/{resultId}/marks/{roll}
+      if((!studentDoc || !studentDoc.exists()) && currentClassId) {
+        studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassId, "results", currentResultId, "marks", roll));
+        if(studentDoc.exists()) {
+          const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassId, "results", currentResultId));
           resultData = resultDoc.data();
         }
       }
@@ -308,8 +343,8 @@
       let totalObtained = 0;
       let totalMax = 0;
       
+      // Mobile app format: subjects map with obtained/total
       if(student.subjects) {
-        // Mobile app format: subjects map with obtained/total
         const subjMap = student.subjects;
         for(const [key, value] of Object.entries(subjMap)) {
           subjects.push(key);
@@ -320,7 +355,6 @@
           totalMax += total;
         }
       } else if(student.marks) {
-        // Direct marks format
         marks = student.marks;
         subjects = Object.keys(marks);
         for(const sub of subjects) {
@@ -328,7 +362,6 @@
           totalMax += 100;
         }
       } else if(resultData?.subjects) {
-        // Fallback to result subjects
         subjects = resultData.subjects;
         for(const sub of subjects) {
           marks[sub] = student[sub] || student.marks?.[sub] || 0;
@@ -336,7 +369,7 @@
           totalMax += 100;
         }
       } else {
-        // Try to guess subjects from student data
+        // Try to find any number fields
         const keys = Object.keys(student).filter(k => k !== 'name' && k !== 'roll' && k !== 'fatherName' && k !== 'father' && k !== 'totalObtained' && k !== 'totalMax' && k !== 'percentage');
         if(keys.length > 0) {
           for(const k of keys) {
@@ -350,7 +383,6 @@
         }
       }
       
-      // If still no subjects, show error
       if(subjects.length === 0) {
         alert("No subject data found for this student.");
         return;
