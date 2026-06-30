@@ -25,7 +25,6 @@
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
     .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
-    .class-badge { background:#e8eaf6; color:#1a237e; font-size:0.65rem; padding:2px 10px; border-radius:12px; margin-left:8px; }
     
     .roll-input-section { background:white; padding:20px; border-radius:10px; margin-top:15px; text-align:center; display:none; }
     .input-group { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
@@ -46,7 +45,7 @@
     .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
     
-    footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f9; }
+    footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
     
     @media (max-width:768px){ .coaching-logo{ width:90px; height:90px; } .school-name{ font-size:1.5rem; } }
   </style>
@@ -73,6 +72,7 @@
     <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
     <div id="resultsList" class="results-list">Loading results...</div>
     
+    <!-- Roll Input -->
     <div id="rollInputSection" class="roll-input-section" style="display:none;">
       <h3 id="selectedExamName">Enter Roll Number</h3>
       <div class="input-group">
@@ -83,6 +83,7 @@
       <div class="hint-text" id="rollHint"></div>
     </div>
     
+    <!-- Result Card -->
     <div id="resultCard" class="result-card" style="display:none;">
       <div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div>
       <div class="student-info">
@@ -106,13 +107,12 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
   let currentResultId = null;
   let currentClassId = null;
-  let currentResultData = null;
 
   // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
@@ -146,92 +146,97 @@
         localStorage.setItem('directorPhone', c.phone || 'Not provided');
         localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
         
-        loadAllResults();
+        // ✅ Load published results
+        loadPublishedResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
-        document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
+        document.getElementById('resultsList').innerHTML = '<p>Coaching not found. Please check the link.</p>';
       }
     } catch(error) {
-      console.error('Error:', error);
+      console.error('Error loading coaching:', error);
+      document.getElementById('coachingName').innerText = 'Error Loading';
     }
   }
 
-  // ===== LOAD ALL RESULTS FROM ALL CLASSES =====
-  async function loadAllResults() {
+  // ===== LOAD ONLY PUBLISHED RESULTS (Mobile App Structure) =====
+  async function loadPublishedResults() {
     const container = document.getElementById('resultsList');
+    container.innerHTML = '<p>Loading results...</p>';
     
     try {
-      // 🔥 Step 1: Get all classes
+      // 🎯 STEP 1: Check if there are any classes
       const classesRef = collection(db, "schools", coachingId, "classes");
       const classesSnap = await getDocs(classesRef);
       
-      if(classesSnap.empty) {
-        container.innerHTML = '<p>No classes found. Please create classes from mobile app first.</p>';
-        return;
-      }
+      let allPublishedResults = [];
       
-      let allResults = [];
-      let classNames = {};
-      
-      // 🔥 Step 2: For each class, get results
-      for(const classDoc of classesSnap.docs) {
-        const className = classDoc.id;
-        classNames[className] = className;
-        
-        const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
-        const resultsSnap = await getDocs(resultsRef);
-        
-        for(const resultDoc of resultsSnap.docs) {
-          const data = resultDoc.data();
+      if(!classesSnap.empty) {
+        // ✅ Go through each class
+        for(const classDoc of classesSnap.docs) {
+          const className = classDoc.id;
+          const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
+          const resultsSnap = await getDocs(resultsRef);
           
-          // 🔥 Check if it's a published result
-          const isPublished = data.status === 'published' || !data.status;
-          
-          if(isPublished) {
-            // 🔥 Count students in this result
-            let studentCount = 0;
-            try {
-              const studentsRef = collection(db, "schools", coachingId, "classes", className, "results", resultDoc.id, "studentResults");
-              const studentsSnap = await getDocs(studentsRef);
-              studentCount = studentsSnap.size;
-            } catch(e) {
-              studentCount = 0;
+          for(const resultDoc of resultsSnap.docs) {
+            const resultData = resultDoc.data();
+            // ✅ ONLY SHOW PUBLISHED RESULTS
+            if(resultData.status === "published") {
+              allPublishedResults.push({
+                id: resultDoc.id,
+                classId: className,
+                examName: resultData.examName || "Unnamed Exam",
+                examDate: resultData.examDate || "",
+                status: resultData.status,
+                createdAt: resultData.createdAt || 0
+              });
             }
-            
-            allResults.push({
-              id: resultDoc.id,
-              className: className,
-              examName: data.examName || 'Unnamed Exam',
-              examDate: data.examDate || 'Date not available',
-              studentCount: studentCount,
-              data: data,
-              createdAt: data.createdAt || 0
-            });
           }
         }
       }
       
-      if(allResults.length === 0) {
-        container.innerHTML = '<p>No published results found in any class. Please publish from mobile app.</p>';
+      // 🎯 STEP 2: Also check direct results collection (if any)
+      try {
+        const directResultsRef = collection(db, "schools", coachingId, "results");
+        const directResultsSnap = await getDocs(directResultsRef);
+        for(const docSnap of directResultsSnap.docs) {
+          const data = docSnap.data();
+          if(data.status === "published" || !data.status) {
+            allPublishedResults.push({
+              id: docSnap.id,
+              classId: null,
+              examName: data.examName || "Unnamed Exam",
+              examDate: data.examDate || "",
+              status: data.status || "published",
+              createdAt: data.createdAt || 0
+            });
+          }
+        }
+      } catch(e) { /* ignore if direct collection doesn't exist */ }
+      
+      // Sort by date (newest first)
+      allPublishedResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      
+      if(allPublishedResults.length === 0) {
+        container.innerHTML = '<p>No published results yet.</p>';
         return;
       }
       
-      // Sort by date (newest first)
-      allResults.sort((a, b) => b.createdAt - a.createdAt);
-      
+      // ✅ Display results
       let html = '';
-      for(const r of allResults) {
-        const classBadge = `<span class="class-badge">📚 ${r.className}</span>`;
+      for(const r of allPublishedResults) {
+        const dateDisplay = r.examDate ? r.examDate : 'Date not available';
         html += `
-          <div class="result-item" onclick="selectExam('${r.id}', '${r.className}', '${r.examName}', '${r.examDate}')">
+          <div class="result-item" onclick="selectExam('${r.id}', '${r.examName.replace(/'/g, "\\'")}', '${r.examDate || ''}', '${r.classId || ''}')">
             <div>
-              <strong>${r.examName}</strong> ${classBadge}
-              <br>${r.examDate} ${r.studentCount > 0 ? `| 👨‍🎓 ${r.studentCount} students` : ''}
+              <strong>${r.examName}</strong>
+              ${r.classId ? `<span style="font-size:0.7rem; color:#888; margin-left:8px;">(${r.classId})</span>` : ''}
+              <br><span style="font-size:0.75rem; color:#888;">${dateDisplay}</span>
             </div>
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-chevron-right" style="color:#1a237e;"></i>
           </div>
         `;
       }
+      
       container.innerHTML = html;
       
     } catch(error) {
@@ -241,10 +246,10 @@
   }
 
   // ===== SELECT EXAM =====
-  window.selectExam = (resultId, className, examName, examDate) => {
+  window.selectExam = (resultId, examName, examDate, classId) => {
     currentResultId = resultId;
-    currentClassId = className;
-    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName} (${className})`;
+    currentClassId = classId;
+    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
     document.getElementById('resultsList').style.display = 'none';
     document.getElementById('rollInputSection').style.display = 'block';
     document.getElementById('resultCard').style.display = 'none';
@@ -258,28 +263,53 @@
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      // 🔥 Path: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{roll}
-      const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassId, "results", currentResultId, "studentResults", roll));
+      let studentDoc = null;
+      let resultData = null;
       
-      if(!studentDoc.exists()) {
-        alert("Roll number not found in this exam");
+      // 🎯 Try different possible paths
+      
+      // Path 1: classes/{classId}/results/{resultId}/studentResults/{roll}
+      if(currentClassId) {
+        studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassId, "results", currentResultId, "studentResults", roll));
+        if(studentDoc.exists()) {
+          const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassId, "results", currentResultId));
+          resultData = resultDoc.data();
+        }
+      }
+      
+      // Path 2: results/{resultId}/studentResults/{roll} (direct)
+      if(!studentDoc || !studentDoc.exists()) {
+        studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "studentResults", roll));
+        if(studentDoc.exists()) {
+          const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+          resultData = resultDoc.data();
+        }
+      }
+      
+      // Path 3: results/{resultId}/marks/{roll} (alternative structure)
+      if(!studentDoc || !studentDoc.exists()) {
+        studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "marks", roll));
+        if(studentDoc.exists()) {
+          const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+          resultData = resultDoc.data();
+        }
+      }
+      
+      if(!studentDoc || !studentDoc.exists()) {
+        alert("Roll number not found in this result.");
         return;
       }
       
       const student = studentDoc.data();
       
-      // Get result data
-      const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassId, "results", currentResultId));
-      const resultData = resultDoc.data();
-      currentResultData = resultData;
-      
-      // Extract data
+      // Extract subjects and marks
       let subjects = [];
       let marks = {};
       let totalObtained = 0;
       let totalMax = 0;
       
       if(student.subjects) {
+        // Mobile app format: subjects map with obtained/total
         const subjMap = student.subjects;
         for(const [key, value] of Object.entries(subjMap)) {
           subjects.push(key);
@@ -290,12 +320,40 @@
           totalMax += total;
         }
       } else if(student.marks) {
+        // Direct marks format
         marks = student.marks;
         subjects = Object.keys(marks);
         for(const sub of subjects) {
           totalObtained += marks[sub] || 0;
           totalMax += 100;
         }
+      } else if(resultData?.subjects) {
+        // Fallback to result subjects
+        subjects = resultData.subjects;
+        for(const sub of subjects) {
+          marks[sub] = student[sub] || student.marks?.[sub] || 0;
+          totalObtained += marks[sub];
+          totalMax += 100;
+        }
+      } else {
+        // Try to guess subjects from student data
+        const keys = Object.keys(student).filter(k => k !== 'name' && k !== 'roll' && k !== 'fatherName' && k !== 'father' && k !== 'totalObtained' && k !== 'totalMax' && k !== 'percentage');
+        if(keys.length > 0) {
+          for(const k of keys) {
+            if(typeof student[k] === 'number') {
+              subjects.push(k);
+              marks[k] = student[k];
+              totalObtained += student[k];
+              totalMax += 100;
+            }
+          }
+        }
+      }
+      
+      // If still no subjects, show error
+      if(subjects.length === 0) {
+        alert("No subject data found for this student.");
+        return;
       }
       
       const totalPercent = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(2) : 0;
@@ -306,11 +364,13 @@
       else if(totalPercent >= 30) division = 'THIRD DIVISION';
       else division = 'FAIL';
       
-      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name || '-')}&roll=${roll}&father=${encodeURIComponent(student.fatherName || student.father || '-')}&exam=${encodeURIComponent(resultData?.examName || 'Exam')}&date=${resultData?.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name || '-')}&roll=${roll}&father=${encodeURIComponent(student.fatherName || student.father || '-')}&exam=${encodeURIComponent(resultData?.examName || 'Result')}&date=${resultData?.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       window.open(resultUrl, '_blank');
       goBack();
+      
     } catch(error) {
-      alert('Error: ' + error.message);
+      console.error('Fetch error:', error);
+      alert('Error fetching result: ' + error.message);
     }
   };
 
@@ -324,6 +384,7 @@
   // ===== DOWNLOAD PDF =====
   window.downloadPDF = () => { window.print(); };
 
+  // ===== LOAD =====
   loadCoaching();
 </script>
 </body>
