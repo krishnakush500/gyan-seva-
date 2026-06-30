@@ -25,6 +25,7 @@
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
     .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .class-badge { background:#e8eaf6; color:#1a237e; font-size:0.65rem; padding:2px 10px; border-radius:12px; margin-left:8px; }
     
     .roll-input-section { background:white; padding:20px; border-radius:10px; margin-top:15px; text-align:center; display:none; }
     .input-group { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
@@ -45,7 +46,7 @@
     .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
     
-    footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
+    footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f9; }
     
     @media (max-width:768px){ .coaching-logo{ width:90px; height:90px; } .school-name{ font-size:1.5rem; } }
   </style>
@@ -67,7 +68,7 @@
     </div>
   </div>
 
-  <!-- RESULTS SECTION - Sirf Published Results -->
+  <!-- RESULTS SECTION -->
   <div class="results-section">
     <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
     <div id="resultsList" class="results-list">Loading results...</div>
@@ -107,11 +108,12 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
   let currentResultId = null;
+  let currentClassId = null;
 
   // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
@@ -139,14 +141,13 @@
           logoElement.src = 'https://via.placeholder.com/120?text=GYAN';
         }
         
-        // Store in localStorage for result-viewer
         localStorage.setItem('coachingName', c.coachingName || 'GYAN SEVA');
         localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
         localStorage.setItem('directorName', c.director || 'Director');
         localStorage.setItem('directorPhone', c.phone || 'Not provided');
         localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
         
-        loadResults();
+        loadAllResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
         document.getElementById('resultsList').innerHTML = '<p>Coaching not found. Please check the link.</p>';
@@ -157,65 +158,70 @@
     }
   }
 
-  // ===== LOAD RESULTS FROM MOBILE APP STRUCTURE =====
-  async function loadResults() {
+  // ===== LOAD ALL RESULTS FROM ALL CLASSES =====
+  async function loadAllResults() {
     const container = document.getElementById('resultsList');
     
     try {
-      // 🎯 Mobile app structure: schools/{schoolId}/classes/{classId}/results
-      // 🎯 OR direct: schools/{schoolId}/results (if you use direct results)
+      // Step 1: Get all classes
+      const classesRef = collection(db, "schools", coachingId, "classes");
+      const classesSnap = await getDocs(classesRef);
       
-      // First try direct results collection (easier)
-      let resultsRef = collection(db, "schools", coachingId, "results");
-      let snap = await getDocs(resultsRef);
-      
-      // If no results in direct collection, try classes subcollection
-      if(snap.empty) {
-        const classesRef = collection(db, "schools", coachingId, "classes");
-        const classesSnap = await getDocs(classesRef);
-        
-        let allResults = [];
-        for(const classDoc of classesSnap.docs) {
-          const resultsRef2 = collection(db, "schools", coachingId, "classes", classDoc.id, "results");
-          const resultsSnap2 = await getDocs(resultsRef2);
-          resultsSnap2.forEach(d => {
-            allResults.push({ id: d.id, ...d.data(), classId: classDoc.id });
-          });
-        }
-        
-        if(allResults.length === 0) {
-          container.innerHTML = '<p>No results published yet.</p>';
-          return;
-        }
-        
-        let html = '';
-        for(const r of allResults) {
-          html += `<div class="result-item" onclick="selectExam('${r.id}', '${r.examName}', '${r.examDate || ''}', '${r.classId || ''}')"><div><strong>${r.examName}</strong><br>${r.examDate || 'Date not available'}</div><i class="fas fa-chevron-right"></i></div>`;
-        }
-        container.innerHTML = html;
+      if(classesSnap.empty) {
+        // No classes found, try direct results
+        tryDirectResults();
         return;
       }
       
-      // Direct results collection has data
-      if(snap.empty) {
-        container.innerHTML = '<p>No results published yet.</p>';
+      let allResults = [];
+      let classNames = {};
+      
+      for(const classDoc of classesSnap.docs) {
+        const className = classDoc.id;
+        classNames[className] = className;
+        
+        // Get results for this class
+        const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
+        const resultsSnap = await getDocs(resultsRef);
+        
+        for(const resultDoc of resultsSnap.docs) {
+          const data = resultDoc.data();
+          // Only show published results
+          if(data.status === 'published' || !data.status) {
+            allResults.push({
+              id: resultDoc.id,
+              className: className,
+              examName: data.examName || 'Unnamed Exam',
+              examDate: data.examDate || 'Date not available',
+              status: data.status || 'published',
+              data: data
+            });
+          }
+        }
+      }
+      
+      if(allResults.length === 0) {
+        container.innerHTML = '<p>No published results found in any class.</p>';
         return;
       }
+      
+      // Display results sorted by date (newest first)
+      allResults.sort((a, b) => (b.data.createdAt || 0) - (a.data.createdAt || 0));
       
       let html = '';
-      snap.forEach(d => {
-        const r = d.data();
-        // Only show published results (skip drafts)
-        if(r.status === 'published' || !r.status) {
-          html += `<div class="result-item" onclick="selectExam('${d.id}', '${r.examName}', '${r.examDate || ''}')"><div><strong>${r.examName}</strong><br>${r.examDate || 'Date not available'}</div><i class="fas fa-chevron-right"></i></div>`;
-        }
-      });
-      
-      if(html === '') {
-        container.innerHTML = '<p>No published results available.</p>';
-      } else {
-        container.innerHTML = html;
+      for(const r of allResults) {
+        const classBadge = `<span class="class-badge">📚 ${r.className}</span>`;
+        html += `
+          <div class="result-item" onclick="selectExam('${r.id}', '${r.examName}', '${r.examDate}', '${r.className}')">
+            <div>
+              <strong>${r.examName}</strong> ${classBadge}
+              <br>${r.examDate}
+            </div>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        `;
       }
+      container.innerHTML = html;
       
     } catch(error) {
       console.error('Error loading results:', error);
@@ -223,9 +229,43 @@
     }
   }
 
+  // ===== TRY DIRECT RESULTS (Fallback) =====
+  async function tryDirectResults() {
+    const container = document.getElementById('resultsList');
+    try {
+      const resultsRef = collection(db, "schools", coachingId, "results");
+      const resultsSnap = await getDocs(resultsRef);
+      
+      if(resultsSnap.empty) {
+        container.innerHTML = '<p>No published results found.</p>';
+        return;
+      }
+      
+      let html = '';
+      for(const docSnap of resultsSnap.docs) {
+        const data = docSnap.data();
+        if(data.status === 'published' || !data.status) {
+          html += `
+            <div class="result-item" onclick="selectExam('${docSnap.id}', '${data.examName || 'Unnamed Exam'}', '${data.examDate || 'Date not available'}', '')">
+              <div>
+                <strong>${data.examName || 'Unnamed Exam'}</strong>
+                <br>${data.examDate || 'Date not available'}
+              </div>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+          `;
+        }
+      }
+      container.innerHTML = html || '<p>No published results found.</p>';
+    } catch(error) {
+      container.innerHTML = '<p>Error loading results.</p>';
+    }
+  }
+
   // ===== SELECT EXAM =====
-  window.selectExam = (resultId, examName, examDate, classId) => {
+  window.selectExam = (resultId, examName, examDate, className) => {
     currentResultId = resultId;
+    currentClassId = className || '';
     document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
     document.getElementById('resultsList').style.display = 'none';
     document.getElementById('rollInputSection').style.display = 'block';
@@ -240,37 +280,42 @@
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      // Try direct marks collection first
-      let studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "marks", roll));
+      let studentDoc = null;
+      let resultData = null;
       
-      // If not found, try studentResults (mobile app structure)
-      if(!studentDoc.exists()) {
-        studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "studentResults", roll));
+      // Try with class path first (if class is known)
+      if(currentClassId) {
+        studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassId, "results", currentResultId, "studentResults", roll));
+        const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassId, "results", currentResultId));
+        resultData = resultDoc.data();
       }
       
-      if(!studentDoc.exists()) {
-        // Try classes structure
-        const classesSnap = await getDocs(collection(db, "schools", coachingId, "classes"));
-        let found = false;
-        for(const classDoc of classesSnap.docs) {
-          const studentDoc2 = await getDoc(doc(db, "schools", coachingId, "classes", classDoc.id, "results", currentResultId, "studentResults", roll));
-          if(studentDoc2.exists()) {
-            studentDoc = studentDoc2;
-            found = true;
-            break;
-          }
-        }
-        if(!found) {
-          alert("Roll number not found");
-          return;
-        }
+      // If not found in class path, try direct path
+      if(!studentDoc || !studentDoc.exists()) {
+        studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "studentResults", roll));
+        const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+        if(resultDoc.exists()) resultData = resultDoc.data();
+      }
+      
+      // Try direct marks path
+      if(!studentDoc || !studentDoc.exists()) {
+        studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "marks", roll));
+        const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+        if(resultDoc.exists()) resultData = resultDoc.data();
+      }
+      
+      if(!studentDoc || !studentDoc.exists()) {
+        alert("Roll number not found");
+        return;
       }
       
       const student = studentDoc.data();
       
-      // Get result data
-      const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
-      const resultData = resultDoc.data();
+      // If resultData is null, try to get from result document
+      if(!resultData) {
+        const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+        if(resultDoc.exists()) resultData = resultDoc.data();
+      }
       
       // Extract subjects and marks
       let subjects = [];
@@ -278,7 +323,6 @@
       let totalObtained = 0;
       let totalMax = 0;
       
-      // If marks are in mobile app format (subjects map)
       if(student.subjects) {
         const subjMap = student.subjects;
         for(const [key, value] of Object.entries(subjMap)) {
@@ -290,15 +334,13 @@
           totalMax += total;
         }
       } else if(student.marks) {
-        // Direct marks format
         marks = student.marks;
         subjects = Object.keys(marks);
         for(const sub of subjects) {
           totalObtained += marks[sub] || 0;
           totalMax += 100;
         }
-      } else if(resultData.subjects) {
-        // Fallback to result subjects
+      } else if(resultData?.subjects) {
         subjects = resultData.subjects;
         for(const sub of subjects) {
           marks[sub] = student[sub] || student.marks?.[sub] || 0;
@@ -315,7 +357,7 @@
       else if(totalPercent >= 30) division = 'THIRD DIVISION';
       else division = 'FAIL';
       
-      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name || '-')}&roll=${roll}&father=${encodeURIComponent(student.fatherName || student.father || '-')}&exam=${encodeURIComponent(resultData.examName)}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name || student.studentName || '-')}&roll=${roll}&father=${encodeURIComponent(student.fatherName || student.father || student.parent || '-')}&exam=${encodeURIComponent(resultData?.examName || 'Exam')}&date=${resultData?.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       window.open(resultUrl, '_blank');
       goBack();
     } catch(error) {
