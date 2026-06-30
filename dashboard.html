@@ -23,12 +23,6 @@
     
     .results-section { padding:25px; background:#f9f9f9; min-height:500px; }
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
-    
-    .class-filter { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; justify-content:center; }
-    .class-filter button { padding:8px 16px; border:1px solid #1a237e; border-radius:20px; background:white; color:#1a237e; cursor:pointer; font-weight:600; }
-    .class-filter button.active { background:#1a237e; color:white; }
-    .class-filter button:hover { background:#1a237e; color:white; }
-    
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
     .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
     
@@ -39,6 +33,7 @@
     .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     
     .result-card { display:none; background:white; border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 5px 15px rgba(0,0,0,0.1); overflow-x:auto; }
+    .result-card-header { text-align:center; border-bottom:2px solid #1a237e; padding-bottom:10px; margin-bottom:15px; }
     .student-info { background:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:15px; display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; }
     .marks-table { width:100%; border-collapse:collapse; min-width:400px; }
     .marks-table th { background:#1a237e; color:white; padding:8px; text-align:left; }
@@ -50,11 +45,6 @@
     .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
     
-    .create-result-form { background:white; padding:20px; border-radius:12px; margin-top:30px; padding-top:20px; border-top:2px solid #ddd; }
-    .create-result-form input, .create-result-form textarea { width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:8px; }
-    .btn-publish { background:#10b981; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
-    .btn-publish:hover { background:#059669; }
-    
     footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
     
     @media (max-width:768px){ .coaching-logo{ width:90px; height:90px; } .school-name{ font-size:1.5rem; } }
@@ -62,6 +52,7 @@
 </head>
 <body>
 <div class="container">
+  <!-- HEADER -->
   <div class="header">
     <div class="header-content">
       <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
@@ -76,14 +67,12 @@
     </div>
   </div>
 
+  <!-- RESULTS SECTION - Sirf Published Results -->
   <div class="results-section">
     <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
-    
-    <!-- Class Filter -->
-    <div class="class-filter" id="classFilter"></div>
-    
     <div id="resultsList" class="results-list">Loading results...</div>
     
+    <!-- Roll Input -->
     <div id="rollInputSection" class="roll-input-section" style="display:none;">
       <h3 id="selectedExamName">Enter Roll Number</h3>
       <div class="input-group">
@@ -94,6 +83,7 @@
       <div class="hint-text" id="rollHint"></div>
     </div>
     
+    <!-- Result Card -->
     <div id="resultCard" class="result-card" style="display:none;">
       <div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div>
       <div class="student-info">
@@ -117,13 +107,11 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
   let currentResultId = null;
-  let currentClass = null;
-  let allResults = [];
 
   // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
@@ -135,6 +123,7 @@
       
       if(snap.exists()) {
         const c = snap.data();
+        
         document.getElementById('coachingName').innerText = c.coachingName || 'GYAN SEVA';
         document.getElementById('coachingLocation').innerText = c.location || 'Bihar, India';
         document.getElementById('directorName').innerText = c.director || 'Director';
@@ -143,112 +132,101 @@
         const logoElement = document.getElementById('coachingLogo');
         if(c.logoUrl && c.logoUrl.trim() !== '' && c.logoUrl !== 'null') {
           logoElement.src = c.logoUrl;
+          logoElement.onerror = function() {
+            this.src = 'https://via.placeholder.com/120?text=GYAN';
+          };
+        } else {
+          logoElement.src = 'https://via.placeholder.com/120?text=GYAN';
         }
         
+        // Store in localStorage for result-viewer
         localStorage.setItem('coachingName', c.coachingName || 'GYAN SEVA');
         localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
         localStorage.setItem('directorName', c.director || 'Director');
         localStorage.setItem('directorPhone', c.phone || 'Not provided');
         localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
         
-        loadClassesAndResults();
+        loadResults();
+      } else {
+        document.getElementById('coachingName').innerText = 'Coaching Not Found';
+        document.getElementById('resultsList').innerHTML = '<p>Coaching not found. Please check the link.</p>';
       }
     } catch(error) {
-      console.error('Error:', error);
+      console.error('Error loading coaching:', error);
+      document.getElementById('coachingName').innerText = 'Error Loading';
     }
   }
 
-  // ===== LOAD CLASSES AND RESULTS =====
-  async function loadClassesAndResults() {
+  // ===== LOAD RESULTS FROM MOBILE APP STRUCTURE =====
+  async function loadResults() {
+    const container = document.getElementById('resultsList');
+    
     try {
-      const classesRef = collection(db, "schools", coachingId, "classes");
-      const classesSnap = await getDocs(classesRef);
+      // 🎯 Mobile app structure: schools/{schoolId}/classes/{classId}/results
+      // 🎯 OR direct: schools/{schoolId}/results (if you use direct results)
       
-      if(classesSnap.empty) {
-        document.getElementById('resultsList').innerHTML = '<p>No classes found. Add a class first.</p>';
+      // First try direct results collection (easier)
+      let resultsRef = collection(db, "schools", coachingId, "results");
+      let snap = await getDocs(resultsRef);
+      
+      // If no results in direct collection, try classes subcollection
+      if(snap.empty) {
+        const classesRef = collection(db, "schools", coachingId, "classes");
+        const classesSnap = await getDocs(classesRef);
+        
+        let allResults = [];
+        for(const classDoc of classesSnap.docs) {
+          const resultsRef2 = collection(db, "schools", coachingId, "classes", classDoc.id, "results");
+          const resultsSnap2 = await getDocs(resultsRef2);
+          resultsSnap2.forEach(d => {
+            allResults.push({ id: d.id, ...d.data(), classId: classDoc.id });
+          });
+        }
+        
+        if(allResults.length === 0) {
+          container.innerHTML = '<p>No results published yet.</p>';
+          return;
+        }
+        
+        let html = '';
+        for(const r of allResults) {
+          html += `<div class="result-item" onclick="selectExam('${r.id}', '${r.examName}', '${r.examDate || ''}', '${r.classId || ''}')"><div><strong>${r.examName}</strong><br>${r.examDate || 'Date not available'}</div><i class="fas fa-chevron-right"></i></div>`;
+        }
+        container.innerHTML = html;
         return;
       }
-
-      // Build class filter buttons
-      let filterHtml = '<button class="active" onclick="filterResults(null)">All Classes</button>';
-      const classNames = [];
-      classesSnap.forEach(doc => {
-        classNames.push(doc.id);
-        filterHtml += `<button onclick="filterResults('${doc.id}')">${doc.id}</button>`;
-      });
-      document.getElementById('classFilter').innerHTML = filterHtml;
-
-      // Load all results from all classes
-      allResults = [];
-      for(const className of classNames) {
-        const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
-        const resultsSnap = await getDocs(resultsRef);
-        resultsSnap.forEach(doc => {
-          const data = doc.data();
-          if(data.status === 'published') {
-            allResults.push({
-              id: doc.id,
-              className: className,
-              examName: data.examName || 'Unnamed Exam',
-              createdAt: data.createdAt || 0,
-              data: data
-            });
-          }
-        });
-      }
-
-      // Sort by date (newest first)
-      allResults.sort((a, b) => b.createdAt - a.createdAt);
       
-      displayResults(allResults);
+      // Direct results collection has data
+      if(snap.empty) {
+        container.innerHTML = '<p>No results published yet.</p>';
+        return;
+      }
+      
+      let html = '';
+      snap.forEach(d => {
+        const r = d.data();
+        // Only show published results (skip drafts)
+        if(r.status === 'published' || !r.status) {
+          html += `<div class="result-item" onclick="selectExam('${d.id}', '${r.examName}', '${r.examDate || ''}')"><div><strong>${r.examName}</strong><br>${r.examDate || 'Date not available'}</div><i class="fas fa-chevron-right"></i></div>`;
+        }
+      });
+      
+      if(html === '') {
+        container.innerHTML = '<p>No published results available.</p>';
+      } else {
+        container.innerHTML = html;
+      }
       
     } catch(error) {
-      console.error('Error loading classes:', error);
-      document.getElementById('resultsList').innerHTML = '<p>Error loading results.</p>';
+      console.error('Error loading results:', error);
+      container.innerHTML = '<p>Error loading results. Please try again.</p>';
     }
-  }
-
-  // ===== FILTER RESULTS =====
-  window.filterResults = (className) => {
-    // Update active button
-    document.querySelectorAll('.class-filter button').forEach(btn => {
-      btn.classList.toggle('active', btn.textContent === (className || 'All Classes'));
-    });
-    
-    const filtered = className ? allResults.filter(r => r.className === className) : allResults;
-    displayResults(filtered);
-  };
-
-  // ===== DISPLAY RESULTS =====
-  function displayResults(results) {
-    const container = document.getElementById('resultsList');
-    if(results.length === 0) {
-      container.innerHTML = '<p>No published results found.</p>';
-      return;
-    }
-    
-    let html = '';
-    results.forEach(r => {
-      const date = r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN') : 'No date';
-      html += `
-        <div class="result-item" onclick="selectExam('${r.id}', '${r.className}', '${r.examName}')">
-          <div>
-            <strong>${r.examName}</strong>
-            <span style="font-size:0.7rem; color:#888; margin-left:8px;">${r.className}</span>
-            <br><span style="font-size:0.7rem; color:#999;">📅 ${date}</span>
-          </div>
-          <i class="fas fa-chevron-right"></i>
-        </div>
-      `;
-    });
-    container.innerHTML = html;
   }
 
   // ===== SELECT EXAM =====
-  window.selectExam = (resultId, className, examName) => {
+  window.selectExam = (resultId, examName, examDate, classId) => {
     currentResultId = resultId;
-    currentClass = className;
-    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName} (${className})`;
+    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
     document.getElementById('resultsList').style.display = 'none';
     document.getElementById('rollInputSection').style.display = 'block';
     document.getElementById('resultCard').style.display = 'none';
@@ -262,25 +240,71 @@
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClass, "results", currentResultId, "studentResults", roll));
-      if(!studentDoc.exists()) { alert("Roll number not found"); return; }
+      // Try direct marks collection first
+      let studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "marks", roll));
+      
+      // If not found, try studentResults (mobile app structure)
+      if(!studentDoc.exists()) {
+        studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "studentResults", roll));
+      }
+      
+      if(!studentDoc.exists()) {
+        // Try classes structure
+        const classesSnap = await getDocs(collection(db, "schools", coachingId, "classes"));
+        let found = false;
+        for(const classDoc of classesSnap.docs) {
+          const studentDoc2 = await getDoc(doc(db, "schools", coachingId, "classes", classDoc.id, "results", currentResultId, "studentResults", roll));
+          if(studentDoc2.exists()) {
+            studentDoc = studentDoc2;
+            found = true;
+            break;
+          }
+        }
+        if(!found) {
+          alert("Roll number not found");
+          return;
+        }
+      }
+      
       const student = studentDoc.data();
       
-      // Get subjects from student data
-      const subjectsData = student.subjects || {};
-      const subjects = Object.keys(subjectsData);
+      // Get result data
+      const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+      const resultData = resultDoc.data();
       
+      // Extract subjects and marks
+      let subjects = [];
+      let marks = {};
       let totalObtained = 0;
       let totalMax = 0;
-      let marksMap = {};
       
-      for(const sub of subjects) {
-        const data = subjectsData[sub];
-        const obtained = data.obtained || 0;
-        const total = data.total || 100;
-        marksMap[sub] = obtained;
-        totalObtained += obtained;
-        totalMax += total;
+      // If marks are in mobile app format (subjects map)
+      if(student.subjects) {
+        const subjMap = student.subjects;
+        for(const [key, value] of Object.entries(subjMap)) {
+          subjects.push(key);
+          const obtained = value.obtained || value;
+          const total = value.total || 100;
+          marks[key] = obtained;
+          totalObtained += obtained;
+          totalMax += total;
+        }
+      } else if(student.marks) {
+        // Direct marks format
+        marks = student.marks;
+        subjects = Object.keys(marks);
+        for(const sub of subjects) {
+          totalObtained += marks[sub] || 0;
+          totalMax += 100;
+        }
+      } else if(resultData.subjects) {
+        // Fallback to result subjects
+        subjects = resultData.subjects;
+        for(const sub of subjects) {
+          marks[sub] = student[sub] || student.marks?.[sub] || 0;
+          totalObtained += marks[sub];
+          totalMax += 100;
+        }
       }
       
       const totalPercent = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(2) : 0;
@@ -291,11 +315,7 @@
       else if(totalPercent >= 30) division = 'THIRD DIVISION';
       else division = 'FAIL';
       
-      // Get exam name from result
-      const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClass, "results", currentResultId));
-      const resultData = resultDoc.data();
-      
-      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent('')}&exam=${encodeURIComponent(resultData.examName || 'Exam')}&date=${''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marksMap))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name || '-')}&roll=${roll}&father=${encodeURIComponent(student.fatherName || student.father || '-')}&exam=${encodeURIComponent(resultData.examName)}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       window.open(resultUrl, '_blank');
       goBack();
     } catch(error) {
