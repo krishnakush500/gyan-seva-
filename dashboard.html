@@ -11,15 +11,62 @@
     body { background:linear-gradient(to bottom, #f5f5f5, #e0e7ff); min-height:100vh; padding:20px; }
     .container { max-width:1200px; margin:0 auto; background:white; border-radius:20px; box-shadow:0 5px 20px rgba(0,0,0,0.1); overflow:hidden; }
     
-    .header { background:linear-gradient(to right,#1a237e,#283593,#303f9f); color:white; padding:30px 25px; }
-    .header-content { display:flex; align-items:center; justify-content:center; gap:30px; flex-wrap:wrap; }
-    .coaching-logo { width:120px; height:120px; border-radius:50%; border:3px solid #ffc107; object-fit:cover; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
-    .school-name { font-size:2rem; font-weight:700; margin-bottom:6px; }
-    .location { font-size:0.9rem; opacity:0.85; margin-bottom:12px; }
-    .director-info { display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap; margin-top:5px; }
-    .director-detail { display:inline-flex; align-items:center; gap:8px; font-size:0.9rem; background:rgba(255,255,255,0.12); padding:6px 18px; border-radius:40px; }
+    /* ===== HEADER - CENTER ALIGN ===== */
+    .header { 
+      background:linear-gradient(to right,#1a237e,#283593,#303f9f); 
+      color:white; 
+      padding:30px 25px;
+      text-align: center;
+    }
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .header-text {
+      text-align: center;
+    }
+    .coaching-logo { 
+      width:120px; 
+      height:120px; 
+      border-radius:50%; 
+      border:3px solid #ffc107; 
+      object-fit:cover; 
+      background:#fff; 
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    }
+    .school-name { 
+      font-size:2rem; 
+      font-weight:700; 
+      margin-bottom:6px; 
+    }
+    .location { 
+      font-size:0.9rem; 
+      opacity:0.85; 
+      margin-bottom:12px; 
+    }
+    .director-info { 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      gap:20px; 
+      flex-wrap:wrap; 
+      margin-top:5px; 
+    }
+    .director-detail { 
+      display:inline-flex; 
+      align-items:center; 
+      gap:8px; 
+      font-size:0.9rem; 
+      background:rgba(255,255,255,0.12); 
+      padding:6px 18px; 
+      border-radius:40px; 
+    }
     .director-detail i { color:#ffc107; }
     
+    /* ===== RESULTS SECTION ===== */
     .results-section { padding:25px; background:#f9f9f9; min-height:500px; }
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
@@ -55,11 +102,11 @@
 </head>
 <body>
 <div class="container">
-  <!-- HEADER -->
+  <!-- ===== HEADER - CENTER ALIGN ===== -->
   <div class="header">
     <div class="header-content">
       <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
-      <div>
+      <div class="header-text">
         <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
         <p class="location" id="coachingLocation">Loading...</p>
         <div class="director-info">
@@ -70,7 +117,7 @@
     </div>
   </div>
 
-  <!-- RESULTS SECTION -->
+  <!-- ===== RESULTS SECTION ===== -->
   <div class="results-section">
     <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
     <div id="resultsList" class="results-list">Loading results...</div>
@@ -135,13 +182,11 @@
       if(snap.exists()) {
         const c = snap.data();
         
-        // Set text data
         document.getElementById('coachingName').innerText = c.coachingName || 'GYAN SEVA';
         document.getElementById('coachingLocation').innerText = c.location || 'Bihar, India';
         document.getElementById('directorName').innerText = c.director || 'Director';
         document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
         
-        // ✅ LOGO FIX: logoUrl se image set karo
         const logoElement = document.getElementById('coachingLogo');
         if(c.logoUrl && c.logoUrl.trim() !== '' && c.logoUrl !== 'null') {
           logoElement.src = c.logoUrl;
@@ -152,7 +197,6 @@
           logoElement.src = 'https://via.placeholder.com/120?text=GYAN';
         }
         
-        // Store in localStorage for result-viewer
         localStorage.setItem('coachingName', c.coachingName || 'GYAN SEVA');
         localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
         localStorage.setItem('directorName', c.director || 'Director');
