@@ -145,14 +145,15 @@
         localStorage.setItem('directorPhone', c.phone || 'Not provided');
         localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
         
-        // ✅ First load classes, then results
-        loadAllClassesAndResults();
+        // ✅ Load all classes and results
+        await loadAllClassesAndResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
         document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
       }
     } catch(error) {
       console.error('Error:', error);
+      document.getElementById('resultsList').innerHTML = '<p>Error: ' + error.message + '</p>';
     }
   }
 
@@ -165,8 +166,11 @@
       const classesRef = collection(db, "schools", coachingId, "classes");
       const classesSnap = await getDocs(classesRef);
       
+      // 🔍 DEBUG LOG
+      console.log("📚 Total Classes Found:", classesSnap.size);
+      
       if(classesSnap.empty) {
-        container.innerHTML = '<p>No classes found. Create a class first.</p>';
+        container.innerHTML = '<p>No classes found.</p>';
         return;
       }
       
@@ -175,13 +179,18 @@
       // ✅ Step 2: For each class, get results
       for(const classDoc of classesSnap.docs) {
         const className = classDoc.id;
+        console.log("📖 Class:", className);
+        
         const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
         const resultsSnap = await getDocs(resultsRef);
         
+        console.log("  📊 Results in", className, ":", resultsSnap.size);
+        
         for(const resultDoc of resultsSnap.docs) {
           const data = resultDoc.data();
-          // ✅ Check if result is published
-          // Mobile app sets status = "published" when published
+          console.log("    📄 Result ID:", resultDoc.id, "| Exam:", data.examName, "| Status:", data.status);
+          
+          // ✅ Only published results
           if(data.status === "published") {
             allResults.push({
               id: resultDoc.id,
@@ -194,11 +203,13 @@
         }
       }
       
-      // Sort by createdAt (newest first)
+      // Sort by newest first
       allResults.sort((a, b) => b.createdAt - a.createdAt);
       
+      console.log("✅ Total Published Results:", allResults.length);
+      
       if(allResults.length === 0) {
-        container.innerHTML = '<p>No published results yet. Publish a result from the mobile app.</p>';
+        container.innerHTML = '<p>No published results yet.</p>';
         return;
       }
       
@@ -222,8 +233,8 @@
       container.innerHTML = html;
       
     } catch(error) {
-      console.error('Error loading results:', error);
-      container.innerHTML = '<p>Error loading results. Please refresh.</p>';
+      console.error('Error:', error);
+      container.innerHTML = '<p>Error loading results. Check console.</p>';
     }
   }
 
@@ -239,13 +250,12 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
-  // ===== FETCH RESULT =====
+  // ===== FETCH RESULT (studentResults) =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      // ✅ Exact path: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{roll}
       const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
       
       if(!studentDoc.exists()) {
@@ -255,11 +265,10 @@
       
       const student = studentDoc.data();
       
-      // Get result details
       const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId));
       const resultData = resultDoc.data();
       
-      // Extract subjects and marks
+      // Extract subjects
       const subjectsData = student.subjects || {};
       const subjectNames = Object.keys(subjectsData);
       const marks = {};
