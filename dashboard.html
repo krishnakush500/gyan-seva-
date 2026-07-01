@@ -107,18 +107,23 @@
   import { db } from './firebase-config.js';
   import { collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+  // 🔥 CoachingId = SchoolId (URL parameter se aayega)
   const urlParams = new URLSearchParams(window.location.search);
-  const coachingId = urlParams.get('id');
+  const schoolId = urlParams.get('id');  // ✅ Yeh schoolId hai
   let currentResultId = null;
   let currentClassName = null;
   let currentResultData = null;
 
   // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
-    if(!coachingId) return;
+    if(!schoolId) {
+      document.getElementById('coachingName').innerText = 'Invalid Link';
+      document.getElementById('resultsList').innerHTML = '<p>No coaching ID provided.</p>';
+      return;
+    }
 
     try {
-      const docRef = doc(db, "schools", coachingId);
+      const docRef = doc(db, "schools", schoolId);
       const snap = await getDoc(docRef);
       
       if(snap.exists()) {
@@ -148,14 +153,15 @@
         loadResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
-        document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
+        document.getElementById('resultsList').innerHTML = '<p>Coaching not found. Please check the link.</p>';
       }
     } catch(error) {
       console.error('Error:', error);
+      document.getElementById('coachingName').innerText = 'Error Loading';
     }
   }
 
-  // ===== LOAD RESULTS FROM BOTH PATHS =====
+  // ===== LOAD RESULTS =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     container.innerHTML = 'Loading results...';
@@ -163,14 +169,14 @@
     try {
       let allResults = [];
       
-      // ✅ PATH 1: schools/{coachingId}/classes/{className}/results/{resultId}
+      // ✅ PATH 1: schools/{schoolId}/classes/{className}/results/{resultId}
       try {
-        const classesRef = collection(db, "schools", coachingId, "classes");
+        const classesRef = collection(db, "schools", schoolId, "classes");
         const classesSnap = await getDocs(classesRef);
         
         for(const classDoc of classesSnap.docs) {
           const className = classDoc.id;
-          const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
+          const resultsRef = collection(db, "schools", schoolId, "classes", className, "results");
           const resultsSnap = await getDocs(resultsRef);
           
           for(const resultDoc of resultsSnap.docs) {
@@ -191,14 +197,13 @@
         }
       } catch(e) { console.log('Path 1 error:', e); }
       
-      // ✅ PATH 2: schools/{coachingId}/results/{resultId} (direct)
+      // ✅ PATH 2: schools/{schoolId}/results/{resultId} (direct)
       try {
-        const directResultsRef = collection(db, "schools", coachingId, "results");
+        const directResultsRef = collection(db, "schools", schoolId, "results");
         const directResultsSnap = await getDocs(directResultsRef);
         
         for(const resultDoc of directResultsSnap.docs) {
           const data = resultDoc.data();
-          // Check if published
           if(data.status === 'published' || data.publishedAt || data.published) {
             allResults.push({
               id: resultDoc.id,
@@ -215,7 +220,7 @@
         }
       } catch(e) { console.log('Path 2 error:', e); }
       
-      // Remove duplicates (by id)
+      // Remove duplicates
       const uniqueResults = {};
       allResults.forEach(r => {
         if(!uniqueResults[r.id] || r.isDirect) {
@@ -224,8 +229,6 @@
       });
       
       const finalResults = Object.values(uniqueResults);
-      
-      // Sort by createdAt (newest first)
       finalResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       
       if(finalResults.length === 0) {
@@ -277,23 +280,23 @@
       let resultData = null;
       let className = currentClassName;
       
-      // ✅ Try PATH 1: classes path
+      // Try PATH 1
       try {
-        const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", className, "results", currentResultId, "studentResults", roll));
+        const studentDoc = await getDoc(doc(db, "schools", schoolId, "classes", className, "results", currentResultId, "studentResults", roll));
         if(studentDoc.exists()) {
           studentData = studentDoc.data();
-          const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", className, "results", currentResultId));
+          const resultDoc = await getDoc(doc(db, "schools", schoolId, "classes", className, "results", currentResultId));
           resultData = resultDoc.data();
         }
       } catch(e) { console.log('Fetch Path 1 error:', e); }
       
-      // ✅ Try PATH 2: direct results path
+      // Try PATH 2
       if(!studentData) {
         try {
-          const studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "studentResults", roll));
+          const studentDoc = await getDoc(doc(db, "schools", schoolId, "results", currentResultId, "studentResults", roll));
           if(studentDoc.exists()) {
             studentData = studentDoc.data();
-            const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+            const resultDoc = await getDoc(doc(db, "schools", schoolId, "results", currentResultId));
             resultData = resultDoc.data();
             className = resultData?.className || 'General';
           }
@@ -305,7 +308,6 @@
         return;
       }
       
-      // Get subjects from student data
       const subjectsMap = studentData.subjects || {};
       const subjects = Object.keys(subjectsMap);
       
@@ -319,7 +321,6 @@
       else if(totalPercent >= 30) division = 'THIRD DIVISION';
       else division = 'FAIL';
       
-      // Build marks data
       const marks = {};
       for(const [subject, data] of Object.entries(subjectsMap)) {
         marks[subject] = data.obtained || 0;
