@@ -24,7 +24,7 @@
     .results-section { padding:25px; background:#f9f9f9; min-height:500px; }
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
-    .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; position:relative; }
     .result-item .demo-badge { background:#ffc107; color:#333; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:20px; margin-left:10px; }
     .new-sticker { position:absolute; top:-8px; right:-8px; background:#ff4757; color:white; font-size:0.65rem; font-weight:bold; padding:4px 10px; border-radius:20px; animation:blink 0.8s infinite; box-shadow:0 2px 8px rgba(255,71,87,0.4); z-index:10; }
     @keyframes blink { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.6;transform:scale(0.95);} }
@@ -78,7 +78,7 @@
     </div>
   </div>
 
-  <!-- RESULTS SECTION (Sirf Published Results - Create Result Hata Diya) -->
+  <!-- RESULTS SECTION -->
   <div class="results-section">
     <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
     <div id="resultsList" class="results-list">Loading results...</div>
@@ -131,6 +131,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
   let currentResultId = null;
+  let currentClassName = null;
   let viewedResults = JSON.parse(localStorage.getItem(`viewed_results_${coachingId}`) || '[]');
 
   function markResultAsViewed(resultId) {
@@ -187,15 +188,22 @@
     const container = document.getElementById('resultsList');
     
     try {
-      // ✅ Mobile app ke structure ke hisaab se results fetch karo
+      // ✅ Step 1: classes collection ke saare documents fetch karo
       const classesRef = collection(db, "schools", coachingId, "classes");
       const classesSnap = await getDocs(classesRef);
       
+      if(classesSnap.empty) {
+        container.innerHTML = '<p>No classes found. Create a class first.</p>';
+        return;
+      }
+      
       let allResults = [];
       
+      // ✅ Step 2: Har class ke andar results fetch karo
       for(const classDoc of classesSnap.docs) {
-        const resultsRef = collection(db, "schools", coachingId, "classes", classDoc.id, "results");
-        // ✅ Sirf published results fetch karo
+        const className = classDoc.id;
+        const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
+        // Sirf published results
         const q = query(resultsRef, where("status", "==", "published"));
         const resultsSnap = await getDocs(q);
         
@@ -205,7 +213,7 @@
             id: d.id,
             examName: data.examName || 'Unnamed Exam',
             examDate: data.examDate || 'Date not available',
-            className: classDoc.id,
+            className: className,
             createdAt: data.createdAt || 0,
             status: data.status,
             isDemo: data.isDemo || false,
@@ -215,10 +223,10 @@
       }
       
       // ✅ Sort by createdAt (newest first)
-      allResults.sort((a, b) => b.createdAt - a.createdAt);
+      allResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       
       if(allResults.length === 0) {
-        container.innerHTML = '<p>No published results yet.</p>';
+        container.innerHTML = '<p>No published results yet. Publish a result from the mobile app first.</p>';
         return;
       }
       
@@ -229,7 +237,7 @@
         const demoBadge = result.isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
         
         html += `
-          <div class="result-item" onclick="selectExam('${result.id}', '${result.examName}', '${result.examDate || 'Date not available'}', '${result.className}')" style="position:relative;">
+          <div class="result-item" onclick="selectExam('${result.id}', '${result.examName}', '${result.examDate || 'Date not available'}', '${result.className}')">
             ${newSticker}
             <div>
               <strong>${result.examName}</strong> ${demoBadge}
@@ -252,7 +260,8 @@
   // ===== SELECT EXAM =====
   window.selectExam = (resultId, examName, examDate, className) => {
     currentResultId = resultId;
-    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
+    currentClassName = className;
+    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName} (${className})`;
     document.getElementById('resultsList').style.display = 'none';
     document.getElementById('rollInputSection').style.display = 'block';
     document.getElementById('resultCard').style.display = 'none';
@@ -268,19 +277,10 @@
     showProgress();
     
     try {
-      // ✅ Pehle result document fetch karo
-      const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", "All", "results", currentResultId));
-      
-      if(!resultDoc.exists()) {
-        hideProgress();
-        alert("Result not found");
-        return;
-      }
-      
-      const resultData = resultDoc.data();
-      
-      // ✅ Student marks fetch karo
-      const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", "All", "results", currentResultId, "studentResults", roll));
+      // ✅ Correct path: schools/{coachingId}/classes/{className}/results/{resultId}/studentResults/{roll}
+      const studentDoc = await getDoc(
+        doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId, "studentResults", roll)
+      );
       
       if(!studentDoc.exists()) {
         hideProgress();
@@ -289,6 +289,12 @@
       }
       
       const student = studentDoc.data();
+      
+      // ✅ Get result data for exam name
+      const resultDoc = await getDoc(
+        doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId)
+      );
+      const resultData = resultDoc.exists() ? resultDoc.data() : { examName: 'Exam', examDate: '' };
       
       // ✅ Mark as viewed
       markResultAsViewed(currentResultId);
