@@ -134,6 +134,8 @@
   let currentClassName = null;
   let viewedResults = JSON.parse(localStorage.getItem(`viewed_results_${coachingId}`) || '[]');
 
+  console.log("🔍 Coaching ID:", coachingId);
+
   function markResultAsViewed(resultId) {
     if (!viewedResults.includes(resultId)) {
       viewedResults.push(resultId);
@@ -150,7 +152,11 @@
 
   // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
-    if(!coachingId) return;
+    if(!coachingId) {
+      document.getElementById('resultsList').innerHTML = '<p>❌ No coaching ID provided in URL.</p>';
+      return;
+    }
+    
     try {
       const snap = await getDoc(doc(db, "schools", coachingId));
       if(snap.exists()) {
@@ -175,11 +181,12 @@
         
         loadPublishedResults();
       } else {
-        document.getElementById('coachingName').innerText = 'Coaching Not Found';
-        document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
+        document.getElementById('coachingName').innerText = '❌ Coaching Not Found';
+        document.getElementById('resultsList').innerHTML = `<p>❌ Coaching with ID "${coachingId}" not found.</p>`;
       }
     } catch(error) {
-      console.error('Error:', error);
+      console.error('Error loading coaching:', error);
+      document.getElementById('coachingName').innerText = '⚠️ Error Loading';
     }
   }
 
@@ -195,7 +202,7 @@
       console.log("📚 Total classes found:", classesSnap.size);
       
       if(classesSnap.empty) {
-        container.innerHTML = '<p>No classes found. Create a class from mobile app first.</p>';
+        container.innerHTML = '📭 No classes found. Create a class from mobile app first.';
         return;
       }
       
@@ -257,7 +264,7 @@
       
     } catch(error) {
       console.error('Error loading results:', error);
-      container.innerHTML = '<p>Error loading results. Please refresh.</p>';
+      container.innerHTML = '<p>⚠️ Error loading results. Please refresh.</p>';
     }
   }
 
@@ -281,7 +288,6 @@
     showProgress();
     
     try {
-      // ✅ Correct path: schools/{coachingId}/classes/{className}/results/{resultId}/studentResults/{roll}
       const studentDoc = await getDoc(
         doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId, "studentResults", roll)
       );
