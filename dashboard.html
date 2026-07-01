@@ -162,24 +162,24 @@
     const container = document.getElementById('resultsList');
     
     try {
-      // ✅ Step 1: Get all classes
+      // ✅ STEP 1: Get all classes
       const classesRef = collection(db, "schools", coachingId, "classes");
       const classesSnap = await getDocs(classesRef);
       
-      // 🔍 DEBUG LOG
-      console.log("📚 Total Classes Found:", classesSnap.size);
+      console.log("📚 Classes found:", classesSnap.size);
       
       if(classesSnap.empty) {
-        container.innerHTML = '<p>No classes found.</p>';
+        container.innerHTML = '<p>No classes found. Please create a class from the mobile app first.</p>';
+        console.log("❌ No classes found at path: schools/" + coachingId + "/classes");
         return;
       }
       
       let allResults = [];
       
-      // ✅ Step 2: For each class, get results
+      // ✅ STEP 2: For each class, get results
       for(const classDoc of classesSnap.docs) {
         const className = classDoc.id;
-        console.log("📖 Class:", className);
+        console.log("📖 Processing class:", className);
         
         const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
         const resultsSnap = await getDocs(resultsRef);
@@ -190,7 +190,6 @@
           const data = resultDoc.data();
           console.log("    📄 Result ID:", resultDoc.id, "| Exam:", data.examName, "| Status:", data.status);
           
-          // ✅ Only published results
           if(data.status === "published") {
             allResults.push({
               id: resultDoc.id,
@@ -203,13 +202,12 @@
         }
       }
       
-      // Sort by newest first
       allResults.sort((a, b) => b.createdAt - a.createdAt);
       
       console.log("✅ Total Published Results:", allResults.length);
       
       if(allResults.length === 0) {
-        container.innerHTML = '<p>No published results yet.</p>';
+        container.innerHTML = '<p>No published results yet. Publish a result from the mobile app.</p>';
         return;
       }
       
@@ -233,8 +231,8 @@
       container.innerHTML = html;
       
     } catch(error) {
-      console.error('Error:', error);
-      container.innerHTML = '<p>Error loading results. Check console.</p>';
+      console.error('Error loading results:', error);
+      container.innerHTML = '<p>Error loading results. Check console for details.</p>';
     }
   }
 
@@ -250,7 +248,7 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
-  // ===== FETCH RESULT (studentResults) =====
+  // ===== FETCH RESULT =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
@@ -268,7 +266,6 @@
       const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId));
       const resultData = resultDoc.data();
       
-      // Extract subjects
       const subjectsData = student.subjects || {};
       const subjectNames = Object.keys(subjectsData);
       const marks = {};
