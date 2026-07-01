@@ -25,7 +25,6 @@
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
     .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
-    .result-item .demo-badge { background:#ffc107; color:#333; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:20px; margin-left:10px; }
     
     .roll-input-section { background:white; padding:20px; border-radius:10px; margin-top:15px; text-align:center; display:none; }
     .input-group { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
@@ -55,7 +54,7 @@
   <!-- HEADER -->
   <div class="header">
     <div class="header-content">
-      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
+      <img id="coachingLogo" class="coaching-logo" src="https://qfmmgeodabytpuzkarrb.supabase.co/storage/v1/object/public/logos/logo_efefa969-ad55-44ea-a5ae-e66e79ebc054.jpg" alt="Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 fill=%22%231a237e%22/%3E%3Ctext x=%2260%22 y=%2270%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22%3EGS%3C/text%3E%3C/svg%3E'">
       <div class="header-text">
         <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
         <p class="location" id="coachingLocation">Loading...</p>
@@ -105,16 +104,14 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, doc, getDoc, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const urlParams = new URLSearchParams(window.location.search);
   const schoolId = urlParams.get('id');
   let currentResultId = null;
   let currentClassName = null;
 
-  console.log("🔍 SCHOOL ID:", schoolId);
-
-  // ===== LOAD HEADER =====
+  // ===== HEADER =====
   async function loadCoaching() {
     if(!schoolId) {
       document.getElementById('coachingName').innerText = 'Invalid Link';
@@ -128,82 +125,53 @@
       
       if(snap.exists()) {
         const c = snap.data();
-        console.log("✅ Coaching Data Loaded:", c);
         document.getElementById('coachingName').innerText = c.coachingName || 'GYAN SEVA';
         document.getElementById('coachingLocation').innerText = c.location || 'Bihar, India';
         document.getElementById('directorName').innerText = c.director || 'Director';
         document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
-        
-        const logoElement = document.getElementById('coachingLogo');
-        if(c.logoUrl && c.logoUrl.trim() !== '' && c.logoUrl !== 'null') {
-          logoElement.src = c.logoUrl;
-        } else {
-          logoElement.src = 'https://via.placeholder.com/120?text=GYAN';
-        }
-        
         loadResults();
       } else {
-        console.error("❌ School not found:", schoolId);
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
         document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
       }
     } catch(error) {
-      console.error('❌ Error loading coaching:', error);
+      console.error('Error:', error);
     }
   }
 
-  // ===== LOAD RESULTS =====
+  // ===== LOAD RESULTS - DIRECT PATH =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     container.innerHTML = 'Loading results...';
     
     try {
-      console.log("🔍 Fetching classes for school:", schoolId);
+      // ✅ DIRECT PATH: schools/{schoolId}/classes/Class 12/results
+      const resultsRef = collection(db, "schools", schoolId, "classes", "Class 12", "results");
+      const resultsSnap = await getDocs(resultsRef);
       
-      // ✅ PATH: schools/{schoolId}/classes
-      const classesRef = collection(db, "schools", schoolId, "classes");
-      const classesSnap = await getDocs(classesRef);
+      console.log("📊 Total results found:", resultsSnap.size);
       
-      console.log("📚 Classes found:", classesSnap.size);
-      
-      if(classesSnap.empty) {
-        console.warn("⚠️ No classes found in this school");
-        container.innerHTML = '<p>No classes found. Create a class first.</p>';
+      if(resultsSnap.empty) {
+        container.innerHTML = '<p>No published results yet.</p>';
         return;
       }
       
       let allResults = [];
-      
-      for(const classDoc of classesSnap.docs) {
-        const className = classDoc.id;
-        console.log("📁 Checking class:", className);
-        
-        // ✅ PATH: schools/{schoolId}/classes/{className}/results
-        const resultsRef = collection(db, "schools", schoolId, "classes", className, "results");
-        const q = query(resultsRef, where("status", "==", "published"));
-        const resultsSnap = await getDocs(q);
-        
-        console.log(`📊 Results in ${className}:`, resultsSnap.size);
-        
-        for(const resultDoc of resultsSnap.docs) {
-          const data = resultDoc.data();
-          console.log(`✅ Result found: ${data.examName} (${className})`);
+      for(const resultDoc of resultsSnap.docs) {
+        const data = resultDoc.data();
+        if(data.status === 'published') {
           allResults.push({
             id: resultDoc.id,
-            className: className,
+            className: 'Class 12',
             examName: data.examName || 'Unnamed Exam',
             examDate: data.examDate || '',
-            status: data.status || 'published',
             createdAt: data.createdAt || 0,
             createdByName: data.createdByName || 'Unknown'
           });
         }
       }
       
-      // Newest first
       allResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-      
-      console.log(`✅ Total published results found: ${allResults.length}`);
       
       if(allResults.length === 0) {
         container.innerHTML = '<p>No published results yet.</p>';
@@ -212,12 +180,9 @@
       
       let html = '';
       for(const result of allResults) {
-        const isDemo = !result.createdByName || result.createdByName === 'Unknown' || result.createdByName.includes('Demo');
-        const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
-        
         html += `<div class="result-item" onclick="selectExam('${result.id}', '${result.className}', '${result.examName}', '${result.examDate}')">
           <div>
-            <strong>${result.examName} ${demoBadge}</strong>
+            <strong>${result.examName}</strong>
             <br>${result.examDate || 'Date not available'} | ${result.className}
             ${result.createdByName ? `<span style="font-size:0.7rem; color:#888;"> | by ${result.createdByName}</span>` : ''}
           </div>
@@ -227,8 +192,8 @@
       container.innerHTML = html;
       
     } catch(error) {
-      console.error('❌ Error loading results:', error);
-      container.innerHTML = '<p>Error loading results: ' + error.message + '</p>';
+      console.error('Error:', error);
+      container.innerHTML = '<p>Error loading results. Please check console.</p>';
     }
   }
 
@@ -241,7 +206,6 @@
     document.getElementById('rollInputSection').style.display = 'block';
     document.getElementById('resultCard').style.display = 'none';
     document.getElementById('rollInput').value = '';
-    document.getElementById('rollHint').innerHTML = '';
   };
 
   // ===== FETCH STUDENT RESULT =====
