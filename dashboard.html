@@ -183,7 +183,7 @@
     }
   }
 
-  // ===== LOAD PUBLISHED RESULTS =====
+  // ===== LOAD PUBLISHED RESULTS (Directly from classes collection) =====
   async function loadPublishedResults() {
     const container = document.getElementById('resultsList');
     
@@ -192,7 +192,7 @@
       const classesSnap = await getDocs(classesRef);
       
       if(classesSnap.empty) {
-        container.innerHTML = '<p>No classes found. Create a class first.</p>';
+        container.innerHTML = 'No classes found. Please create a class from the mobile app first.';
         return;
       }
       
@@ -222,7 +222,7 @@
       allResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       
       if(allResults.length === 0) {
-        container.innerHTML = '<p>No published results yet. Publish a result from the mobile app first.</p>';
+        container.innerHTML = 'No published results yet. Publish a result from the mobile app first.';
         return;
       }
       
@@ -249,7 +249,7 @@
       
     } catch(error) {
       console.error('Error loading results:', error);
-      container.innerHTML = '<p>Error loading results. Please refresh.</p>';
+      container.innerHTML = 'Error loading results. Please refresh.';
     }
   }
 
@@ -273,7 +273,6 @@
     showProgress();
     
     try {
-      // ✅ Correct path: schools/{coachingId}/classes/{className}/results/{resultId}/studentResults/{roll}
       const studentDoc = await getDoc(
         doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId, "studentResults", roll)
       );
