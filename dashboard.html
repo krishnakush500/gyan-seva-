@@ -67,7 +67,7 @@
     </div>
   </div>
 
-  <!-- RESULTS SECTION (Only Published Results - No Create Option) -->
+  <!-- RESULTS SECTION -->
   <div class="results-section">
     <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
     <div id="resultsList" class="results-list">Loading results...</div>
@@ -105,12 +105,13 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
   let currentResultId = null;
   let currentResultData = null;
+  let currentClassName = null;
 
   // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
@@ -154,15 +155,12 @@
     }
   }
 
-  // ===== LOAD RESULTS (From Mobile App Structure) =====
+  // ===== LOAD RESULTS (Exact Path: schools/{schoolId}/classes/{className}/results/) =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     
-    // ✅ Mobile app structure: schools/{schoolId}/classes/{className}/results/
-    // But mobile app stores results under "classes" subcollection
-    // We need to fetch all classes and their results
-    
     try {
+      // Step 1: Get all classes
       const classesRef = collection(db, "schools", coachingId, "classes");
       const classesSnap = await getDocs(classesRef);
       
@@ -173,6 +171,7 @@
       
       let allResults = [];
       
+      // Step 2: For each class, get published results
       for(const classDoc of classesSnap.docs) {
         const className = classDoc.id;
         const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
@@ -180,8 +179,8 @@
         
         for(const resultDoc of resultsSnap.docs) {
           const data = resultDoc.data();
-          // ✅ Only show published results
-          if(data.status === 'published') {
+          // ✅ Only show published results (status = "published")
+          if(data.status === "published") {
             allResults.push({
               id: resultDoc.id,
               className: className,
@@ -229,6 +228,7 @@
   // ===== SELECT EXAM =====
   window.selectExam = (resultId, className, examName) => {
     currentResultId = resultId;
+    currentClassName = className;
     document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${className} - ${examName}`;
     document.getElementById('resultsList').style.display = 'none';
     document.getElementById('rollInputSection').style.display = 'block';
@@ -237,59 +237,44 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
-  // ===== FETCH RESULT =====
+  // ===== FETCH RESULT (Exact Path: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{rollNo}) =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      // Find which class has this result
-      const classesRef = collection(db, "schools", coachingId, "classes");
-      const classesSnap = await getDocs(classesRef);
+      // ✅ Exact path matching mobile app
+      const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
       
-      let foundClass = null;
-      for(const classDoc of classesSnap.docs) {
-        const resultRef = doc(db, "schools", coachingId, "classes", classDoc.id, "results", currentResultId);
-        const resultSnap = await getDoc(resultRef);
-        if(resultSnap.exists()) {
-          foundClass = classDoc.id;
-          currentResultData = resultSnap.data();
-          break;
-        }
-      }
-      
-      if(!foundClass || !currentResultData) {
-        alert("Result not found");
-        return;
-      }
-      
-      // Fetch student marks
-      const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", foundClass, "results", currentResultId, "studentResults", roll));
       if(!studentDoc.exists()) {
         alert("Roll number not found");
         return;
       }
       
       const student = studentDoc.data();
-      const subjects = student.subjects || {};
+      
+      // Get result details
+      const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId));
+      const resultData = resultDoc.data();
+      
+      // Extract subjects and marks
+      const subjectsData = student.subjects || {};
+      const subjectNames = Object.keys(subjectsData);
+      const marks = {};
+      
+      for(const [key, value] of Object.entries(subjectsData)) {
+        marks[key] = value.obtained || 0;
+      }
+      
       const totalPercent = student.percentage || 0;
       
-      // Calculate division
       let division = '';
       if(totalPercent >= 60) division = 'FIRST DIVISION';
       else if(totalPercent >= 45) division = 'SECOND DIVISION';
       else if(totalPercent >= 30) division = 'THIRD DIVISION';
       else division = 'FAIL';
       
-      // Build marks object
-      const marks = {};
-      const subjectNames = [];
-      for(const [key, value] of Object.entries(subjects)) {
-        marks[key] = value.obtained || 0;
-        subjectNames.push(key);
-      }
-      
-      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name || '')}&roll=${roll}&father=${encodeURIComponent('')}&exam=${encodeURIComponent(currentResultData.examName || '')}&date=${encodeURIComponent('')}&subjects=${encodeURIComponent(JSON.stringify(subjectNames))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name || '')}&roll=${roll}&father=${encodeURIComponent('')}&exam=${encodeURIComponent(resultData.examName || '')}&date=${encodeURIComponent('')}&subjects=${encodeURIComponent(JSON.stringify(subjectNames))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       
       window.open(resultUrl, '_blank');
       goBack();
