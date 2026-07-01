@@ -183,26 +183,34 @@
     }
   }
 
-  // ===== LOAD PUBLISHED RESULTS (Directly from classes collection) =====
+  // ===== LOAD PUBLISHED RESULTS =====
   async function loadPublishedResults() {
     const container = document.getElementById('resultsList');
     
     try {
+      // ✅ Sabhi classes fetch karo
       const classesRef = collection(db, "schools", coachingId, "classes");
       const classesSnap = await getDocs(classesRef);
       
+      console.log("📚 Total classes found:", classesSnap.size);
+      
       if(classesSnap.empty) {
-        container.innerHTML = 'No classes found. Please create a class from the mobile app first.';
+        container.innerHTML = '<p>No classes found. Create a class from mobile app first.</p>';
         return;
       }
       
       let allResults = [];
       
+      // ✅ Har class ke andar results fetch karo
       for(const classDoc of classesSnap.docs) {
         const className = classDoc.id;
+        console.log("📖 Checking class:", className);
+        
         const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
         const q = query(resultsRef, where("status", "==", "published"));
         const resultsSnap = await getDocs(q);
+        
+        console.log(`📊 ${className} - Results found:`, resultsSnap.size);
         
         resultsSnap.forEach(d => {
           const data = d.data();
@@ -222,7 +230,7 @@
       allResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       
       if(allResults.length === 0) {
-        container.innerHTML = 'No published results yet. Publish a result from the mobile app first.';
+        container.innerHTML = '📭 No published results yet. Publish a result from the mobile app first.';
         return;
       }
       
@@ -238,7 +246,7 @@
             <div>
               <strong>${result.examName}</strong> ${demoBadge}
               <br>${result.examDate || 'Date not available'}
-              <br><span style="font-size:0.7rem; color:#888;">${result.className}</span>
+              <br><span style="font-size:0.7rem; color:#888;">📚 ${result.className}</span>
             </div>
             <i class="fas fa-chevron-right"></i>
           </div>
@@ -249,7 +257,7 @@
       
     } catch(error) {
       console.error('Error loading results:', error);
-      container.innerHTML = 'Error loading results. Please refresh.';
+      container.innerHTML = '<p>Error loading results. Please refresh.</p>';
     }
   }
 
@@ -273,6 +281,7 @@
     showProgress();
     
     try {
+      // ✅ Correct path: schools/{coachingId}/classes/{className}/results/{resultId}/studentResults/{roll}
       const studentDoc = await getDoc(
         doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId, "studentResults", roll)
       );
