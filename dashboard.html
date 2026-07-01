@@ -105,7 +105,7 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
@@ -145,7 +145,8 @@
         localStorage.setItem('directorPhone', c.phone || 'Not provided');
         localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
         
-        loadResults();
+        // ✅ First load classes, then results
+        loadAllClassesAndResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
         document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
@@ -155,23 +156,23 @@
     }
   }
 
-  // ===== LOAD RESULTS (Exact Path: schools/{schoolId}/classes/{className}/results/) =====
-  async function loadResults() {
+  // ===== LOAD ALL CLASSES AND THEIR PUBLISHED RESULTS =====
+  async function loadAllClassesAndResults() {
     const container = document.getElementById('resultsList');
     
     try {
-      // Step 1: Get all classes
+      // ✅ Step 1: Get all classes
       const classesRef = collection(db, "schools", coachingId, "classes");
       const classesSnap = await getDocs(classesRef);
       
       if(classesSnap.empty) {
-        container.innerHTML = '<p>No results published yet.</p>';
+        container.innerHTML = '<p>No classes found. Create a class first.</p>';
         return;
       }
       
       let allResults = [];
       
-      // Step 2: For each class, get published results
+      // ✅ Step 2: For each class, get results
       for(const classDoc of classesSnap.docs) {
         const className = classDoc.id;
         const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
@@ -179,7 +180,8 @@
         
         for(const resultDoc of resultsSnap.docs) {
           const data = resultDoc.data();
-          // ✅ Only show published results (status = "published")
+          // ✅ Check if result is published
+          // Mobile app sets status = "published" when published
           if(data.status === "published") {
             allResults.push({
               id: resultDoc.id,
@@ -196,7 +198,7 @@
       allResults.sort((a, b) => b.createdAt - a.createdAt);
       
       if(allResults.length === 0) {
-        container.innerHTML = '<p>No published results yet.</p>';
+        container.innerHTML = '<p>No published results yet. Publish a result from the mobile app.</p>';
         return;
       }
       
@@ -210,9 +212,9 @@
         
         html += `<div class="result-item" onclick="selectExam('${result.id}', '${result.className}', '${result.examName}')">
           <div>
-            <strong>${result.examName}</strong>
+            <strong>📘 ${result.examName}</strong>
             <br>
-            <span style="font-size:0.75rem; color:#666;">${result.className} | ${date}</span>
+            <span style="font-size:0.75rem; color:#666;">📚 ${result.className} | 📅 ${date}</span>
           </div>
           <i class="fas fa-chevron-right"></i>
         </div>`;
@@ -237,13 +239,13 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
-  // ===== FETCH RESULT (Exact Path: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{rollNo}) =====
+  // ===== FETCH RESULT =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      // ✅ Exact path matching mobile app
+      // ✅ Exact path: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{roll}
       const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
       
       if(!studentDoc.exists()) {
