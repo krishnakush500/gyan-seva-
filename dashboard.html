@@ -11,6 +11,7 @@
     body { background:linear-gradient(to bottom, #f5f5f5, #e0e7ff); min-height:100vh; padding:20px; }
     .container { max-width:1200px; margin:0 auto; background:white; border-radius:20px; box-shadow:0 5px 20px rgba(0,0,0,0.1); overflow:hidden; }
     
+    /* ===== HEADER ===== */
     .header { background:linear-gradient(to right,#1a237e,#283593,#303f9f); color:white; padding:30px 25px; }
     .header-content { display:flex; align-items:center; justify-content:center; gap:30px; flex-wrap:wrap; }
     .coaching-logo { width:120px; height:120px; border-radius:50%; border:3px solid #ffc107; object-fit:cover; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
@@ -21,6 +22,7 @@
     .director-detail { display:inline-flex; align-items:center; gap:8px; font-size:0.9rem; background:rgba(255,255,255,0.12); padding:6px 18px; border-radius:40px; }
     .director-detail i { color:#ffc107; }
     
+    /* ===== RESULTS SECTION ===== */
     .results-section { padding:25px; background:#f9f9f9; min-height:500px; }
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
@@ -30,7 +32,6 @@
     .input-group { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
     .input-group input { padding:10px; border-radius:8px; border:1px solid #ccc; width:200px; }
     .result-btn { padding:10px 20px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer; }
-    .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     
     .result-card { display:none; background:white; border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 5px 15px rgba(0,0,0,0.1); overflow-x:auto; }
     .student-info { background:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:15px; display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; }
@@ -42,17 +43,18 @@
     
     .action-buttons { display:flex; justify-content:center; gap:10px; margin-top:20px; flex-wrap:wrap; }
     .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
+    .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
     
-    footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f9; }
+    footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
     
     @media (max-width:768px){ .coaching-logo{ width:90px; height:90px; } .school-name{ font-size:1.5rem; } }
   </style>
 </head>
 <body>
 <div class="container">
-  <!-- HEADER -->
+  <!-- ===== HEADER ===== -->
   <div class="header">
     <div class="header-content">
       <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
@@ -67,11 +69,12 @@
     </div>
   </div>
 
-  <!-- RESULTS SECTION -->
+  <!-- ===== RESULTS SECTION (Sirf Published Results) ===== -->
   <div class="results-section">
     <h2 class="section-title"><i class="fas fa-history"></i> Published Results</h2>
     <div id="resultsList" class="results-list">Loading results...</div>
     
+    <!-- Roll Input -->
     <div id="rollInputSection" class="roll-input-section" style="display:none;">
       <h3 id="selectedExamName">Enter Roll Number</h3>
       <div class="input-group">
@@ -82,6 +85,7 @@
       <div class="hint-text" id="rollHint"></div>
     </div>
     
+    <!-- Result Card -->
     <div id="resultCard" class="result-card" style="display:none;">
       <div class="result-card-header"><h2 id="resultExamName">Exam Name</h2></div>
       <div class="student-info">
@@ -95,7 +99,7 @@
       <div class="percentage-display" id="totalPercent">Total: 0%</div>
       <div class="action-buttons">
         <button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button>
-        <button class="result-btn" onclick="goBack()" style="background:#6c757d;">⬅ Back</button>
+        <button class="back-btn" onclick="goBack()">⬅ Back</button>
       </div>
     </div>
   </div>
@@ -110,8 +114,6 @@
   const urlParams = new URLSearchParams(window.location.search);
   const coachingId = urlParams.get('id');
   let currentResultId = null;
-  let currentResultData = null;
-  let currentClassName = null;
 
   // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
@@ -145,102 +147,39 @@
         localStorage.setItem('directorPhone', c.phone || 'Not provided');
         localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
         
-        // ✅ Load all classes and results
-        await loadAllClassesAndResults();
+        loadResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
         document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
       }
     } catch(error) {
       console.error('Error:', error);
-      document.getElementById('resultsList').innerHTML = '<p>Error: ' + error.message + '</p>';
     }
   }
 
-  // ===== LOAD ALL CLASSES AND THEIR PUBLISHED RESULTS =====
-  async function loadAllClassesAndResults() {
+  // ===== LOAD RESULTS =====
+  async function loadResults() {
     const container = document.getElementById('resultsList');
+    const resultsRef = collection(db, "schools", coachingId, "results");
+    const snap = await getDocs(resultsRef);
     
-    try {
-      // ✅ STEP 1: Get all classes
-      const classesRef = collection(db, "schools", coachingId, "classes");
-      const classesSnap = await getDocs(classesRef);
-      
-      console.log("📚 Classes found:", classesSnap.size);
-      
-      if(classesSnap.empty) {
-        container.innerHTML = '<p>No classes found. Please create a class from the mobile app first.</p>';
-        console.log("❌ No classes found at path: schools/" + coachingId + "/classes");
-        return;
-      }
-      
-      let allResults = [];
-      
-      // ✅ STEP 2: For each class, get results
-      for(const classDoc of classesSnap.docs) {
-        const className = classDoc.id;
-        console.log("📖 Processing class:", className);
-        
-        const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
-        const resultsSnap = await getDocs(resultsRef);
-        
-        console.log("  📊 Results in", className, ":", resultsSnap.size);
-        
-        for(const resultDoc of resultsSnap.docs) {
-          const data = resultDoc.data();
-          console.log("    📄 Result ID:", resultDoc.id, "| Exam:", data.examName, "| Status:", data.status);
-          
-          if(data.status === "published") {
-            allResults.push({
-              id: resultDoc.id,
-              className: className,
-              examName: data.examName || 'Unnamed Exam',
-              createdAt: data.createdAt || 0,
-              data: data
-            });
-          }
-        }
-      }
-      
-      allResults.sort((a, b) => b.createdAt - a.createdAt);
-      
-      console.log("✅ Total Published Results:", allResults.length);
-      
-      if(allResults.length === 0) {
-        container.innerHTML = '<p>No published results yet. Publish a result from the mobile app.</p>';
-        return;
-      }
-      
-      let html = '';
-      for(const result of allResults) {
-        const date = result.createdAt ? new Date(result.createdAt).toLocaleDateString('en-IN', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric'
-        }) : 'Date not available';
-        
-        html += `<div class="result-item" onclick="selectExam('${result.id}', '${result.className}', '${result.examName}')">
-          <div>
-            <strong>📘 ${result.examName}</strong>
-            <br>
-            <span style="font-size:0.75rem; color:#666;">📚 ${result.className} | 📅 ${date}</span>
-          </div>
-          <i class="fas fa-chevron-right"></i>
-        </div>`;
-      }
-      container.innerHTML = html;
-      
-    } catch(error) {
-      console.error('Error loading results:', error);
-      container.innerHTML = '<p>Error loading results. Check console for details.</p>';
+    if(snap.empty) {
+      container.innerHTML = '<p>No results published yet.</p>';
+      return;
     }
+    
+    let html = '';
+    snap.forEach(d => {
+      const r = d.data();
+      html += `<div class="result-item" onclick="selectExam('${d.id}', '${r.examName}', '${r.examDate}')"><div><strong>${r.examName}</strong><br>${r.examDate}</div><i class="fas fa-chevron-right"></i></div>`;
+    });
+    container.innerHTML = html;
   }
 
   // ===== SELECT EXAM =====
-  window.selectExam = (resultId, className, examName) => {
+  window.selectExam = (resultId, examName, examDate) => {
     currentResultId = resultId;
-    currentClassName = className;
-    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${className} - ${examName}`;
+    document.getElementById('selectedExamName').innerHTML = `Enter Roll Number for: ${examName}`;
     document.getElementById('resultsList').style.display = 'none';
     document.getElementById('rollInputSection').style.display = 'block';
     document.getElementById('resultCard').style.display = 'none';
@@ -254,27 +193,21 @@
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
-      
-      if(!studentDoc.exists()) {
-        alert("Roll number not found");
-        return;
-      }
-      
+      const studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "marks", roll));
+      if(!studentDoc.exists()) { alert("Roll number not found"); return; }
       const student = studentDoc.data();
       
-      const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId));
+      const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
       const resultData = resultDoc.data();
+      const subjects = resultData.subjects || [];
       
-      const subjectsData = student.subjects || {};
-      const subjectNames = Object.keys(subjectsData);
-      const marks = {};
-      
-      for(const [key, value] of Object.entries(subjectsData)) {
-        marks[key] = value.obtained || 0;
+      let totalObtained = 0;
+      let totalMax = 0;
+      for(let sub of subjects) {
+        totalObtained += student.marks[sub] || 0;
+        totalMax += 100;
       }
-      
-      const totalPercent = student.percentage || 0;
+      const totalPercent = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(2) : 0;
       
       let division = '';
       if(totalPercent >= 60) division = 'FIRST DIVISION';
@@ -282,14 +215,11 @@
       else if(totalPercent >= 30) division = 'THIRD DIVISION';
       else division = 'FAIL';
       
-      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name || '')}&roll=${roll}&father=${encodeURIComponent('')}&exam=${encodeURIComponent(resultData.examName || '')}&date=${encodeURIComponent('')}&subjects=${encodeURIComponent(JSON.stringify(subjectNames))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
-      
+      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(resultData.examName)}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(student.marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       window.open(resultUrl, '_blank');
       goBack();
-      
     } catch(error) {
       alert('Error: ' + error.message);
-      console.error(error);
     }
   };
 
