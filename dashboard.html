@@ -111,6 +111,7 @@
   const coachingId = urlParams.get('id');
   let currentResultId = null;
   let currentClassName = null;
+  let currentResultData = null;
 
   // ===== LOAD COACHING DATA =====
   async function loadCoaching() {
@@ -154,52 +155,86 @@
     }
   }
 
-  // ===== LOAD RESULTS FROM classes COLLECTION =====
+  // ===== LOAD RESULTS FROM BOTH PATHS =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     container.innerHTML = 'Loading results...';
     
     try {
-      // ✅ Path: schools/{coachingId}/classes/{className}/results/{resultId}
-      const classesRef = collection(db, "schools", coachingId, "classes");
-      const classesSnap = await getDocs(classesRef);
-      
       let allResults = [];
       
-      for(const classDoc of classesSnap.docs) {
-        const className = classDoc.id;
-        const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
-        const resultsSnap = await getDocs(resultsRef);
+      // ✅ PATH 1: schools/{coachingId}/classes/{className}/results/{resultId}
+      try {
+        const classesRef = collection(db, "schools", coachingId, "classes");
+        const classesSnap = await getDocs(classesRef);
         
-        for(const resultDoc of resultsSnap.docs) {
+        for(const classDoc of classesSnap.docs) {
+          const className = classDoc.id;
+          const resultsRef = collection(db, "schools", coachingId, "classes", className, "results");
+          const resultsSnap = await getDocs(resultsRef);
+          
+          for(const resultDoc of resultsSnap.docs) {
+            const data = resultDoc.data();
+            if(data.status === 'published') {
+              allResults.push({
+                id: resultDoc.id,
+                className: className,
+                examName: data.examName || 'Unnamed Exam',
+                examDate: data.examDate || '',
+                status: data.status,
+                createdAt: data.createdAt || 0,
+                createdBy: data.createdBy || '',
+                createdByName: data.createdByName || 'Unknown'
+              });
+            }
+          }
+        }
+      } catch(e) { console.log('Path 1 error:', e); }
+      
+      // ✅ PATH 2: schools/{coachingId}/results/{resultId} (direct)
+      try {
+        const directResultsRef = collection(db, "schools", coachingId, "results");
+        const directResultsSnap = await getDocs(directResultsRef);
+        
+        for(const resultDoc of directResultsSnap.docs) {
           const data = resultDoc.data();
-          // Only show published results
-          if(data.status === 'published') {
+          // Check if published
+          if(data.status === 'published' || data.publishedAt || data.published) {
             allResults.push({
               id: resultDoc.id,
-              className: className,
+              className: data.className || 'General',
               examName: data.examName || 'Unnamed Exam',
               examDate: data.examDate || '',
-              status: data.status,
-              createdAt: data.createdAt || 0,
+              status: data.status || 'published',
+              createdAt: data.publishedAt || data.createdAt || 0,
               createdBy: data.createdBy || '',
-              createdByName: data.createdByName || 'Unknown'
+              createdByName: data.createdByName || 'Unknown',
+              isDirect: true
             });
           }
         }
-      }
+      } catch(e) { console.log('Path 2 error:', e); }
+      
+      // Remove duplicates (by id)
+      const uniqueResults = {};
+      allResults.forEach(r => {
+        if(!uniqueResults[r.id] || r.isDirect) {
+          uniqueResults[r.id] = r;
+        }
+      });
+      
+      const finalResults = Object.values(uniqueResults);
       
       // Sort by createdAt (newest first)
-      allResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      finalResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       
-      if(allResults.length === 0) {
+      if(finalResults.length === 0) {
         container.innerHTML = '<p>No published results yet.</p>';
         return;
       }
       
       let html = '';
-      for(const result of allResults) {
-        // Check if demo result (createdBy name contains Demo or is empty)
+      for(const result of finalResults) {
         const isDemo = !result.createdByName || result.createdByName === 'Unknown' || result.createdByName.includes('Demo');
         const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
         
@@ -238,26 +273,45 @@
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      // ✅ Path: schools/{coachingId}/classes/{className}/results/{resultId}/studentResults/{roll}
-      const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
+      let studentData = null;
+      let resultData = null;
+      let className = currentClassName;
       
-      if(!studentDoc.exists()) { 
-        alert("Roll number not found"); 
-        return; 
+      // ✅ Try PATH 1: classes path
+      try {
+        const studentDoc = await getDoc(doc(db, "schools", coachingId, "classes", className, "results", currentResultId, "studentResults", roll));
+        if(studentDoc.exists()) {
+          studentData = studentDoc.data();
+          const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", className, "results", currentResultId));
+          resultData = resultDoc.data();
+        }
+      } catch(e) { console.log('Fetch Path 1 error:', e); }
+      
+      // ✅ Try PATH 2: direct results path
+      if(!studentData) {
+        try {
+          const studentDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId, "studentResults", roll));
+          if(studentDoc.exists()) {
+            studentData = studentDoc.data();
+            const resultDoc = await getDoc(doc(db, "schools", coachingId, "results", currentResultId));
+            resultData = resultDoc.data();
+            className = resultData?.className || 'General';
+          }
+        } catch(e) { console.log('Fetch Path 2 error:', e); }
       }
-      const student = studentDoc.data();
       
-      // Get result data for exam name
-      const resultDoc = await getDoc(doc(db, "schools", coachingId, "classes", currentClassName, "results", currentResultId));
-      const resultData = resultDoc.data();
+      if(!studentData) {
+        alert("Roll number not found");
+        return;
+      }
       
       // Get subjects from student data
-      const subjectsMap = student.subjects || {};
+      const subjectsMap = studentData.subjects || {};
       const subjects = Object.keys(subjectsMap);
       
-      let totalObtained = student.totalObtained || 0;
-      let totalMax = student.totalMax || 0;
-      const totalPercent = student.percentage || 0;
+      let totalObtained = studentData.totalObtained || 0;
+      let totalMax = studentData.totalMax || 0;
+      const totalPercent = studentData.percentage || 0;
       
       let division = '';
       if(totalPercent >= 60) division = 'FIRST DIVISION';
@@ -265,13 +319,13 @@
       else if(totalPercent >= 30) division = 'THIRD DIVISION';
       else division = 'FAIL';
       
-      // Build marks data for result-viewer
+      // Build marks data
       const marks = {};
       for(const [subject, data] of Object.entries(subjectsMap)) {
         marks[subject] = data.obtained || 0;
       }
       
-      const resultUrl = `result-viewer.html?name=${encodeURIComponent(student.name)}&roll=${roll}&father=${encodeURIComponent(student.fatherName || '-')}&exam=${encodeURIComponent(resultData.examName || 'Exam')}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+      const resultUrl = `result-viewer.html?name=${encodeURIComponent(studentData.name)}&roll=${roll}&father=${encodeURIComponent(studentData.fatherName || '-')}&exam=${encodeURIComponent(resultData?.examName || 'Exam')}&date=${resultData?.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       window.open(resultUrl, '_blank');
       goBack();
     } catch(error) {
