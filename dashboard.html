@@ -112,6 +112,8 @@
   let currentResultId = null;
   let currentClassName = null;
 
+  console.log("🔍 SCHOOL ID:", schoolId);
+
   // ===== LOAD HEADER =====
   async function loadCoaching() {
     if(!schoolId) {
@@ -126,6 +128,7 @@
       
       if(snap.exists()) {
         const c = snap.data();
+        console.log("✅ Coaching Data Loaded:", c);
         document.getElementById('coachingName').innerText = c.coachingName || 'GYAN SEVA';
         document.getElementById('coachingLocation').innerText = c.location || 'Bihar, India';
         document.getElementById('directorName').innerText = c.director || 'Director';
@@ -140,36 +143,51 @@
         
         loadResults();
       } else {
+        console.error("❌ School not found:", schoolId);
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
         document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
       }
     } catch(error) {
-      console.error('Error:', error);
+      console.error('❌ Error loading coaching:', error);
     }
   }
 
-  // ===== LOAD RESULTS (EXACT MOBILE APP PATH) =====
+  // ===== LOAD RESULTS =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     container.innerHTML = 'Loading results...';
     
     try {
-      // ✅ EXACT PATH: schools/{schoolId}/classes/{className}/results/{resultId}
+      console.log("🔍 Fetching classes for school:", schoolId);
+      
+      // ✅ PATH: schools/{schoolId}/classes
       const classesRef = collection(db, "schools", schoolId, "classes");
       const classesSnap = await getDocs(classesRef);
+      
+      console.log("📚 Classes found:", classesSnap.size);
+      
+      if(classesSnap.empty) {
+        console.warn("⚠️ No classes found in this school");
+        container.innerHTML = '<p>No classes found. Create a class first.</p>';
+        return;
+      }
       
       let allResults = [];
       
       for(const classDoc of classesSnap.docs) {
         const className = classDoc.id;
-        const resultsRef = collection(db, "schools", schoolId, "classes", className, "results");
+        console.log("📁 Checking class:", className);
         
-        // ✅ Mobile app jaisa query: sirf "published" status wale
+        // ✅ PATH: schools/{schoolId}/classes/{className}/results
+        const resultsRef = collection(db, "schools", schoolId, "classes", className, "results");
         const q = query(resultsRef, where("status", "==", "published"));
         const resultsSnap = await getDocs(q);
         
+        console.log(`📊 Results in ${className}:`, resultsSnap.size);
+        
         for(const resultDoc of resultsSnap.docs) {
           const data = resultDoc.data();
+          console.log(`✅ Result found: ${data.examName} (${className})`);
           allResults.push({
             id: resultDoc.id,
             className: className,
@@ -184,6 +202,8 @@
       
       // Newest first
       allResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      
+      console.log(`✅ Total published results found: ${allResults.length}`);
       
       if(allResults.length === 0) {
         container.innerHTML = '<p>No published results yet.</p>';
@@ -207,8 +227,8 @@
       container.innerHTML = html;
       
     } catch(error) {
-      console.error('Error loading results:', error);
-      container.innerHTML = '<p>Error loading results. Please try again.</p>';
+      console.error('❌ Error loading results:', error);
+      container.innerHTML = '<p>Error loading results: ' + error.message + '</p>';
     }
   }
 
@@ -224,13 +244,12 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
-  // ===== FETCH STUDENT RESULT (EXACT PATH) =====
+  // ===== FETCH STUDENT RESULT =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      // ✅ EXACT PATH: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{rollNo}
       const studentDoc = await getDoc(doc(db, "schools", schoolId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
       
       if(!studentDoc.exists()) { 
