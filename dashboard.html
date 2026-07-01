@@ -25,6 +25,7 @@
     .section-title { font-size:1.4rem; color:#1a237e; text-align:center; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #1a237e; display:flex; align-items:center; justify-content:center; gap:8px; }
     .results-list { display:grid; gap:12px; margin-bottom:20px; }
     .result-item { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer; border-left:4px solid #1a237e; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .result-item .demo-badge { background:#ffc107; color:#333; font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:20px; margin-left:10px; }
     
     .roll-input-section { background:white; padding:20px; border-radius:10px; margin-top:15px; text-align:center; display:none; }
     .input-group { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
@@ -54,7 +55,7 @@
   <!-- HEADER -->
   <div class="header">
     <div class="header-content">
-      <img id="coachingLogo" class="coaching-logo" src="https://qfmmgeodabytpuzkarrb.supabase.co/storage/v1/object/public/logos/logo_efefa969-ad55-44ea-a5ae-e66e79ebc054.jpg" alt="Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 fill=%22%231a237e%22/%3E%3Ctext x=%2260%22 y=%2270%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22%3EGS%3C/text%3E%3C/svg%3E'">
+      <img id="coachingLogo" class="coaching-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%231a237e'/%3E%3Ctext x='60' y='70' font-size='40' text-anchor='middle' fill='white' font-family='sans-serif'%3EGS%3C/text%3E%3C/svg%3E" alt="Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%231a237e'/%3E%3Ctext x='60' y='70' font-size='40' text-anchor='middle' fill='white' font-family='sans-serif'%3EGS%3C/text%3E%3C/svg%3E'">
       <div class="header-text">
         <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
         <p class="location" id="coachingLocation">Loading...</p>
@@ -104,14 +105,14 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, doc, getDoc, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const urlParams = new URLSearchParams(window.location.search);
   const schoolId = urlParams.get('id');
   let currentResultId = null;
   let currentClassName = null;
 
-  // ===== HEADER =====
+  // ===== LOAD HEADER =====
   async function loadCoaching() {
     if(!schoolId) {
       document.getElementById('coachingName').innerText = 'Invalid Link';
@@ -129,6 +130,11 @@
         document.getElementById('coachingLocation').innerText = c.location || 'Bihar, India';
         document.getElementById('directorName').innerText = c.director || 'Director';
         document.getElementById('directorPhone').innerText = c.phone || 'Not provided';
+        
+        const logoElement = document.getElementById('coachingLogo');
+        if(c.logoUrl && c.logoUrl.trim() !== '' && c.logoUrl !== 'null') {
+          logoElement.src = c.logoUrl;
+        }
         loadResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
@@ -139,30 +145,34 @@
     }
   }
 
-  // ===== LOAD RESULTS - DIRECT PATH =====
+  // ===== LOAD RESULTS (Mobile App Jaisa) =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     container.innerHTML = 'Loading results...';
     
     try {
-      // ✅ DIRECT PATH: schools/{schoolId}/classes/Class 12/results
-      const resultsRef = collection(db, "schools", schoolId, "classes", "Class 12", "results");
-      const resultsSnap = await getDocs(resultsRef);
+      // ✅ EXACT PATH: schools/{schoolId}/classes/{className}/results/{resultId}
+      const classesRef = collection(db, "schools", schoolId, "classes");
+      const classesSnap = await getDocs(classesRef);
       
-      console.log("📊 Total results found:", resultsSnap.size);
+      let allResults = [];
       
-      if(resultsSnap.empty) {
-        container.innerHTML = '<p>No published results yet.</p>';
+      if(classesSnap.empty) {
+        container.innerHTML = '<p>No classes found. Create a class first.</p>';
         return;
       }
       
-      let allResults = [];
-      for(const resultDoc of resultsSnap.docs) {
-        const data = resultDoc.data();
-        if(data.status === 'published') {
+      for(const classDoc of classesSnap.docs) {
+        const className = classDoc.id;
+        const resultsRef = collection(db, "schools", schoolId, "classes", className, "results");
+        const q = query(resultsRef, where("status", "==", "published"));
+        const resultsSnap = await getDocs(q);
+        
+        for(const resultDoc of resultsSnap.docs) {
+          const data = resultDoc.data();
           allResults.push({
             id: resultDoc.id,
-            className: 'Class 12',
+            className: className,
             examName: data.examName || 'Unnamed Exam',
             examDate: data.examDate || '',
             createdAt: data.createdAt || 0,
@@ -180,20 +190,25 @@
       
       let html = '';
       for(const result of allResults) {
-        html += `<div class="result-item" onclick="selectExam('${result.id}', '${result.className}', '${result.examName}', '${result.examDate}')">
-          <div>
-            <strong>${result.examName}</strong>
-            <br>${result.examDate || 'Date not available'} | ${result.className}
-            ${result.createdByName ? `<span style="font-size:0.7rem; color:#888;"> | by ${result.createdByName}</span>` : ''}
+        const isDemo = !result.createdByName || result.createdByName === 'Unknown' || result.createdByName.includes('Demo');
+        const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
+        
+        html += `
+          <div class="result-item" onclick="selectExam('${result.id}', '${result.className}', '${result.examName}', '${result.examDate}')">
+            <div>
+              <strong>${result.examName} ${demoBadge}</strong>
+              <br>${result.examDate || 'Date not available'} | ${result.className}
+              ${result.createdByName ? `<span style="font-size:0.7rem; color:#888;"> | by ${result.createdByName}</span>` : ''}
+            </div>
+            <i class="fas fa-chevron-right"></i>
           </div>
-          <i class="fas fa-chevron-right"></i>
-        </div>`;
+        `;
       }
       container.innerHTML = html;
       
     } catch(error) {
-      console.error('Error:', error);
-      container.innerHTML = '<p>Error loading results. Please check console.</p>';
+      console.error('Error loading results:', error);
+      container.innerHTML = '<p>Error loading results: ' + error.message + '</p>';
     }
   }
 
@@ -206,6 +221,7 @@
     document.getElementById('rollInputSection').style.display = 'block';
     document.getElementById('resultCard').style.display = 'none';
     document.getElementById('rollInput').value = '';
+    document.getElementById('rollHint').innerHTML = '';
   };
 
   // ===== FETCH STUDENT RESULT =====
@@ -214,6 +230,7 @@
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
+      // ✅ PATH: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{rollNo}
       const studentDoc = await getDoc(doc(db, "schools", schoolId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
       
       if(!studentDoc.exists()) { 
@@ -240,6 +257,7 @@
         marks[subject] = data.obtained || 0;
       }
       
+      // ✅ Open result-viewer with all data
       const resultUrl = `result-viewer.html?name=${encodeURIComponent(studentData.name)}&roll=${roll}&father=${encodeURIComponent(studentData.fatherName || '-')}&exam=${encodeURIComponent(resultData.examName || 'Exam')}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       window.open(resultUrl, '_blank');
       goBack();
