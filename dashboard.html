@@ -45,7 +45,7 @@
     .download-btn { background:#28a745; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     .hint-text { font-size:0.7rem; color:#888; margin-top:8px; text-align:center; }
     
-    footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f5; }
+    footer { text-align:center; padding:15px; color:#666; font-size:0.8rem; background:#f5f5f9; }
     
     @media (max-width:768px){ .coaching-logo{ width:90px; height:90px; } .school-name{ font-size:1.5rem; } }
   </style>
@@ -105,20 +105,17 @@
 
 <script type="module">
   import { db } from './firebase-config.js';
-  import { collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // 🔥 CoachingId = SchoolId (URL parameter se aayega)
   const urlParams = new URLSearchParams(window.location.search);
-  const schoolId = urlParams.get('id');  // ✅ Yeh schoolId hai
+  const schoolId = urlParams.get('id');
   let currentResultId = null;
   let currentClassName = null;
-  let currentResultData = null;
 
-  // ===== LOAD COACHING DATA =====
+  // ===== LOAD HEADER =====
   async function loadCoaching() {
     if(!schoolId) {
       document.getElementById('coachingName').innerText = 'Invalid Link';
-      document.getElementById('resultsList').innerHTML = '<p>No coaching ID provided.</p>';
       return;
     }
 
@@ -128,7 +125,6 @@
       
       if(snap.exists()) {
         const c = snap.data();
-        
         document.getElementById('coachingName').innerText = c.coachingName || 'GYAN SEVA';
         document.getElementById('coachingLocation').innerText = c.location || 'Bihar, India';
         document.getElementById('directorName').innerText = c.director || 'Director';
@@ -137,107 +133,64 @@
         const logoElement = document.getElementById('coachingLogo');
         if(c.logoUrl && c.logoUrl.trim() !== '' && c.logoUrl !== 'null') {
           logoElement.src = c.logoUrl;
-          logoElement.onerror = function() {
-            this.src = 'https://via.placeholder.com/120?text=GYAN';
-          };
         } else {
           logoElement.src = 'https://via.placeholder.com/120?text=GYAN';
         }
         
-        localStorage.setItem('coachingName', c.coachingName || 'GYAN SEVA');
-        localStorage.setItem('coachingLocation', c.location || 'Bihar, India');
-        localStorage.setItem('directorName', c.director || 'Director');
-        localStorage.setItem('directorPhone', c.phone || 'Not provided');
-        localStorage.setItem('coachingLogo', c.logoUrl || 'https://via.placeholder.com/120?text=GYAN');
-        
         loadResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
-        document.getElementById('resultsList').innerHTML = '<p>Coaching not found. Please check the link.</p>';
+        document.getElementById('resultsList').innerHTML = '<p>Coaching not found.</p>';
       }
     } catch(error) {
       console.error('Error:', error);
-      document.getElementById('coachingName').innerText = 'Error Loading';
     }
   }
 
-  // ===== LOAD RESULTS =====
+  // ===== LOAD RESULTS (EXACT MOBILE APP PATH) =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     container.innerHTML = 'Loading results...';
     
     try {
+      // ✅ EXACT PATH: schools/{schoolId}/classes/{className}/results/{resultId}
+      const classesRef = collection(db, "schools", schoolId, "classes");
+      const classesSnap = await getDocs(classesRef);
+      
       let allResults = [];
       
-      // ✅ PATH 1: schools/{schoolId}/classes/{className}/results/{resultId}
-      try {
-        const classesRef = collection(db, "schools", schoolId, "classes");
-        const classesSnap = await getDocs(classesRef);
+      for(const classDoc of classesSnap.docs) {
+        const className = classDoc.id;
+        const resultsRef = collection(db, "schools", schoolId, "classes", className, "results");
+        const resultsSnap = await getDocs(resultsRef);
         
-        for(const classDoc of classesSnap.docs) {
-          const className = classDoc.id;
-          const resultsRef = collection(db, "schools", schoolId, "classes", className, "results");
-          const resultsSnap = await getDocs(resultsRef);
-          
-          for(const resultDoc of resultsSnap.docs) {
-            const data = resultDoc.data();
-            if(data.status === 'published') {
-              allResults.push({
-                id: resultDoc.id,
-                className: className,
-                examName: data.examName || 'Unnamed Exam',
-                examDate: data.examDate || '',
-                status: data.status,
-                createdAt: data.createdAt || 0,
-                createdBy: data.createdBy || '',
-                createdByName: data.createdByName || 'Unknown'
-              });
-            }
-          }
-        }
-      } catch(e) { console.log('Path 1 error:', e); }
-      
-      // ✅ PATH 2: schools/{schoolId}/results/{resultId} (direct)
-      try {
-        const directResultsRef = collection(db, "schools", schoolId, "results");
-        const directResultsSnap = await getDocs(directResultsRef);
-        
-        for(const resultDoc of directResultsSnap.docs) {
+        for(const resultDoc of resultsSnap.docs) {
           const data = resultDoc.data();
-          if(data.status === 'published' || data.publishedAt || data.published) {
+          // Sirf "published" status wale results
+          if(data.status === 'published') {
             allResults.push({
               id: resultDoc.id,
-              className: data.className || 'General',
+              className: className,
               examName: data.examName || 'Unnamed Exam',
               examDate: data.examDate || '',
-              status: data.status || 'published',
-              createdAt: data.publishedAt || data.createdAt || 0,
-              createdBy: data.createdBy || '',
-              createdByName: data.createdByName || 'Unknown',
-              isDirect: true
+              status: data.status,
+              createdAt: data.createdAt || 0,
+              createdByName: data.createdByName || 'Unknown'
             });
           }
         }
-      } catch(e) { console.log('Path 2 error:', e); }
+      }
       
-      // Remove duplicates
-      const uniqueResults = {};
-      allResults.forEach(r => {
-        if(!uniqueResults[r.id] || r.isDirect) {
-          uniqueResults[r.id] = r;
-        }
-      });
+      // Newest first
+      allResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       
-      const finalResults = Object.values(uniqueResults);
-      finalResults.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-      
-      if(finalResults.length === 0) {
+      if(allResults.length === 0) {
         container.innerHTML = '<p>No published results yet.</p>';
         return;
       }
       
       let html = '';
-      for(const result of finalResults) {
+      for(const result of allResults) {
         const isDemo = !result.createdByName || result.createdByName === 'Unknown' || result.createdByName.includes('Demo');
         const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
         
@@ -270,49 +223,26 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
-  // ===== FETCH RESULT =====
+  // ===== FETCH STUDENT RESULT (EXACT PATH) =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      let studentData = null;
-      let resultData = null;
-      let className = currentClassName;
+      // ✅ EXACT PATH: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{rollNo}
+      const studentDoc = await getDoc(doc(db, "schools", schoolId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
       
-      // Try PATH 1
-      try {
-        const studentDoc = await getDoc(doc(db, "schools", schoolId, "classes", className, "results", currentResultId, "studentResults", roll));
-        if(studentDoc.exists()) {
-          studentData = studentDoc.data();
-          const resultDoc = await getDoc(doc(db, "schools", schoolId, "classes", className, "results", currentResultId));
-          resultData = resultDoc.data();
-        }
-      } catch(e) { console.log('Fetch Path 1 error:', e); }
-      
-      // Try PATH 2
-      if(!studentData) {
-        try {
-          const studentDoc = await getDoc(doc(db, "schools", schoolId, "results", currentResultId, "studentResults", roll));
-          if(studentDoc.exists()) {
-            studentData = studentDoc.data();
-            const resultDoc = await getDoc(doc(db, "schools", schoolId, "results", currentResultId));
-            resultData = resultDoc.data();
-            className = resultData?.className || 'General';
-          }
-        } catch(e) { console.log('Fetch Path 2 error:', e); }
+      if(!studentDoc.exists()) { 
+        alert("Roll number not found"); 
+        return; 
       }
       
-      if(!studentData) {
-        alert("Roll number not found");
-        return;
-      }
+      const studentData = studentDoc.data();
+      const resultDoc = await getDoc(doc(db, "schools", schoolId, "classes", currentClassName, "results", currentResultId));
+      const resultData = resultDoc.data();
       
       const subjectsMap = studentData.subjects || {};
       const subjects = Object.keys(subjectsMap);
-      
-      let totalObtained = studentData.totalObtained || 0;
-      let totalMax = studentData.totalMax || 0;
       const totalPercent = studentData.percentage || 0;
       
       let division = '';
@@ -326,7 +256,7 @@
         marks[subject] = data.obtained || 0;
       }
       
-      const resultUrl = `result-viewer.html?name=${encodeURIComponent(studentData.name)}&roll=${roll}&father=${encodeURIComponent(studentData.fatherName || '-')}&exam=${encodeURIComponent(resultData?.examName || 'Exam')}&date=${resultData?.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+      const resultUrl = `result-viewer.html?name=${encodeURIComponent(studentData.name)}&roll=${roll}&father=${encodeURIComponent(studentData.fatherName || '-')}&exam=${encodeURIComponent(resultData.examName || 'Exam')}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       window.open(resultUrl, '_blank');
       goBack();
     } catch(error) {
