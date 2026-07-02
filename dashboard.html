@@ -34,7 +34,7 @@
     .back-btn { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; }
     
     .result-card { display:none; background:white; border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 5px 15px rgba(0,0,0,0.1); overflow-x:auto; }
-    .student-info { background:#f5f5f9; padding:10px; border-radius:8px; margin-bottom:15px; display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; }
+    .student-info { background:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:15px; display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; }
     .marks-table { width:100%; border-collapse:collapse; min-width:400px; }
     .marks-table th { background:#1a237e; color:white; padding:8px; text-align:left; }
     .marks-table td { padding:8px; border-bottom:1px solid #ddd; }
@@ -55,7 +55,7 @@
   <!-- HEADER -->
   <div class="header">
     <div class="header-content">
-      <img id="coachingLogo" class="coaching-logo" src="https://via.placeholder.com/120?text=GYAN" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=GYAN'">
+      <img id="coachingLogo" class="coaching-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%231a237e'/%3E%3Ctext x='60' y='70' font-size='40' text-anchor='middle' fill='white' font-family='sans-serif'%3EGS%3C/text%3E%3C/svg%3E" alt="Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%231a237e'/%3E%3Ctext x='60' y='70' font-size='40' text-anchor='middle' fill='white' font-family='sans-serif'%3EGS%3C/text%3E%3C/svg%3E'">
       <div class="header-text">
         <h1 class="school-name" id="coachingName">GYAN SEVA</h1>
         <p class="location" id="coachingLocation">Loading...</p>
@@ -134,10 +134,7 @@
         const logoElement = document.getElementById('coachingLogo');
         if(c.logoUrl && c.logoUrl.trim() !== '' && c.logoUrl !== 'null') {
           logoElement.src = c.logoUrl;
-        } else {
-          logoElement.src = 'https://via.placeholder.com/120?text=GYAN';
         }
-        
         loadResults();
       } else {
         document.getElementById('coachingName').innerText = 'Coaching Not Found';
@@ -148,17 +145,22 @@
     }
   }
 
-  // ===== LOAD RESULTS (Mobile App Path) =====
+  // ===== LOAD RESULTS (Mobile App Jaisa) =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     container.innerHTML = 'Loading results...';
     
     try {
-      // Path: schools/{schoolId}/classes/{className}/results
+      // ✅ EXACT PATH: schools/{schoolId}/classes/{className}/results/{resultId}
       const classesRef = collection(db, "schools", schoolId, "classes");
       const classesSnap = await getDocs(classesRef);
       
       let allResults = [];
+      
+      if(classesSnap.empty) {
+        container.innerHTML = '<p>No classes found. Create a class first.</p>';
+        return;
+      }
       
       for(const classDoc of classesSnap.docs) {
         const className = classDoc.id;
@@ -173,7 +175,6 @@
             className: className,
             examName: data.examName || 'Unnamed Exam',
             examDate: data.examDate || '',
-            status: data.status || 'published',
             createdAt: data.createdAt || 0,
             createdByName: data.createdByName || 'Unknown'
           });
@@ -192,20 +193,22 @@
         const isDemo = !result.createdByName || result.createdByName === 'Unknown' || result.createdByName.includes('Demo');
         const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
         
-        html += `<div class="result-item" onclick="selectExam('${result.id}', '${result.className}', '${result.examName}', '${result.examDate}')">
-          <div>
-            <strong>${result.examName} ${demoBadge}</strong>
-            <br>${result.examDate || 'Date not available'} | ${result.className}
-            ${result.createdByName ? `<span style="font-size:0.7rem; color:#888;"> | by ${result.createdByName}</span>` : ''}
+        html += `
+          <div class="result-item" onclick="selectExam('${result.id}', '${result.className}', '${result.examName}', '${result.examDate}')">
+            <div>
+              <strong>${result.examName} ${demoBadge}</strong>
+              <br>${result.examDate || 'Date not available'} | ${result.className}
+              ${result.createdByName ? `<span style="font-size:0.7rem; color:#888;"> | by ${result.createdByName}</span>` : ''}
+            </div>
+            <i class="fas fa-chevron-right"></i>
           </div>
-          <i class="fas fa-chevron-right"></i>
-        </div>`;
+        `;
       }
       container.innerHTML = html;
       
     } catch(error) {
       console.error('Error loading results:', error);
-      container.innerHTML = '<p>Error loading results.</p>';
+      container.innerHTML = '<p>Error loading results: ' + error.message + '</p>';
     }
   }
 
@@ -221,13 +224,13 @@
     document.getElementById('rollHint').innerHTML = '';
   };
 
-  // ===== FETCH STUDENT RESULT (Mobile App Path) =====
+  // ===== FETCH STUDENT RESULT =====
   window.fetchResult = async () => {
     const roll = document.getElementById('rollInput').value.trim();
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      // ✅ Mobile App Path: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{rollNo}
+      // ✅ PATH: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{rollNo}
       const studentDoc = await getDoc(doc(db, "schools", schoolId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
       
       if(!studentDoc.exists()) { 
@@ -254,7 +257,7 @@
         marks[subject] = data.obtained || 0;
       }
       
-      // ✅ result-viewer.html ko data bhejo (pehle jaisa)
+      // ✅ Open result-viewer with all data
       const resultUrl = `result-viewer.html?name=${encodeURIComponent(studentData.name)}&roll=${roll}&father=${encodeURIComponent(studentData.fatherName || '-')}&exam=${encodeURIComponent(resultData.examName || 'Exam')}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       window.open(resultUrl, '_blank');
       goBack();
