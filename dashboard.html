@@ -148,13 +148,12 @@
     }
   }
 
-  // ===== LOAD RESULTS (FIXED: Directly from known classes) =====
+  // ===== LOAD RESULTS (FIXED: Date display) =====
   async function loadResults() {
     const container = document.getElementById('resultsList');
     container.innerHTML = 'Loading results...';
     
     try {
-      // ✅ List of all possible classes (from your Firebase structure)
       const classNames = ["Class 1", "Class 2", "Class 3", "Class 4", "Class 5", 
                           "Class 6", "Class 7", "Class 8", "Class 9", "Class 10", 
                           "Class 11", "Class 12"];
@@ -163,11 +162,8 @@
       
       for(const className of classNames) {
         try {
-          // ✅ Direct path: schools/{schoolId}/classes/{className}/results
           const resultsRef = collection(db, "schools", schoolId, "classes", className, "results");
           const resultsSnap = await getDocs(resultsRef);
-          
-          console.log(`📊 Results in ${className}:`, resultsSnap.size);
           
           for(const resultDoc of resultsSnap.docs) {
             const data = resultDoc.data();
@@ -182,7 +178,6 @@
           }
         } catch(e) {
           // Class might not exist, skip silently
-          console.log(`⚠️ Class ${className} not found or no results`);
         }
       }
       
@@ -198,10 +193,22 @@
         const isDemo = !result.createdByName || result.createdByName === 'Unknown' || result.createdByName.includes('Demo');
         const demoBadge = isDemo ? '<span class="demo-badge">🔰 DEMO</span>' : '';
         
+        // ✅ DATE FIX: Agar examDate hai toh wo dikhao, warna createdAt se date generate karo
+        let dateDisplay = 'Date not available';
+        if(result.examDate && result.examDate !== '') {
+          dateDisplay = result.examDate;
+        } else if(result.createdAt && result.createdAt > 0) {
+          dateDisplay = new Date(result.createdAt).toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+          });
+        }
+        
         html += `<div class="result-item" onclick="selectExam('${result.id}', '${result.className}', '${result.examName}', '${result.examDate}')">
           <div>
             <strong>${result.examName} ${demoBadge}</strong>
-            <br>${result.examDate || 'Date not available'} | ${result.className}
+            <br>${dateDisplay} | ${result.className}
             ${result.createdByName ? `<span style="font-size:0.7rem; color:#888;"> | by ${result.createdByName}</span>` : ''}
           </div>
           <i class="fas fa-chevron-right"></i>
@@ -233,7 +240,6 @@
     if(!roll){ alert("Enter roll number"); return; }
     
     try {
-      // ✅ Path: schools/{schoolId}/classes/{className}/results/{resultId}/studentResults/{rollNo}
       const studentDoc = await getDoc(doc(db, "schools", schoolId, "classes", currentClassName, "results", currentResultId, "studentResults", roll));
       
       if(!studentDoc.exists()) { 
@@ -260,7 +266,7 @@
         marks[subject] = data.obtained || 0;
       }
       
-      const resultUrl = `result-viewer.html?name=${encodeURIComponent(studentData.name)}&roll=${roll}&father=${encodeURIComponent(studentData.fatherName || '-')}&exam=${encodeURIComponent(resultData.examName || 'Exam')}&date=${resultData.examDate || ''}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
+      const resultUrl = `result-viewer.html?name=${encodeURIComponent(studentData.name)}&roll=${roll}&father=${encodeURIComponent(studentData.fatherName || '-')}&exam=${encodeURIComponent(resultData.examName || 'Exam')}&date=${encodeURIComponent(resultData.examDate || '')}&subjects=${encodeURIComponent(JSON.stringify(subjects))}&marks=${encodeURIComponent(JSON.stringify(marks))}&percent=${totalPercent}&division=${encodeURIComponent(division)}`;
       window.open(resultUrl, '_blank');
       goBack();
     } catch(error) {
