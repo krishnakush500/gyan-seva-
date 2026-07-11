@@ -8,7 +8,7 @@
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body {
-      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      background: linear-gradient(135deg, #f0f4ff, #d9e2f5);
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -16,32 +16,34 @@
       padding: 20px;
     }
     .container {
-      max-width: 450px;
+      max-width: 480px;
       width: 100%;
       background: white;
       border-radius: 32px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
       overflow: hidden;
       padding: 30px 24px;
     }
+    /* Header - Sirf "Choose Your Role" */
     .header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 28px;
     }
     .header h1 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       color: #1a237e;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .header p {
-      color: #666;
-      font-size: 0.9rem;
+      color: #64748b;
+      font-size: 0.85rem;
     }
+    /* Role Cards */
     .role-card {
       background: white;
       border-radius: 20px;
       padding: 20px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       border: 2px solid #e8ecf4;
       cursor: pointer;
       transition: all 0.3s;
@@ -51,41 +53,31 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(26,35,126,0.08);
     }
-    .role-card .icon {
-      font-size: 2.2rem;
-      margin-bottom: 8px;
-    }
-    .role-card h3 {
-      font-size: 1.2rem;
-      color: #1e293b;
-      margin-bottom: 4px;
-    }
-    .role-card p {
-      font-size: 0.85rem;
-      color: #64748b;
-    }
+    .role-card .icon { font-size: 2rem; margin-bottom: 6px; }
+    .role-card h3 { font-size: 1.1rem; color: #1e293b; margin-bottom: 2px; }
+    .role-card p { font-size: 0.8rem; color: #64748b; }
     .btn-google {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       background: #1a237e;
       color: white;
       border: none;
       border-radius: 12px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      margin-top: 16px;
+      margin-top: 12px;
     }
     .btn-google:hover { background: #283593; }
-    .btn-google i { font-size: 1.2rem; }
+    .btn-google i { font-size: 1.1rem; }
     .or-divider {
       text-align: center;
       color: #94a3b8;
-      margin: 20px 0;
+      margin: 18px 0;
       position: relative;
     }
     .or-divider::before {
@@ -101,43 +93,166 @@
       background: white;
       padding: 0 14px;
       position: relative;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
     .info-box {
       background: #eff6ff;
       border-radius: 12px;
-      padding: 12px 16px;
-      margin-top: 16px;
+      padding: 10px 14px;
+      margin-top: 14px;
       border: 1px solid #bfdbfe;
     }
-    .info-box p {
-      font-size: 0.8rem;
-      color: #2563eb;
-      margin: 0;
-    }
+    .info-box p { font-size: 0.75rem; color: #2563eb; }
     .back-link {
       display: block;
       text-align: center;
-      margin-top: 20px;
+      margin-top: 16px;
       color: #64748b;
       text-decoration: none;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
     .back-link:hover { color: #1a237e; }
+
+    /* ===== STUDENT LOGIN MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: white;
+      border-radius: 28px;
+      padding: 28px 24px;
+      max-width: 450px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(20px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+    .modal-box h2 {
+      font-size: 1.4rem;
+      color: #1a237e;
+      margin-bottom: 4px;
+    }
+    .modal-box .sub {
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+    .modal-box label {
+      display: block;
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.85rem;
+      margin-top: 14px;
+      margin-bottom: 4px;
+    }
+    .modal-box input, .modal-box select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      font-size: 0.95rem;
+    }
+    .modal-box input:focus, .modal-box select:focus {
+      outline: none;
+      border-color: #1a237e;
+      box-shadow: 0 0 0 3px rgba(26,35,126,0.1);
+    }
+    .search-code-section {
+      position: relative;
+      margin-top: 6px;
+    }
+    .search-code-section input {
+      padding-right: 50px;
+    }
+    .search-code-section button {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #1a237e;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .institute-preview {
+      display: none;
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 12px;
+      border: 2px solid #dbeafe;
+      align-items: center;
+      gap: 14px;
+    }
+    .institute-preview img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #1a237e;
+    }
+    .institute-preview .info { flex: 1; }
+    .institute-preview .info h4 { font-size: 1rem; color: #1e293b; }
+    .institute-preview .info p { font-size: 0.8rem; color: #64748b; }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary { background: #1a237e; color: white; }
+    .btn-primary:hover { background: #283593; }
+    .btn-secondary { background: #e2e8f0; color: #1e293b; }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    @media (max-width: 480px) {
+      .container { padding: 20px 16px; }
+      .modal-box { padding: 20px 16px; }
+      .modal-actions { flex-direction: column; }
+      .btn-google { font-size: 0.85rem; }
+    }
   </style>
 </head>
 <body>
+
 <div class="container">
   <div class="header">
-    <h1>🎓 GYAN SEVA</h1>
-    <p>Choose your role to continue</p>
+    <h1>🎓 Choose Your Role</h1>
+    <p>Select how you want to login</p>
   </div>
 
-  <!-- Teacher Role -->
+  <!-- TEACHER CARD -->
   <div class="role-card" id="teacherRole">
     <div class="icon">👨‍🏫</div>
     <h3>Teacher Login</h3>
-    <p>Login with your Google account registered with institute</p>
+    <p>Sign in with your Google account</p>
     <button class="btn-google" id="teacherLoginBtn">
       <i class="fab fa-google"></i> Continue with Google
     </button>
@@ -145,17 +260,14 @@
 
   <div class="or-divider"><span>OR</span></div>
 
-  <!-- Student Role -->
+  <!-- STUDENT CARD -->
   <div class="role-card" id="studentRole">
     <div class="icon">🧑‍🎓</div>
     <h3>Student Login</h3>
-    <p>Enter your roll number to check your result</p>
-    <div style="margin-top:12px;">
-      <input type="text" id="studentRollInput" placeholder="Enter Roll Number" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; font-size:0.95rem;">
-      <button class="btn-google" id="studentLoginBtn" style="background:#10b981; margin-top:10px;">
-        <i class="fas fa-search"></i> Check Result
-      </button>
-    </div>
+    <p>Enter your details to check results</p>
+    <button class="btn-google" id="studentLoginBtn" style="background:#10b981;">
+      <i class="fas fa-user-graduate"></i> Login as Student
+    </button>
   </div>
 
   <div class="info-box">
@@ -165,31 +277,184 @@
   <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
 </div>
 
+<!-- ===== STUDENT LOGIN MODAL ===== -->
+<div id="studentModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2>🧑‍🎓 Student Login</h2>
+    <p class="sub">Enter your details to access your results</p>
+
+    <label>👤 Full Name</label>
+    <input type="text" id="studentName" placeholder="Enter your full name">
+
+    <label>📚 Class</label>
+    <select id="studentClass">
+      <option value="">Select your class</option>
+      <option value="Class 1">Class 1</option>
+      <option value="Class 2">Class 2</option>
+      <option value="Class 3">Class 3</option>
+      <option value="Class 4">Class 4</option>
+      <option value="Class 5">Class 5</option>
+      <option value="Class 6">Class 6</option>
+      <option value="Class 7">Class 7</option>
+      <option value="Class 8">Class 8</option>
+      <option value="Class 9">Class 9</option>
+      <option value="Class 10">Class 10</option>
+      <option value="Class 11">Class 11</option>
+      <option value="Class 12">Class 12</option>
+    </select>
+
+    <label>🆔 Student ID (Roll Number)</label>
+    <input type="text" id="studentRoll" placeholder="Enter your roll number">
+
+    <label>🔑 Institute Search Code</label>
+    <div class="search-code-section">
+      <input type="text" id="searchCodeInput" placeholder="Enter 6-digit code" maxlength="6" oninput="searchInstitute()">
+      <button onclick="searchInstitute()"><i class="fas fa-search"></i></button>
+    </div>
+    <div id="institutePreview" class="institute-preview">
+      <img id="previewLogo" src="" alt="Logo">
+      <div class="info">
+        <h4 id="previewName">Institute Name</h4>
+        <p id="previewLocation">Location</p>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeStudentModal()">Cancel</button>
+      <button class="btn-primary" id="studentLoginFinalBtn" disabled onclick="studentLogin()">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
+  // ===== FIREBASE CONFIG =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
+    authDomain: "gyan-seva.firebaseapp.com",
+    projectId: "gyan-seva",
+    storageBucket: "gyan-seva.firebasestorage.app",
+    messagingSenderId: "451862212887",
+    appId: "1:451862212887:web:637fd8785c4c01bd448752",
+    measurementId: "G-R375P3YCHP"
+  };
+
+  // Initialize Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  let foundInstituteId = null;
+  let foundInstituteData = null;
+
   // ===== TEACHER LOGIN =====
   document.getElementById('teacherLoginBtn').addEventListener('click', function() {
-    alert('🔐 Teacher login with Google will open here.\n\nFor now, redirecting to Teacher Panel...');
-    // Google Sign-In integration will go here
-    // window.location.href = 'teacher-panel.html';
+    // Google Sign-In will open account picker
+    alert('🔐 Google Sign-In will open.\nAll your Google accounts will appear for selection.');
+    // window.location.href = 'teacher-login.html';
   });
 
-  // ===== STUDENT LOGIN =====
+  // ===== STUDENT LOGIN - Open Modal =====
   document.getElementById('studentLoginBtn').addEventListener('click', function() {
-    const roll = document.getElementById('studentRollInput').value.trim();
-    if(!roll) {
-      alert('Please enter your roll number');
+    document.getElementById('studentModal').classList.add('active');
+    document.getElementById('studentName').value = '';
+    document.getElementById('studentClass').value = '';
+    document.getElementById('studentRoll').value = '';
+    document.getElementById('searchCodeInput').value = '';
+    document.getElementById('institutePreview').style.display = 'none';
+    document.getElementById('studentLoginFinalBtn').disabled = true;
+    foundInstituteId = null;
+    foundInstituteData = null;
+  });
+
+  window.closeStudentModal = function() {
+    document.getElementById('studentModal').classList.remove('active');
+  };
+
+  // Close modal on outside click
+  document.getElementById('studentModal').addEventListener('click', function(e) {
+    if(e.target === this) closeStudentModal();
+  });
+
+  // ===== SEARCH INSTITUTE BY CODE =====
+  window.searchInstitute = async function() {
+    const code = document.getElementById('searchCodeInput').value.trim();
+    const previewDiv = document.getElementById('institutePreview');
+    const loginBtn = document.getElementById('studentLoginFinalBtn');
+
+    if(!code || code.length !== 6) {
+      previewDiv.style.display = 'none';
+      loginBtn.disabled = true;
+      foundInstituteId = null;
+      foundInstituteData = null;
       return;
     }
-    alert('🔍 Checking result for roll number: ' + roll);
-    // Will redirect to result-viewer with roll number
-    // window.location.href = 'result-viewer.html?roll=' + roll;
-  });
 
-  // Enter key for student roll
-  document.getElementById('studentRollInput').addEventListener('keypress', function(e) {
-    if(e.key === 'Enter') {
-      document.getElementById('studentLoginBtn').click();
+    try {
+      const schoolsRef = collection(db, "schools");
+      const q = query(schoolsRef, where("searchCode", "==", code));
+      const snap = await getDocs(q);
+
+      if(snap.empty) {
+        previewDiv.style.display = 'none';
+        loginBtn.disabled = true;
+        foundInstituteId = null;
+        foundInstituteData = null;
+        alert('❌ No institute found with this code. Please check and try again.');
+        return;
+      }
+
+      const doc = snap.docs[0];
+      foundInstituteId = doc.id;
+      foundInstituteData = doc.data();
+
+      // Show preview
+      const logo = foundInstituteData.logoUrl || 'https://via.placeholder.com/50?text=GYAN';
+      document.getElementById('previewLogo').src = logo;
+      document.getElementById('previewName').textContent = foundInstituteData.coachingName || 'Institute';
+      document.getElementById('previewLocation').textContent = foundInstituteData.location || 'Location not specified';
+      previewDiv.style.display = 'flex';
+
+      // Enable login button
+      loginBtn.disabled = false;
+    } catch(e) {
+      console.error('Search error:', e);
+      alert('Error searching institute. Please try again.');
     }
+  };
+
+  // ===== STUDENT LOGIN FINAL =====
+  window.studentLogin = function() {
+    const name = document.getElementById('studentName').value.trim();
+    const classVal = document.getElementById('studentClass').value;
+    const roll = document.getElementById('studentRoll').value.trim();
+
+    if(!name) { alert('Please enter your name'); return; }
+    if(!classVal) { alert('Please select your class'); return; }
+    if(!roll) { alert('Please enter your roll number'); return; }
+    if(!foundInstituteId) { alert('Please search and select your institute first'); return; }
+
+    // Save student session in localStorage
+    const studentData = {
+      name: name,
+      class: classVal,
+      roll: roll,
+      instituteId: foundInstituteId,
+      instituteName: foundInstituteData.coachingName,
+      loginTime: Date.now()
+    };
+    localStorage.setItem('gyan_seva_student', JSON.stringify(studentData));
+
+    // Redirect to dashboard with institute ID
+    window.location.href = `dashboard.html?id=${foundInstituteId}&student=true&name=${encodeURIComponent(name)}&class=${encodeURIComponent(classVal)}&roll=${encodeURIComponent(roll)}`;
+  };
+
+  // Enter key support
+  document.getElementById('searchCodeInput').addEventListener('keypress', function(e) {
+    if(e.key === 'Enter') searchInstitute();
   });
 </script>
 </body>
