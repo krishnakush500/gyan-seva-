@@ -330,18 +330,67 @@
   </div>
 </div>
 
-<script>
-  // ===== TEACHER LOGIN =====
-  document.getElementById('teacherLoginBtn').addEventListener('click', function() {
-    alert('🔐 Google Sign-In will open.\nAll your Google accounts will appear for selection.');
-    // For full Google Sign-In, integrate Firebase Auth
-    // window.location.href = 'teacher-login.html';
+<!-- ===== FIREBASE + GOOGLE SIGN-IN (Teacher) ===== -->
+<script type="module">
+  // Import Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
+    authDomain: "gyan-seva.firebaseapp.com",
+    projectId: "gyan-seva",
+    storageBucket: "gyan-seva.firebasestorage.app",
+    messagingSenderId: "451862212887",
+    appId: "1:451862212887:web:637fd8785c4c01bd448752",
+    measurementId: "G-R375P3YCHP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' }); // ✅ Force account picker
+
+  // ===== TEACHER LOGIN - Google Sign-In =====
+  document.getElementById('teacherLoginBtn').addEventListener('click', async function() {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const email = user.email;
+      const name = user.displayName || 'Teacher';
+      
+      console.log('✅ Google Sign-In successful:', email);
+      
+      // Check if this email is registered as a teacher in any institute
+      // For now, redirect to teacher panel
+      alert(`✅ Welcome ${name}!\n\nYou are signed in with: ${email}\n\nRedirecting to Teacher Panel...`);
+      
+      // Store teacher session
+      localStorage.setItem('teacher_email', email);
+      localStorage.setItem('teacher_name', name);
+      localStorage.setItem('isTeacherLoggedIn', 'true');
+      
+      // Redirect to teacher dashboard (you can create this page)
+      // window.location.href = 'teacher-dashboard.html';
+      
+    } catch(error) {
+      console.error('❌ Google Sign-In error:', error);
+      alert('❌ Sign-in failed: ' + error.message);
+    }
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fab fa-google"></i> Continue with Google';
   });
 
-  // ===== STUDENT LOGIN - Open Modal =====
+  // ===== STUDENT LOGIN =====
   document.getElementById('studentLoginBtn').addEventListener('click', function() {
-    const modal = document.getElementById('studentModal');
-    modal.classList.add('active');
+    document.getElementById('studentModal').classList.add('active');
     document.getElementById('studentName').value = '';
     document.getElementById('studentClass').value = '';
     document.getElementById('studentRoll').value = '';
@@ -356,7 +405,6 @@
     document.getElementById('studentModal').classList.remove('active');
   };
 
-  // Close modal on outside click
   document.getElementById('studentModal').addEventListener('click', function(e) {
     if(e.target === this) closeStudentModal();
   });
@@ -379,23 +427,6 @@
     }
 
     try {
-      // Firebase import dynamically
-      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
-      const { getFirestore, collection, getDocs, query, where } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
-        authDomain: "gyan-seva.firebaseapp.com",
-        projectId: "gyan-seva",
-        storageBucket: "gyan-seva.firebasestorage.app",
-        messagingSenderId: "451862212887",
-        appId: "1:451862212887:web:637fd8785c4c01bd448752",
-        measurementId: "G-R375P3YCHP"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-
       const schoolsRef = collection(db, "schools");
       const q = query(schoolsRef, where("searchCode", "==", code));
       const snap = await getDocs(q);
@@ -425,7 +456,6 @@
     }
   };
 
-  // ===== STUDENT LOGIN FINAL =====
   window.studentLogin = function() {
     const name = document.getElementById('studentName').value.trim();
     const classVal = document.getElementById('studentClass').value;
