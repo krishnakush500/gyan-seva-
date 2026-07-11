@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>GYAN SEVA — Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 450px;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      overflow: hidden;
+      padding: 30px 24px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 1.8rem;
+      color: #1a237e;
+      margin-bottom: 6px;
+    }
+    .header p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .role-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 2px solid #e8ecf4;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .role-card:hover {
+      border-color: #1a237e;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(26,35,126,0.08);
+    }
+    .role-card .icon {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+    .role-card h3 {
+      font-size: 1.2rem;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    .role-card p {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    .btn-google {
+      width: 100%;
+      padding: 14px;
+      background: #1a237e;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .btn-google:hover { background: #283593; }
+    .btn-google i { font-size: 1.2rem; }
+    .or-divider {
+      text-align: center;
+      color: #94a3b8;
+      margin: 20px 0;
+      position: relative;
+    }
+    .or-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #e2e8f0;
+    }
+    .or-divider span {
+      background: white;
+      padding: 0 14px;
+      position: relative;
+      font-size: 0.85rem;
+    }
+    .info-box {
+      background: #eff6ff;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 16px;
+      border: 1px solid #bfdbfe;
+    }
+    .info-box p {
+      font-size: 0.8rem;
+      color: #2563eb;
+      margin: 0;
+    }
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .back-link:hover { color: #1a237e; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎓 GYAN SEVA</h1>
+    <p>Choose your role to continue</p>
+  </div>
+
+  <!-- Teacher Role -->
+  <div class="role-card" id="teacherRole">
+    <div class="icon">👨‍🏫</div>
+    <h3>Teacher Login</h3>
+    <p>Login with your Google account registered with institute</p>
+    <button class="btn-google" id="teacherLoginBtn">
+      <i class="fab fa-google"></i> Continue with Google
+    </button>
+  </div>
+
+  <div class="or-divider"><span>OR</span></div>
+
+  <!-- Student Role -->
+  <div class="role-card" id="studentRole">
+    <div class="icon">🧑‍🎓</div>
+    <h3>Student Login</h3>
+    <p>Enter your roll number to check your result</p>
+    <div style="margin-top:12px;">
+      <input type="text" id="studentRollInput" placeholder="Enter Roll Number" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; font-size:0.95rem;">
+      <button class="btn-google" id="studentLoginBtn" style="background:#10b981; margin-top:10px;">
+        <i class="fas fa-search"></i> Check Result
+      </button>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <p>💡 <strong>New Director?</strong> Sign in with Google to create your institute</p>
+  </div>
+
+  <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+</div>
+
+<script>
+  // ===== TEACHER LOGIN =====
+  document.getElementById('teacherLoginBtn').addEventListener('click', function() {
+    alert('🔐 Teacher login with Google will open here.\n\nFor now, redirecting to Teacher Panel...');
+    // Google Sign-In integration will go here
+    // window.location.href = 'teacher-panel.html';
+  });
+
+  // ===== STUDENT LOGIN =====
+  document.getElementById('studentLoginBtn').addEventListener('click', function() {
+    const roll = document.getElementById('studentRollInput').value.trim();
+    if(!roll) {
+      alert('Please enter your roll number');
+      return;
+    }
+    alert('🔍 Checking result for roll number: ' + roll);
+    // Will redirect to result-viewer with roll number
+    // window.location.href = 'result-viewer.html?roll=' + roll;
+  });
+
+  // Enter key for student roll
+  document.getElementById('studentRollInput').addEventListener('keypress', function(e) {
+    if(e.key === 'Enter') {
+      document.getElementById('studentLoginBtn').click();
+    }
+  });
+</script>
+</body>
+</html>
