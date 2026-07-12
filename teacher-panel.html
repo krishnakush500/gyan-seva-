@@ -12,7 +12,6 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #f0f2f5; min-height: 100vh; }
 
-        /* Top Bar */
         .topbar {
             background: linear-gradient(135deg, #1a237e, #283593);
             color: white;
@@ -45,7 +44,6 @@
 
         .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
 
-        /* Welcome */
         .welcome-card {
             background: white;
             border-radius: 20px;
@@ -66,7 +64,6 @@
             margin-top: 8px;
         }
 
-        /* Single Action Card - Manage Results */
         .action-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -113,7 +110,6 @@
         }
         .action-card:hover .action-btn { background: #1a237e; color: white; }
 
-        /* ===== MANAGE RESULTS SECTION (Full) ===== */
         .manage-section {
             display: none;
             background: white;
@@ -143,7 +139,6 @@
         }
         .back-btn:hover { background: #5a6268; }
 
-        /* Action Cards inside manage */
         .action-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -165,7 +160,6 @@
         .mini-card .title { font-size: 1.1rem; font-weight: 700; color: #1e293b; }
         .mini-card .desc { font-size: 0.8rem; color: #64748b; }
 
-        /* Fullscreen Sections */
         .fullscreen-section {
             display: none;
             background: white;
@@ -192,7 +186,40 @@
         }
         .toast-message.publish { background: #198754; }
 
-        /* Responsive */
+        .subject-box {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .template-selector {
+            display: flex;
+            gap: 12px;
+            padding: 10px 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .template-option {
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            background: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .template-option:hover { border-color: #1a237e; transform: translateY(-1px); }
+        .template-option.selected { border-color: #1a237e; background: #e8eafe; }
+
         @media (max-width: 768px) {
             .topbar { padding: 12px 16px; }
             .topbar .brand { font-size: 1rem; }
@@ -220,14 +247,12 @@
 
 <!-- ===== MAIN CONTENT ===== -->
 <div class="container">
-    <!-- Welcome Card -->
     <div class="welcome-card">
         <h1>👋 Welcome, <span id="welcomeName">Teacher</span>!</h1>
         <p>Manage your institute's results from one place.</p>
         <span class="badge"><i class="fas fa-check-circle"></i> Teacher Panel</span>
     </div>
 
-    <!-- ===== ACTION CARD ===== -->
     <div class="action-grid" id="mainActionGrid">
         <div class="action-card" id="manageResultsBtn">
             <div class="action-icon"><i class="fas fa-chart-line"></i></div>
@@ -244,7 +269,6 @@
             <button class="back-btn" id="backFromManageBtn"><i class="fas fa-arrow-left"></i> Back to Menu</button>
         </div>
 
-        <!-- Mini Action Cards -->
         <div class="action-cards" id="actionCardsContainer">
             <div class="mini-card" id="createResultMainCard">
                 <div class="icon"><i class="fas fa-plus-circle" style="color:#1a237e;"></i></div>
@@ -270,15 +294,15 @@
                 <button class="back-btn" id="backFromCreateBtn"><i class="fas fa-arrow-left"></i> Back</button>
             </div>
             
-            <div class="template-selector" id="templateSelector" style="display:flex; gap:12px; padding:10px 15px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:20px; flex-wrap:wrap; align-items:center;">
+            <div class="template-selector" id="templateSelector">
                 <span style="font-weight:600; color:#1a237e; font-size:0.85rem; margin-right:10px;"><i class="fas fa-palette"></i> Template:</span>
-                <div class="template-option selected" id="templateResult" style="padding:8px 16px; border-radius:30px; border:2px solid #1a237e; cursor:pointer; text-align:center; transition:all 0.3s; background:#e8eafe;">
-                    <span class="template-icon"><i class="fas fa-file-alt"></i></span>
-                    <span class="template-name" style="font-weight:600; color:#1a237e; font-size:0.85rem;">Classic Result</span>
+                <div class="template-option selected" id="templateResult">
+                    <span><i class="fas fa-file-alt"></i></span>
+                    <span style="font-weight:600; color:#1a237e; font-size:0.85rem;">Classic Result</span>
                 </div>
-                <div class="template-option" id="templateResult1" style="padding:8px 16px; border-radius:30px; border:2px solid #e2e8f0; cursor:pointer; text-align:center; transition:all 0.3s; background:white;">
-                    <span class="template-icon"><i class="fas fa-id-card"></i></span>
-                    <span class="template-name" style="font-weight:600; color:#1a237e; font-size:0.85rem;">Admit Card Style</span>
+                <div class="template-option" id="templateResult1">
+                    <span><i class="fas fa-id-card"></i></span>
+                    <span style="font-weight:600; color:#1a237e; font-size:0.85rem;">Admit Card Style</span>
                 </div>
             </div>
             
@@ -411,26 +435,31 @@
     const db = getFirestore(app);
 
     // ===== TEACHER SESSION =====
-    function loadTeacherSession() {
-        const name = localStorage.getItem('teacher_name') || 'Teacher';
-        const email = localStorage.getItem('teacher_email') || '---';
-        const isLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
-        if (!isLoggedIn) { alert('Please login first!'); window.location.href = 'login.html'; return; }
-        document.getElementById('teacherName').textContent = name;
-        document.getElementById('teacherEmail').textContent = email;
-        document.getElementById('welcomeName').textContent = name;
-    }
-    loadTeacherSession();
+    const schoolId = localStorage.getItem('schoolId') || localStorage.getItem('instituteId') || '';
+    const teacherName = localStorage.getItem('teacher_name') || 'Teacher';
+    const teacherEmail = localStorage.getItem('teacher_email') || '---';
+    const isLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
 
-    function logout() {
+    if (!isLoggedIn || !schoolId) {
+        alert('Please login first!');
+        window.location.href = 'login.html';
+    }
+
+    document.getElementById('teacherName').textContent = teacherName;
+    document.getElementById('teacherEmail').textContent = teacherEmail;
+    document.getElementById('welcomeName').textContent = teacherName;
+
+    // ===== LOGOUT =====
+    window.logout = function() {
         if (confirm('Are you sure you want to logout?')) {
             localStorage.removeItem('teacher_name');
             localStorage.removeItem('teacher_email');
             localStorage.removeItem('isTeacherLoggedIn');
+            localStorage.removeItem('schoolId');
+            localStorage.removeItem('instituteId');
             window.location.href = 'login.html';
         }
-    }
-    window.logout = logout;
+    };
 
     // ===== DOM ELEMENTS =====
     const manageBtn = document.getElementById('manageResultsBtn');
@@ -495,16 +524,14 @@
     let editingPublishedResultId = null;
     let selectedTemplate = 'result';
 
-    // ===== SHOW/HIDE FUNCTIONS =====
+    // ===== SHOW/HIDE =====
     function showManageSection() { manageSection.classList.add('active'); document.getElementById('mainActionGrid').style.display = 'none'; }
     function hideManageSection() { manageSection.classList.remove('active'); document.getElementById('mainActionGrid').style.display = 'grid'; }
-
     function showFullScreen(section) {
         document.querySelectorAll('.fullscreen-section').forEach(s => s.classList.remove('active'));
         section.classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
     function showToast(msg, isPublished = false) {
         const toast = isPublished ? document.getElementById('publishedToast') : document.getElementById('successToast');
         if (!isPublished) document.getElementById('toastMessage').innerText = msg;
@@ -512,7 +539,7 @@
         setTimeout(() => toast.style.display = 'none', 2000);
     }
 
-    // ===== EVENT LISTENERS =====
+    // ===== EVENTS =====
     manageBtn.addEventListener('click', showManageSection);
     backFromManage.addEventListener('click', hideManageSection);
     createMainCard.addEventListener('click', () => { showFullScreen(createSection); resetCreateResultForm(); });
@@ -525,19 +552,15 @@
     // Template Selection
     document.querySelectorAll('#templateSelector .template-option').forEach(opt => {
         opt.addEventListener('click', function() {
-            document.querySelectorAll('#templateSelector .template-option').forEach(o => {
-                o.style.borderColor = '#e2e8f0';
-                o.style.background = 'white';
-            });
-            this.style.borderColor = '#1a237e';
-            this.style.background = '#e8eafe';
+            document.querySelectorAll('#templateSelector .template-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
             selectedTemplate = this.id === 'templateResult1' ? 'result1' : 'result';
         });
     });
 
-    // Subject Dialog - Simple
+    // Subjects
     document.getElementById('addMainSubjectBtn').addEventListener('click', () => {
-        const subject = prompt('Enter main subject name (e.g., Mathematics):');
+        const subject = prompt('Enter main subject name:');
         if (subject && subject.trim()) {
             const total = prompt(`Enter total marks for ${subject}:`);
             if (total && parseInt(total) > 0) {
@@ -549,7 +572,7 @@
     });
 
     document.getElementById('addOptionalSubjectBtn').addEventListener('click', () => {
-        const subject = prompt('Enter optional subject name (e.g., Computer Science):');
+        const subject = prompt('Enter optional subject name:');
         if (subject && subject.trim()) {
             const total = prompt(`Enter total marks for ${subject} (optional):`);
             if (total && parseInt(total) > 0) {
@@ -561,10 +584,10 @@
     });
 
     function updateSubjectDisplay() {
-        const mainDiv = document.getElementById('selectedMainSubjects');
-        const optDiv = document.getElementById('selectedOptionalSubjects');
-        mainDiv.innerHTML = selectedMainSubjects.length ? `<span class="badge bg-primary">Main: ${selectedMainSubjects.map(s => s.name).join(', ')}</span>` : '';
-        optDiv.innerHTML = selectedOptionalSubjects.length ? `<span class="badge bg-warning text-dark">Optional: ${selectedOptionalSubjects.map(s => s.name).join(', ')}</span>` : '';
+        document.getElementById('selectedMainSubjects').innerHTML = selectedMainSubjects.length ? 
+            `<span class="badge bg-primary">Main: ${selectedMainSubjects.map(s => s.name).join(', ')}</span>` : '';
+        document.getElementById('selectedOptionalSubjects').innerHTML = selectedOptionalSubjects.length ? 
+            `<span class="badge bg-warning text-dark">Optional: ${selectedOptionalSubjects.map(s => s.name).join(', ')}</span>` : '';
     }
 
     function generateSubjectFieldsBtnClick() {
@@ -573,7 +596,6 @@
         selectedMainSubjects.forEach(sub => {
             const box = document.createElement('div');
             box.className = 'subject-box';
-            box.style.cssText = 'background:#f8fafc; border-radius:16px; padding:12px; margin-bottom:12px; border:1px solid #e2e8f0;';
             box.innerHTML = `
                 <div class="row">
                     <div class="col-md-6"><label><strong>${sub.name}</strong></label><input type="text" class="form-control" value="${sub.name}" readonly style="background:#f1f5f9;"></div>
@@ -602,8 +624,7 @@
         marksFields.innerHTML = '<h5 class="mb-3">Main Subjects</h5>';
         selectedMainSubjects.forEach((sub) => {
             const div = document.createElement('div');
-            div.className = 'mb-2';
-            div.style.cssText = 'background:#f8fafc; border-radius:10px; padding:10px 15px; border:1px solid #e2e8f0;';
+            div.style.cssText = 'background:#f8fafc; border-radius:10px; padding:10px 15px; border:1px solid #e2e8f0; margin-bottom:8px;';
             div.innerHTML = `
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <label style="min-width:120px; font-weight:600;">${sub.name} (${sub.total})</label>
@@ -620,8 +641,7 @@
         optionalMarksList.innerHTML = '<strong style="color:#c5a059;">Optional Subjects</strong>';
         selectedOptionalSubjects.forEach((opt) => {
             const div = document.createElement('div');
-            div.className = 'mb-2';
-            div.style.cssText = 'background:#fef9e6; border-radius:10px; padding:10px 15px; border:1px solid #c5a059;';
+            div.style.cssText = 'background:#fef9e6; border-radius:10px; padding:10px 15px; border:1px solid #c5a059; margin-bottom:8px;';
             div.innerHTML = `
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <label style="min-width:120px; font-weight:600; color:#c5a059;">${opt.name} (${opt.total})</label>
@@ -697,12 +717,10 @@
         studentNameInput.value = s.name;
         fatherNameInput.value = s.fatherName || '';
         document.querySelectorAll('.subject-mark').forEach(inp => {
-            const sub = inp.dataset.subject;
-            inp.value = s.marks[sub] || 0;
+            inp.value = s.marks[inp.dataset.subject] || 0;
         });
         document.querySelectorAll('.optional-mark').forEach(inp => {
-            const sub = inp.dataset.subject;
-            inp.value = s.optionalMarks && s.optionalMarks[sub] !== undefined ? s.optionalMarks[sub] : '';
+            inp.value = s.optionalMarks && s.optionalMarks[inp.dataset.subject] !== undefined ? s.optionalMarks[inp.dataset.subject] : '';
         });
         addStudentBtn.classList.add('d-none');
         updateStudentBtn.classList.remove('d-none');
@@ -761,7 +779,16 @@
     saveDraftBtn.addEventListener('click', async () => {
         if (!examNameInput.value.trim() || students.length === 0) { alert('Exam name and at least one student required'); return; }
         try {
-            const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students, createdAt: serverTimestamp() };
+            const data = { 
+                examName: examNameInput.value, 
+                examCentre: examCentreInput.value || '', 
+                rollCode: rollCodeInput.value || '55075', 
+                template: selectedTemplate, 
+                subjects: selectedMainSubjects, 
+                optionalSubjects: selectedOptionalSubjects, 
+                students, 
+                createdAt: serverTimestamp() 
+            };
             if (editingDraftId) await updateDoc(doc(db, "draft_results", editingDraftId), data);
             else await addDoc(collection(db, "draft_results"), data);
             showToast('Draft saved');
@@ -775,8 +802,21 @@
         if (!examNameInput.value.trim() || students.length === 0) { alert('Exam name and at least one student required'); return; }
         if (isEditingPublishedResult) { editPublishedConfirmModal.show(); return; }
         try {
-            const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students, createdAt: serverTimestamp() };
-            await addDoc(collection(db, "results"), data);
+            // ✅ Save to schools/{schoolId}/results/
+            const resultsRef = collection(db, "schools", schoolId, "results");
+            const data = { 
+                examName: examNameInput.value, 
+                examCentre: examCentreInput.value || '', 
+                rollCode: rollCodeInput.value || '55075', 
+                template: selectedTemplate, 
+                subjects: selectedMainSubjects, 
+                optionalSubjects: selectedOptionalSubjects, 
+                students, 
+                createdAt: serverTimestamp(),
+                publishedBy: teacherName,
+                publishedByEmail: teacherEmail
+            };
+            await addDoc(resultsRef, data);
             if (editingDraftId) await deleteDoc(doc(db, "draft_results", editingDraftId));
             showToast('', true);
             resetCreateResultForm();
@@ -788,8 +828,18 @@
     saveChangesConfirmBtn.addEventListener('click', async () => {
         if (!editingPublishedResultId) { editPublishedConfirmModal.hide(); return; }
         try {
-            const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students };
-            await updateDoc(doc(db, "results", editingPublishedResultId), data);
+            const data = { 
+                examName: examNameInput.value, 
+                examCentre: examCentreInput.value || '', 
+                rollCode: rollCodeInput.value || '55075', 
+                template: selectedTemplate, 
+                subjects: selectedMainSubjects, 
+                optionalSubjects: selectedOptionalSubjects, 
+                students,
+                updatedAt: serverTimestamp(),
+                updatedBy: teacherName
+            };
+            await updateDoc(doc(db, "schools", schoolId, "results", editingPublishedResultId), data);
             editPublishedConfirmModal.hide();
             showToast('Result updated!');
             resetCreateResultForm();
@@ -800,7 +850,16 @@
 
     saveDraftConfirmBtn.addEventListener('click', async () => {
         try {
-            const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students, createdAt: serverTimestamp() };
+            const data = { 
+                examName: examNameInput.value, 
+                examCentre: examCentreInput.value || '', 
+                rollCode: rollCodeInput.value || '55075', 
+                template: selectedTemplate, 
+                subjects: selectedMainSubjects, 
+                optionalSubjects: selectedOptionalSubjects, 
+                students, 
+                createdAt: serverTimestamp() 
+            };
             await addDoc(collection(db, "draft_results"), data);
             editPublishedConfirmModal.hide();
             showToast('Saved as draft!');
@@ -844,7 +903,7 @@
         if (snap.empty) { draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No drafts found.</p></div>'; return; }
         snap.forEach(doc => {
             const d = doc.data();
-            const card = `<div class="col-md-6 col-lg-4"><div class="card h-100 shadow-sm"><div class="card-body"><h5 class="card-title">${d.examName}</h5><p class="card-text text-muted">Subjects: ${d.subjects.length} | Students: ${d.students.length}</p><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}">Edit</button><button class="btn btn-sm btn-danger delete-draft" data-id="${doc.id}">Delete</button></div></div></div></div>`;
+            const card = `<div class="col-md-6 col-lg-4"><div class="card h-100 shadow-sm"><div class="card-body"><h5 class="card-title">${d.examName}</h5><p class="card-text text-muted">Subjects: ${d.subjects?.length || 0} | Students: ${d.students?.length || 0}</p><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}">Edit</button><button class="btn btn-sm btn-danger delete-draft" data-id="${doc.id}">Delete</button></div></div></div></div>`;
             draftResultsList.insertAdjacentHTML('beforeend', card);
         });
         document.querySelectorAll('.edit-draft').forEach(btn => btn.addEventListener('click', e => editDraft(e.target.dataset.id)));
@@ -873,32 +932,71 @@
 
     async function deleteDraft(id) { if (confirm('Delete draft?')) { await deleteDoc(doc(db, "draft_results", id)); showToast('Draft deleted'); loadDraftResults(); } }
 
-    // ===== LOAD PUBLISHED =====
+    // ===== LOAD PUBLISHED RESULTS (SIRF USI COACHING KE) =====
     async function loadOldResults() {
-        const q = query(collection(db, "results"), orderBy("createdAt", "desc"));
-        const snap = await getDocs(q);
-        oldResultsList.innerHTML = '';
-        if (snap.empty) { oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No published results.</p></div>'; return; }
-        snap.forEach(doc => {
-            const d = doc.data();
-            const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString() : 'Unknown';
-            const card = `<div class="col-md-6 col-lg-4"><div class="card h-100 shadow-sm"><div class="card-body"><h5 class="card-title">${d.examName}</h5><p class="card-text text-muted">${date} | Subjects: ${d.subjects.length} | Students: ${d.students.length}</p><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-primary view-result" data-id="${doc.id}">View</button><button class="btn btn-sm btn-warning edit-result" data-id="${doc.id}">Edit</button><button class="btn btn-sm btn-danger delete-result" data-id="${doc.id}">Delete</button></div></div></div></div>`;
-            oldResultsList.insertAdjacentHTML('beforeend', card);
-        });
-        document.querySelectorAll('.view-result').forEach(btn => btn.addEventListener('click', e => viewResult(e.target.dataset.id)));
-        document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editResult(e.target.dataset.id)));
-        document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deleteResult(e.target.dataset.id)));
+        if (!schoolId) {
+            oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found. Please contact director.</p></div>';
+            return;
+        }
+
+        try {
+            // ✅ Path: schools/{schoolId}/results
+            const resultsRef = collection(db, "schools", schoolId, "results");
+            const q = query(resultsRef, orderBy("createdAt", "desc"));
+            const snap = await getDocs(q);
+            
+            oldResultsList.innerHTML = '';
+            
+            if (snap.empty) {
+                oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No published results found for your institute.</p></div>';
+                return;
+            }
+            
+            snap.forEach(doc => {
+                const d = doc.data();
+                const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString() : 'Unknown';
+                const card = `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">${d.examName || 'Unnamed Exam'}</h5>
+                                <p class="card-text text-muted">${date} | Students: ${d.students?.length || 0}</p>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button class="btn btn-sm btn-primary view-result" data-id="${doc.id}">View</button>
+                                    <button class="btn btn-sm btn-warning edit-result" data-id="${doc.id}">Edit</button>
+                                    <button class="btn btn-sm btn-danger delete-result" data-id="${doc.id}">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                oldResultsList.insertAdjacentHTML('beforeend', card);
+            });
+            
+            document.querySelectorAll('.view-result').forEach(btn => btn.addEventListener('click', e => viewResult(e.target.dataset.id)));
+            document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editResult(e.target.dataset.id)));
+            document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deleteResult(e.target.dataset.id)));
+            
+        } catch(error) {
+            console.error('Error loading results:', error);
+            oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Error loading results. Please try again.</p></div>';
+        }
     }
 
+    // ===== VIEW RESULT =====
     async function viewResult(id) {
-        const snap = await getDocs(query(collection(db, "results"), where("__name__", "==", id)));
+        const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
         if (snap.empty) return;
         const data = snap.docs[0].data();
+        window._currentResultData = data;
+        window._currentExamName = data.examName;
+        
         const sorted = [...data.students].sort((a,b) => {
             let ta=0, ma=0, tb=0, mb=0;
             data.subjects.forEach(s => { ta += a.marks[s.name]||0; ma += s.total; tb += b.marks[s.name]||0; mb += s.total; });
             return (tb/mb) - (ta/ma);
         });
+        
         resultModalTitle.innerText = data.examName + ' (Ranked)';
         let html = `<p><strong>Total Students:</strong> ${data.students.length}</p>`;
         if (sorted.length) html += `<div class="alert alert-success">🏆 Top: ${sorted[0].name} (Roll: ${sorted[0].rollNo})</div>`;
@@ -928,8 +1026,9 @@
         resultModal.show();
     }
 
+    // ===== EDIT RESULT =====
     async function editResult(id) {
-        const snap = await getDocs(query(collection(db, "results"), where("__name__", "==", id)));
+        const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
         if (snap.empty) return;
         const data = snap.docs[0].data();
         examNameInput.value = data.examName || '';
@@ -949,8 +1048,20 @@
         }, 100);
     }
 
-    async function deleteResult(id) { if (confirm('Delete published result?')) { await deleteDoc(doc(db, "results", id)); showToast('Result deleted'); loadOldResults(); } }
+    // ===== DELETE RESULT =====
+    async function deleteResult(id) {
+        if (confirm('Delete this published result permanently?')) {
+            try {
+                await deleteDoc(doc(db, "schools", schoolId, "results", id));
+                showToast('Result deleted successfully!');
+                loadOldResults();
+            } catch(e) {
+                alert('Error deleting: ' + e.message);
+            }
+        }
+    }
 
+    // ===== PDF DOWNLOAD =====
     downloadPdfBtn.addEventListener('click', () => {
         const data = window._currentResultData;
         const name = window._currentExamName;
@@ -964,7 +1075,7 @@
             return (tb/mb) - (ta/ma);
         });
         let columns = [{ header: 'Rank', dataKey: 'rank' }, { header: 'Roll', dataKey: 'roll' }, { header: 'Name', dataKey: 'name' }, { header: 'Father', dataKey: 'father' }];
-        data.subjects.forEach(s => columns.push({ header: `${s.name}`, dataKey: s.name }));
+        data.subjects.forEach(s => columns.push({ header: s.name, dataKey: s.name }));
         if (data.optionalSubjects?.length) data.optionalSubjects.forEach(o => columns.push({ header: `${o.name} (Opt)`, dataKey: `opt_${o.name}` }));
         columns.push({ header: 'Total', dataKey: 'total' }, { header: '%', dataKey: 'percent' });
         const rows = sorted.map((s, idx) => {
@@ -990,18 +1101,8 @@
         showToast('PDF Downloaded');
     });
 
-    // Store data for PDF
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('view-result')) {
-            const id = e.target.dataset.id;
-            getDocs(query(collection(db, "results"), where("__name__", "==", id))).then(snap => {
-                if (!snap.empty) {
-                    window._currentResultData = snap.docs[0].data();
-                    window._currentExamName = window._currentResultData.examName;
-                }
-            });
-        }
-    });
+    // ===== INITIAL LOAD =====
+    loadOldResults();
 </script>
 </body>
 </html>
