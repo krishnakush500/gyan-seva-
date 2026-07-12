@@ -351,7 +351,7 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: 'select_account' }); // ✅ Force account picker
+  provider.setCustomParameters({ prompt: 'select_account' });
 
   // ===== TEACHER LOGIN - Google Sign-In =====
   document.getElementById('teacherLoginBtn').addEventListener('click', async function() {
@@ -367,17 +367,13 @@
       
       console.log('✅ Google Sign-In successful:', email);
       
-      // Check if this email is registered as a teacher in any institute
-      // For now, redirect to teacher panel
-      alert(`✅ Welcome ${name}!\n\nYou are signed in with: ${email}\n\nRedirecting to Teacher Panel...`);
-      
-      // Store teacher session
+      // ✅ Store teacher session
       localStorage.setItem('teacher_email', email);
       localStorage.setItem('teacher_name', name);
       localStorage.setItem('isTeacherLoggedIn', 'true');
       
-      // Redirect to teacher dashboard (you can create this page)
-      // window.location.href = 'teacher-dashboard.html';
+      // ✅ Redirect to Teacher Panel
+      window.location.href = 'teacher-panel.html';
       
     } catch(error) {
       console.error('❌ Google Sign-In error:', error);
