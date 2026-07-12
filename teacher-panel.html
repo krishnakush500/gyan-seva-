@@ -30,6 +30,7 @@
         .topbar .brand { font-size: 1.3rem; font-weight: 700; }
         .topbar .brand i { color: #ffc107; }
         .topbar .user-info { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .topbar .user-info .institute-name { font-size: 0.85rem; opacity: 0.9; background: rgba(255,255,255,0.12); padding: 4px 14px; border-radius: 30px; }
         .topbar .user-info span { font-size: 0.85rem; opacity: 0.9; }
         .topbar .logout-btn {
             background: rgba(255,255,255,0.15);
@@ -45,45 +46,28 @@
 
         .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
 
-        /* Welcome Card with Institute Name */
+        /* Welcome */
         .welcome-card {
             background: white;
             border-radius: 20px;
             padding: 24px 28px;
             margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
         }
-        .welcome-card .left h1 { font-size: 1.6rem; color: #1a237e; }
-        .welcome-card .left p { color: #64748b; font-size: 0.95rem; margin-top: 4px; }
-        .welcome-card .left .badge {
+        .welcome-card h1 { font-size: 1.6rem; color: #1a237e; }
+        .welcome-card .institute-badge {
             display: inline-block;
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-        .welcome-card .right {
-            text-align: right;
-        }
-        .welcome-card .right .institute-name {
-            font-size: 1.2rem;
-            font-weight: 700;
+            background: #e8eafe;
             color: #1a237e;
-        }
-        .welcome-card .right .institute-location {
+            padding: 4px 16px;
+            border-radius: 30px;
             font-size: 0.85rem;
-            color: #64748b;
+            font-weight: 600;
+            margin-top: 6px;
         }
+        .welcome-card p { color: #64748b; font-size: 0.95rem; margin-top: 4px; }
 
-        /* Action Card */
+        /* Single Action Card - Manage Results */
         .action-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -130,7 +114,7 @@
         }
         .action-card:hover .action-btn { background: #1a237e; color: white; }
 
-        /* Manage Section */
+        /* ===== MANAGE RESULTS SECTION ===== */
         .manage-section {
             display: none;
             background: white;
@@ -207,7 +191,17 @@
         }
         .toast-message.publish { background: #198754; }
 
-        .subject-box { background: #f8fafc; border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; }
+        .template-selector {
+            display: flex;
+            gap: 12px;
+            padding: 10px 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
         .template-option {
             padding: 8px 16px;
             border-radius: 30px;
@@ -216,21 +210,20 @@
             text-align: center;
             transition: all 0.3s;
             background: white;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
-        .template-option:hover { border-color: #1a237e; transform: translateY(-1px); }
         .template-option.selected { border-color: #1a237e; background: #e8eafe; }
+        .template-option .template-name { font-weight: 600; color: #1a237e; font-size: 0.85rem; }
+
+        .subject-box { background: #f8fafc; border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; }
 
         @media (max-width: 768px) {
             .topbar { padding: 12px 16px; }
             .topbar .brand { font-size: 1rem; }
             .topbar .user-info span { font-size: 0.75rem; }
-            .welcome-card { flex-direction: column; text-align: center; }
-            .welcome-card .right { text-align: center; }
             .action-grid { max-width: 100%; }
             .action-card { padding: 25px 20px; }
+            .action-icon { width: 60px; height: 60px; font-size: 28px; }
+            .action-title { font-size: 1.2rem; }
             .action-cards { grid-template-columns: 1fr; }
             .section-header { flex-direction: column; gap: 12px; text-align: center; }
         }
@@ -242,25 +235,19 @@
 <div class="topbar">
     <div class="brand"><i class="fas fa-chalkboard-user"></i> GYAN SEVA</div>
     <div class="user-info">
+        <span class="institute-name"><i class="fas fa-school"></i> <span id="instituteName">Loading...</span></span>
         <span><i class="fas fa-user-circle"></i> <span id="teacherName">Teacher</span></span>
-        <span><i class="fas fa-envelope"></i> <span id="teacherEmail">---</span></span>
         <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 </div>
 
 <!-- ===== MAIN CONTENT ===== -->
 <div class="container">
-    <!-- Welcome Card with Institute Name -->
+    <!-- Welcome Card -->
     <div class="welcome-card">
-        <div class="left">
-            <h1>👋 Welcome, <span id="welcomeName">Teacher</span>!</h1>
-            <p>Manage your institute's results from one place.</p>
-            <span class="badge"><i class="fas fa-check-circle"></i> Teacher Panel</span>
-        </div>
-        <div class="right">
-            <div class="institute-name" id="instituteName">🏫 Loading...</div>
-            <div class="institute-location" id="instituteLocation">📍 Loading...</div>
-        </div>
+        <h1>👋 Welcome, <span id="welcomeName">Teacher</span>!</h1>
+        <p>Manage your institute's results from one place.</p>
+        <span class="institute-badge"><i class="fas fa-school"></i> <span id="welcomeInstitute">Loading...</span></span>
     </div>
 
     <!-- ===== ACTION CARD ===== -->
@@ -280,7 +267,6 @@
             <button class="back-btn" id="backFromManageBtn"><i class="fas fa-arrow-left"></i> Back to Menu</button>
         </div>
 
-        <!-- Mini Action Cards -->
         <div class="action-cards" id="actionCardsContainer">
             <div class="mini-card" id="createResultMainCard">
                 <div class="icon"><i class="fas fa-plus-circle" style="color:#1a237e;"></i></div>
@@ -299,33 +285,28 @@
             </div>
         </div>
 
-        <!-- ===== CREATE RESULT SECTION ===== -->
+        <!-- ===== CREATE RESULT ===== -->
         <div id="createResultSection" class="fullscreen-section">
             <div class="section-header">
                 <h3><i class="fas fa-plus-circle me-2"></i> Create New Result</h3>
                 <button class="back-btn" id="backFromCreateBtn"><i class="fas fa-arrow-left"></i> Back</button>
             </div>
-            
-            <div class="template-selector" style="display:flex; gap:12px; padding:10px 15px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:20px; flex-wrap:wrap; align-items:center;">
+            <div class="template-selector" id="templateSelector">
                 <span style="font-weight:600; color:#1a237e; font-size:0.85rem; margin-right:10px;"><i class="fas fa-palette"></i> Template:</span>
-                <div class="template-option selected" id="templateResult" style="padding:8px 16px; border-radius:30px; border:2px solid #1a237e; cursor:pointer; text-align:center; transition:all 0.3s; background:#e8eafe;">
-                    <span class="template-icon"><i class="fas fa-file-alt"></i></span>
-                    <span class="template-name" style="font-weight:600; color:#1a237e; font-size:0.85rem;">Classic Result</span>
+                <div class="template-option selected" id="templateResult" onclick="selectTemplate('result')">
+                    <span class="template-name">📄 Classic Result</span>
                 </div>
-                <div class="template-option" id="templateResult1" style="padding:8px 16px; border-radius:30px; border:2px solid #e2e8f0; cursor:pointer; text-align:center; transition:all 0.3s; background:white;">
-                    <span class="template-icon"><i class="fas fa-id-card"></i></span>
-                    <span class="template-name" style="font-weight:600; color:#1a237e; font-size:0.85rem;">Admit Card Style</span>
+                <div class="template-option" id="templateResult1" onclick="selectTemplate('result1')">
+                    <span class="template-name">🎫 Admit Card Style</span>
                 </div>
             </div>
-            
             <div id="examSetupStep">
                 <div class="card mb-4">
                     <div class="card-header bg-white fw-bold">Step 1: Exam Setup</div>
                     <div class="card-body">
                         <div class="mb-3"><label class="form-label">Exam Name <span style="color:#dc2626;">*</span></label><input type="text" class="form-control" id="examName" placeholder="e.g., Final Examination 2025"></div>
-                        <div class="mb-3"><label class="form-label">Examination Centre</label><input type="text" class="form-control" id="examCentre" placeholder="e.g., QUEST COACHING CENTRE, GOPALGANJ"></div>
+                        <div class="mb-3"><label class="form-label">Examination Centre</label><input type="text" class="form-control" id="examCentre" placeholder="e.g., GYAN SEVA, BEGUSARAI"></div>
                         <div class="mb-3"><label class="form-label">Roll Code</label><input type="text" class="form-control" id="rollCode" value="55075"></div>
-                        
                         <div class="mb-3">
                             <label class="form-label">Subjects <span style="color:#dc2626;">*</span></label>
                             <div class="d-flex gap-2 flex-wrap">
@@ -340,7 +321,6 @@
                 <div id="subjectFields" class="mb-4"></div>
                 <div id="step1NextBtn" class="d-none mt-3"><button id="nextToStudentEntryBtn" class="btn btn-success">Next →</button></div>
             </div>
-            
             <div id="studentEntryStep" style="display: none;">
                 <div class="card mb-4">
                     <div class="card-header bg-white fw-bold">Step 2: Student Marks Entry</div>
@@ -348,21 +328,11 @@
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">Roll No <span style="color:#dc2626;">*</span></label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="rollNo" min="1" value="1">
-                                    <button class="btn btn-outline-secondary" type="button" id="incrementRollBtn">+</button>
-                                </div>
+                                <div class="input-group"><input type="number" class="form-control" id="rollNo" min="1" value="1"><button class="btn btn-outline-secondary" type="button" id="incrementRollBtn">+</button></div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Student Name</label>
-                                <input type="text" class="form-control" id="studentName" placeholder="Enter name">
-                            </div>
-                            <div class="col-md-5 mb-3">
-                                <label class="form-label">Father's Name</label>
-                                <input type="text" class="form-control" id="fatherName" placeholder="Enter father's name">
-                            </div>
+                            <div class="col-md-4 mb-3"><label class="form-label">Student Name</label><input type="text" class="form-control" id="studentName" placeholder="Enter name"></div>
+                            <div class="col-md-5 mb-3"><label class="form-label">Father's Name</label><input type="text" class="form-control" id="fatherName" placeholder="Enter father's name"></div>
                         </div>
-                        
                         <div id="marksFields" class="mb-3"></div>
                         <div id="optionalMarksFields" style="display:none;" class="mb-3">
                             <div style="border:1px solid #c5a059; border-radius:10px; padding:12px;">
@@ -370,7 +340,6 @@
                                 <div id="optionalMarksList"></div>
                             </div>
                         </div>
-                        
                         <div class="d-flex gap-2 flex-wrap">
                             <button id="addStudentBtn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Add Student</button>
                             <button id="updateStudentBtn" class="btn btn-warning d-none">Update Student</button>
@@ -381,14 +350,7 @@
                 <div class="card">
                     <div class="card-header bg-white fw-bold">Students List</div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr><th>Roll</th><th>Name</th><th>Father</th><th>Marks</th><th>Actions</th></tr>
-                                </thead>
-                                <tbody id="studentsTableBody"></tbody>
-                            </table>
-                        </div>
+                        <div class="table-responsive"><table class="table table-hover"><thead class="table-light"><tr><th>Roll</th><th>Name</th><th>Father</th><th>Marks</th><th>Actions</th></tr></thead><tbody id="studentsTableBody"></tbody></table></div>
                         <div class="d-flex gap-2 flex-wrap mt-3">
                             <button id="saveDraftBtn" class="btn btn-warning"><i class="fas fa-save"></i> Save as Draft</button>
                             <button id="publishResultBtn" class="btn btn-success"><i class="fas fa-globe"></i> Publish Result</button>
@@ -404,7 +366,7 @@
             <div id="draftResultsList" class="row g-4"></div>
         </div>
 
-        <!-- ===== PUBLISHED RESULTS (Sirf usi coaching ke) ===== -->
+        <!-- ===== PUBLISHED RESULTS ===== -->
         <div id="oldResultsSection" class="fullscreen-section">
             <div class="section-header"><h3><i class="fas fa-history me-2"></i> Published Results</h3><button class="back-btn" id="backFromOldBtn"><i class="fas fa-arrow-left"></i> Back</button></div>
             <div id="oldResultsList" class="row g-4"></div>
@@ -429,9 +391,9 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
@@ -446,53 +408,89 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ===== TEACHER SESSION =====
+    // ===== TEACHER SESSION LOAD =====
     let schoolId = null;
     let instituteName = '';
-    let instituteLocation = '';
 
     async function loadTeacherSession() {
         const name = localStorage.getItem('teacher_name') || 'Teacher';
         const email = localStorage.getItem('teacher_email') || '---';
         const isLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
-        schoolId = localStorage.getItem('schoolId') || localStorage.getItem('instituteId');
-        
-        if (!isLoggedIn || !schoolId) {
+        const savedSchoolId = localStorage.getItem('schoolId');
+
+        if (!isLoggedIn) {
             alert('Please login first!');
             window.location.href = 'login.html';
             return;
         }
 
         document.getElementById('teacherName').textContent = name;
-        document.getElementById('teacherEmail').textContent = email;
         document.getElementById('welcomeName').textContent = name;
+        document.getElementById('teacherEmail')?.remove();
 
-        // ✅ Load institute details from Firebase
+        // ✅ Get institute name from email
+        if (savedSchoolId) {
+            schoolId = savedSchoolId;
+            await loadInstituteName(schoolId);
+        } else {
+            // Try to find school from email
+            await findSchoolFromEmail(email);
+        }
+    }
+
+    async function loadInstituteName(id) {
         try {
-            const docRef = doc(db, "schools", schoolId);
-            const snap = await getDoc(docRef);
-            if (snap.exists()) {
-                const data = snap.data();
+            const docRef = doc(db, "schools", id);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
                 instituteName = data.coachingName || data.name || 'Institute';
-                instituteLocation = data.location || 'Location not specified';
-                document.getElementById('instituteName').textContent = '🏫 ' + instituteName;
-                document.getElementById('instituteLocation').textContent = '📍 ' + instituteLocation;
-            } else {
-                document.getElementById('instituteName').textContent = '🏫 Institute not found';
+                document.getElementById('instituteName').textContent = instituteName;
+                document.getElementById('welcomeInstitute').textContent = instituteName;
+                localStorage.setItem('schoolId', id);
+                schoolId = id;
             }
-        } catch (error) {
-            console.error('Error loading institute:', error);
-            document.getElementById('instituteName').textContent = '🏫 Error loading institute';
+        } catch(e) {
+            console.error('Error loading institute:', e);
+        }
+    }
+
+    async function findSchoolFromEmail(email) {
+        try {
+            const schoolsRef = collection(db, "schools");
+            const snap = await getDocs(schoolsRef);
+            let found = false;
+            for (const doc of snap.docs) {
+                const data = doc.data();
+                const teachersRef = collection(db, "schools", doc.id, "teachers");
+                const teachersSnap = await getDocs(teachersRef);
+                for (const t of teachersSnap.docs) {
+                    const teacherData = t.data();
+                    if (teacherData.email === email) {
+                        schoolId = doc.id;
+                        instituteName = data.coachingName || data.name || 'Institute';
+                        document.getElementById('instituteName').textContent = instituteName;
+                        document.getElementById('welcomeInstitute').textContent = instituteName;
+                        localStorage.setItem('schoolId', schoolId);
+                        localStorage.setItem('teacherName', teacherData.name || 'Teacher');
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+            if (!found) {
+                document.getElementById('instituteName').textContent = 'Not found';
+                document.getElementById('welcomeInstitute').textContent = 'Not found';
+            }
+        } catch(e) {
+            console.error('Error finding school:', e);
         }
     }
 
     function logout() {
         if (confirm('Are you sure you want to logout?')) {
-            localStorage.removeItem('teacher_name');
-            localStorage.removeItem('teacher_email');
-            localStorage.removeItem('isTeacherLoggedIn');
-            localStorage.removeItem('schoolId');
-            localStorage.removeItem('instituteId');
+            localStorage.clear();
             window.location.href = 'login.html';
         }
     }
@@ -511,6 +509,37 @@
     const backFromCreate = document.getElementById('backFromCreateBtn');
     const backFromDraft = document.getElementById('backFromDraftBtn');
     const backFromOld = document.getElementById('backFromOldBtn');
+    const examSetupStep = document.getElementById('examSetupStep');
+    const studentEntryStep = document.getElementById('studentEntryStep');
+    const examNameInput = document.getElementById('examName');
+    const examCentreInput = document.getElementById('examCentre');
+    const rollCodeInput = document.getElementById('rollCode');
+    const subjectFields = document.getElementById('subjectFields');
+    const step1NextBtn = document.getElementById('step1NextBtn');
+    const nextToStudentEntryBtn = document.getElementById('nextToStudentEntryBtn');
+    const rollNoInput = document.getElementById('rollNo');
+    const incrementRollBtn = document.getElementById('incrementRollBtn');
+    const studentNameInput = document.getElementById('studentName');
+    const fatherNameInput = document.getElementById('fatherName');
+    const marksFields = document.getElementById('marksFields');
+    const optionalMarksFields = document.getElementById('optionalMarksFields');
+    const optionalMarksList = document.getElementById('optionalMarksList');
+    const addStudentBtn = document.getElementById('addStudentBtn');
+    const updateStudentBtn = document.getElementById('updateStudentBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const studentsTableBody = document.getElementById('studentsTableBody');
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    const publishResultBtn = document.getElementById('publishResultBtn');
+    const draftResultsList = document.getElementById('draftResultsList');
+    const oldResultsList = document.getElementById('oldResultsList');
+    const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+    const resultModalTitle = document.getElementById('resultModalTitle');
+    const resultDetails = document.getElementById('resultDetails');
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    const editPublishedConfirmModal = new bootstrap.Modal(document.getElementById('editPublishedConfirmModal'));
+    const dontSaveConfirmBtn = document.getElementById('dontSaveConfirmBtn');
+    const saveDraftConfirmBtn = document.getElementById('saveDraftConfirmBtn');
+    const saveChangesConfirmBtn = document.getElementById('saveChangesConfirmBtn');
 
     const ALL_SUBJECTS = [
         "MATHEMATICS", "SCIENCE", "SOCIAL SCIENCE", "HINDI", "SANSKRIT",
@@ -522,46 +551,24 @@
 
     let selectedMainSubjects = [];
     let selectedOptionalSubjects = [];
+    let subjects = [];
     let students = [];
     let editingStudentIndex = null;
     let editingDraftId = null;
     let isEditingPublishedResult = false;
     let editingPublishedResultId = null;
     let selectedTemplate = 'result';
-    let examNameInput = document.getElementById('examName');
-    let examCentreInput = document.getElementById('examCentre');
-    let rollCodeInput = document.getElementById('rollCode');
-    let subjectFields = document.getElementById('subjectFields');
-    let step1NextBtn = document.getElementById('step1NextBtn');
-    let nextToStudentEntryBtn = document.getElementById('nextToStudentEntryBtn');
-    let rollNoInput = document.getElementById('rollNo');
-    let studentNameInput = document.getElementById('studentName');
-    let fatherNameInput = document.getElementById('fatherName');
-    let marksFields = document.getElementById('marksFields');
-    let optionalMarksList = document.getElementById('optionalMarksList');
-    let optionalMarksFields = document.getElementById('optionalMarksFields');
-    let addStudentBtn = document.getElementById('addStudentBtn');
-    let updateStudentBtn = document.getElementById('updateStudentBtn');
-    let cancelEditBtn = document.getElementById('cancelEditBtn');
-    let studentsTableBody = document.getElementById('studentsTableBody');
-    let saveDraftBtn = document.getElementById('saveDraftBtn');
-    let publishResultBtn = document.getElementById('publishResultBtn');
-    let draftResultsList = document.getElementById('draftResultsList');
-    let oldResultsList = document.getElementById('oldResultsList');
-    const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
-    const resultModalTitle = document.getElementById('resultModalTitle');
-    const resultDetails = document.getElementById('resultDetails');
-    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-    const editPublishedConfirmModal = new bootstrap.Modal(document.getElementById('editPublishedConfirmModal'));
-    const dontSaveConfirmBtn = document.getElementById('dontSaveConfirmBtn');
-    const saveDraftConfirmBtn = document.getElementById('saveDraftConfirmBtn');
-    const saveChangesConfirmBtn = document.getElementById('saveChangesConfirmBtn');
 
     // ===== SHOW/HIDE =====
     function showManageSection() { manageSection.classList.add('active'); document.getElementById('mainActionGrid').style.display = 'none'; }
     function hideManageSection() { manageSection.classList.remove('active'); document.getElementById('mainActionGrid').style.display = 'grid'; }
-    function showFullScreen(section) { document.querySelectorAll('.fullscreen-section').forEach(s => s.classList.remove('active')); section.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function showToast(msg, isPublished = false) { const toast = isPublished ? document.getElementById('publishedToast') : document.getElementById('successToast'); if (!isPublished) document.getElementById('toastMessage').innerText = msg; toast.style.display = 'flex'; setTimeout(() => toast.style.display = 'none', 2000); }
+    function showFullScreen(section) { document.querySelectorAll('.fullscreen-section').forEach(s => s.classList.remove('active')); section.classList.add('active'); window.scrollTo(0,0); }
+    function showToast(msg, isPublished = false) {
+        const toast = isPublished ? document.getElementById('publishedToast') : document.getElementById('successToast');
+        if (!isPublished) document.getElementById('toastMessage').innerText = msg;
+        toast.style.display = 'flex';
+        setTimeout(() => toast.style.display = 'none', 2000);
+    }
 
     // ===== EVENT LISTENERS =====
     manageBtn.addEventListener('click', showManageSection);
@@ -573,20 +580,11 @@
     backFromDraft.addEventListener('click', () => { showFullScreen(draftSection); });
     backFromOld.addEventListener('click', () => { showFullScreen(oldSection); });
 
-    // ===== TEMPLATE SELECTION =====
-    document.querySelectorAll('#templateSelector .template-option').forEach(opt => {
-        opt.addEventListener('click', function() {
-            document.querySelectorAll('#templateSelector .template-option').forEach(o => {
-                o.style.borderColor = '#e2e8f0';
-                o.style.background = 'white';
-                o.classList.remove('selected');
-            });
-            this.style.borderColor = '#1a237e';
-            this.style.background = '#e8eafe';
-            this.classList.add('selected');
-            selectedTemplate = this.id === 'templateResult1' ? 'result1' : 'result';
-        });
-    });
+    window.selectTemplate = function(template) {
+        selectedTemplate = template;
+        document.querySelectorAll('.template-option').forEach(o => o.classList.remove('selected'));
+        document.getElementById(template === 'result' ? 'templateResult' : 'templateResult1').classList.add('selected');
+    };
 
     // ===== SUBJECT MANAGEMENT =====
     document.getElementById('addMainSubjectBtn').addEventListener('click', () => {
@@ -604,7 +602,7 @@
     document.getElementById('addOptionalSubjectBtn').addEventListener('click', () => {
         const subject = prompt('Enter optional subject name:');
         if (subject && subject.trim()) {
-            const total = prompt(`Enter total marks for ${subject} (optional):`);
+            const total = prompt(`Enter total marks for ${subject}:`);
             if (total && parseInt(total) > 0) {
                 selectedOptionalSubjects.push({ name: subject.trim(), total: parseInt(total) });
                 updateSubjectDisplay();
@@ -614,10 +612,10 @@
     });
 
     function updateSubjectDisplay() {
-        const mainDiv = document.getElementById('selectedMainSubjects');
-        const optDiv = document.getElementById('selectedOptionalSubjects');
-        mainDiv.innerHTML = selectedMainSubjects.length ? `<span class="badge bg-primary me-1">Main: ${selectedMainSubjects.map(s => s.name).join(', ')}</span>` : '';
-        optDiv.innerHTML = selectedOptionalSubjects.length ? `<span class="badge bg-warning text-dark me-1">Optional: ${selectedOptionalSubjects.map(s => s.name).join(', ')}</span>` : '';
+        document.getElementById('selectedMainSubjects').innerHTML = selectedMainSubjects.length ?
+            `<span class="badge bg-primary me-1">Main: ${selectedMainSubjects.map(s => s.name).join(', ')}</span>` : '';
+        document.getElementById('selectedOptionalSubjects').innerHTML = selectedOptionalSubjects.length ?
+            `<span class="badge bg-warning text-dark">Optional: ${selectedOptionalSubjects.map(s => s.name).join(', ')}</span>` : '';
     }
 
     function generateSubjectFields() {
@@ -637,7 +635,7 @@
         if (selectedOptionalSubjects.length) {
             const optDiv = document.createElement('div');
             optDiv.className = 'alert alert-warning mt-3';
-            optDiv.innerHTML = `<strong>Optional:</strong> ${selectedOptionalSubjects.map(s => s.name).join(', ')}`;
+            optDiv.innerHTML = `<strong><i class="fas fa-info-circle"></i> Optional: ${selectedOptionalSubjects.map(s => s.name).join(', ')}</strong>`;
             subjectFields.appendChild(optDiv);
         }
         step1NextBtn.classList.remove('d-none');
@@ -646,15 +644,16 @@
     nextToStudentEntryBtn.addEventListener('click', () => {
         generateMarksFields();
         generateOptionalMarksFields();
-        document.getElementById('examSetupStep').style.display = 'none';
-        document.getElementById('studentEntryStep').style.display = 'block';
+        examSetupStep.style.display = 'none';
+        studentEntryStep.style.display = 'block';
     });
 
     function generateMarksFields() {
         marksFields.innerHTML = '<h5 class="mb-3">Main Subjects</h5>';
         selectedMainSubjects.forEach((sub) => {
             const div = document.createElement('div');
-            div.style.cssText = 'background:#f8fafc; border-radius:10px; padding:10px 15px; border:1px solid #e2e8f0; margin-bottom:10px;';
+            div.className = 'mb-2';
+            div.style.cssText = 'background:#f8fafc; border-radius:10px; padding:10px 15px; border:1px solid #e2e8f0;';
             div.innerHTML = `
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <label style="min-width:120px; font-weight:600;">${sub.name} (${sub.total})</label>
@@ -671,7 +670,8 @@
         optionalMarksList.innerHTML = '<strong style="color:#c5a059;">Optional Subjects</strong>';
         selectedOptionalSubjects.forEach((opt) => {
             const div = document.createElement('div');
-            div.style.cssText = 'background:#fef9e6; border-radius:10px; padding:10px 15px; border:1px solid #c5a059; margin-bottom:8px;';
+            div.className = 'mb-2';
+            div.style.cssText = 'background:#fef9e6; border-radius:10px; padding:10px 15px; border:1px solid #c5a059;';
             div.innerHTML = `
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <label style="min-width:120px; font-weight:600; color:#c5a059;">${opt.name} (${opt.total})</label>
@@ -746,17 +746,9 @@
         rollNoInput.value = s.rollNo;
         studentNameInput.value = s.name;
         fatherNameInput.value = s.fatherName || '';
-        document.querySelectorAll('.subject-mark').forEach(inp => {
-            const sub = inp.dataset.subject;
-            inp.value = s.marks[sub] || 0;
-        });
-        document.querySelectorAll('.optional-mark').forEach(inp => {
-            const sub = inp.dataset.subject;
-            inp.value = s.optionalMarks && s.optionalMarks[sub] !== undefined ? s.optionalMarks[sub] : '';
-        });
-        addStudentBtn.classList.add('d-none');
-        updateStudentBtn.classList.remove('d-none');
-        cancelEditBtn.classList.remove('d-none');
+        document.querySelectorAll('.subject-mark').forEach(inp => { const sub = inp.dataset.subject; inp.value = s.marks[sub] || 0; });
+        document.querySelectorAll('.optional-mark').forEach(inp => { const sub = inp.dataset.subject; inp.value = s.optionalMarks && s.optionalMarks[sub] !== undefined ? s.optionalMarks[sub] : ''; });
+        addStudentBtn.classList.add('d-none'); updateStudentBtn.classList.remove('d-none'); cancelEditBtn.classList.remove('d-none');
     }
 
     updateStudentBtn.addEventListener('click', () => {
@@ -800,9 +792,7 @@
         studentNameInput.value = ''; fatherNameInput.value = '';
         document.querySelectorAll('.subject-mark').forEach(inp => inp.value = '');
         document.querySelectorAll('.optional-mark').forEach(inp => inp.value = '');
-        addStudentBtn.classList.remove('d-none');
-        updateStudentBtn.classList.add('d-none');
-        cancelEditBtn.classList.add('d-none');
+        addStudentBtn.classList.remove('d-none'); updateStudentBtn.classList.add('d-none'); cancelEditBtn.classList.add('d-none');
     }
 
     function deleteStudent(idx) { if (confirm('Delete student?')) { students.splice(idx, 1); updateStudentsTable(); showToast('Deleted'); } }
@@ -812,8 +802,8 @@
         if (!examNameInput.value.trim() || students.length === 0) { alert('Exam name and at least one student required'); return; }
         if (!schoolId) { alert('Institute not found. Please login again.'); return; }
         try {
-            const resultsRef = collection(db, "schools", schoolId, "draft_results");
             const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students, createdAt: serverTimestamp() };
+            const resultsRef = collection(db, "schools", schoolId, "draft_results");
             if (editingDraftId) await updateDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId), data);
             else await addDoc(resultsRef, data);
             showToast('Draft saved');
@@ -828,8 +818,8 @@
         if (!schoolId) { alert('Institute not found. Please login again.'); return; }
         if (isEditingPublishedResult) { editPublishedConfirmModal.show(); return; }
         try {
-            const resultsRef = collection(db, "schools", schoolId, "results");
             const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students, createdAt: serverTimestamp() };
+            const resultsRef = collection(db, "schools", schoolId, "results");
             await addDoc(resultsRef, data);
             if (editingDraftId) await deleteDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId));
             showToast('', true);
@@ -853,10 +843,10 @@
     });
 
     saveDraftConfirmBtn.addEventListener('click', async () => {
-        if (!schoolId) return;
         try {
             const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students, createdAt: serverTimestamp() };
-            await addDoc(collection(db, "schools", schoolId, "draft_results"), data);
+            const resultsRef = collection(db, "schools", schoolId, "draft_results");
+            await addDoc(resultsRef, data);
             editPublishedConfirmModal.hide();
             showToast('Saved as draft!');
             resetCreateResultForm();
@@ -865,42 +855,29 @@
         } catch(e) { alert(e.message); }
     });
 
-    dontSaveConfirmBtn.addEventListener('click', () => {
-        editPublishedConfirmModal.hide();
-        resetCreateResultForm();
-        showFullScreen(oldSection);
-        loadOldResults();
-    });
+    dontSaveConfirmBtn.addEventListener('click', () => { editPublishedConfirmModal.hide(); resetCreateResultForm(); showFullScreen(oldSection); loadOldResults(); });
 
     function resetCreateResultForm() {
-        examNameInput.value = '';
-        examCentreInput.value = '';
-        rollCodeInput.value = '55075';
-        subjectFields.innerHTML = '';
-        step1NextBtn.classList.add('d-none');
-        document.getElementById('examSetupStep').style.display = 'block';
-        document.getElementById('studentEntryStep').style.display = 'none';
-        students = [];
-        updateStudentsTable();
-        editingDraftId = null;
-        isEditingPublishedResult = false;
-        editingPublishedResultId = null;
+        examNameInput.value = ''; examCentreInput.value = ''; rollCodeInput.value = '55075';
+        subjectFields.innerHTML = ''; step1NextBtn.classList.add('d-none');
+        examSetupStep.style.display = 'block'; studentEntryStep.style.display = 'none';
+        students = []; updateStudentsTable();
+        editingDraftId = null; isEditingPublishedResult = false; editingPublishedResultId = null;
         cancelEdit();
-        selectedMainSubjects = [];
-        selectedOptionalSubjects = [];
+        selectedMainSubjects = []; selectedOptionalSubjects = [];
         updateSubjectDisplay();
     }
 
     // ===== LOAD DRAFTS =====
     async function loadDraftResults() {
-        if (!schoolId) { draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>'; return; }
+        if (!schoolId) { draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">Please login again.</p></div>'; return; }
         const q = query(collection(db, "schools", schoolId, "draft_results"), orderBy("createdAt", "desc"));
         const snap = await getDocs(q);
         draftResultsList.innerHTML = '';
         if (snap.empty) { draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No drafts found.</p></div>'; return; }
         snap.forEach(doc => {
             const d = doc.data();
-            const card = `<div class="col-md-6 col-lg-4"><div class="card h-100 shadow-sm"><div class="card-body"><h5 class="card-title">${d.examName}</h5><p class="card-text text-muted">Subjects: ${d.subjects.length} | Students: ${d.students.length}</p><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}">Edit</button><button class="btn btn-sm btn-danger delete-draft" data-id="${doc.id}">Delete</button></div></div></div></div>`;
+            const card = `<div class="col-md-6 col-lg-4"><div class="card h-100 shadow-sm"><div class="card-body"><h5 class="card-title">${d.examName}</h5><p class="card-text text-muted">Subjects: ${d.subjects?.length || 0} | Students: ${d.students?.length || 0}</p><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}">Edit</button><button class="btn btn-sm btn-danger delete-draft" data-id="${doc.id}">Delete</button></div></div></div></div>`;
             draftResultsList.insertAdjacentHTML('beforeend', card);
         });
         document.querySelectorAll('.edit-draft').forEach(btn => btn.addEventListener('click', e => editDraft(e.target.dataset.id)));
@@ -928,9 +905,16 @@
         }, 100);
     }
 
-    async function deleteDraft(id) { if (confirm('Delete draft?')) { await deleteDoc(doc(db, "schools", schoolId, "draft_results", id)); showToast('Draft deleted'); loadDraftResults(); } }
+    async function deleteDraft(id) {
+        if (!schoolId) return;
+        if (confirm('Delete draft?')) {
+            await deleteDoc(doc(db, "schools", schoolId, "draft_results", id));
+            showToast('Draft deleted');
+            loadDraftResults();
+        }
+    }
 
-    // ===== LOAD PUBLISHED RESULTS (Sirf usi coaching ke) =====
+    // ===== LOAD PUBLISHED RESULTS (SIRF USI COACHING KE) =====
     async function loadOldResults() {
         if (!schoolId) {
             oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found. Please contact director.</p></div>';
@@ -938,7 +922,6 @@
         }
 
         try {
-            // ✅ Sirf usi coaching ke results fetch karo — PATH: schools/{schoolId}/results
             const resultsRef = collection(db, "schools", schoolId, "results");
             const q = query(resultsRef, orderBy("createdAt", "desc"));
             const snap = await getDocs(q);
@@ -971,27 +954,31 @@
                 oldResultsList.insertAdjacentHTML('beforeend', card);
             });
             
-            // Attach event listeners
             document.querySelectorAll('.view-result').forEach(btn => btn.addEventListener('click', e => viewResult(e.target.dataset.id)));
             document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editResult(e.target.dataset.id)));
             document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deleteResult(e.target.dataset.id)));
             
-        } catch (error) {
+        } catch(error) {
             console.error('Error loading results:', error);
-            oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Error loading results.</p></div>';
+            oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Error loading results. Please try again.</p></div>';
         }
     }
 
+    // ===== VIEW, EDIT, DELETE =====
     async function viewResult(id) {
         if (!schoolId) return;
         const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
         if (snap.empty) return;
         const data = snap.docs[0].data();
+        window._currentResultData = data;
+        window._currentExamName = data.examName;
+
         const sorted = [...data.students].sort((a,b) => {
             let ta=0, ma=0, tb=0, mb=0;
             data.subjects.forEach(s => { ta += a.marks[s.name]||0; ma += s.total; tb += b.marks[s.name]||0; mb += s.total; });
             return (tb/mb) - (ta/ma);
         });
+        
         resultModalTitle.innerText = data.examName + ' (Ranked)';
         let html = `<p><strong>Total Students:</strong> ${data.students.length}</p>`;
         if (sorted.length) html += `<div class="alert alert-success">🏆 Top: ${sorted[0].name} (Roll: ${sorted[0].rollNo})</div>`;
@@ -1018,8 +1005,6 @@
         });
         html += `</tbody></table></div>`;
         resultDetails.innerHTML = html;
-        window._currentResultData = data;
-        window._currentExamName = data.examName;
         resultModal.show();
     }
 
@@ -1045,13 +1030,13 @@
         }, 100);
     }
 
-    async function deleteResult(id) { 
+    async function deleteResult(id) {
         if (!schoolId) return;
-        if (confirm('Delete published result?')) { 
-            await deleteDoc(doc(db, "schools", schoolId, "results", id)); 
-            showToast('Result deleted'); 
-            loadOldResults(); 
-        } 
+        if (confirm('Delete published result permanently?')) {
+            await deleteDoc(doc(db, "schools", schoolId, "results", id));
+            showToast('Result deleted');
+            loadOldResults();
+        }
     }
 
     downloadPdfBtn.addEventListener('click', () => {
@@ -1060,7 +1045,8 @@
         if (!data) return;
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-        doc.setFontSize(18); doc.text(`GYAN SEVA - ${name}`, 14, 15);
+        doc.setFontSize(18);
+        doc.text(`GYAN SEVA - ${name}`, 14, 15);
         const sorted = [...data.students].sort((a,b) => {
             let ta=0, ma=0, tb=0, mb=0;
             data.subjects.forEach(s => { ta += a.marks[s.name]||0; ma += s.total; tb += b.marks[s.name]||0; mb += s.total; });
@@ -1093,7 +1079,7 @@
         showToast('PDF Downloaded');
     });
 
-    // ===== LOAD ON START =====
+    // ===== INIT =====
     loadTeacherSession();
 </script>
 </body>
