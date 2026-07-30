@@ -24,33 +24,18 @@
       overflow: hidden;
       padding: 30px 24px;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    .header h1 {
-      font-size: 1.6rem;
-      color: #1a237e;
-      margin-bottom: 4px;
-    }
-    .header p {
-      color: #64748b;
-      font-size: 0.85rem;
-    }
+    .header { text-align: center; margin-bottom: 28px; }
+    .header h1 { font-size: 1.6rem; color: #1a237e; margin-bottom: 4px; }
+    .header p { color: #64748b; font-size: 0.85rem; }
     .role-card {
       background: white;
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 14px;
       border: 2px solid #e8ecf4;
-      cursor: pointer;
       transition: all 0.3s;
     }
-    .role-card:hover {
-      border-color: #1a237e;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(26,35,126,0.08);
-    }
+    .role-card:hover { border-color: #1a237e; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(26,35,126,0.08); }
     .role-card .icon { font-size: 2rem; margin-bottom: 6px; }
     .role-card h3 { font-size: 1.1rem; color: #1e293b; margin-bottom: 2px; }
     .role-card p { font-size: 0.8rem; color: #64748b; }
@@ -72,9 +57,7 @@
     }
     .btn-google:hover { background: #283593; }
     .btn-google i { font-size: 1.1rem; }
-    .btn-student {
-      background: #10b981;
-    }
+    .btn-student { background: #10b981; }
     .btn-student:hover { background: #059669; }
     .or-divider {
       text-align: center;
@@ -91,12 +74,7 @@
       height: 1px;
       background: #e2e8f0;
     }
-    .or-divider span {
-      background: white;
-      padding: 0 14px;
-      position: relative;
-      font-size: 0.8rem;
-    }
+    .or-divider span { background: white; padding: 0 14px; position: relative; font-size: 0.8rem; }
     .info-box {
       background: #eff6ff;
       border-radius: 12px;
@@ -114,8 +92,6 @@
       font-size: 0.8rem;
     }
     .back-link:hover { color: #1a237e; }
-
-    /* ===== STUDENT LOGIN MODAL ===== */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -141,28 +117,10 @@
       box-shadow: 0 25px 60px rgba(0,0,0,0.2);
       animation: fadeIn 0.3s ease;
     }
-    @keyframes fadeIn {
-      from { opacity:0; transform:translateY(20px); }
-      to { opacity:1; transform:translateY(0); }
-    }
-    .modal-box h2 {
-      font-size: 1.4rem;
-      color: #1a237e;
-      margin-bottom: 4px;
-    }
-    .modal-box .sub {
-      color: #64748b;
-      font-size: 0.85rem;
-      margin-bottom: 20px;
-    }
-    .modal-box label {
-      display: block;
-      font-weight: 600;
-      color: #1e293b;
-      font-size: 0.85rem;
-      margin-top: 14px;
-      margin-bottom: 4px;
-    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .modal-box h2 { font-size: 1.4rem; color: #1a237e; margin-bottom: 4px; }
+    .modal-box .sub { color: #64748b; font-size: 0.85rem; margin-bottom: 20px; }
+    .modal-box label { display: block; font-weight: 600; color: #1e293b; font-size: 0.85rem; margin-top: 14px; margin-bottom: 4px; }
     .modal-box input, .modal-box select {
       width: 100%;
       padding: 12px;
@@ -175,13 +133,8 @@
       border-color: #1a237e;
       box-shadow: 0 0 0 3px rgba(26,35,126,0.1);
     }
-    .search-code-section {
-      position: relative;
-      margin-top: 6px;
-    }
-    .search-code-section input {
-      padding-right: 50px;
-    }
+    .search-code-section { position: relative; margin-top: 6px; }
+    .search-code-section input { padding-right: 50px; }
     .search-code-section button {
       position: absolute;
       right: 6px;
@@ -215,11 +168,7 @@
     .institute-preview .info { flex: 1; }
     .institute-preview .info h4 { font-size: 1rem; color: #1e293b; }
     .institute-preview .info p { font-size: 0.8rem; color: #64748b; }
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-    }
+    .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
     .modal-actions button {
       flex: 1;
       padding: 12px;
@@ -233,7 +182,7 @@
     .btn-secondary { background: #e2e8f0; color: #1e293b; }
     .btn-secondary:hover { background: #cbd5e1; }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-
+    .error-msg { color: #dc2626; font-size: 0.85rem; margin-top: 10px; padding: 10px; background: #fee2e2; border-radius: 8px; display: none; }
     @media (max-width: 480px) {
       .container { padding: 20px 16px; }
       .modal-box { padding: 20px 16px; }
@@ -258,6 +207,7 @@
     <button class="btn-google" id="teacherLoginBtn">
       <i class="fab fa-google"></i> Continue with Google
     </button>
+    <div id="teacherError" class="error-msg"></div>
   </div>
 
   <div class="or-divider"><span>OR</span></div>
@@ -330,12 +280,10 @@
   </div>
 </div>
 
-<!-- ===== FIREBASE + GOOGLE SIGN-IN (Teacher) ===== -->
 <script type="module">
-  // Import Firebase
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
@@ -353,11 +301,16 @@
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
 
-  // ===== TEACHER LOGIN - Google Sign-In =====
+  let foundInstituteId = null;
+  let foundInstituteData = null;
+
+  // ===== TEACHER LOGIN =====
   document.getElementById('teacherLoginBtn').addEventListener('click', async function() {
     const btn = this;
+    const errorDiv = document.getElementById('teacherError');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+    errorDiv.style.display = 'none';
 
     try {
       const result = await signInWithPopup(auth, provider);
@@ -367,21 +320,55 @@
       
       console.log('✅ Google Sign-In successful:', email);
       
-      // ✅ Store teacher session
-      localStorage.setItem('teacher_email', email);
-      localStorage.setItem('teacher_name', name);
-      localStorage.setItem('isTeacherLoggedIn', 'true');
+      // ✅ Check if teacher is registered in any school
+      const schoolsRef = collection(db, "schools");
+      const schoolsSnap = await getDocs(schoolsRef);
       
-      // ✅ Redirect to Teacher Panel
-      window.location.href = 'teacher-panel.html';
+      let found = false;
+      let schoolId = null;
+      let teacherName = '';
+      
+      for (const doc of schoolsSnap.docs) {
+        const teachersRef = collection(db, "schools", doc.id, "teachers");
+        const teachersSnap = await getDocs(teachersRef);
+        for (const t of teachersSnap.docs) {
+          if (t.data().email === email) {
+            found = true;
+            schoolId = doc.id;
+            teacherName = t.data().name || name;
+            break;
+          }
+        }
+        if (found) break;
+      }
+      
+      if (found && schoolId) {
+        // ✅ Save session
+        localStorage.setItem('teacher_email', email);
+        localStorage.setItem('teacher_name', teacherName);
+        localStorage.setItem('schoolId', schoolId);
+        localStorage.setItem('isTeacherLoggedIn', 'true');
+        
+        // ✅ Redirect to Admin Panel
+        window.location.href = 'teacher-panel.html';
+      } else {
+        // ❌ Not registered
+        errorDiv.innerHTML = `
+          ❌ This email is not registered as a teacher in any institute.
+          <br>Please contact your institute director.
+        `;
+        errorDiv.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fab fa-google"></i> Continue with Google';
+      }
       
     } catch(error) {
       console.error('❌ Google Sign-In error:', error);
-      alert('❌ Sign-in failed: ' + error.message);
+      errorDiv.innerHTML = '❌ Sign-in failed: ' + error.message;
+      errorDiv.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fab fa-google"></i> Continue with Google';
     }
-    
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fab fa-google"></i> Continue with Google';
   });
 
   // ===== STUDENT LOGIN =====
@@ -406,9 +393,6 @@
   });
 
   // ===== SEARCH INSTITUTE BY CODE =====
-  let foundInstituteId = null;
-  let foundInstituteData = null;
-
   window.searchInstitute = async function() {
     const code = document.getElementById('searchCodeInput').value.trim();
     const previewDiv = document.getElementById('institutePreview');
