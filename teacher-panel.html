@@ -324,6 +324,7 @@
   // ===== TEACHER SESSION LOAD =====
   let schoolId = null;
   let instituteName = '';
+  let teacherEmail = '';
 
   async function loadTeacherSession() {
     const name = localStorage.getItem('teacher_name') || 'Teacher';
@@ -337,6 +338,7 @@
       return;
     }
 
+    teacherEmail = email;
     document.getElementById('teacherName').textContent = name;
     document.getElementById('welcomeName').textContent = name;
 
@@ -369,12 +371,26 @@
       const snap = await getDocs(schoolsRef);
       let found = false;
       for (const doc of snap.docs) {
+        const data = doc.data();
+        
+        // ✅ Check directorEmail
+        if (data.directorEmail === email) {
+          schoolId = doc.id;
+          instituteName = data.coachingName || 'Institute';
+          document.getElementById('instituteName').textContent = instituteName;
+          document.getElementById('welcomeInstitute').textContent = instituteName;
+          localStorage.setItem('schoolId', schoolId);
+          found = true;
+          break;
+        }
+        
+        // ✅ Check teachers subcollection
         const teachersRef = collection(db, "schools", doc.id, "teachers");
         const teachersSnap = await getDocs(teachersRef);
         for (const t of teachersSnap.docs) {
           if (t.data().email === email) {
             schoolId = doc.id;
-            instituteName = t.data().instituteName || 'Institute';
+            instituteName = data.coachingName || 'Institute';
             document.getElementById('instituteName').textContent = instituteName;
             document.getElementById('welcomeInstitute').textContent = instituteName;
             localStorage.setItem('schoolId', schoolId);
