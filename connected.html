@@ -26,8 +26,6 @@
     .coaching-details { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; font-size:0.85rem; color:#475569; }
     .coaching-details i { width:20px; color:#2563eb; }
     .action-buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
-    
-    /* Button Styles */
     .btn-dashboard { background:#2563eb; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
     .btn-admin { background:#dc2626; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
     .btn-admin:hover { background:#b91c1c; }
@@ -53,8 +51,6 @@
     .btn-cancel { background:#94a3b8; color:white; }
     .btn-submit { background:#10b981; color:white; }
     .btn-submit:hover { background:#059669; }
-    .btn-generate { background:#f59e0b; color:white; padding:8px 16px; border-radius:30px; border:none; cursor:pointer; font-weight:600; }
-    .search-code-box { background:#f1f5f9; padding:12px; border-radius:12px; text-align:center; font-size:1.3rem; font-weight:700; color:#1a237e; margin:10px 0; display:none; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
     @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .btn-dashboard,.btn-admin,.btn-edit,.btn-delete,.btn-whatsapp{ text-align:center; justify-content:center; } }
   </style>
@@ -92,7 +88,7 @@
   <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
 </div>
 
-<!-- Add School Modal -->
+<!-- ✅ Add School Modal — Search Code Hata Diya, Email Add Kar Diya -->
 <div id="addSchoolModal" class="modal">
   <div class="modal-content">
     <h3><i class="fas fa-school" style="color:#10b981;"></i> Add School / Coaching</h3>
@@ -110,6 +106,11 @@
     <label>📞 Phone Number</label>
     <input type="text" id="addSchoolPhone" placeholder="e.g., 9123456789">
     
+    <!-- ✅ NEW: Teacher/Director Email -->
+    <label>📧 Director/Teacher Email</label>
+    <input type="email" id="addSchoolEmail" placeholder="e.g., director@gmail.com">
+    <small style="color:#888; font-size:0.7rem;">This email will be used for teacher login</small>
+    
     <label>🖼️ Logo</label>
     <div class="logo-upload-area" onclick="document.getElementById('logoInput').click()">
       <img id="logoPreview" src="https://via.placeholder.com/80?text=Logo" alt="Logo Preview">
@@ -117,11 +118,7 @@
       <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="previewLogo(event)">
     </div>
     
-    <label>🔑 Search Code</label>
-    <div style="display:flex; gap:10px; align-items:center;">
-      <div class="search-code-box" id="searchCodeBox" style="flex:1;">—</div>
-      <button class="btn-generate" onclick="generateCodeForSchool()"><i class="fas fa-sync-alt"></i> Generate</button>
-    </div>
+    <!-- ❌ Search Code Remove Kar Diya -->
     
     <div class="modal-buttons">
       <button class="btn-cancel" onclick="closeAddSchoolModal()">Cancel</button>
@@ -155,7 +152,6 @@
   const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbW1nZW9kYWJ5dHB1emthcnJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNzQyMDEsImV4cCI6MjA4Njg1MDIwMX0._NxbC8_P3GQWRMyqNZgneC7lYWDTvEpekt40ZFRmtJk";
 
   let currentEditId = null;
-  let generatedCode = null;
   let selectedLogoFile = null;
 
   // ===== LOGO UPLOAD =====
@@ -196,23 +192,14 @@
     document.getElementById('addSchoolLocation').value = '';
     document.getElementById('addSchoolDirector').value = '';
     document.getElementById('addSchoolPhone').value = '';
+    document.getElementById('addSchoolEmail').value = ''; // ✅ New email field
     document.getElementById('logoPreview').src = 'https://via.placeholder.com/80?text=Logo';
-    document.getElementById('searchCodeBox').style.display = 'none';
     document.getElementById('logoInput').value = '';
     selectedLogoFile = null;
-    generatedCode = null;
   };
 
   window.closeAddSchoolModal = () => {
     document.getElementById('addSchoolModal').style.display = 'none';
-  };
-
-  window.generateCodeForSchool = () => {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    generatedCode = code;
-    const box = document.getElementById('searchCodeBox');
-    box.textContent = code;
-    box.style.display = 'block';
   };
 
   window.saveSchoolToFirebase = async () => {
@@ -220,14 +207,15 @@
     const location = document.getElementById('addSchoolLocation').value.trim();
     const director = document.getElementById('addSchoolDirector').value.trim();
     const phone = document.getElementById('addSchoolPhone').value.trim();
+    const email = document.getElementById('addSchoolEmail').value.trim(); // ✅ New email
 
-    if(!name || !location || !director || !phone) {
-      alert('Please fill all required fields');
+    if(!name || !location || !director || !phone || !email) {
+      alert('Please fill all required fields (including email)');
       return;
     }
 
-    if(!generatedCode) {
-      alert('Please generate a search code first');
+    if(!email.includes('@')) {
+      alert('Please enter a valid email address');
       return;
     }
 
@@ -255,7 +243,7 @@
       director: director,
       phone: phone,
       logoUrl: logoUrl,
-      searchCode: generatedCode,
+      directorEmail: email, // ✅ Email save kar rahe hain
       createdBy: userId,
       createdAt: Date.now(),
       subscriptionStatus: 'active',
@@ -264,14 +252,17 @@
 
     try {
       await setDoc(doc(db, "schools", userId), schoolData);
+      
+      // ✅ Teacher ko automatically add kar rahe hain (director ke email se)
       await setDoc(doc(db, "schools", userId, "teachers", userId), {
         name: director,
-        email: user.email || '',
+        email: email,
         role: 'director',
         joinedAt: Date.now(),
         isActive: true
       });
-      alert('✅ Institute created!\nSearch Code: ' + generatedCode);
+      
+      alert('✅ Institute created successfully!');
       closeAddSchoolModal();
       loadConnectedCoachings();
     } catch(error) {
@@ -356,19 +347,15 @@
               <div><i class="fas fa-phone"></i> ${c.phone}</div>
               <div><i class="fas fa-location-dot"></i> ${c.location || 'Location'}</div>
               <div><i class="fas fa-chart-line"></i> ${resultsSnap.size} Results</div>
-              ${c.searchCode ? `<div><i class="fas fa-key"></i> Code: ${c.searchCode}</div>` : ''}
+              ${c.directorEmail ? `<div><i class="fas fa-envelope"></i> ${c.directorEmail}</div>` : ''}
             </div>
             <div class="action-buttons">
-              <!-- ✅ DASHBOARD BUTTON - Student ke liye -->
               <a href="dashboard.html?id=${id}" class="btn-dashboard">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
               </a>
-              
-              <!-- ✅ ADMIN PANEL BUTTON - Sirf Teacher/Director ke liye -->
               <a href="teacher-panel.html?coachingId=${id}" class="btn-admin" target="_blank">
                 <i class="fas fa-user-shield"></i> Admin Panel
               </a>
-              
               <button class="btn-edit" onclick="openEditModal('${id}','${(c.coachingName||'').replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logoUrl||'').replace(/'/g,"\\'")}')">
                 <i class="fas fa-pen"></i> Edit
               </button>
