@@ -36,7 +36,7 @@
     .btn-add-school:hover { background:#059669; }
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     
-    /* Modal */
+    /* Modal Styles */
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center; }
     .modal-content { background:white; border-radius:32px; padding:28px; max-width:550px; width:90%; max-height:90vh; overflow-y:auto; }
     .modal-content h3 { margin-bottom:10px; color:#1e293b; display:flex; align-items:center; gap:10px; }
@@ -88,11 +88,11 @@
   <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
 </div>
 
-<!-- Add School Modal -->
+<!-- ✅ Add School Modal — Search Code Hata Diya, Email Add Kar Diya -->
 <div id="addSchoolModal" class="modal">
   <div class="modal-content">
     <h3><i class="fas fa-school" style="color:#10b981;"></i> Add School / Coaching</h3>
-    <p style="color:#666; font-size:0.85rem;">Enter institute details</p>
+    <p style="color:#666; font-size:0.85rem;">Logo uploaded to cloud, saved in schools collection</p>
     
     <label>🏫 Coaching / School Name</label>
     <input type="text" id="addSchoolName" placeholder="e.g., Modern Academy" maxlength="25">
@@ -106,7 +106,8 @@
     <label>📞 Phone Number</label>
     <input type="text" id="addSchoolPhone" placeholder="e.g., 9123456789">
     
-    <label>📧 Director/Teacher Email (Login ke liye)</label>
+    <!-- ✅ NEW: Teacher/Director Email -->
+    <label>📧 Director/Teacher Email</label>
     <input type="email" id="addSchoolEmail" placeholder="e.g., director@gmail.com">
     <small style="color:#888; font-size:0.7rem;">This email will be used for teacher login</small>
     
@@ -116,6 +117,8 @@
       <p><i class="fas fa-cloud-upload-alt"></i> Click to upload logo</p>
       <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="previewLogo(event)">
     </div>
+    
+    <!-- ❌ Search Code Remove Kar Diya -->
     
     <div class="modal-buttons">
       <button class="btn-cancel" onclick="closeAddSchoolModal()">Cancel</button>
@@ -178,10 +181,7 @@
       body: formData
     });
     
-    if(!response.ok) {
-      const err = await response.text();
-      throw new Error(err || 'Upload failed');
-    }
+    if(!response.ok) throw new Error('Upload failed');
     return `${SUPABASE_URL}/storage/v1/object/public/logos/${fileName}`;
   }
 
@@ -192,7 +192,7 @@
     document.getElementById('addSchoolLocation').value = '';
     document.getElementById('addSchoolDirector').value = '';
     document.getElementById('addSchoolPhone').value = '';
-    document.getElementById('addSchoolEmail').value = '';
+    document.getElementById('addSchoolEmail').value = ''; // ✅ New email field
     document.getElementById('logoPreview').src = 'https://via.placeholder.com/80?text=Logo';
     document.getElementById('logoInput').value = '';
     selectedLogoFile = null;
@@ -207,25 +207,25 @@
     const location = document.getElementById('addSchoolLocation').value.trim();
     const director = document.getElementById('addSchoolDirector').value.trim();
     const phone = document.getElementById('addSchoolPhone').value.trim();
-    const email = document.getElementById('addSchoolEmail').value.trim();
+    const email = document.getElementById('addSchoolEmail').value.trim(); // ✅ New email
 
     if(!name || !location || !director || !phone || !email) {
-      alert('Please fill all required fields');
+      alert('Please fill all required fields (including email)');
       return;
     }
 
     if(!email.includes('@')) {
-      alert('Please enter a valid email');
+      alert('Please enter a valid email address');
       return;
     }
 
-    // ✅ User ko check karo — agar login nahi hai toh guest ID use karo
-    let userId = localStorage.getItem('guestUserId');
-    if(!userId) {
-      userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-      localStorage.setItem('guestUserId', userId);
+    const user = auth.currentUser;
+    if(!user) {
+      alert('Please login first');
+      return;
     }
 
+    const userId = user.uid;
     let logoUrl = '';
 
     if(selectedLogoFile) {
@@ -243,7 +243,7 @@
       director: director,
       phone: phone,
       logoUrl: logoUrl,
-      directorEmail: email,
+      directorEmail: email, // ✅ Email save kar rahe hain
       createdBy: userId,
       createdAt: Date.now(),
       subscriptionStatus: 'active',
@@ -251,11 +251,9 @@
     };
 
     try {
-      // ✅ schools collection mein save
-      const docRef = doc(db, "schools", userId);
-      await setDoc(docRef, schoolData);
+      await setDoc(doc(db, "schools", userId), schoolData);
       
-      // ✅ teachers subcollection mein director ko add
+      // ✅ Teacher ko automatically add kar rahe hain (director ke email se)
       await setDoc(doc(db, "schools", userId, "teachers", userId), {
         name: director,
         email: email,
@@ -268,8 +266,7 @@
       closeAddSchoolModal();
       loadConnectedCoachings();
     } catch(error) {
-      console.error('Save error:', error);
-      alert('Error saving: ' + error.message);
+      alert('Error: ' + error.message);
     }
   };
 
@@ -303,7 +300,7 @@
     alert('✅ Updated!');
   };
 
-  // ===== DELETE =====
+  // ===== DELETE FUNCTIONS =====
   window.deleteCoaching = async (id, name) => {
     if(confirm(`Delete "${name}" permanently? This deletes ALL results!`)) {
       const resultsSnap = await getDocs(collection(db, "schools", id, "results"));
@@ -382,10 +379,9 @@
   // ===== LOGIN CHECK =====
   onAuthStateChanged(auth, (user) => {
     if(user) {
-      console.log('✅ Logged in:', user.uid);
-      localStorage.setItem('guestUserId', user.uid);
+      console.log('Logged in:', user.uid);
     } else {
-      console.log('❌ Not logged in — using guest ID');
+      console.log('Not logged in');
     }
   });
 
