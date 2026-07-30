@@ -92,6 +92,9 @@
       font-size: 0.8rem;
     }
     .back-link:hover { color: #1a237e; }
+    .error-msg { color: #dc2626; font-size: 0.85rem; margin-top: 10px; padding: 10px; background: #fee2e2; border-radius: 8px; display: none; }
+    
+    /* Student Modal */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -182,7 +185,6 @@
     .btn-secondary { background: #e2e8f0; color: #1e293b; }
     .btn-secondary:hover { background: #cbd5e1; }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error-msg { color: #dc2626; font-size: 0.85rem; margin-top: 10px; padding: 10px; background: #fee2e2; border-radius: 8px; display: none; }
     @media (max-width: 480px) {
       .container { padding: 20px 16px; }
       .modal-box { padding: 20px 16px; }
@@ -320,7 +322,7 @@
       
       console.log('✅ Google Sign-In successful:', email);
       
-      // ✅ Check if teacher is registered in any school
+      // ✅ Check if teacher is registered in any school (directorEmail ya teachers collection)
       const schoolsRef = collection(db, "schools");
       const schoolsSnap = await getDocs(schoolsRef);
       
@@ -329,6 +331,17 @@
       let teacherName = '';
       
       for (const doc of schoolsSnap.docs) {
+        const data = doc.data();
+        
+        // ✅ Check if email matches directorEmail
+        if (data.directorEmail === email) {
+          found = true;
+          schoolId = doc.id;
+          teacherName = data.director || name;
+          break;
+        }
+        
+        // ✅ Check teachers subcollection
         const teachersRef = collection(db, "schools", doc.id, "teachers");
         const teachersSnap = await getDocs(teachersRef);
         for (const t of teachersSnap.docs) {
@@ -355,7 +368,8 @@
         // ❌ Not registered
         errorDiv.innerHTML = `
           ❌ This email is not registered as a teacher in any institute.
-          <br>Please contact your institute director.
+          <br><br>📧 Your email: <strong>${email}</strong>
+          <br><br>Please contact your institute director to add you.
         `;
         errorDiv.style.display = 'block';
         btn.disabled = false;
