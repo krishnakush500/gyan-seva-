@@ -26,7 +26,22 @@
     .topbar .brand { font-size: 1.3rem; font-weight: 700; }
     .topbar .brand i { color: #ffc107; }
     .topbar .user-info { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .topbar .user-info .institute-name { font-size: 0.85rem; opacity: 0.9; background: rgba(255,255,255,0.12); padding: 4px 14px; border-radius: 30px; }
+    .topbar .user-info .institute-name { 
+      font-size: 0.85rem; 
+      opacity: 0.9; 
+      background: rgba(255,255,255,0.12); 
+      padding: 4px 14px; 
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .topbar .user-info .institute-name img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
     .topbar .user-info span { font-size: 0.85rem; opacity: 0.9; }
     .topbar .logout-btn {
       background: rgba(255,255,255,0.15);
@@ -46,9 +61,20 @@
       padding: 24px 28px;
       margin-bottom: 24px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
     }
-    .welcome-card h1 { font-size: 1.6rem; color: #1a237e; }
-    .welcome-card .institute-badge {
+    .welcome-card .institute-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #e8eafe;
+    }
+    .welcome-card .welcome-text h1 { font-size: 1.6rem; color: #1a237e; margin: 0; }
+    .welcome-card .welcome-text .institute-badge {
       display: inline-block;
       background: #e8eafe;
       color: #1a237e;
@@ -58,7 +84,7 @@
       font-weight: 600;
       margin-top: 6px;
     }
-    .welcome-card p { color: #64748b; font-size: 0.95rem; margin-top: 4px; }
+    .welcome-card .welcome-text p { color: #64748b; font-size: 0.95rem; margin-top: 4px; }
     .action-grid { display: grid; grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
     .action-card {
       background: white;
@@ -141,6 +167,7 @@
       .action-title { font-size: 1.2rem; }
       .action-cards { grid-template-columns: 1fr; }
       .section-header { flex-direction: column; gap: 12px; text-align: center; }
+      .welcome-card { flex-direction: column; text-align: center; }
     }
   </style>
 </head>
@@ -150,7 +177,9 @@
 <div class="topbar">
   <div class="brand"><i class="fas fa-chalkboard-user"></i> GYAN SEVA</div>
   <div class="user-info">
-    <span class="institute-name"><i class="fas fa-school"></i> <span id="instituteName">Loading...</span></span>
+    <span class="institute-name" id="instituteDisplay">
+      <i class="fas fa-school"></i> <span id="instituteName">Loading...</span>
+    </span>
     <span><i class="fas fa-user-circle"></i> <span id="teacherName">Teacher</span></span>
     <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
   </div>
@@ -159,9 +188,12 @@
 <!-- MAIN CONTENT -->
 <div class="container">
   <div class="welcome-card">
-    <h1>👋 Welcome, <span id="welcomeName">Teacher</span>!</h1>
-    <p>Manage your institute's results from one place.</p>
-    <span class="institute-badge"><i class="fas fa-school"></i> <span id="welcomeInstitute">Loading...</span></span>
+    <img id="instituteLogo" class="institute-logo" src="https://via.placeholder.com/80?text=Logo" alt="Institute Logo" onerror="this.src='https://via.placeholder.com/80?text=Logo'">
+    <div class="welcome-text">
+      <h1>👋 Welcome, <span id="welcomeName">Teacher</span>!</h1>
+      <p>Manage your institute's results from one place.</p>
+      <span class="institute-badge"><i class="fas fa-school"></i> <span id="welcomeInstitute">Loading...</span></span>
+    </div>
   </div>
 
   <div class="action-grid" id="mainActionGrid">
@@ -305,7 +337,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
@@ -321,90 +353,83 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // ===== TEACHER SESSION LOAD =====
+  // ===== GET COACHING ID FROM URL =====
+  function getCoachingIdFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('coachingId');
+  }
+
+  // ===== LOAD INSTITUTE DATA DIRECTLY FROM COACHING ID =====
   let schoolId = null;
-  let instituteName = '';
+  let instituteData = null;
   let teacherEmail = '';
 
-  async function loadTeacherSession() {
-    const name = localStorage.getItem('teacher_name') || 'Teacher';
-    const email = localStorage.getItem('teacher_email') || '---';
-    const isLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
-    const savedSchoolId = localStorage.getItem('schoolId');
-
-    if (!isLoggedIn) {
-      alert('Please login first!');
-      window.location.href = 'login.html';
+  async function loadInstituteFromCoachingId(coachingId) {
+    if (!coachingId) {
+      alert('No coaching ID found in URL! Please go back and select a coaching.');
+      document.getElementById('instituteName').textContent = 'Error: No ID';
+      document.getElementById('welcomeInstitute').textContent = 'Error: No ID';
       return;
     }
 
-    teacherEmail = email;
-    document.getElementById('teacherName').textContent = name;
-    document.getElementById('welcomeName').textContent = name;
-
-    if (savedSchoolId) {
-      schoolId = savedSchoolId;
-      await loadInstituteName(schoolId);
-    } else {
-      await findSchoolFromEmail(email);
+    try {
+      const docRef = doc(db, "schools", coachingId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        instituteData = docSnap.data();
+        schoolId = coachingId;
+        
+        // Update UI with institute data
+        const name = instituteData.coachingName || instituteData.name || 'Institute';
+        const logo = instituteData.logoUrl || '';
+        const director = instituteData.director || 'Director';
+        
+        document.getElementById('instituteName').textContent = name;
+        document.getElementById('welcomeInstitute').textContent = name;
+        document.getElementById('teacherName').textContent = director;
+        document.getElementById('welcomeName').textContent = director;
+        
+        // Set logo
+        if (logo) {
+          document.getElementById('instituteLogo').src = logo;
+        }
+        
+        // Store in localStorage for other functions
+        localStorage.setItem('schoolId', coachingId);
+        localStorage.setItem('instituteName', name);
+        localStorage.setItem('instituteLogo', logo);
+        localStorage.setItem('teacher_name', director);
+        localStorage.setItem('isTeacherLoggedIn', 'true');
+        
+        console.log('✅ Institute loaded:', name);
+      } else {
+        document.getElementById('instituteName').textContent = 'Not Found';
+        document.getElementById('welcomeInstitute').textContent = 'Not Found';
+        alert('Institute not found! Please check the coaching ID.');
+      }
+    } catch(error) {
+      console.error('Error loading institute:', error);
+      document.getElementById('instituteName').textContent = 'Error';
+      document.getElementById('welcomeInstitute').textContent = 'Error';
     }
   }
 
-  async function loadInstituteName(id) {
-    try {
-      const docRef = doc(db, "schools", id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        instituteName = data.coachingName || data.name || 'Institute';
-        document.getElementById('instituteName').textContent = instituteName;
-        document.getElementById('welcomeInstitute').textContent = instituteName;
-        localStorage.setItem('schoolId', id);
-        schoolId = id;
-      }
-    } catch(e) { console.error('Error loading institute:', e); }
-  }
-
-  async function findSchoolFromEmail(email) {
-    try {
-      const schoolsRef = collection(db, "schools");
-      const snap = await getDocs(schoolsRef);
-      let found = false;
-      for (const doc of snap.docs) {
-        const data = doc.data();
-        
-        // ✅ Check directorEmail
-        if (data.directorEmail === email) {
-          schoolId = doc.id;
-          instituteName = data.coachingName || 'Institute';
-          document.getElementById('instituteName').textContent = instituteName;
-          document.getElementById('welcomeInstitute').textContent = instituteName;
-          localStorage.setItem('schoolId', schoolId);
-          found = true;
-          break;
-        }
-        
-        // ✅ Check teachers subcollection
-        const teachersRef = collection(db, "schools", doc.id, "teachers");
-        const teachersSnap = await getDocs(teachersRef);
-        for (const t of teachersSnap.docs) {
-          if (t.data().email === email) {
-            schoolId = doc.id;
-            instituteName = data.coachingName || 'Institute';
-            document.getElementById('instituteName').textContent = instituteName;
-            document.getElementById('welcomeInstitute').textContent = instituteName;
-            localStorage.setItem('schoolId', schoolId);
-            found = true;
-            break;
-          }
-        }
-        if (found) break;
-      }
-      if (!found) {
-        document.getElementById('instituteName').textContent = 'Not found';
-        document.getElementById('welcomeInstitute').textContent = 'Not found';
-      }
-    } catch(e) { console.error('Error finding school:', e); }
+  // ===== INITIALIZE =====
+  const coachingId = getCoachingIdFromURL();
+  
+  if (coachingId) {
+    loadInstituteFromCoachingId(coachingId);
+  } else {
+    // Fallback: Check localStorage
+    const savedId = localStorage.getItem('schoolId');
+    if (savedId) {
+      loadInstituteFromCoachingId(savedId);
+    } else {
+      alert('No coaching ID found! Please go back and select a coaching from Connected Customers.');
+      document.getElementById('instituteName').textContent = '⚠️ No ID';
+      document.getElementById('welcomeInstitute').textContent = '⚠️ No ID';
+    }
   }
 
   function logout() {
@@ -983,8 +1008,17 @@
     showToast('PDF Downloaded');
   });
 
-  // ===== INIT =====
-  loadTeacherSession();
+  // Check if coachingId is missing and show error
+  if (!coachingId) {
+    // Try to load from localStorage as fallback
+    const savedId = localStorage.getItem('schoolId');
+    if (!savedId) {
+      document.querySelector('.welcome-card .welcome-text h1').innerHTML = '⚠️ No Coaching Selected';
+      document.querySelector('.welcome-card .welcome-text p').innerHTML = 'Please go to <a href="connect.html" style="color:#1a237e;font-weight:600;">Connected Customers</a> and select a coaching.';
+    }
+  }
+
+  console.log('✅ Admin Panel Loaded for School ID:', schoolId);
 </script>
 </body>
 </html>
