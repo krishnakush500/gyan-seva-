@@ -36,7 +36,6 @@
     .btn-add-school:hover { background:#059669; }
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     
-    /* Modal Styles */
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center; }
     .modal-content { background:white; border-radius:32px; padding:28px; max-width:550px; width:90%; max-height:90vh; overflow-y:auto; }
     .modal-content h3 { margin-bottom:10px; color:#1e293b; display:flex; align-items:center; gap:10px; }
@@ -88,7 +87,7 @@
   <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
 </div>
 
-<!-- ✅ Add School Modal — Search Code Hata Diya, Email Add Kar Diya -->
+<!-- Add School Modal -->
 <div id="addSchoolModal" class="modal">
   <div class="modal-content">
     <h3><i class="fas fa-school" style="color:#10b981;"></i> Add School / Coaching</h3>
@@ -106,7 +105,6 @@
     <label>📞 Phone Number</label>
     <input type="text" id="addSchoolPhone" placeholder="e.g., 9123456789">
     
-    <!-- ✅ NEW: Teacher/Director Email -->
     <label>📧 Director/Teacher Email</label>
     <input type="email" id="addSchoolEmail" placeholder="e.g., director@gmail.com">
     <small style="color:#888; font-size:0.7rem;">This email will be used for teacher login</small>
@@ -117,8 +115,6 @@
       <p><i class="fas fa-cloud-upload-alt"></i> Click to upload logo</p>
       <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="previewLogo(event)">
     </div>
-    
-    <!-- ❌ Search Code Remove Kar Diya -->
     
     <div class="modal-buttons">
       <button class="btn-cancel" onclick="closeAddSchoolModal()">Cancel</button>
@@ -153,6 +149,121 @@
 
   let currentEditId = null;
   let selectedLogoFile = null;
+
+  // ===== INDIAN URBAN NAMES FOR DEMO DATA =====
+  const INDIAN_NAMES = [
+    { name: "Aarav Sharma", father: "Mr. Rajesh Sharma" },
+    { name: "Vivaan Singh", father: "Mr. Suresh Singh" },
+    { name: "Aditya Kumar", father: "Mr. Ramesh Kumar" },
+    { name: "Vihaan Gupta", father: "Mr. Sunil Gupta" },
+    { name: "Arjun Reddy", father: "Mr. Prakash Reddy" },
+    { name: "Sai Patel", father: "Mr. Dinesh Patel" },
+    { name: "Krishna Iyer", father: "Mr. Gopal Iyer" },
+    { name: "Rohit Malhotra", father: "Mr. Deepak Malhotra" },
+    { name: "Amit Shah", father: "Mr. Jayesh Shah" },
+    { name: "Rahul Verma", father: "Mr. Sanjay Verma" },
+    { name: "Priya Nair", father: "Mr. Rajan Nair" },
+    { name: "Ananya Reddy", father: "Mr. Ravi Reddy" },
+    { name: "Sneha Patel", father: "Mr. Kiran Patel" },
+    { name: "Kavya Singh", father: "Mr. Vikram Singh" },
+    { name: "Ishita Gupta", father: "Mr. Rohit Gupta" },
+    { name: "Riya Sharma", father: "Mr. Amit Sharma" },
+    { name: "Neha Jain", father: "Mr. Mahesh Jain" },
+    { name: "Pooja Agarwal", father: "Mr. Anil Agarwal" },
+    { name: "Meera Nair", father: "Mr. Sanjay Nair" },
+    { name: "Aisha Khan", father: "Mr. Rashid Khan" }
+  ];
+
+  // ===== GENERATE DEMO RESULTS =====
+  function generateDemoResults(schoolId, schoolName, directorName) {
+    const subjects = [
+      { name: "Mathematics", total: 100 },
+      { name: "Science", total: 100 },
+      { name: "English", total: 100 },
+      { name: "Hindi", total: 100 },
+      { name: "Social Studies", total: 100 }
+    ];
+
+    const demoResults = [];
+
+    // ===== DEMO RESULT 1: Mid-Term Examination =====
+    const students1 = [];
+    const usedNames1 = INDIAN_NAMES.slice(0, 10);
+    usedNames1.forEach((person, index) => {
+      const marks = {};
+      subjects.forEach(sub => {
+        // Random marks between 45-98
+        marks[sub.name] = Math.floor(Math.random() * 54) + 45;
+      });
+      students1.push({
+        rollNo: index + 1,
+        name: person.name,
+        fatherName: person.father,
+        marks: marks
+      });
+    });
+
+    demoResults.push({
+      examName: "Mid-Term Examination 2024-25",
+      examCentre: `${schoolName}, ${directorName || 'Director'}`,
+      rollCode: "55075",
+      subjects: subjects,
+      students: students1,
+      createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) // 15 days ago
+    });
+
+    // ===== DEMO RESULT 2: Unit Test 1 =====
+    const students2 = [];
+    const usedNames2 = INDIAN_NAMES.slice(5, 15);
+    usedNames2.forEach((person, index) => {
+      const marks = {};
+      subjects.forEach(sub => {
+        marks[sub.name] = Math.floor(Math.random() * 50) + 35;
+      });
+      students2.push({
+        rollNo: index + 1,
+        name: person.name,
+        fatherName: person.father,
+        marks: marks
+      });
+    });
+
+    demoResults.push({
+      examName: "Unit Test 1 - 2024-25",
+      examCentre: `${schoolName}, ${directorName || 'Director'}`,
+      rollCode: "55076",
+      subjects: subjects,
+      students: students2,
+      createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000) // 8 days ago
+    });
+
+    // ===== DEMO RESULT 3: Pre-Board Examination =====
+    const students3 = [];
+    const usedNames3 = INDIAN_NAMES.slice(0, 8);
+    usedNames3.forEach((person, index) => {
+      const marks = {};
+      subjects.forEach(sub => {
+        marks[sub.name] = Math.floor(Math.random() * 40) + 55;
+      });
+      students3.push({
+        rollNo: index + 1,
+        name: person.name,
+        fatherName: person.father,
+        marks: marks
+      });
+    });
+
+    demoResults.push({
+      examName: "Pre-Board Examination 2024-25",
+      examCentre: `${schoolName}, ${directorName || 'Director'}`,
+      rollCode: "55077",
+      subjects: subjects,
+      students: students3,
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+    });
+
+    return demoResults;
+  }
 
   // ===== LOGO UPLOAD =====
   window.previewLogo = (event) => {
@@ -192,7 +303,7 @@
     document.getElementById('addSchoolLocation').value = '';
     document.getElementById('addSchoolDirector').value = '';
     document.getElementById('addSchoolPhone').value = '';
-    document.getElementById('addSchoolEmail').value = ''; // ✅ New email field
+    document.getElementById('addSchoolEmail').value = '';
     document.getElementById('logoPreview').src = 'https://via.placeholder.com/80?text=Logo';
     document.getElementById('logoInput').value = '';
     selectedLogoFile = null;
@@ -202,12 +313,13 @@
     document.getElementById('addSchoolModal').style.display = 'none';
   };
 
+  // ===== SAVE SCHOOL WITH DEMO RESULTS =====
   window.saveSchoolToFirebase = async () => {
     const name = document.getElementById('addSchoolName').value.trim();
     const location = document.getElementById('addSchoolLocation').value.trim();
     const director = document.getElementById('addSchoolDirector').value.trim();
     const phone = document.getElementById('addSchoolPhone').value.trim();
-    const email = document.getElementById('addSchoolEmail').value.trim(); // ✅ New email
+    const email = document.getElementById('addSchoolEmail').value.trim();
 
     if(!name || !location || !director || !phone || !email) {
       alert('Please fill all required fields (including email)');
@@ -237,23 +349,25 @@
       }
     }
 
-    const schoolData = {
-      coachingName: name,
-      location: location,
-      director: director,
-      phone: phone,
-      logoUrl: logoUrl,
-      directorEmail: email, // ✅ Email save kar rahe hain
-      createdBy: userId,
-      createdAt: Date.now(),
-      subscriptionStatus: 'active',
-      subscriptionPlan: 'free_trial'
-    };
-
     try {
+      // 1. Save School Data
+      const schoolData = {
+        coachingName: name,
+        location: location,
+        director: director,
+        phone: phone,
+        logoUrl: logoUrl,
+        directorEmail: email,
+        createdBy: userId,
+        createdAt: Date.now(),
+        subscriptionStatus: 'active',
+        subscriptionPlan: 'free_trial',
+        demoResultsAdded: true
+      };
+
       await setDoc(doc(db, "schools", userId), schoolData);
       
-      // ✅ Teacher ko automatically add kar rahe hain (director ke email se)
+      // 2. Add Teacher (Director)
       await setDoc(doc(db, "schools", userId, "teachers", userId), {
         name: director,
         email: email,
@@ -261,8 +375,25 @@
         joinedAt: Date.now(),
         isActive: true
       });
+
+      // ===== 🔥 ADD 3 DEMO RESULTS =====
+      const demoResults = generateDemoResults(userId, name, director);
       
-      alert('✅ Institute created successfully!');
+      for (const result of demoResults) {
+        // Convert date to Firestore Timestamp if needed
+        const resultData = {
+          examName: result.examName,
+          examCentre: result.examCentre,
+          rollCode: result.rollCode,
+          subjects: result.subjects,
+          students: result.students,
+          createdAt: result.createdAt,
+          isDemo: true // Flag to identify demo results
+        };
+        await setDoc(doc(collection(db, "schools", userId, "results")), resultData);
+      }
+
+      alert('✅ Institute created successfully with 3 demo results!');
       closeAddSchoolModal();
       loadConnectedCoachings();
     } catch(error) {
@@ -336,10 +467,13 @@
         const resultsSnap = await getDocs(collection(db, "schools", id, "results"));
         const logoHtml = c.logoUrl ? `<img src="${c.logoUrl}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none'">` : '';
         
+        // Check if demo results are added
+        const demoBadge = c.demoResultsAdded ? `<span style="background:#10b981; color:white; padding:2px 10px; border-radius:30px; font-size:0.6rem; margin-left:8px;">✅ Demo</span>` : '';
+        
         html += `
           <div class="coaching-card">
             <div class="coaching-header">
-              <div class="coaching-name">${logoHtml} 🎓 ${c.coachingName || c.name || 'Unnamed'}</div>
+              <div class="coaching-name">${logoHtml} 🎓 ${c.coachingName || c.name || 'Unnamed'} ${demoBadge}</div>
               <span class="status-badge"><i class="fas fa-check-circle"></i> Active</span>
             </div>
             <div class="coaching-details">
