@@ -140,6 +140,72 @@
       display: none; background: white; border-radius: 25px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     }
     .fullscreen-section.active { display: block; }
+
+    /* ===== CREATE RESULT OVERLAY (Full Screen Modal) ===== */
+    .create-result-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .create-result-overlay.active {
+      display: flex;
+    }
+    .create-result-modal {
+      background: white;
+      border-radius: 25px;
+      padding: 30px;
+      max-width: 900px;
+      width: 100%;
+      margin: 20px auto;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .create-result-modal .modal-close {
+      position: sticky;
+      top: 0;
+      float: right;
+      background: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+    }
+    .create-result-modal .modal-close:hover {
+      background: #b91c1c;
+      transform: scale(1.05);
+    }
+    .create-result-modal .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a237e;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .create-result-modal .modal-title i {
+      color: #1a237e;
+    }
+
     .toast-message {
       position: fixed; bottom: 25px; right: 25px; z-index: 1100;
       background: #28a745; color: white; padding: 12px 24px; border-radius: 50px;
@@ -157,6 +223,7 @@
     .template-option.selected { border-color: #1a237e; background: #e8eafe; }
     .template-option .template-name { font-weight: 600; color: #1a237e; font-size: 0.85rem; }
     .subject-box { background: #f8fafc; border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; }
+    
     @media (max-width: 768px) {
       .topbar { padding: 12px 16px; }
       .topbar .brand { font-size: 1rem; }
@@ -168,6 +235,8 @@
       .action-cards { grid-template-columns: 1fr; }
       .section-header { flex-direction: column; gap: 12px; text-align: center; }
       .welcome-card { flex-direction: column; text-align: center; }
+      .create-result-modal { padding: 20px; margin: 10px; }
+      .create-result-modal .modal-close { width: 35px; height: 35px; font-size: 1rem; }
     }
   </style>
 </head>
@@ -229,81 +298,6 @@
       </div>
     </div>
 
-    <!-- CREATE RESULT -->
-    <div id="createResultSection" class="fullscreen-section">
-      <div class="section-header">
-        <h3><i class="fas fa-plus-circle me-2"></i> Create New Result</h3>
-        <button class="back-btn" id="backFromCreateBtn"><i class="fas fa-arrow-left"></i> Back</button>
-      </div>
-      <div class="template-selector" id="templateSelector">
-        <span style="font-weight:600; color:#1a237e; font-size:0.85rem; margin-right:10px;"><i class="fas fa-palette"></i> Template:</span>
-        <div class="template-option selected" id="templateResult" onclick="selectTemplate('result')">
-          <span class="template-name">📄 Classic Result</span>
-        </div>
-        <div class="template-option" id="templateResult1" onclick="selectTemplate('result1')">
-          <span class="template-name">🎫 Admit Card Style</span>
-        </div>
-      </div>
-      <div id="examSetupStep">
-        <div class="card mb-4">
-          <div class="card-header bg-white fw-bold">Step 1: Exam Setup</div>
-          <div class="card-body">
-            <div class="mb-3"><label class="form-label">Exam Name <span style="color:#dc2626;">*</span></label><input type="text" class="form-control" id="examName" placeholder="e.g., Final Examination 2025"></div>
-            <div class="mb-3"><label class="form-label">Examination Centre</label><input type="text" class="form-control" id="examCentre" placeholder="e.g., GYAN SEVA, BEGUSARAI"></div>
-            <div class="mb-3"><label class="form-label">Roll Code</label><input type="text" class="form-control" id="rollCode" value="55075"></div>
-            <div class="mb-3">
-              <label class="form-label">Subjects <span style="color:#dc2626;">*</span></label>
-              <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-primary btn-sm" id="addMainSubjectBtn"><i class="fas fa-plus"></i> Add Main Subjects</button>
-                <button class="btn btn-warning btn-sm" id="addOptionalSubjectBtn"><i class="fas fa-plus"></i> Add Optional Subjects</button>
-              </div>
-              <div id="selectedMainSubjects" style="margin-top:8px;"></div>
-              <div id="selectedOptionalSubjects" style="margin-top:4px;"></div>
-            </div>
-          </div>
-        </div>
-        <div id="subjectFields" class="mb-4"></div>
-        <div id="step1NextBtn" class="d-none mt-3"><button id="nextToStudentEntryBtn" class="btn btn-success">Next →</button></div>
-      </div>
-      <div id="studentEntryStep" style="display: none;">
-        <div class="card mb-4">
-          <div class="card-header bg-white fw-bold">Step 2: Student Marks Entry</div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-3 mb-3">
-                <label class="form-label">Roll No <span style="color:#dc2626;">*</span></label>
-                <div class="input-group"><input type="number" class="form-control" id="rollNo" min="1" value="1"><button class="btn btn-outline-secondary" type="button" id="incrementRollBtn">+</button></div>
-              </div>
-              <div class="col-md-4 mb-3"><label class="form-label">Student Name</label><input type="text" class="form-control" id="studentName" placeholder="Enter name"></div>
-              <div class="col-md-5 mb-3"><label class="form-label">Father's Name</label><input type="text" class="form-control" id="fatherName" placeholder="Enter father's name"></div>
-            </div>
-            <div id="marksFields" class="mb-3"></div>
-            <div id="optionalMarksFields" style="display:none;" class="mb-3">
-              <div style="border:1px solid #c5a059; border-radius:10px; padding:12px;">
-                <strong style="color:#c5a059;"><i class="fas fa-book"></i> Optional Subjects</strong>
-                <div id="optionalMarksList"></div>
-              </div>
-            </div>
-            <div class="d-flex gap-2 flex-wrap">
-              <button id="addStudentBtn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Add Student</button>
-              <button id="updateStudentBtn" class="btn btn-warning d-none">Update Student</button>
-              <button id="cancelEditBtn" class="btn btn-secondary d-none">Cancel</button>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header bg-white fw-bold">Students List</div>
-          <div class="card-body">
-            <div class="table-responsive"><table class="table table-hover"><thead class="table-light"><tr><th>Roll</th><th>Name</th><th>Father</th><th>Marks</th><th>Actions</th></tr></thead><tbody id="studentsTableBody"></tbody></table></div>
-            <div class="d-flex gap-2 flex-wrap mt-3">
-              <button id="saveDraftBtn" class="btn btn-warning"><i class="fas fa-save"></i> Save as Draft</button>
-              <button id="publishResultBtn" class="btn btn-success"><i class="fas fa-globe"></i> Publish Result</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- DRAFT RESULTS -->
     <div id="draftResultsSection" class="fullscreen-section">
       <div class="section-header"><h3><i class="fas fa-file-draft me-2"></i> Draft Results</h3><button class="back-btn" id="backFromDraftBtn"><i class="fas fa-arrow-left"></i> Back</button></div>
@@ -314,6 +308,87 @@
     <div id="oldResultsSection" class="fullscreen-section">
       <div class="section-header"><h3><i class="fas fa-history me-2"></i> Published Results</h3><button class="back-btn" id="backFromOldBtn"><i class="fas fa-arrow-left"></i> Back</button></div>
       <div id="oldResultsList" class="row g-4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CREATE RESULT OVERLAY (Full Screen Modal) ===== -->
+<div class="create-result-overlay" id="createResultOverlay">
+  <div class="create-result-modal">
+    <button class="modal-close" onclick="closeCreateResult()"><i class="fas fa-times"></i></button>
+    
+    <div class="modal-title">
+      <i class="fas fa-plus-circle"></i> Create New Result
+    </div>
+
+    <div class="template-selector" id="templateSelector">
+      <span style="font-weight:600; color:#1a237e; font-size:0.85rem; margin-right:10px;"><i class="fas fa-palette"></i> Template:</span>
+      <div class="template-option selected" id="templateResult" onclick="selectTemplate('result')">
+        <span class="template-name">📄 Classic Result</span>
+      </div>
+      <div class="template-option" id="templateResult1" onclick="selectTemplate('result1')">
+        <span class="template-name">🎫 Admit Card Style</span>
+      </div>
+    </div>
+
+    <div id="examSetupStep">
+      <div class="card mb-4">
+        <div class="card-header bg-white fw-bold">Step 1: Exam Setup</div>
+        <div class="card-body">
+          <div class="mb-3"><label class="form-label">Exam Name <span style="color:#dc2626;">*</span></label><input type="text" class="form-control" id="examName" placeholder="e.g., Final Examination 2025"></div>
+          <div class="mb-3"><label class="form-label">Examination Centre</label><input type="text" class="form-control" id="examCentre" placeholder="e.g., GYAN SEVA, BEGUSARAI"></div>
+          <div class="mb-3"><label class="form-label">Roll Code</label><input type="text" class="form-control" id="rollCode" value="55075"></div>
+          <div class="mb-3">
+            <label class="form-label">Subjects <span style="color:#dc2626;">*</span></label>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-primary btn-sm" id="addMainSubjectBtn"><i class="fas fa-plus"></i> Add Main Subjects</button>
+              <button class="btn btn-warning btn-sm" id="addOptionalSubjectBtn"><i class="fas fa-plus"></i> Add Optional Subjects</button>
+            </div>
+            <div id="selectedMainSubjects" style="margin-top:8px;"></div>
+            <div id="selectedOptionalSubjects" style="margin-top:4px;"></div>
+          </div>
+        </div>
+      </div>
+      <div id="subjectFields" class="mb-4"></div>
+      <div id="step1NextBtn" class="d-none mt-3"><button id="nextToStudentEntryBtn" class="btn btn-success">Next →</button></div>
+    </div>
+
+    <div id="studentEntryStep" style="display: none;">
+      <div class="card mb-4">
+        <div class="card-header bg-white fw-bold">Step 2: Student Marks Entry</div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Roll No <span style="color:#dc2626;">*</span></label>
+              <div class="input-group"><input type="number" class="form-control" id="rollNo" min="1" value="1"><button class="btn btn-outline-secondary" type="button" id="incrementRollBtn">+</button></div>
+            </div>
+            <div class="col-md-4 mb-3"><label class="form-label">Student Name</label><input type="text" class="form-control" id="studentName" placeholder="Enter name"></div>
+            <div class="col-md-5 mb-3"><label class="form-label">Father's Name</label><input type="text" class="form-control" id="fatherName" placeholder="Enter father's name"></div>
+          </div>
+          <div id="marksFields" class="mb-3"></div>
+          <div id="optionalMarksFields" style="display:none;" class="mb-3">
+            <div style="border:1px solid #c5a059; border-radius:10px; padding:12px;">
+              <strong style="color:#c5a059;"><i class="fas fa-book"></i> Optional Subjects</strong>
+              <div id="optionalMarksList"></div>
+            </div>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button id="addStudentBtn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Add Student</button>
+            <button id="updateStudentBtn" class="btn btn-warning d-none">Update Student</button>
+            <button id="cancelEditBtn" class="btn btn-secondary d-none">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-white fw-bold">Students List</div>
+        <div class="card-body">
+          <div class="table-responsive"><table class="table table-hover"><thead class="table-light"><tr><th>Roll</th><th>Name</th><th>Father</th><th>Marks</th><th>Actions</th></tr></thead><tbody id="studentsTableBody"></tbody></table></div>
+          <div class="d-flex gap-2 flex-wrap mt-3">
+            <button id="saveDraftBtn" class="btn btn-warning"><i class="fas fa-save"></i> Save as Draft</button>
+            <button id="publishResultBtn" class="btn btn-success"><i class="fas fa-globe"></i> Publish Result</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -362,7 +437,6 @@
   // ===== LOAD INSTITUTE DATA DIRECTLY FROM COACHING ID =====
   let schoolId = null;
   let instituteData = null;
-  let teacherEmail = '';
 
   async function loadInstituteFromCoachingId(coachingId) {
     if (!coachingId) {
@@ -380,7 +454,6 @@
         instituteData = docSnap.data();
         schoolId = coachingId;
         
-        // Update UI with institute data
         const name = instituteData.coachingName || instituteData.name || 'Institute';
         const logo = instituteData.logoUrl || '';
         const director = instituteData.director || 'Director';
@@ -390,12 +463,10 @@
         document.getElementById('teacherName').textContent = director;
         document.getElementById('welcomeName').textContent = director;
         
-        // Set logo
         if (logo) {
           document.getElementById('instituteLogo').src = logo;
         }
         
-        // Store in localStorage for other functions
         localStorage.setItem('schoolId', coachingId);
         localStorage.setItem('instituteName', name);
         localStorage.setItem('instituteLogo', logo);
@@ -421,7 +492,6 @@
   if (coachingId) {
     loadInstituteFromCoachingId(coachingId);
   } else {
-    // Fallback: Check localStorage
     const savedId = localStorage.getItem('schoolId');
     if (savedId) {
       loadInstituteFromCoachingId(savedId);
@@ -447,12 +517,23 @@
   const createMainCard = document.getElementById('createResultMainCard');
   const draftMainCard = document.getElementById('draftResultsMainCard');
   const oldMainCard = document.getElementById('oldResultsMainCard');
-  const createSection = document.getElementById('createResultSection');
   const draftSection = document.getElementById('draftResultsSection');
   const oldSection = document.getElementById('oldResultsSection');
-  const backFromCreate = document.getElementById('backFromCreateBtn');
   const backFromDraft = document.getElementById('backFromDraftBtn');
   const backFromOld = document.getElementById('backFromOldBtn');
+  const draftResultsList = document.getElementById('draftResultsList');
+  const oldResultsList = document.getElementById('oldResultsList');
+  const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+  const resultModalTitle = document.getElementById('resultModalTitle');
+  const resultDetails = document.getElementById('resultDetails');
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+  const editPublishedConfirmModal = new bootstrap.Modal(document.getElementById('editPublishedConfirmModal'));
+  const dontSaveConfirmBtn = document.getElementById('dontSaveConfirmBtn');
+  const saveDraftConfirmBtn = document.getElementById('saveDraftConfirmBtn');
+  const saveChangesConfirmBtn = document.getElementById('saveChangesConfirmBtn');
+
+  // ===== CREATE RESULT OVERLAY ELEMENTS =====
+  const createResultOverlay = document.getElementById('createResultOverlay');
   const examSetupStep = document.getElementById('examSetupStep');
   const studentEntryStep = document.getElementById('studentEntryStep');
   const examNameInput = document.getElementById('examName');
@@ -474,16 +555,6 @@
   const studentsTableBody = document.getElementById('studentsTableBody');
   const saveDraftBtn = document.getElementById('saveDraftBtn');
   const publishResultBtn = document.getElementById('publishResultBtn');
-  const draftResultsList = document.getElementById('draftResultsList');
-  const oldResultsList = document.getElementById('oldResultsList');
-  const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
-  const resultModalTitle = document.getElementById('resultModalTitle');
-  const resultDetails = document.getElementById('resultDetails');
-  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-  const editPublishedConfirmModal = new bootstrap.Modal(document.getElementById('editPublishedConfirmModal'));
-  const dontSaveConfirmBtn = document.getElementById('dontSaveConfirmBtn');
-  const saveDraftConfirmBtn = document.getElementById('saveDraftConfirmBtn');
-  const saveChangesConfirmBtn = document.getElementById('saveChangesConfirmBtn');
 
   let selectedMainSubjects = [];
   let selectedOptionalSubjects = [];
@@ -505,13 +576,28 @@
     setTimeout(() => toast.style.display = 'none', 2000);
   }
 
+  // ===== OPEN/CLOSE CREATE RESULT OVERLAY =====
+  function openCreateResult() {
+    createResultOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    resetCreateResultForm();
+  }
+
+  window.closeCreateResult = function() {
+    createResultOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
   // ===== EVENT LISTENERS =====
   manageBtn.addEventListener('click', showManageSection);
   backFromManage.addEventListener('click', hideManageSection);
-  createMainCard.addEventListener('click', () => { showFullScreen(createSection); resetCreateResultForm(); });
+  
+  createMainCard.addEventListener('click', () => { 
+    openCreateResult(); 
+  });
+  
   draftMainCard.addEventListener('click', () => { showFullScreen(draftSection); loadDraftResults(); });
   oldMainCard.addEventListener('click', () => { showFullScreen(oldSection); loadOldResults(); });
-  backFromCreate.addEventListener('click', () => { showFullScreen(createSection); });
   backFromDraft.addEventListener('click', () => { showFullScreen(draftSection); });
   backFromOld.addEventListener('click', () => { showFullScreen(oldSection); });
 
@@ -732,7 +818,7 @@
 
   function deleteStudent(idx) { if (confirm('Delete student?')) { students.splice(idx, 1); updateStudentsTable(); showToast('Deleted'); } }
 
-  // ===== SAVE / PUBLISH (School-Specific Path) =====
+  // ===== SAVE / PUBLISH =====
   saveDraftBtn.addEventListener('click', async () => {
     if (!examNameInput.value.trim() || students.length === 0) { alert('Exam name and at least one student required'); return; }
     if (!schoolId) { alert('Institute not found. Please login again.'); return; }
@@ -747,7 +833,6 @@
         students, 
         createdAt: serverTimestamp() 
       };
-      // 🔥 School-specific path: schools/{schoolId}/draft_results
       const resultsRef = collection(db, "schools", schoolId, "draft_results");
       if (editingDraftId) {
         await updateDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId), data);
@@ -756,6 +841,7 @@
       }
       showToast('Draft saved');
       resetCreateResultForm();
+      closeCreateResult();
       showFullScreen(draftSection);
       loadDraftResults();
     } catch(e) { alert(e.message); }
@@ -776,7 +862,6 @@
         students, 
         createdAt: serverTimestamp() 
       };
-      // 🔥 School-specific path: schools/{schoolId}/results
       const resultsRef = collection(db, "schools", schoolId, "results");
       await addDoc(resultsRef, data);
       if (editingDraftId) {
@@ -784,6 +869,7 @@
       }
       showToast('', true);
       resetCreateResultForm();
+      closeCreateResult();
       showFullScreen(oldSection);
       loadOldResults();
     } catch(e) { alert(e.message); }
@@ -801,11 +887,11 @@
         optionalSubjects: selectedOptionalSubjects, 
         students 
       };
-      // 🔥 School-specific path: schools/{schoolId}/results/{resultId}
       await updateDoc(doc(db, "schools", schoolId, "results", editingPublishedResultId), data);
       editPublishedConfirmModal.hide();
       showToast('Result updated!');
       resetCreateResultForm();
+      closeCreateResult();
       showFullScreen(oldSection);
       loadOldResults();
     } catch(e) { alert(e.message); }
@@ -823,12 +909,12 @@
         students, 
         createdAt: serverTimestamp() 
       };
-      // 🔥 School-specific path: schools/{schoolId}/draft_results
       const resultsRef = collection(db, "schools", schoolId, "draft_results");
       await addDoc(resultsRef, data);
       editPublishedConfirmModal.hide();
       showToast('Saved as draft!');
       resetCreateResultForm();
+      closeCreateResult();
       showFullScreen(draftSection);
       loadDraftResults();
     } catch(e) { alert(e.message); }
@@ -837,6 +923,7 @@
   dontSaveConfirmBtn.addEventListener('click', () => { 
     editPublishedConfirmModal.hide(); 
     resetCreateResultForm(); 
+    closeCreateResult();
     showFullScreen(oldSection); 
     loadOldResults(); 
   });
@@ -860,7 +947,7 @@
     updateSubjectDisplay();
   }
 
-  // ===== LOAD DRAFTS (School-Specific) =====
+  // ===== LOAD DRAFTS =====
   async function loadDraftResults() {
     if (!schoolId) { 
       draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">Please login again.</p></div>'; 
@@ -905,7 +992,7 @@
         updateStudentsTable();
         editingDraftId = id;
         isEditingPublishedResult = false;
-        showFullScreen(createSection);
+        openCreateResult();
       }, 100);
     } catch(error) {
       alert('Error loading draft: ' + error.message);
@@ -925,7 +1012,7 @@
     }
   }
 
-  // ===== LOAD PUBLISHED RESULTS (School-Specific) =====
+  // ===== LOAD PUBLISHED RESULTS =====
   async function loadOldResults() {
     if (!schoolId) {
       oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
@@ -1036,7 +1123,7 @@
         editingDraftId = null;
         isEditingPublishedResult = true;
         editingPublishedResultId = id;
-        showFullScreen(createSection);
+        openCreateResult();
       }, 100);
     } catch(error) {
       alert('Error editing result: ' + error.message);
@@ -1062,7 +1149,6 @@
     const name = window._currentExamName;
     if (!data) return;
     
-    // Check if jsPDF is loaded, if not load it
     if (typeof window.jspdf === 'undefined') {
       const script = document.createElement('script');
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
@@ -1125,7 +1211,6 @@
     showToast('PDF Downloaded');
   }
 
-  // ===== INIT =====
   console.log('✅ Admin Panel Loaded for School ID:', schoolId);
 </script>
 </body>
