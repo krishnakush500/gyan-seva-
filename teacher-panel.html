@@ -732,15 +732,28 @@
 
   function deleteStudent(idx) { if (confirm('Delete student?')) { students.splice(idx, 1); updateStudentsTable(); showToast('Deleted'); } }
 
-  // ===== SAVE / PUBLISH =====
+  // ===== SAVE / PUBLISH (School-Specific Path) =====
   saveDraftBtn.addEventListener('click', async () => {
     if (!examNameInput.value.trim() || students.length === 0) { alert('Exam name and at least one student required'); return; }
     if (!schoolId) { alert('Institute not found. Please login again.'); return; }
     try {
-      const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students, createdAt: serverTimestamp() };
+      const data = { 
+        examName: examNameInput.value, 
+        examCentre: examCentreInput.value || '', 
+        rollCode: rollCodeInput.value || '55075', 
+        template: selectedTemplate, 
+        subjects: selectedMainSubjects, 
+        optionalSubjects: selectedOptionalSubjects, 
+        students, 
+        createdAt: serverTimestamp() 
+      };
+      // 🔥 School-specific path: schools/{schoolId}/draft_results
       const resultsRef = collection(db, "schools", schoolId, "draft_results");
-      if (editingDraftId) await updateDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId), data);
-      else await addDoc(resultsRef, data);
+      if (editingDraftId) {
+        await updateDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId), data);
+      } else {
+        await addDoc(resultsRef, data);
+      }
       showToast('Draft saved');
       resetCreateResultForm();
       showFullScreen(draftSection);
@@ -753,10 +766,22 @@
     if (!schoolId) { alert('Institute not found. Please login again.'); return; }
     if (isEditingPublishedResult) { editPublishedConfirmModal.show(); return; }
     try {
-      const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students, createdAt: serverTimestamp() };
+      const data = { 
+        examName: examNameInput.value, 
+        examCentre: examCentreInput.value || '', 
+        rollCode: rollCodeInput.value || '55075', 
+        template: selectedTemplate, 
+        subjects: selectedMainSubjects, 
+        optionalSubjects: selectedOptionalSubjects, 
+        students, 
+        createdAt: serverTimestamp() 
+      };
+      // 🔥 School-specific path: schools/{schoolId}/results
       const resultsRef = collection(db, "schools", schoolId, "results");
       await addDoc(resultsRef, data);
-      if (editingDraftId) await deleteDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId));
+      if (editingDraftId) {
+        await deleteDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId));
+      }
       showToast('', true);
       resetCreateResultForm();
       showFullScreen(oldSection);
@@ -767,7 +792,16 @@
   saveChangesConfirmBtn.addEventListener('click', async () => {
     if (!editingPublishedResultId || !schoolId) { editPublishedConfirmModal.hide(); return; }
     try {
-      const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students };
+      const data = { 
+        examName: examNameInput.value, 
+        examCentre: examCentreInput.value || '', 
+        rollCode: rollCodeInput.value || '55075', 
+        template: selectedTemplate, 
+        subjects: selectedMainSubjects, 
+        optionalSubjects: selectedOptionalSubjects, 
+        students 
+      };
+      // 🔥 School-specific path: schools/{schoolId}/results/{resultId}
       await updateDoc(doc(db, "schools", schoolId, "results", editingPublishedResultId), data);
       editPublishedConfirmModal.hide();
       showToast('Result updated!');
@@ -779,7 +813,17 @@
 
   saveDraftConfirmBtn.addEventListener('click', async () => {
     try {
-      const data = { examName: examNameInput.value, examCentre: examCentreInput.value || '', rollCode: rollCodeInput.value || '55075', template: selectedTemplate, subjects: selectedMainSubjects, optionalSubjects: selectedOptionalSubjects, students, createdAt: serverTimestamp() };
+      const data = { 
+        examName: examNameInput.value, 
+        examCentre: examCentreInput.value || '', 
+        rollCode: rollCodeInput.value || '55075', 
+        template: selectedTemplate, 
+        subjects: selectedMainSubjects, 
+        optionalSubjects: selectedOptionalSubjects, 
+        students, 
+        createdAt: serverTimestamp() 
+      };
+      // 🔥 School-specific path: schools/{schoolId}/draft_results
       const resultsRef = collection(db, "schools", schoolId, "draft_results");
       await addDoc(resultsRef, data);
       editPublishedConfirmModal.hide();
@@ -790,66 +834,98 @@
     } catch(e) { alert(e.message); }
   });
 
-  dontSaveConfirmBtn.addEventListener('click', () => { editPublishedConfirmModal.hide(); resetCreateResultForm(); showFullScreen(oldSection); loadOldResults(); });
+  dontSaveConfirmBtn.addEventListener('click', () => { 
+    editPublishedConfirmModal.hide(); 
+    resetCreateResultForm(); 
+    showFullScreen(oldSection); 
+    loadOldResults(); 
+  });
 
   function resetCreateResultForm() {
-    examNameInput.value = ''; examCentreInput.value = ''; rollCodeInput.value = '55075';
-    subjectFields.innerHTML = ''; step1NextBtn.classList.add('d-none');
-    examSetupStep.style.display = 'block'; studentEntryStep.style.display = 'none';
-    students = []; updateStudentsTable();
-    editingDraftId = null; isEditingPublishedResult = false; editingPublishedResultId = null;
+    examNameInput.value = ''; 
+    examCentreInput.value = ''; 
+    rollCodeInput.value = '55075';
+    subjectFields.innerHTML = ''; 
+    step1NextBtn.classList.add('d-none');
+    examSetupStep.style.display = 'block'; 
+    studentEntryStep.style.display = 'none';
+    students = []; 
+    updateStudentsTable();
+    editingDraftId = null; 
+    isEditingPublishedResult = false; 
+    editingPublishedResultId = null;
     cancelEdit();
-    selectedMainSubjects = []; selectedOptionalSubjects = [];
+    selectedMainSubjects = []; 
+    selectedOptionalSubjects = [];
     updateSubjectDisplay();
   }
 
-  // ===== LOAD DRAFTS =====
+  // ===== LOAD DRAFTS (School-Specific) =====
   async function loadDraftResults() {
-    if (!schoolId) { draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">Please login again.</p></div>'; return; }
-    const q = query(collection(db, "schools", schoolId, "draft_results"), orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    draftResultsList.innerHTML = '';
-    if (snap.empty) { draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No drafts found.</p></div>'; return; }
-    snap.forEach(doc => {
-      const d = doc.data();
-      const card = `<div class="col-md-6 col-lg-4"><div class="card h-100 shadow-sm"><div class="card-body"><h5 class="card-title">${d.examName}</h5><p class="card-text text-muted">Subjects: ${d.subjects?.length || 0} | Students: ${d.students?.length || 0}</p><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}">Edit</button><button class="btn btn-sm btn-danger delete-draft" data-id="${doc.id}">Delete</button></div></div></div></div>`;
-      draftResultsList.insertAdjacentHTML('beforeend', card);
-    });
-    document.querySelectorAll('.edit-draft').forEach(btn => btn.addEventListener('click', e => editDraft(e.target.dataset.id)));
-    document.querySelectorAll('.delete-draft').forEach(btn => btn.addEventListener('click', e => deleteDraft(e.target.dataset.id)));
+    if (!schoolId) { 
+      draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">Please login again.</p></div>'; 
+      return; 
+    }
+    try {
+      const q = query(collection(db, "schools", schoolId, "draft_results"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      draftResultsList.innerHTML = '';
+      if (snap.empty) { 
+        draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No drafts found.</p></div>'; 
+        return; 
+      }
+      snap.forEach(doc => {
+        const d = doc.data();
+        const card = `<div class="col-md-6 col-lg-4"><div class="card h-100 shadow-sm"><div class="card-body"><h5 class="card-title">${d.examName}</h5><p class="card-text text-muted">Subjects: ${d.subjects?.length || 0} | Students: ${d.students?.length || 0}</p><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}">Edit</button><button class="btn btn-sm btn-danger delete-draft" data-id="${doc.id}">Delete</button></div></div></div></div>`;
+        draftResultsList.insertAdjacentHTML('beforeend', card);
+      });
+      document.querySelectorAll('.edit-draft').forEach(btn => btn.addEventListener('click', e => editDraft(e.target.dataset.id)));
+      document.querySelectorAll('.delete-draft').forEach(btn => btn.addEventListener('click', e => deleteDraft(e.target.dataset.id)));
+    } catch(error) {
+      console.error('Error loading drafts:', error);
+      draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Error loading drafts.</p></div>';
+    }
   }
 
   async function editDraft(id) {
     if (!schoolId) return;
-    const snap = await getDocs(query(collection(db, "schools", schoolId, "draft_results"), where("__name__", "==", id)));
-    if (snap.empty) return;
-    const data = snap.docs[0].data();
-    examNameInput.value = data.examName || '';
-    examCentreInput.value = data.examCentre || '';
-    rollCodeInput.value = data.rollCode || '55075';
-    selectedMainSubjects = data.subjects || [];
-    selectedOptionalSubjects = data.optionalSubjects || [];
-    updateSubjectDisplay();
-    generateSubjectFields();
-    setTimeout(() => {
-      students = data.students || [];
-      updateStudentsTable();
-      editingDraftId = id;
-      isEditingPublishedResult = false;
-      showFullScreen(createSection);
-    }, 100);
+    try {
+      const snap = await getDocs(query(collection(db, "schools", schoolId, "draft_results"), where("__name__", "==", id)));
+      if (snap.empty) return;
+      const data = snap.docs[0].data();
+      examNameInput.value = data.examName || '';
+      examCentreInput.value = data.examCentre || '';
+      rollCodeInput.value = data.rollCode || '55075';
+      selectedMainSubjects = data.subjects || [];
+      selectedOptionalSubjects = data.optionalSubjects || [];
+      updateSubjectDisplay();
+      generateSubjectFields();
+      setTimeout(() => {
+        students = data.students || [];
+        updateStudentsTable();
+        editingDraftId = id;
+        isEditingPublishedResult = false;
+        showFullScreen(createSection);
+      }, 100);
+    } catch(error) {
+      alert('Error loading draft: ' + error.message);
+    }
   }
 
   async function deleteDraft(id) {
     if (!schoolId) return;
     if (confirm('Delete draft?')) {
-      await deleteDoc(doc(db, "schools", schoolId, "draft_results", id));
-      showToast('Draft deleted');
-      loadDraftResults();
+      try {
+        await deleteDoc(doc(db, "schools", schoolId, "draft_results", id));
+        showToast('Draft deleted');
+        loadDraftResults();
+      } catch(error) {
+        alert('Error deleting draft: ' + error.message);
+      }
     }
   }
 
-  // ===== LOAD PUBLISHED RESULTS =====
+  // ===== LOAD PUBLISHED RESULTS (School-Specific) =====
   async function loadOldResults() {
     if (!schoolId) {
       oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
@@ -896,95 +972,129 @@
   // ===== VIEW, EDIT, DELETE =====
   async function viewResult(id) {
     if (!schoolId) return;
-    const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
-    if (snap.empty) return;
-    const data = snap.docs[0].data();
-    window._currentResultData = data;
-    window._currentExamName = data.examName;
+    try {
+      const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
+      if (snap.empty) return;
+      const data = snap.docs[0].data();
+      window._currentResultData = data;
+      window._currentExamName = data.examName;
 
-    const sorted = [...data.students].sort((a,b) => {
-      let ta=0, ma=0, tb=0, mb=0;
-      data.subjects.forEach(s => { ta += a.marks[s.name]||0; ma += s.total; tb += b.marks[s.name]||0; mb += s.total; });
-      return (tb/mb) - (ta/ma);
-    });
-
-    resultModalTitle.innerText = data.examName + ' (Ranked)';
-    let html = `<p><strong>Total Students:</strong> ${data.students.length}</p>`;
-    if (sorted.length) html += `<div class="alert alert-success">🏆 Top: ${sorted[0].name} (Roll: ${sorted[0].rollNo})</div>`;
-    html += `<div class="table-responsive"><table class="table table-striped"><thead><tr><th>Rank</th><th>Roll</th><th>Name</th><th>Father</th>`;
-    data.subjects.forEach(s => html += `<th>${s.name}</th>`);
-    if (data.optionalSubjects?.length) data.optionalSubjects.forEach(o => html += `<th>${o.name}<br><small>(Opt)</small></th>`);
-    html += `<th>Total</th><th>%</th></tr></thead><tbody>`;
-    sorted.forEach((s, idx) => {
-      let total=0, maxTotal=0;
-      html += `<tr${idx===0?' style="background:#fff3cd;font-weight:500;"':''}><td><strong>#${idx+1}</strong></td><td>${s.rollNo}</td><td>${s.name}${idx===0?' 🏆':''}</td><td>${s.fatherName||'-'}</td>`;
-      data.subjects.forEach(sub => {
-        const mark = s.marks[sub.name] || 0;
-        total += mark; maxTotal += sub.total;
-        html += `<td>${mark}/${sub.total}</td>`;
+      const sorted = [...data.students].sort((a,b) => {
+        let ta=0, ma=0, tb=0, mb=0;
+        data.subjects.forEach(s => { ta += a.marks[s.name]||0; ma += s.total; tb += b.marks[s.name]||0; mb += s.total; });
+        return (tb/mb) - (ta/ma);
       });
-      if (data.optionalSubjects?.length) {
-        data.optionalSubjects.forEach(o => {
-          const opt = s.optionalMarks && s.optionalMarks[o.name] !== undefined ? s.optionalMarks[o.name] : '-';
-          html += `<td style="color:#c5a059;">${opt !== null && opt !== '-' ? `${opt}/${o.total}` : '-'}</td>`;
+
+      resultModalTitle.innerText = data.examName + ' (Ranked)';
+      let html = `<p><strong>Total Students:</strong> ${data.students.length}</p>`;
+      if (sorted.length) html += `<div class="alert alert-success">🏆 Top: ${sorted[0].name} (Roll: ${sorted[0].rollNo})</div>`;
+      html += `<div class="table-responsive"><table class="table table-striped"><thead><tr><th>Rank</th><th>Roll</th><th>Name</th><th>Father</th>`;
+      data.subjects.forEach(s => html += `<th>${s.name}</th>`);
+      if (data.optionalSubjects?.length) data.optionalSubjects.forEach(o => html += `<th>${o.name}<br><small>(Opt)</small></th>`);
+      html += `<th>Total</th><th>%</th></tr></thead><tbody>`;
+      sorted.forEach((s, idx) => {
+        let total=0, maxTotal=0;
+        html += `<tr${idx===0?' style="background:#fff3cd;font-weight:500;"':''}><td><strong>#${idx+1}</strong></td><td>${s.rollNo}</td><td>${s.name}${idx===0?' 🏆':''}</td><td>${s.fatherName||'-'}</td>`;
+        data.subjects.forEach(sub => {
+          const mark = s.marks[sub.name] || 0;
+          total += mark; maxTotal += sub.total;
+          html += `<td>${mark}/${sub.total}</td>`;
         });
-      }
-      const percent = maxTotal ? ((total/maxTotal)*100).toFixed(2) : 0;
-      html += `<td><strong>${total}/${maxTotal}</strong></td><td><strong>${percent}%</strong></td></tr>`;
-    });
-    html += `</tbody></table></div>`;
-    resultDetails.innerHTML = html;
-    resultModal.show();
+        if (data.optionalSubjects?.length) {
+          data.optionalSubjects.forEach(o => {
+            const opt = s.optionalMarks && s.optionalMarks[o.name] !== undefined ? s.optionalMarks[o.name] : '-';
+            html += `<td style="color:#c5a059;">${opt !== null && opt !== '-' ? `${opt}/${o.total}` : '-'}</td>`;
+          });
+        }
+        const percent = maxTotal ? ((total/maxTotal)*100).toFixed(2) : 0;
+        html += `<td><strong>${total}/${maxTotal}</strong></td><td><strong>${percent}%</strong></td></tr>`;
+      });
+      html += `</tbody></table></div>`;
+      resultDetails.innerHTML = html;
+      resultModal.show();
+    } catch(error) {
+      alert('Error viewing result: ' + error.message);
+    }
   }
 
   async function editResult(id) {
     if (!schoolId) return;
-    const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
-    if (snap.empty) return;
-    const data = snap.docs[0].data();
-    examNameInput.value = data.examName || '';
-    examCentreInput.value = data.examCentre || '';
-    rollCodeInput.value = data.rollCode || '55075';
-    selectedMainSubjects = data.subjects || [];
-    selectedOptionalSubjects = data.optionalSubjects || [];
-    updateSubjectDisplay();
-    generateSubjectFields();
-    setTimeout(() => {
-      students = data.students || [];
-      updateStudentsTable();
-      editingDraftId = null;
-      isEditingPublishedResult = true;
-      editingPublishedResultId = id;
-      showFullScreen(createSection);
-    }, 100);
+    try {
+      const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
+      if (snap.empty) return;
+      const data = snap.docs[0].data();
+      examNameInput.value = data.examName || '';
+      examCentreInput.value = data.examCentre || '';
+      rollCodeInput.value = data.rollCode || '55075';
+      selectedMainSubjects = data.subjects || [];
+      selectedOptionalSubjects = data.optionalSubjects || [];
+      updateSubjectDisplay();
+      generateSubjectFields();
+      setTimeout(() => {
+        students = data.students || [];
+        updateStudentsTable();
+        editingDraftId = null;
+        isEditingPublishedResult = true;
+        editingPublishedResultId = id;
+        showFullScreen(createSection);
+      }, 100);
+    } catch(error) {
+      alert('Error editing result: ' + error.message);
+    }
   }
 
   async function deleteResult(id) {
     if (!schoolId) return;
     if (confirm('Delete published result permanently?')) {
-      await deleteDoc(doc(db, "schools", schoolId, "results", id));
-      showToast('Result deleted');
-      loadOldResults();
+      try {
+        await deleteDoc(doc(db, "schools", schoolId, "results", id));
+        showToast('Result deleted');
+        loadOldResults();
+      } catch(error) {
+        alert('Error deleting result: ' + error.message);
+      }
     }
   }
 
+  // ===== PDF DOWNLOAD =====
   downloadPdfBtn.addEventListener('click', () => {
     const data = window._currentResultData;
     const name = window._currentExamName;
     if (!data) return;
+    
+    // Check if jsPDF is loaded, if not load it
+    if (typeof window.jspdf === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+      script.onload = function() {
+        const script2 = document.createElement('script');
+        script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js';
+        script2.onload = function() { generatePDF(data, name); };
+        document.head.appendChild(script2);
+      };
+      document.head.appendChild(script);
+      return;
+    }
+    generatePDF(data, name);
+  });
+
+  function generatePDF(data, name) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
     doc.setFontSize(18);
     doc.text(`GYAN SEVA - ${name}`, 14, 15);
+    
     const sorted = [...data.students].sort((a,b) => {
       let ta=0, ma=0, tb=0, mb=0;
       data.subjects.forEach(s => { ta += a.marks[s.name]||0; ma += s.total; tb += b.marks[s.name]||0; mb += s.total; });
       return (tb/mb) - (ta/ma);
     });
+    
     let columns = [{ header: 'Rank', dataKey: 'rank' }, { header: 'Roll', dataKey: 'roll' }, { header: 'Name', dataKey: 'name' }, { header: 'Father', dataKey: 'father' }];
     data.subjects.forEach(s => columns.push({ header: `${s.name}`, dataKey: s.name }));
     if (data.optionalSubjects?.length) data.optionalSubjects.forEach(o => columns.push({ header: `${o.name} (Opt)`, dataKey: `opt_${o.name}` }));
     columns.push({ header: 'Total', dataKey: 'total' }, { header: '%', dataKey: 'percent' });
+    
     const rows = sorted.map((s, idx) => {
       let row = { rank: idx+1, roll: s.rollNo, name: s.name, father: s.fatherName||'-' };
       let total=0, maxTotal=0;
@@ -1003,21 +1113,19 @@
       row.percent = maxTotal ? `${((total/maxTotal)*100).toFixed(2)}%` : '0%';
       return row;
     });
-    doc.autoTable({ startY: 25, head: [columns.map(c=>c.header)], body: rows.map(r=>columns.map(c=>r[c.dataKey])), styles: { fontSize: 8 }, headStyles: { fillColor: [41,128,185] } });
+    
+    doc.autoTable({ 
+      startY: 25, 
+      head: [columns.map(c=>c.header)], 
+      body: rows.map(r=>columns.map(c=>r[c.dataKey])), 
+      styles: { fontSize: 8 }, 
+      headStyles: { fillColor: [41,128,185] } 
+    });
     doc.save(`${name}_Results.pdf`);
     showToast('PDF Downloaded');
-  });
-
-  // Check if coachingId is missing and show error
-  if (!coachingId) {
-    // Try to load from localStorage as fallback
-    const savedId = localStorage.getItem('schoolId');
-    if (!savedId) {
-      document.querySelector('.welcome-card .welcome-text h1').innerHTML = '⚠️ No Coaching Selected';
-      document.querySelector('.welcome-card .welcome-text p').innerHTML = 'Please go to <a href="connect.html" style="color:#1a237e;font-weight:600;">Connected Customers</a> and select a coaching.';
-    }
   }
 
+  // ===== INIT =====
   console.log('✅ Admin Panel Loaded for School ID:', schoolId);
 </script>
 </body>
