@@ -29,7 +29,7 @@
       min-height:100vh;
     }
 
-    /* ===== HEADER - SMALLER BLUE AREA ===== */
+    /* ===== HEADER ===== */
     .header { 
       background:linear-gradient(to right,#1a237e,#283593,#303f9f); 
       color:white; 
@@ -105,7 +105,7 @@
       margin: 0 4px;
     }
 
-    /* ===== YELLOW PATTI - THIN, NO EMOJI, NOT BOLD ===== */
+    /* ===== YELLOW PATTI ===== */
     .marquee-container {
       background:#ffc107;
       overflow:hidden;
@@ -129,7 +129,7 @@
       100% { transform: translateX(-100%); }
     }
 
-    /* ===== SINGLE TAB - ONLY RESULTS ===== */
+    /* ===== SINGLE TAB ===== */
     .main-tabs {
       display: flex;
       background: white;
@@ -162,14 +162,13 @@
       background: #e8edf5;
     }
 
-    /* Content Sections */
     .tab-content {
       display: block;
       padding: 0;
       min-height: 400px;
     }
 
-    /* Results Section - 🔥 NO HEADING HERE, ONLY TAB */
+    /* Results Section */
     .results-section {
       padding: 20px 15px;
       background: #f9f9f9;
@@ -211,7 +210,6 @@
       margin-bottom: 4px;
     }
     
-    /* NEW Sticker */
     .new-sticker {
       position: absolute;
       top: -6px;
@@ -272,7 +270,6 @@
       background: #283593;
     }
 
-    /* Show More/Less Button */
     .show-more-btn {
       display: block;
       margin: 15px auto;
@@ -304,7 +301,6 @@
       margin: 12px 0;
     }
 
-    /* Footer */
     .footer {
       background: #1a237e;
       color: white;
@@ -314,7 +310,6 @@
       border-top: 1px solid rgba(255,255,255,0.1);
     }
     
-    /* Developer Contact Section */
     .developer-contact {
       background: #f8f9fa;
       padding: 15px;
@@ -358,7 +353,6 @@
       font-size: 1rem;
     }
     
-    /* Password Modal */
     .password-modal {
       position: fixed;
       top: 0;
@@ -437,16 +431,11 @@
       display: none;
     }
     
-    /* ===== 🔥 RESPONSIVE ===== */
-    
     @media (min-width: 769px) {
       .header { padding: 14px 20px; }
       .header-logo { width: 110px; height: 110px; }
       .school-name { font-size: 2rem; }
       .location { font-size: 0.95rem; }
-      .director-details-header .name { font-size: 1.05rem; }
-      .director-details-header .phone-email { font-size: 0.85rem; }
-      .marquee-content { font-size: 1rem; }
       .results-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
     }
     
@@ -454,43 +443,21 @@
       .header { padding: 12px 15px; }
       .header-logo { width: 95px; height: 95px; }
       .school-name { font-size: 1.7rem; }
-      .location { font-size: 0.85rem; }
-      .marquee-content { font-size: 0.9rem; }
       .results-list { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
     }
     
     @media (max-width: 480px) {
-      body { padding: 0; }
-      .container { border-radius: 0; box-shadow: none; margin: 0; width: 100%; }
       .header { padding: 10px 10px; }
-      .header-logo { width: 75px; height: 75px; border-width: 2px; }
+      .header-logo { width: 75px; height: 75px; }
       .school-name { font-size: 1.4rem; }
       .location { font-size: 0.75rem; }
-      .director-details-header .label { font-size: 0.55rem; }
-      .director-details-header .name { font-size: 0.85rem; }
-      .director-details-header .phone-email { font-size: 0.7rem; }
-      .marquee-container { height: 30px; padding: 0 10px; }
+      .marquee-container { height: 30px; }
       .marquee-content { font-size: 0.8rem; }
-      .tab-btn { padding: 10px 16px; font-size: 0.9rem; gap: 6px; }
-      .tab-btn i { font-size: 1.1rem; }
+      .tab-btn { padding: 10px 16px; font-size: 0.9rem; }
       .results-list { grid-template-columns: 1fr; gap: 10px; }
       .result-item { padding: 10px; }
       .exam-name { font-size: 0.85rem; }
-      .roll-input-section h3 { font-size: 0.85rem; }
-      .input-group input { max-width: 100%; font-size: 0.85rem; padding: 10px; }
-      .result-btn { font-size: 0.85rem; padding: 10px 14px; }
-      .contact-info { flex-direction: column; gap: 8px; }
-      .contact-item { padding: 8px 12px; justify-content: center; }
-    }
-    
-    @media (max-width: 360px) {
-      .header-logo { width: 65px; height: 65px; }
-      .school-name { font-size: 1.2rem; }
-      .location { font-size: 0.65rem; }
-      .director-details-header .name { font-size: 0.75rem; }
-      .director-details-header .phone-email { font-size: 0.6rem; }
-      .marquee-content { font-size: 0.7rem; }
-      .tab-btn { font-size: 0.8rem; padding: 8px 12px; }
+      .input-group input { max-width: 100%; }
     }
   </style>
 </head>
@@ -536,17 +503,16 @@
       </div>
     </div>
 
-    <!-- ===== SINGLE TAB - ONLY "Exam Results" ===== -->
+    <!-- ===== SINGLE TAB ===== -->
     <div class="main-tabs">
       <button class="tab-btn active" id="results-tab">
         <i class="fas fa-chart-line"></i> Exam Results
       </button>
     </div>
 
-    <!-- ===== RESULTS CONTENT - NO HEADING DUPLICATE ===== -->
+    <!-- ===== RESULTS CONTENT ===== -->
     <div class="tab-content active" id="results-content">
       <div class="results-section">
-        <!-- 🔥 NO "Exam Results" Heading Here - Only Tab -->
         <div class="loading" id="loading-results">
           <i class="fas fa-spinner fa-spin"></i> Loading available results...
         </div>
@@ -792,6 +758,7 @@
       document.querySelectorAll('.result-item').forEach(item => item.classList.remove('active'));
     }
 
+    // ===== 🔥 GET RESULT FUNCTION - UPDATED =====
     function getResult() {
       const rollInput = document.getElementById('roll-input').value.trim();
       if (!rollInput) {
@@ -809,14 +776,53 @@
         return;
       }
       
-      const template = selectedExamData.template || 'result';
-      let url;
-      if (template === 'result1') {
-        url = `result1.html?examId=${selectedExamId}&rollNo=${rollInput}&schoolId=${schoolId}`;
-      } else {
-        url = `result.html?examId=${selectedExamId}&rollNo=${rollInput}&schoolId=${schoolId}`;
-      }
+      // 🔥 Get coaching data from schoolData
+      const coachingName = schoolData?.coachingName || schoolData?.name || 'GYAN SEVA';
+      const directorName = schoolData?.director || 'Director';
+      const coachingLogo = schoolData?.logoUrl || '';
+      const coachingPhone = schoolData?.phone || '';
+      const directorEmail = schoolData?.directorEmail || '';
       
+      // 🔥 Prepare subjects and marks
+      const subjects = selectedExamData.subjects.map(s => s.name);
+      const marks = student.marks || {};
+      
+      // 🔥 Calculate total and percentage
+      let totalObtained = 0;
+      let totalMax = 0;
+      selectedExamData.subjects.forEach(sub => {
+        totalObtained += (student.marks[sub.name] || 0);
+        totalMax += sub.total || 100;
+      });
+      const totalPercent = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(2) : 0;
+      
+      // 🔥 Calculate division
+      let division = 'FAIL';
+      if (totalPercent >= 60) division = 'FIRST DIVISION';
+      else if (totalPercent >= 45) division = 'SECOND DIVISION';
+      else if (totalPercent >= 33) division = 'THIRD DIVISION';
+      
+      // 🔥 Create URL parameters
+      const params = new URLSearchParams();
+      params.set('name', student.name);
+      params.set('roll', student.rollNo);
+      params.set('father', student.fatherName || '');
+      params.set('exam', selectedExamData.examName);
+      params.set('date', new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }));
+      params.set('subjects', JSON.stringify(subjects));
+      params.set('marks', JSON.stringify(marks));
+      params.set('percent', totalPercent);
+      params.set('division', division);
+      
+      // 🔥 Store coaching data in localStorage for result-viewer
+      localStorage.setItem('coachingName', coachingName);
+      localStorage.setItem('directorName', directorName);
+      localStorage.setItem('coachingLogo', coachingLogo);
+      localStorage.setItem('directorPhone', coachingPhone);
+      localStorage.setItem('directorEmail', directorEmail);
+      
+      // 🔥 Open result-viewer.html with parameters
+      const url = `result-viewer.html?${params.toString()}`;
       window.open(url, '_blank');
     }
 
