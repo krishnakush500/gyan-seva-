@@ -6,6 +6,7 @@
   <title>GYAN SEVA — Add Customer</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    /* Same styles as above */
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
     body { background:#ffffff; padding:40px 24px; }
     .container { max-width:800px; margin:0 auto; }
@@ -228,6 +229,25 @@
     setTimeout(() => { toast.style.display = 'none'; }, 4000);
   }
 
+  // ===== 🔥 FIXED: GET CORRECT BASE URL =====
+  function getBaseUrl() {
+    let baseUrl = window.location.origin;
+    const pathname = window.location.pathname;
+    if (pathname.includes('/') && !pathname.endsWith('/')) {
+      const parts = pathname.split('/');
+      parts.pop();
+      const repoPath = parts.join('/');
+      if (baseUrl.includes('github.io')) {
+        baseUrl = baseUrl + repoPath;
+      }
+    }
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.slice(0, -1);
+    }
+    console.log('🔗 Base URL:', baseUrl);
+    return baseUrl;
+  }
+
   window.saveSchoolToFirebase = async () => {
     const name = document.getElementById('addSchoolName').value.trim();
     const location = document.getElementById('addSchoolLocation').value.trim();
@@ -308,13 +328,8 @@
         });
       }
 
-      // 🔥 FIXED: Get base URL dynamically
-      let baseUrl = window.location.origin;
-      if (baseUrl.endsWith('/')) {
-        baseUrl = baseUrl.slice(0, -1);
-      }
-      
-      // 🔥 Create correct dashboard link
+      // 🔥 FIXED: Get correct base URL
+      const baseUrl = getBaseUrl();
       const dashboardLink = `${baseUrl}/teacher-panel.html?coachingId=${schoolId}`;
       
       const message = `📚 *Namaste ${name} Team!*
