@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>GYAN SEVA — Add Customer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+    body { background:#ffffff; padding:40px 24px; }
+    .container { max-width:800px; margin:0 auto; }
+    .nav-links { text-align:center; margin-bottom:30px; }
+    .nav-links a { text-decoration:none; background:#f1f5f9; padding:8px 24px; border-radius:40px; margin:0 8px; color:#1e293b; font-weight:500; font-size:0.85rem; }
+    .nav-links a.active { background:#2563eb; color:white; }
+    .nav-links a i { margin-right:6px; }
+    .add-card { background:#fff; border-radius:48px; box-shadow:0 20px 40px -12px rgba(0,0,0,0.08); border:1px solid #dbeafe; overflow:hidden; }
+    .add-header { background:#10b981; padding:28px 32px; text-align:center; }
+    .add-header h2 { color:white; font-size:2rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:12px; }
+    .add-header p { color:rgba(255,255,255,0.8); margin-top:5px; }
+    .add-body { padding:32px; }
+    .form-group { margin-bottom:20px; }
+    .form-group label { display:block; font-weight:600; color:#1e293b; margin-bottom:6px; }
+    .form-group label i { margin-right:8px; color:#2563eb; }
+    .form-group input { width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:0.95rem; transition:0.3s; }
+    .form-group input:focus { outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
+    .form-group small { display:block; color:#94a3b8; font-size:0.75rem; margin-top:4px; }
+    .logo-upload-area { border:2px dashed #e2e8f0; border-radius:16px; padding:30px; text-align:center; cursor:pointer; transition:0.3s; background:#fafafa; }
+    .logo-upload-area:hover { border-color:#10b981; background:#f0fdf4; }
+    .logo-upload-area img { width:100px; height:100px; border-radius:50%; object-fit:cover; margin:10px auto; display:block; }
+    .logo-upload-area p { color:#94a3b8; font-size:0.85rem; margin:0; }
+    .logo-upload-area p i { color:#10b981; }
+    .btn-submit { background:#10b981; color:white; padding:16px 32px; border:none; border-radius:40px; font-size:1rem; font-weight:600; cursor:pointer; transition:0.3s; width:100%; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .btn-submit:hover { background:#059669; transform:translateY(-2px); box-shadow:0 8px 20px rgba(16,185,129,0.3); }
+    .btn-submit:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+    .btn-cancel { background:#94a3b8; color:white; padding:16px 32px; border:none; border-radius:40px; font-size:1rem; font-weight:600; cursor:pointer; transition:0.3s; width:100%; display:flex; align-items:center; justify-content:center; gap:10px; margin-top:10px; }
+    .btn-cancel:hover { background:#64748b; }
+    footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
+    .success-toast { position:fixed; bottom:30px; right:30px; background:#10b981; color:white; padding:16px 24px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.15); display:none; align-items:center; gap:12px; font-weight:500; z-index:1000; }
+    .success-toast i { font-size:1.3rem; }
+    @media (max-width:640px){ .add-body { padding:20px; } .nav-links a { display:inline-block; margin:5px; } }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-links">
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="connected.html"><i class="fas fa-handshake"></i> Connected</a>
+    <a href="add-customer.html" class="active"><i class="fas fa-plus-circle"></i> Add Customer</a>
+    <a href="teacher-panel.html"><i class="fas fa-chalkboard-user"></i> Teacher Panel</a>
+  </div>
+
+  <div class="add-card">
+    <div class="add-header">
+      <h2><i class="fas fa-plus-circle"></i> ADD NEW CUSTOMER</h2>
+      <p>Add a new school / coaching centre to GYAN SEVA network</p>
+    </div>
+    <div class="add-body">
+      <div class="form-group">
+        <label><i class="fas fa-school"></i> Coaching / School Name <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="addSchoolName" placeholder="e.g., Modern Academy" maxlength="50">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-location-dot"></i> Location <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="addSchoolLocation" placeholder="e.g., Begusarai, Bihar" maxlength="50">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-user-tie"></i> Director / Owner Name <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="addSchoolDirector" placeholder="e.g., Raman Sir" maxlength="30">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-phone"></i> Phone Number <span style="color:#dc2626;">*</span></label>
+        <input type="tel" id="addSchoolPhone" placeholder="e.g., 9123456789" maxlength="15">
+        <small>WhatsApp number for sharing dashboard link</small>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Director/Teacher Email <span style="color:#dc2626;">*</span></label>
+        <input type="email" id="addSchoolEmail" placeholder="e.g., director@gmail.com">
+        <small>This email will be used for teacher login</small>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-image"></i> Logo</label>
+        <div class="logo-upload-area" onclick="document.getElementById('logoInput').click()">
+          <img id="logoPreview" src="https://via.placeholder.com/100?text=Logo" alt="Logo Preview">
+          <p><i class="fas fa-cloud-upload-alt"></i> Click to upload logo (optional)</p>
+          <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="previewLogo(event)">
+        </div>
+      </div>
+
+      <button class="btn-submit" id="submitBtn" onclick="saveSchoolToFirebase()">
+        <i class="fas fa-save"></i> Add Institute & Send Welcome
+      </button>
+      
+      <button class="btn-cancel" onclick="window.location.href='connected.html'">
+        <i class="fas fa-arrow-left"></i> Back to Connected List
+      </button>
+    </div>
+  </div>
+  <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
+</div>
+
+<!-- Success Toast -->
+<div id="successToast" class="success-toast">
+  <i class="fas fa-check-circle"></i>
+  <span id="toastMessage">Institute added successfully!</span>
+</div>
+
+<script type="module">
+  import { db, auth } from './firebase-config.js';
+  import { collection, doc, setDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  const SUPABASE_URL = "https://qfmmgeodabytpuzkarrb.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbW1nZW9kYWJ5dHB1emthcnJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNzQyMDEsImV4cCI6MjA4Njg1MDIwMX0._NxbC8_P3GQWRMyqNZgneC7lYWDTvEpekt40ZFRmtJk";
+
+  let selectedLogoFile = null;
+
+  // ===== INDIAN NAMES FOR DEMO =====
+  const INDIAN_NAMES = [
+    { name: "Aarav Sharma", father: "Mr. Rajesh Sharma" },
+    { name: "Vivaan Singh", father: "Mr. Suresh Singh" },
+    { name: "Aditya Kumar", father: "Mr. Ramesh Kumar" },
+    { name: "Vihaan Gupta", father: "Mr. Sunil Gupta" },
+    { name: "Arjun Reddy", father: "Mr. Prakash Reddy" },
+    { name: "Sai Patel", father: "Mr. Dinesh Patel" },
+    { name: "Krishna Iyer", father: "Mr. Gopal Iyer" },
+    { name: "Rohit Malhotra", father: "Mr. Deepak Malhotra" },
+    { name: "Amit Shah", father: "Mr. Jayesh Shah" },
+    { name: "Rahul Verma", father: "Mr. Sanjay Verma" }
+  ];
+
+  function generateDemoResults(schoolName, directorName) {
+    const subjects = [
+      { name: "Mathematics", total: 100 },
+      { name: "Science", total: 100 },
+      { name: "English", total: 100 },
+      { name: "Hindi", total: 100 },
+      { name: "Social Studies", total: 100 }
+    ];
+
+    const demoResults = [];
+
+    // Result 1: Mid-Term
+    const students1 = INDIAN_NAMES.slice(0, 10).map((p, i) => {
+      const marks = {};
+      subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 54) + 45; });
+      return { rollNo: i + 1, name: p.name, fatherName: p.father, marks };
+    });
+    demoResults.push({
+      examName: "Mid-Term Examination 2024-25",
+      examCentre: `${schoolName}, ${directorName}`,
+      rollCode: "55075",
+      subjects,
+      students: students1,
+      createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+      isDemo: true
+    });
+
+    // Result 2: Unit Test
+    const students2 = INDIAN_NAMES.slice(3, 13).map((p, i) => {
+      const marks = {};
+      subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 50) + 35; });
+      return { rollNo: i + 1, name: p.name, fatherName: p.father, marks };
+    });
+    demoResults.push({
+      examName: "Unit Test 1 - 2024-25",
+      examCentre: `${schoolName}, ${directorName}`,
+      rollCode: "55076",
+      subjects,
+      students: students2,
+      createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+      isDemo: true
+    });
+
+    // Result 3: Pre-Board
+    const students3 = INDIAN_NAMES.slice(0, 8).map((p, i) => {
+      const marks = {};
+      subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 40) + 55; });
+      return { rollNo: i + 1, name: p.name, fatherName: p.father, marks };
+    });
+    demoResults.push({
+      examName: "Pre-Board Examination 2024-25",
+      examCentre: `${schoolName}, ${directorName}`,
+      rollCode: "55077",
+      subjects,
+      students: students3,
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      isDemo: true
+    });
+
+    return demoResults;
+  }
+
+  // ===== LOGO UPLOAD =====
+  window.previewLogo = (event) => {
+    const file = event.target.files[0];
+    if(file) {
+      selectedLogoFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('logoPreview').src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  async function uploadToSupabase(file) {
+    const fileName = `logo_${Date.now()}_${Math.random().toString(36).substr(2, 6)}.jpg`;
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch(`${SUPABASE_URL}/storage/v1/object/logos/${fileName}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY
+      },
+      body: formData
+    });
+    
+    if(!response.ok) throw new Error('Upload failed');
+    return `${SUPABASE_URL}/storage/v1/object/public/logos/${fileName}`;
+  }
+
+  function showToast(message) {
+    document.getElementById('toastMessage').textContent = message;
+    const toast = document.getElementById('successToast');
+    toast.style.display = 'flex';
+    setTimeout(() => { toast.style.display = 'none'; }, 4000);
+  }
+
+  // ===== SAVE SCHOOL =====
+  window.saveSchoolToFirebase = async () => {
+    const name = document.getElementById('addSchoolName').value.trim();
+    const location = document.getElementById('addSchoolLocation').value.trim();
+    const director = document.getElementById('addSchoolDirector').value.trim();
+    const phone = document.getElementById('addSchoolPhone').value.trim();
+    const email = document.getElementById('addSchoolEmail').value.trim();
+
+    if(!name || !location || !director || !phone || !email) {
+      alert('Please fill all required fields (including email)');
+      return;
+    }
+
+    if(!email.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    const user = auth.currentUser;
+    if(!user) {
+      alert('Please login first');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding Institute...';
+
+    let logoUrl = '';
+    if(selectedLogoFile) {
+      try {
+        logoUrl = await uploadToSupabase(selectedLogoFile);
+      } catch(error) {
+        alert('Logo upload failed: ' + error.message);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Add Institute & Send Welcome';
+        return;
+      }
+    }
+
+    try {
+      // Create unique school ID
+      const schoolRef = doc(collection(db, "schools"));
+      const schoolId = schoolRef.id;
+
+      // 1. Save School
+      const schoolData = {
+        coachingName: name,
+        location: location,
+        director: director,
+        phone: phone,
+        logoUrl: logoUrl,
+        directorEmail: email,
+        createdBy: user.uid,
+        createdAt: Date.now(),
+        subscriptionStatus: 'active',
+        subscriptionPlan: 'free_trial',
+        demoResultsAdded: true,
+        schoolId: schoolId
+      };
+      await setDoc(schoolRef, schoolData);
+
+      // 2. Add Teacher
+      await setDoc(doc(db, "schools", schoolId, "teachers", user.uid), {
+        name: director,
+        email: email,
+        role: 'director',
+        joinedAt: Date.now(),
+        isActive: true
+      });
+
+      // 3. Add Demo Results
+      const demoResults = generateDemoResults(name, director);
+      for (const result of demoResults) {
+        await addDoc(collection(db, "schools", schoolId, "results"), {
+          examName: result.examName,
+          examCentre: result.examCentre,
+          rollCode: result.rollCode,
+          subjects: result.subjects,
+          students: result.students,
+          createdAt: result.createdAt,
+          isDemo: true
+        });
+      }
+
+      // 4. Send WhatsApp message with dashboard link
+      const dashboardLink = `${window.location.origin}/teacher-panel.html?coachingId=${schoolId}`;
+      const message = `📚 *Namaste ${name} Team!*
+
+🎯 Your GYAN SEVA Admin Panel is ready!
+
+🔗 *Dashboard Link:* ${dashboardLink}
+
+📊 You can:
+✅ Manage Results (Create, Edit, Publish)
+✅ Conduct Online Tests
+✅ View Student Performance
+
+*GYAN SEVA* — Connected, Served, Growing 📈`;
+
+      const whatsappUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
+      
+      // Open WhatsApp in new tab
+      window.open(whatsappUrl, '_blank');
+
+      showToast('✅ Institute added successfully! Demo results created.');
+      
+      // Reset form
+      document.getElementById('addSchoolName').value = '';
+      document.getElementById('addSchoolLocation').value = '';
+      document.getElementById('addSchoolDirector').value = '';
+      document.getElementById('addSchoolPhone').value = '';
+      document.getElementById('addSchoolEmail').value = '';
+      document.getElementById('logoPreview').src = 'https://via.placeholder.com/100?text=Logo';
+      document.getElementById('logoInput').value = '';
+      selectedLogoFile = null;
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-save"></i> Add Another Institute';
+
+      // Redirect after 3 seconds
+      setTimeout(() => {
+        window.location.href = 'connected.html';
+      }, 3000);
+
+    } catch(error) {
+      alert('Error: ' + error.message);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-save"></i> Add Institute & Send Welcome';
+    }
+  };
+
+  // ===== LOGIN CHECK =====
+  onAuthStateChanged(auth, (user) => {
+    if(user) {
+      console.log('Logged in:', user.uid);
+    } else {
+      console.log('Not logged in');
+    }
+  });
+</script>
+</body>
+</html>
