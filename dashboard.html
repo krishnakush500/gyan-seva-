@@ -29,7 +29,6 @@
       min-height:100vh;
     }
 
-    /* ===== HEADER ===== */
     .header { 
       background:linear-gradient(to right,#1a237e,#283593,#303f9f); 
       color:white; 
@@ -105,7 +104,6 @@
       margin: 0 4px;
     }
 
-    /* ===== YELLOW PATTI ===== */
     .marquee-container {
       background:#ffc107;
       overflow:hidden;
@@ -129,7 +127,6 @@
       100% { transform: translateX(-100%); }
     }
 
-    /* ===== SINGLE TAB ===== */
     .main-tabs {
       display: flex;
       background: white;
@@ -168,7 +165,6 @@
       min-height: 400px;
     }
 
-    /* Results Section */
     .results-section {
       padding: 20px 15px;
       background: #f9f9f9;
@@ -478,7 +474,6 @@
   </div>
 
   <div class="container">
-    <!-- ===== HEADER ===== -->
     <div class="header">
       <div class="header-content">
         <img id="schoolLogo" class="header-logo" src="https://via.placeholder.com/110?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/110?text=Logo'">
@@ -496,21 +491,18 @@
       </div>
     </div>
 
-    <!-- ===== YELLOW PATTI ===== -->
     <div class="marquee-container">
       <div class="marquee-content" id="marqueeContent">
         <span id="promoCoachingName">Loading...</span> — Quality Education & Excellence — Join Us for a Bright Future!
       </div>
     </div>
 
-    <!-- ===== SINGLE TAB ===== -->
     <div class="main-tabs">
       <button class="tab-btn active" id="results-tab">
         <i class="fas fa-chart-line"></i> Exam Results
       </button>
     </div>
 
-    <!-- ===== RESULTS CONTENT ===== -->
     <div class="tab-content active" id="results-content">
       <div class="results-section">
         <div class="loading" id="loading-results">
@@ -534,7 +526,6 @@
       </div>
     </div>
 
-    <!-- Developer Contact -->
     <div class="developer-contact">
       <h3><i class="fas fa-laptop-code"></i> Website Development Contact</h3>
       <p>This website was developed by:</p>
@@ -758,7 +749,7 @@
       document.querySelectorAll('.result-item').forEach(item => item.classList.remove('active'));
     }
 
-    // ===== 🔥 GET RESULT FUNCTION - UPDATED =====
+    // ===== 🔥 GET RESULT FUNCTION - UPDATED WITH FALLBACK VALUES =====
     function getResult() {
       const rollInput = document.getElementById('roll-input').value.trim();
       if (!rollInput) {
@@ -802,13 +793,38 @@
       else if (totalPercent >= 45) division = 'SECOND DIVISION';
       else if (totalPercent >= 33) division = 'THIRD DIVISION';
       
-      // 🔥 Create URL parameters
+      // 🔥 NEW: Get class from exam data or student data (with fallback)
+      const studentClass = selectedExamData.class || student.class || 'Not Specified';
+      
+      // 🔥 NEW: Exam Date - use from data or fallback
+      let examDate = 'Not Specified';
+      if (selectedExamData.examDate) {
+        examDate = selectedExamData.examDate;
+      } else if (selectedExamData.createdAt) {
+        try {
+          const date = selectedExamData.createdAt.toDate ? 
+            selectedExamData.createdAt.toDate() : 
+            new Date(selectedExamData.createdAt);
+          examDate = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+        } catch(e) {
+          examDate = '15 Jan 2025';
+        }
+      } else {
+        examDate = '15 Jan 2025';
+      }
+      
+      // 🔥 NEW: Session - use from data or fallback
+      const examSession = selectedExamData.session || '2026-2027';
+      
+      // 🔥 Create URL parameters with all fields
       const params = new URLSearchParams();
       params.set('name', student.name);
       params.set('roll', student.rollNo);
       params.set('father', student.fatherName || '');
       params.set('exam', selectedExamData.examName);
-      params.set('date', new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }));
+      params.set('date', examDate);
+      params.set('class', studentClass);
+      params.set('session', examSession);
       params.set('subjects', JSON.stringify(subjects));
       params.set('marks', JSON.stringify(marks));
       params.set('percent', totalPercent);
