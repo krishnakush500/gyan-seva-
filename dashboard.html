@@ -29,7 +29,7 @@
       min-height:100vh;
     }
 
-    /* ===== HEADER - ONLY ONE PLACE ===== */
+    /* ===== HEADER ===== */
     .header { 
       background:linear-gradient(to right,#1a237e,#283593,#303f9f); 
       color:white; 
@@ -69,27 +69,14 @@
     .location { 
       font-size:1rem; 
       opacity: 0.9;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .director-info-header {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin-top: 5px;
-    }
-    .director-photo-sm {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.3);
-      object-fit: cover;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .director-photo-sm:hover {
-      border-color: #ffc107;
-      transform: scale(1.05);
+      margin-top: 4px;
     }
     .director-details-header {
       display: flex;
@@ -621,7 +608,7 @@
   </div>
 
   <div class="container">
-    <!-- ===== HEADER - ONLY ONE PLACE ===== -->
+    <!-- ===== HEADER - ONLY LOGO, NAME, LOCATION, DIRECTOR NAME & PHONE ===== -->
     <div class="header">
       <div class="header-content">
         <img id="schoolLogo" class="header-logo" src="https://via.placeholder.com/80?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/80?text=Logo'">
@@ -629,7 +616,6 @@
           <h1 class="school-name" id="schoolName">Loading...</h1>
           <p class="location" id="schoolLocation">📍 Loading location...</p>
           <div class="director-info-header">
-            <img id="directorPhoto" class="director-photo-sm" src="https://via.placeholder.com/45?text=DP" alt="Director" onclick="openPasswordModal()" onerror="this.src='https://via.placeholder.com/45?text=DP'">
             <div class="director-details-header">
               <span class="label" id="directorTitle">CEO & FOUNDER</span>
               <span class="name" id="directorName">Loading...</span>
@@ -768,7 +754,6 @@
           const director = schoolData.director || 'Director';
           const phone = schoolData.phone || 'N/A';
           const logo = schoolData.logoUrl || '';
-          const directorPhoto = schoolData.directorPhoto || schoolData.logoUrl || '';
           
           document.getElementById('schoolName').textContent = name;
           document.getElementById('schoolLocation').textContent = '📍 ' + location;
@@ -778,9 +763,6 @@
           
           if (logo) {
             document.getElementById('schoolLogo').src = logo;
-          }
-          if (directorPhoto) {
-            document.getElementById('directorPhoto').src = directorPhoto;
           }
           
           // Load notices
