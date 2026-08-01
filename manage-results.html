@@ -7,135 +7,186 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== SAME STYLES AS BEFORE ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f0f2f5; min-height: 100vh; }
+        body { background: #f0f2f5; min-height: 100vh; font-size: 14px; }
         
         .topbar {
             background: linear-gradient(135deg, #1a237e, #283593);
             color: white;
-            padding: 14px 24px;
+            padding: 10px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 8px;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
-        .topbar .brand { font-size: 1.3rem; font-weight: 700; }
+        .topbar .brand { font-size: 1rem; font-weight: 700; }
         .topbar .brand i { color: #ffc107; }
-        .topbar .user-info { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .topbar .user-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .topbar .user-info .institute-name { 
-            font-size: 0.85rem; 
+            font-size: 0.7rem; 
             opacity: 0.9; 
             background: rgba(255,255,255,0.12); 
-            padding: 4px 14px; 
+            padding: 3px 12px; 
             border-radius: 30px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
-        .topbar .user-info .institute-name img {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .topbar .user-info span { font-size: 0.85rem; opacity: 0.9; }
+        .topbar .user-info .institute-name img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
+        .topbar .user-info span { font-size: 0.75rem; opacity: 0.9; }
         .topbar .logout-btn {
             background: rgba(255,255,255,0.15);
             color: white;
             border: 1px solid rgba(255,255,255,0.3);
-            padding: 6px 16px;
+            padding: 4px 12px;
             border-radius: 30px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             transition: 0.3s;
+            text-decoration: none;
         }
-        .topbar .logout-btn:hover { background: rgba(255,255,255,0.25); }
+        .topbar .logout-btn:hover { background: rgba(255,255,255,0.25); color: white; }
         
-        .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+        .container { max-width: 100%; margin: 0 auto; padding: 12px 10px; }
         .section { display: none; }
         .section.active { display: block; }
         
         .welcome-card {
             background: white;
-            border-radius: 20px;
-            padding: 20px 28px;
-            margin-bottom: 24px;
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 12px;
             flex-wrap: wrap;
         }
-        .welcome-card .institute-logo {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #e8eafe;
-        }
-        .welcome-card .welcome-text h2 { font-size: 1.3rem; color: #1a237e; margin: 0; }
-        .welcome-card .welcome-text p { color: #64748b; font-size: 0.9rem; margin: 0; }
+        .welcome-card .institute-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e8eafe; }
+        .welcome-card .welcome-text h2 { font-size: 1rem; color: #1a237e; margin: 0; }
+        .welcome-card .welcome-text p { color: #64748b; font-size: 0.75rem; margin: 0; }
         
-        .subject-box {
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-        .student-row:hover { background-color: #f8f9fa; }
+        /* ===== MOBILE-FRIENDLY CARDS ===== */
+        .card { border-radius: 12px; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .card-header { padding: 10px 14px; font-size: 0.85rem; font-weight: 600; }
+        .card-body { padding: 12px 14px; }
         
-        .success-message {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
+        .subject-box { background: #f8f9fa; border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+        .form-label { font-size: 0.75rem; font-weight: 600; margin-bottom: 2px; }
+        .form-control, .form-select { font-size: 0.8rem; padding: 6px 10px; border-radius: 8px; }
+        .form-control-sm, .form-select-sm { font-size: 0.75rem; padding: 4px 8px; }
+        .btn { font-size: 0.78rem; padding: 6px 14px; border-radius: 8px; font-weight: 600; }
+        .btn-sm { font-size: 0.7rem; padding: 4px 10px; }
+        .btn-lg { font-size: 0.9rem; padding: 8px 20px; }
+        
+        .demo-badge { background: #10b981; color: white; padding: 1px 8px; border-radius: 30px; font-size: 0.55rem; margin-left: 6px; }
+        .back-to-panel-btn { background: #6c757d; color: white; border: none; border-radius: 50px; padding: 4px 12px; font-size: 0.7rem; text-decoration: none; }
+        .back-to-panel-btn:hover { background: #5a6268; color: white; }
+        
+        .success-message { position: fixed; bottom: 15px; right: 15px; z-index: 1000; font-size: 0.8rem; padding: 8px 16px; }
         .published-toast { background-color: #0d6efd !important; }
-        .save-changes-btn {
-            background-color: #0dcaf0;
-            border-color: #0dcaf0;
-            color: white;
-        }
-        .save-changes-btn:hover {
-            background-color: #0bb6d9;
-            border-color: #0bb6d9;
-            color: white;
-        }
+        .save-changes-btn { background-color: #0dcaf0; border-color: #0dcaf0; color: white; }
+        .save-changes-btn:hover { background-color: #0bb6d9; border-color: #0bb6d9; color: white; }
         
-        .demo-badge {
-            background: #10b981;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 30px;
-            font-size: 0.6rem;
-            margin-left: 8px;
+        /* ===== STEP 1 SUMMARY - TOP OF STEP 2 ===== */
+        .exam-summary {
+            background: #f0f7ff;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            border: 1px solid #dce8f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 0.75rem;
         }
-        
-        .back-to-panel-btn {
-            background: #6c757d;
-            color: white;
+        .exam-summary .info { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+        .exam-summary .info span { color: #1a237e; }
+        .exam-summary .info strong { color: #0f172a; font-weight: 600; }
+        .exam-summary .edit-btn {
+            background: none;
             border: none;
-            border-radius: 50px;
-            padding: 8px 20px;
-            font-weight: 500;
-            text-decoration: none;
+            color: #1a237e;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            transition: 0.3s;
         }
-        .back-to-panel-btn:hover {
-            background: #5a6268;
-            color: white;
+        .exam-summary .edit-btn:hover { background: #dce8f5; }
+        
+        /* ===== STUDENT LIST - COMPACT ===== */
+        .student-list-container {
+            max-height: 250px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid #eef2f7;
+        }
+        .student-list-container::-webkit-scrollbar { width: 4px; }
+        .student-list-container::-webkit-scrollbar-thumb { background: #1a237e; border-radius: 10px; }
+        
+        .student-compact {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 10px;
+            border-bottom: 1px solid #eef2f7;
+            font-size: 0.75rem;
+            transition: 0.2s;
+        }
+        .student-compact:hover { background: #f5f8ff; }
+        .student-compact:last-child { border-bottom: none; }
+        .student-compact .info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .student-compact .info .roll { font-weight: 700; color: #1a237e; min-width: 30px; }
+        .student-compact .info .name { font-weight: 600; color: #0f172a; }
+        .student-compact .info .marks-text { color: #64748b; font-size: 0.65rem; }
+        .student-compact .actions { display: flex; gap: 4px; }
+        .student-compact .actions button { background: none; border: none; padding: 2px 6px; cursor: pointer; font-size: 0.7rem; border-radius: 4px; transition: 0.2s; }
+        .student-compact .actions .edit-btn:hover { background: #fef3c7; color: #d97706; }
+        .student-compact .actions .del-btn:hover { background: #fee2e2; color: #dc2626; }
+        .student-empty { padding: 20px; text-align: center; color: #94a3b8; font-size: 0.8rem; }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .topbar { padding: 8px 12px; }
+            .topbar .brand { font-size: 0.85rem; }
+            .topbar .user-info span { font-size: 0.65rem; }
+            .container { padding: 8px 6px; }
+            .welcome-card { padding: 10px 12px; }
+            .welcome-card .welcome-text h2 { font-size: 0.9rem; }
+            
+            .card-body { padding: 10px 12px; }
+            .form-control, .form-select { font-size: 0.75rem; padding: 5px 8px; }
+            .btn { font-size: 0.7rem; padding: 5px 10px; }
+            .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
+            .student-compact { font-size: 0.65rem; padding: 4px 8px; }
+            .student-compact .info .marks-text { font-size: 0.55rem; }
         }
         
-        @media (max-width: 768px) {
-            .topbar { padding: 12px 16px; }
-            .topbar .brand { font-size: 1rem; }
-            .topbar .user-info span { font-size: 0.75rem; }
-            .welcome-card { flex-direction: column; text-align: center; }
+        @media (max-width: 480px) {
+            .topbar .user-info .institute-name { font-size: 0.6rem; padding: 2px 8px; }
+            .student-compact { flex-wrap: wrap; gap: 4px; }
+            .student-compact .info { gap: 6px; }
+            .exam-summary { flex-direction: column; align-items: stretch; }
+            .exam-summary .edit-btn { align-self: flex-end; }
+        }
+        
+        @media print {
+            body { background: white; }
+            .topbar, .action-buttons { display: none; }
+            .result-card { box-shadow: none; border: 1px solid #ddd; }
         }
     </style>
 </head>
@@ -149,48 +200,45 @@
             <i class="fas fa-school"></i> <span id="instituteName">Loading...</span>
         </span>
         <span><i class="fas fa-user-circle"></i> <span id="teacherName">Teacher</span></span>
-        <a href="teacher-panel.html" class="logout-btn" style="text-decoration:none;"><i class="fas fa-arrow-left"></i> Back to Panel</a>
-        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <a href="teacher-panel.html" class="logout-btn"><i class="fas fa-arrow-left"></i> Panel</a>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
     </div>
 </div>
 
 <div class="container">
     <!-- Welcome Card -->
     <div class="welcome-card">
-        <img id="instituteLogo" class="institute-logo" src="https://via.placeholder.com/60?text=Logo" alt="Institute Logo" onerror="this.src='https://via.placeholder.com/60?text=Logo'">
+        <img id="instituteLogo" class="institute-logo" src="https://via.placeholder.com/40?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/40?text=Logo'">
         <div class="welcome-text">
             <h2>📊 Manage Results — <span id="welcomeInstitute">Loading...</span></h2>
-            <p>Create, edit and publish exam results for your institute</p>
+            <p>Create, edit and publish exam results</p>
         </div>
     </div>
 
     <!-- ===== DASHBOARD CARDS ===== -->
     <div id="dashboardSection" class="section active">
-        <div class="row">
-            <div class="col-md-4 mb-3">
+        <div class="row g-2">
+            <div class="col-4">
                 <div class="card text-center h-100">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-plus-circle text-primary"></i> Create Result</h5>
-                        <p class="card-text">Create a new exam result with subjects & marks</p>
-                        <button id="createResultBtn" class="btn btn-primary">Go</button>
+                        <h6><i class="fas fa-plus-circle text-primary"></i> Create</h6>
+                        <button id="createResultBtn" class="btn btn-primary btn-sm mt-1">Go</button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-4">
                 <div class="card text-center h-100">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-file-draft text-warning"></i> Draft Results</h5>
-                        <p class="card-text">View and edit saved draft results</p>
-                        <button id="draftResultsBtn" class="btn btn-warning">Go</button>
+                        <h6><i class="fas fa-file-draft text-warning"></i> Drafts</h6>
+                        <button id="draftResultsBtn" class="btn btn-warning btn-sm mt-1">Go</button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-4">
                 <div class="card text-center h-100">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-history text-info"></i> Published Results</h5>
-                        <p class="card-text">View, edit or delete published results</p>
-                        <button id="oldResultsBtn" class="btn btn-info">Go</button>
+                        <h6><i class="fas fa-history text-info"></i> Published</h6>
+                        <button id="oldResultsBtn" class="btn btn-info btn-sm mt-1">Go</button>
                     </div>
                 </div>
             </div>
@@ -199,109 +247,129 @@
 
     <!-- ===== CREATE RESULT SECTION ===== -->
     <div id="createResultSection" class="section">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="fas fa-plus-circle text-primary"></i> Create Result</h2>
-            <button id="backToDashboardBtn" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0"><i class="fas fa-plus-circle text-primary"></i> Create Result</h5>
+            <button id="backToDashboardBtn" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></button>
         </div>
         
         <!-- Step 1: Exam Setup -->
         <div id="examSetupStep">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4>Step 1: Exam Setup</h4>
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white py-2">
+                    <h6 class="mb-0">📋 Step 1: Exam Setup</h6>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label for="examName" class="form-label">Exam Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="examName" placeholder="e.g., Final Examination 2025" required>
+                    <!-- Exam Name -->
+                    <div class="mb-2">
+                        <label class="form-label">Exam Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="examName" placeholder="e.g., Final Exam 2025">
                     </div>
-                    <div class="mb-3">
-                        <label for="examCentre" class="form-label">Examination Centre</label>
-                        <input type="text" class="form-control" id="examCentre" placeholder="e.g., GYAN SEVA, BEGUSARAI">
+                    
+                    <!-- Class -->
+                    <div class="mb-2">
+                        <label class="form-label">Class <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="examClass" placeholder="e.g., 10th, 12th">
                     </div>
-                    <div class="mb-3">
-                        <label for="rollCode" class="form-label">Roll Code</label>
-                        <input type="text" class="form-control" id="rollCode" value="55075">
+                    
+                    <!-- Session Dropdown -->
+                    <div class="mb-2">
+                        <label class="form-label">Session <span class="text-danger">*</span></label>
+                        <select class="form-select" id="examSession">
+                            <option value="2026-2027">2026-2027</option>
+                            <option value="2027-2028">2027-2028</option>
+                            <option value="2028-2029">2028-2029</option>
+                            <option value="2029-2030">2029-2030</option>
+                        </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="subjectCount" class="form-label">Number of Subjects <span class="text-danger">*</span></label>
+                    
+                    <!-- Exam Date -->
+                    <div class="mb-2">
+                        <label class="form-label">Exam Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="examDate">
+                    </div>
+                    
+                    <!-- Number of Subjects -->
+                    <div class="mb-2">
+                        <label class="form-label">Number of Subjects <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="subjectCount" min="1" placeholder="e.g., 5">
-                            <button id="generateSubjectFieldsBtn" class="btn btn-primary">Generate Subject Fields</button>
+                            <button id="generateSubjectFieldsBtn" class="btn btn-primary btn-sm">Generate</button>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div id="subjectFields" class="mb-4"></div>
+            <div id="subjectFields" class="mb-3"></div>
             
-            <div id="step1NextBtn" class="d-none">
-                <button id="nextToStudentEntryBtn" class="btn btn-success btn-lg"><i class="fas fa-arrow-right"></i> Next →</button>
+            <div id="step1NextBtn" class="d-none text-center">
+                <button id="nextToStudentEntryBtn" class="btn btn-success btn-sm"><i class="fas fa-arrow-right"></i> Next →</button>
             </div>
         </div>
         
         <!-- Step 2: Student Marks Entry -->
         <div id="studentEntryStep" class="d-none">
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <h4>Step 2: Student Marks Entry</h4>
+            <!-- 🔥 Exam Summary - Step 1 Data -->
+            <div class="exam-summary" id="examSummary">
+                <div class="info">
+                    <span><strong id="summaryExamName">-</strong></span>
+                    <span>📚 <strong id="summaryClass">-</strong></span>
+                    <span>📅 <strong id="summaryDate">-</strong></span>
+                    <span>📆 <strong id="summarySession">-</strong></span>
+                    <span>📋 <strong id="summarySubjects">0</strong> subjects</span>
+                </div>
+                <button class="edit-btn" id="editExamDetailsBtn" title="Edit Exam Details">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+            </div>
+            
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white py-2">
+                    <h6 class="mb-0">👨‍🎓 Step 2: Add Students</h6>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <label for="rollNo" class="form-label">Roll No <span class="text-danger">*</span></label>
+                    <div class="row g-2">
+                        <div class="col-3">
+                            <label class="form-label">Roll</label>
                             <div class="input-group">
                                 <input type="number" class="form-control" id="rollNo" min="1" value="1">
-                                <button class="btn btn-outline-secondary" type="button" id="incrementRollBtn"><i class="fas fa-plus"></i></button>
+                                <button class="btn btn-outline-secondary" type="button" id="incrementRollBtn" style="padding:4px 8px;"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="studentName" class="form-label">Student Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="studentName" placeholder="Enter name">
+                        <div class="col-5">
+                            <label class="form-label">Student Name</label>
+                            <input type="text" class="form-control" id="studentName" placeholder="Name">
                         </div>
-                        <div class="col-md-5 mb-3">
-                            <label for="fatherName" class="form-label">Father's Name</label>
-                            <input type="text" class="form-control" id="fatherName" placeholder="Enter father's name">
+                        <div class="col-4">
+                            <label class="form-label">Father</label>
+                            <input type="text" class="form-control" id="fatherName" placeholder="Father">
                         </div>
                     </div>
                     
-                    <div id="marksFields" class="mb-3"></div>
+                    <div id="marksFields" class="mt-2"></div>
                     
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button id="addStudentBtn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Add Student</button>
-                        <button id="updateStudentBtn" class="btn btn-warning d-none"><i class="fas fa-edit"></i> Update Student</button>
-                        <button id="cancelEditBtn" class="btn btn-secondary d-none"><i class="fas fa-times"></i> Cancel</button>
+                    <div class="d-flex gap-1 flex-wrap mt-2">
+                        <button id="addStudentBtn" class="btn btn-primary btn-sm"><i class="fas fa-user-plus"></i> Add</button>
+                        <button id="updateStudentBtn" class="btn btn-warning btn-sm d-none"><i class="fas fa-edit"></i> Update</button>
+                        <button id="cancelEditBtn" class="btn btn-secondary btn-sm d-none">Cancel</button>
                     </div>
                 </div>
             </div>
             
+            <!-- 🔥 Student List - Compact with Scroll -->
             <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h4>Students List</h4>
+                <div class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">📋 Students (<span id="studentCount">0</span>)</h6>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Roll No</th>
-                                    <th>Name</th>
-                                    <th>Father Name</th>
-                                    <th>Marks</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="studentsTableBody">
-                                <!-- Student rows will be added here dynamically -->
-                            </tbody>
-                        </table>
+                <div class="card-body p-1">
+                    <div class="student-list-container" id="studentListContainer">
+                        <div id="studentsList" class="student-empty">No students added yet</div>
                     </div>
                     
-                    <div class="d-flex gap-2 flex-wrap mt-3">
-                        <button id="saveDraftBtn" class="btn btn-warning"><i class="fas fa-save"></i> Save as Draft</button>
-                        <button id="saveChangesBtn" class="btn save-changes-btn d-none"><i class="fas fa-check"></i> Save Changes</button>
-                        <button id="publishResultBtn" class="btn btn-success"><i class="fas fa-globe"></i> Publish Result</button>
-                        <button id="dontSaveBtn" class="btn btn-secondary d-none"><i class="fas fa-times"></i> Don't Save</button>
+                    <div class="d-flex gap-1 flex-wrap mt-2 p-1">
+                        <button id="saveDraftBtn" class="btn btn-warning btn-sm"><i class="fas fa-save"></i> Draft</button>
+                        <button id="saveChangesBtn" class="btn save-changes-btn btn-sm d-none"><i class="fas fa-check"></i> Save</button>
+                        <button id="publishResultBtn" class="btn btn-success btn-sm"><i class="fas fa-globe"></i> Publish</button>
+                        <button id="dontSaveBtn" class="btn btn-secondary btn-sm d-none">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -310,20 +378,20 @@
 
     <!-- ===== DRAFT RESULTS SECTION ===== -->
     <div id="draftResultsSection" class="section">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="fas fa-file-draft text-warning"></i> Draft Results</h2>
-            <button id="backToDashboardBtn2" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0"><i class="fas fa-file-draft text-warning"></i> Drafts</h5>
+            <button id="backToDashboardBtn2" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></button>
         </div>
-        <div id="draftResultsList" class="row"></div>
+        <div id="draftResultsList" class="row g-2"></div>
     </div>
 
     <!-- ===== PUBLISHED RESULTS SECTION ===== -->
     <div id="oldResultsSection" class="section">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="fas fa-history text-info"></i> Published Results</h2>
-            <button id="backToDashboardBtn3" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0"><i class="fas fa-history text-info"></i> Published</h5>
+            <button id="backToDashboardBtn3" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></button>
         </div>
-        <div id="oldResultsList" class="row"></div>
+        <div id="oldResultsList" class="row g-2"></div>
     </div>
 </div>
 
@@ -331,14 +399,14 @@
 <div class="modal fade" id="resultModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="resultModalTitle">Result Details</h5>
+            <div class="modal-header py-2">
+                <h6 class="modal-title" id="resultModalTitle">Result Details</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="resultDetails"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="downloadPdfBtn"><i class="fas fa-download"></i> Download PDF</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <div class="modal-body" id="resultDetails" style="font-size:0.8rem;"></div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-danger btn-sm" id="downloadPdfBtn"><i class="fas fa-download"></i> PDF</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -346,27 +414,19 @@
 
 <!-- ===== EDIT PUBLISHED CONFIRM MODAL ===== -->
 <div class="modal fade" id="editPublishedConfirmModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-sm">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirm Edit</h5>
+            <div class="modal-header py-2">
+                <h6 class="modal-title">Confirm Edit</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <p>You are editing a published result. What would you like to do?</p>
-                <div class="alert alert-info">
-                    <strong>Note:</strong>
-                    <ul class="mb-0">
-                        <li><strong>Save Changes:</strong> Update the existing result directly</li>
-                        <li><strong>Don't Save:</strong> Go back without saving changes</li>
-                        <li><strong>Save as Draft:</strong> Save changes as a new draft</li>
-                    </ul>
+            <div class="modal-body" style="font-size:0.8rem;">
+                <p>What would you like to do?</p>
+                <div class="d-flex gap-1 flex-wrap">
+                    <button class="btn btn-secondary btn-sm" id="dontSaveConfirmBtn">Don't Save</button>
+                    <button class="btn btn-warning btn-sm" id="saveDraftConfirmBtn">Save as Draft</button>
+                    <button class="btn save-changes-btn btn-sm" id="saveChangesConfirmBtn">Save Changes</button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="dontSaveConfirmBtn" data-bs-dismiss="modal">Don't Save</button>
-                <button type="button" class="btn btn-warning" id="saveDraftConfirmBtn" data-bs-dismiss="modal">Save as Draft</button>
-                <button type="button" class="btn save-changes-btn" id="saveChangesConfirmBtn" data-bs-dismiss="modal">Save Changes</button>
             </div>
         </div>
     </div>
@@ -375,13 +435,13 @@
 <!-- ===== TOASTS ===== -->
 <div id="successToast" class="toast align-items-center text-bg-success border-0 success-message" role="alert">
     <div class="d-flex">
-        <div class="toast-body" id="toastMessage">Successfully Saved!</div>
+        <div class="toast-body" id="toastMessage">Saved!</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
 </div>
 <div id="publishedToast" class="toast align-items-center text-bg-success border-0 success-message published-toast" role="alert" style="display: none;">
     <div class="d-flex">
-        <div class="toast-body">✅ Result Published Successfully!</div>
+        <div class="toast-body">✅ Published!</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
 </div>
@@ -389,11 +449,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script type="module">
-    // ===== COMPLETE RESULT MANAGEMENT LOGIC =====
-    // (Yahan wahi saara code aayega jo aapne pehle banaya tha)
-    // Maine space save karne ke liye yahan short kiya hai,
-    // but aap apna poora result management code yahan paste kar sakte hain
-    
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { 
@@ -411,7 +466,6 @@
         getDoc
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
         authDomain: "gyan-seva.firebaseapp.com",
@@ -426,8 +480,8 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ===== GET SCHOOL ID =====
     let schoolId = null;
+    let schoolData = null;
 
     function getCoachingIdFromURL() {
         const params = new URLSearchParams(window.location.search);
@@ -448,11 +502,11 @@
             const docRef = doc(db, "schools", coachingId);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                const data = docSnap.data();
+                schoolData = docSnap.data();
                 schoolId = coachingId;
-                const name = data.coachingName || 'Institute';
-                const logo = data.logoUrl || '';
-                const director = data.director || 'Teacher';
+                const name = schoolData.coachingName || 'Institute';
+                const logo = schoolData.logoUrl || '';
+                const director = schoolData.director || 'Teacher';
                 
                 document.getElementById('instituteName').textContent = name;
                 document.getElementById('welcomeInstitute').textContent = name;
@@ -474,7 +528,6 @@
     }
     window.logout = logout;
 
-    // ===== INIT =====
     const coachingId = getCoachingIdFromURL() || localStorage.getItem('schoolId');
     loadInstituteFromCoachingId(coachingId);
 
@@ -492,94 +545,788 @@
     const backToDashboardBtn2 = document.getElementById('backToDashboardBtn2');
     const backToDashboardBtn3 = document.getElementById('backToDashboardBtn3');
     
-    // ... (Baki saara result management code yahan aayega)
-    // Aap apna purana code yahan paste kar sakte hain
+    // Step 1 Elements
+    const examSetupStep = document.getElementById('examSetupStep');
+    const studentEntryStep = document.getElementById('studentEntryStep');
+    const examNameInput = document.getElementById('examName');
+    const examClassInput = document.getElementById('examClass');
+    const examSessionSelect = document.getElementById('examSession');
+    const examDateInput = document.getElementById('examDate');
+    const subjectCountInput = document.getElementById('subjectCount');
+    const generateSubjectFieldsBtn = document.getElementById('generateSubjectFieldsBtn');
+    const subjectFields = document.getElementById('subjectFields');
+    const step1NextBtn = document.getElementById('step1NextBtn');
+    const nextToStudentEntryBtn = document.getElementById('nextToStudentEntryBtn');
     
-    // ===== SIMPLE NAVIGATION =====
+    // Step 1 Summary
+    const summaryExamName = document.getElementById('summaryExamName');
+    const summaryClass = document.getElementById('summaryClass');
+    const summaryDate = document.getElementById('summaryDate');
+    const summarySession = document.getElementById('summarySession');
+    const summarySubjects = document.getElementById('summarySubjects');
+    const editExamDetailsBtn = document.getElementById('editExamDetailsBtn');
+    
+    // Step 2 Elements
+    const rollNoInput = document.getElementById('rollNo');
+    const incrementRollBtn = document.getElementById('incrementRollBtn');
+    const studentNameInput = document.getElementById('studentName');
+    const fatherNameInput = document.getElementById('fatherName');
+    const marksFields = document.getElementById('marksFields');
+    const addStudentBtn = document.getElementById('addStudentBtn');
+    const updateStudentBtn = document.getElementById('updateStudentBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const studentsList = document.getElementById('studentsList');
+    const studentCount = document.getElementById('studentCount');
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    const saveChangesBtn = document.getElementById('saveChangesBtn');
+    const publishResultBtn = document.getElementById('publishResultBtn');
+    const dontSaveBtn = document.getElementById('dontSaveBtn');
+    
+    const draftResultsList = document.getElementById('draftResultsList');
+    const oldResultsList = document.getElementById('oldResultsList');
+    
+    const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+    const resultModalTitle = document.getElementById('resultModalTitle');
+    const resultDetails = document.getElementById('resultDetails');
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    
+    const editPublishedConfirmModal = new bootstrap.Modal(document.getElementById('editPublishedConfirmModal'));
+    const dontSaveConfirmBtn = document.getElementById('dontSaveConfirmBtn');
+    const saveDraftConfirmBtn = document.getElementById('saveDraftConfirmBtn');
+    const saveChangesConfirmBtn = document.getElementById('saveChangesConfirmBtn');
+    
+    const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+    const publishedToast = new bootstrap.Toast(document.getElementById('publishedToast'));
+    const toastMessage = document.getElementById('toastMessage');
+
+    // ===== APP STATE =====
+    let subjects = [];
+    let students = [];
+    let editingStudentIndex = null;
+    let editingDraftId = null;
+    let isEditingPublishedResult = false;
+    let editingPublishedResultId = null;
+    let hasChanges = false;
+    let isStep1DataValid = false;
+
     function showSection(section) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         section.classList.add('active');
     }
+
+    function showToast(message) {
+        toastMessage.textContent = message;
+        successToast.show();
+    }
+
+    // ===== NAVIGATION =====
+    createResultBtn.addEventListener('click', () => { resetCreateResultForm(); showSection(createResultSection); });
+    draftResultsBtn.addEventListener('click', () => { loadDraftResults(); showSection(draftResultsSection); });
+    oldResultsBtn.addEventListener('click', () => { loadOldResults(); showSection(oldResultsSection); });
     
-    createResultBtn.addEventListener('click', () => showSection(createResultSection));
-    draftResultsBtn.addEventListener('click', () => { showSection(draftResultsSection); loadDraftResults(); });
-    oldResultsBtn.addEventListener('click', () => { showSection(oldResultsSection); loadOldResults(); });
-    
-    backToDashboardBtn.addEventListener('click', () => showSection(dashboardSection));
+    backToDashboardBtn.addEventListener('click', () => {
+        if (isEditingPublishedResult && hasChanges) {
+            editPublishedConfirmModal.show();
+        } else {
+            resetCreateResultForm();
+            showSection(dashboardSection);
+        }
+    });
     backToDashboardBtn2.addEventListener('click', () => showSection(dashboardSection));
     backToDashboardBtn3.addEventListener('click', () => showSection(dashboardSection));
 
+    // ===== CONFIRM MODAL =====
+    dontSaveConfirmBtn.addEventListener('click', () => { resetCreateResultForm(); showSection(dashboardSection); });
+    saveDraftConfirmBtn.addEventListener('click', () => {
+        if (validateResultData()) saveEditedPublishedResultAsDraft();
+        else showSection(dashboardSection);
+    });
+    saveChangesConfirmBtn.addEventListener('click', () => {
+        if (validateResultData()) updateExistingPublishedResult();
+        else showSection(dashboardSection);
+    });
+
+    // ===== STEP 1: GENERATE SUBJECTS =====
+    generateSubjectFieldsBtn.addEventListener('click', () => {
+        const count = parseInt(subjectCountInput.value);
+        if (count < 1) { alert('Please enter valid number of subjects'); return; }
+        
+        // Validate Step 1 fields
+        if (!examNameInput.value.trim()) { alert('Please enter Exam Name'); return; }
+        if (!examClassInput.value.trim()) { alert('Please enter Class'); return; }
+        if (!examDateInput.value) { alert('Please select Exam Date'); return; }
+        
+        subjectFields.innerHTML = '';
+        subjects = [];
+        
+        for (let i = 0; i < count; i++) {
+            const box = document.createElement('div');
+            box.className = 'subject-box';
+            box.innerHTML = `
+                <div class="row g-1">
+                    <div class="col-7">
+                        <label class="form-label" style="font-size:0.7rem;">Subject ${i+1}</label>
+                        <input type="text" class="form-control form-control-sm subject-name" placeholder="e.g., Math" required>
+                    </div>
+                    <div class="col-5">
+                        <label class="form-label" style="font-size:0.7rem;">Total</label>
+                        <input type="number" class="form-control form-control-sm subject-total" min="1" value="100" required>
+                    </div>
+                </div>
+            `;
+            subjectFields.appendChild(box);
+        }
+        step1NextBtn.classList.remove('d-none');
+    });
+
+    // ===== STEP 1: NEXT =====
+    nextToStudentEntryBtn.addEventListener('click', () => {
+        const nameInputs = document.querySelectorAll('.subject-name');
+        const totalInputs = document.querySelectorAll('.subject-total');
+        subjects = [];
+        let valid = true;
+        
+        for (let i = 0; i < nameInputs.length; i++) {
+            const name = nameInputs[i].value.trim();
+            const total = parseInt(totalInputs[i].value);
+            if (!name || isNaN(total) || total < 1) { valid = false; break; }
+            subjects.push({ name, total });
+        }
+        
+        if (!valid) { alert('Please fill all subject fields correctly'); return; }
+        
+        // Update summary
+        updateSummary();
+        
+        generateMarksFields();
+        examSetupStep.classList.add('d-none');
+        studentEntryStep.classList.remove('d-none');
+        isStep1DataValid = true;
+        setupChangeTracking();
+    });
+
+    // ===== UPDATE SUMMARY =====
+    function updateSummary() {
+        summaryExamName.textContent = examNameInput.value.trim() || '-';
+        summaryClass.textContent = examClassInput.value.trim() || '-';
+        summaryDate.textContent = examDateInput.value ? new Date(examDateInput.value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
+        summarySession.textContent = examSessionSelect.value || '-';
+        summarySubjects.textContent = subjects.length || 0;
+    }
+
+    // ===== EDIT EXAM DETAILS (Pencil Icon) =====
+    editExamDetailsBtn.addEventListener('click', () => {
+        if (confirm('Edit exam details? This will reset student data.')) {
+            studentEntryStep.classList.add('d-none');
+            examSetupStep.classList.remove('d-none');
+            students = [];
+            renderStudents();
+            isStep1DataValid = false;
+        }
+    });
+
+    function generateMarksFields() {
+        marksFields.innerHTML = '<label class="form-label" style="font-size:0.7rem;">Enter Marks</label>';
+        subjects.forEach(subject => {
+            const div = document.createElement('div');
+            div.className = 'mb-1';
+            div.innerHTML = `
+                <div class="row g-1 align-items-center">
+                    <div class="col-5">
+                        <span style="font-size:0.75rem;font-weight:600;">${subject.name}</span>
+                    </div>
+                    <div class="col-5">
+                        <input type="number" class="form-control form-control-sm subject-mark" data-subject="${subject.name}" min="0" max="${subject.total}" placeholder="Marks">
+                    </div>
+                    <div class="col-2" style="font-size:0.6rem;color:#94a3b8;">/${subject.total}</div>
+                </div>
+            `;
+            marksFields.appendChild(div);
+        });
+    }
+
+    incrementRollBtn.addEventListener('click', () => {
+        rollNoInput.value = parseInt(rollNoInput.value || 1) + 1;
+    });
+
+    // ===== ADD STUDENT =====
+    addStudentBtn.addEventListener('click', () => {
+        const rollNo = parseInt(rollNoInput.value);
+        const name = studentNameInput.value.trim();
+        const fatherName = fatherNameInput.value.trim();
+        
+        if (!name) { alert('Please enter student name'); return; }
+        
+        const markInputs = document.querySelectorAll('.subject-mark');
+        const marks = {};
+        let valid = true;
+        
+        markInputs.forEach(input => {
+            const subjectName = input.dataset.subject;
+            const mark = parseInt(input.value);
+            if (isNaN(mark) || mark < 0) { valid = false; return; }
+            const subject = subjects.find(s => s.name === subjectName);
+            if (mark > subject.total) {
+                alert(`Marks for ${subjectName} cannot exceed ${subject.total}`);
+                valid = false;
+                return;
+            }
+            marks[subjectName] = mark;
+        });
+        if (!valid) return;
+        
+        students.push({ rollNo, name, fatherName, marks });
+        renderStudents();
+        
+        studentNameInput.value = '';
+        fatherNameInput.value = '';
+        markInputs.forEach(input => input.value = '');
+        rollNoInput.value = rollNo + 1;
+        hasChanges = true;
+        updateButtonVisibility();
+        showToast('Student added');
+    });
+
+    // ===== RENDER STUDENTS - COMPACT =====
+    function renderStudents() {
+        const container = document.getElementById('studentsList');
+        studentCount.textContent = students.length;
+        
+        if (students.length === 0) {
+            container.innerHTML = '<div class="student-empty">No students added yet</div>';
+            return;
+        }
+        
+        let html = '';
+        students.forEach((s, idx) => {
+            let marksText = subjects.map(sub => `${sub.name}:${s.marks[sub.name]||0}`).join(' ');
+            html += `
+                <div class="student-compact">
+                    <div class="info">
+                        <span class="roll">#${s.rollNo}</span>
+                        <span class="name">${s.name}</span>
+                        <span class="marks-text">${marksText}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="edit-btn" onclick="editStudent(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="del-btn" onclick="deleteStudent(${idx})"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // ===== EDIT STUDENT =====
+    window.editStudent = function(index) {
+        const s = students[index];
+        editingStudentIndex = index;
+        rollNoInput.value = s.rollNo;
+        studentNameInput.value = s.name;
+        fatherNameInput.value = s.fatherName || '';
+        document.querySelectorAll('.subject-mark').forEach(input => {
+            input.value = s.marks[input.dataset.subject] || 0;
+        });
+        addStudentBtn.classList.add('d-none');
+        updateStudentBtn.classList.remove('d-none');
+        cancelEditBtn.classList.remove('d-none');
+    };
+
+    updateStudentBtn.addEventListener('click', () => {
+        if (editingStudentIndex === null) return;
+        const rollNo = parseInt(rollNoInput.value);
+        const name = studentNameInput.value.trim();
+        const fatherName = fatherNameInput.value.trim();
+        if (!name) { alert('Enter name'); return; }
+        
+        const markInputs = document.querySelectorAll('.subject-mark');
+        const marks = {};
+        let valid = true;
+        markInputs.forEach(input => {
+            const subjectName = input.dataset.subject;
+            const mark = parseInt(input.value);
+            if (isNaN(mark) || mark < 0) { valid = false; return; }
+            const subject = subjects.find(s => s.name === subjectName);
+            if (mark > subject.total) {
+                alert(`Marks for ${subjectName} cannot exceed ${subject.total}`);
+                valid = false;
+                return;
+            }
+            marks[subjectName] = mark;
+        });
+        if (!valid) return;
+        
+        students[editingStudentIndex] = { rollNo, name, fatherName, marks };
+        renderStudents();
+        cancelEdit();
+        hasChanges = true;
+        updateButtonVisibility();
+        showToast('Student updated');
+    });
+
+    cancelEditBtn.addEventListener('click', cancelEdit);
+    function cancelEdit() {
+        editingStudentIndex = null;
+        studentNameInput.value = '';
+        fatherNameInput.value = '';
+        document.querySelectorAll('.subject-mark').forEach(input => input.value = '');
+        addStudentBtn.classList.remove('d-none');
+        updateStudentBtn.classList.add('d-none');
+        cancelEditBtn.classList.add('d-none');
+    }
+
+    window.deleteStudent = function(index) {
+        if (confirm('Delete this student?')) {
+            students.splice(index, 1);
+            renderStudents();
+            hasChanges = true;
+            updateButtonVisibility();
+            showToast('Deleted');
+        }
+    };
+
+    function setupChangeTracking() {
+        const inputs = [examNameInput, examClassInput, examDateInput, studentNameInput, fatherNameInput];
+        inputs.forEach(input => {
+            if (input) input.addEventListener('input', () => { hasChanges = true; updateButtonVisibility(); });
+        });
+        document.querySelectorAll('.subject-mark').forEach(input => {
+            input.addEventListener('input', () => { hasChanges = true; updateButtonVisibility(); });
+        });
+    }
+
+    function updateButtonVisibility() {
+        if (isEditingPublishedResult) {
+            saveDraftBtn.classList.add('d-none');
+            publishResultBtn.classList.add('d-none');
+            saveChangesBtn.classList.remove('d-none');
+            dontSaveBtn.classList.remove('d-none');
+        } else {
+            saveDraftBtn.classList.remove('d-none');
+            publishResultBtn.classList.remove('d-none');
+            saveChangesBtn.classList.add('d-none');
+            dontSaveBtn.classList.add('d-none');
+        }
+    }
+
+    function validateResultData() {
+        if (!examNameInput.value.trim()) { alert('Please enter exam name'); return false; }
+        if (!examClassInput.value.trim()) { alert('Please enter class'); return false; }
+        if (!examDateInput.value) { alert('Please select exam date'); return false; }
+        if (students.length === 0) { alert('Please add at least one student'); return false; }
+        return true;
+    }
+
+    function resetCreateResultForm() {
+        examNameInput.value = '';
+        examClassInput.value = '';
+        examSessionSelect.value = '2026-2027';
+        examDateInput.value = '';
+        subjectCountInput.value = '';
+        subjectFields.innerHTML = '';
+        step1NextBtn.classList.add('d-none');
+        examSetupStep.classList.remove('d-none');
+        studentEntryStep.classList.add('d-none');
+        students = [];
+        renderStudents();
+        editingDraftId = null;
+        isEditingPublishedResult = false;
+        editingPublishedResultId = null;
+        hasChanges = false;
+        isStep1DataValid = false;
+        cancelEdit();
+        updateButtonVisibility();
+    }
+
+    // ===== SAVE DRAFT =====
+    saveDraftBtn.addEventListener('click', async () => {
+        if (!validateResultData()) return;
+        if (!schoolId) { alert('Institute not found'); return; }
+        try {
+            const data = {
+                examName: examNameInput.value,
+                class: examClassInput.value,
+                session: examSessionSelect.value,
+                examDate: examDateInput.value,
+                subjects,
+                students,
+                createdAt: serverTimestamp()
+            };
+            const ref = collection(db, "schools", schoolId, "draft_results");
+            if (editingDraftId) {
+                await updateDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId), data);
+                showToast('Draft updated!');
+            } else {
+                await addDoc(ref, data);
+                showToast('Draft saved!');
+            }
+            resetCreateResultForm();
+            showSection(dashboardSection);
+        } catch(error) {
+            alert('Error: ' + error.message);
+        }
+    });
+
+    // ===== PUBLISH RESULT =====
+    publishResultBtn.addEventListener('click', async () => {
+        if (!validateResultData()) return;
+        if (!schoolId) { alert('Institute not found'); return; }
+        if (isEditingPublishedResult) {
+            alert('Please use "Save Changes" button.');
+            return;
+        }
+        try {
+            const data = {
+                examName: examNameInput.value,
+                class: examClassInput.value,
+                session: examSessionSelect.value,
+                examDate: examDateInput.value,
+                subjects,
+                students,
+                createdAt: serverTimestamp(),
+                isDemo: false
+            };
+            await addDoc(collection(db, "schools", schoolId, "results"), data);
+            if (editingDraftId) {
+                await deleteDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId));
+            }
+            publishedToast.show();
+            resetCreateResultForm();
+            showSection(dashboardSection);
+        } catch(error) {
+            alert('Error: ' + error.message);
+        }
+    });
+
+    async function updateExistingPublishedResult() {
+        if (!schoolId || !editingPublishedResultId) return;
+        try {
+            const data = {
+                examName: examNameInput.value,
+                class: examClassInput.value,
+                session: examSessionSelect.value,
+                examDate: examDateInput.value,
+                subjects,
+                students,
+                updatedAt: serverTimestamp()
+            };
+            await updateDoc(doc(db, "schools", schoolId, "results", editingPublishedResultId), data);
+            showToast('Result updated!');
+            resetCreateResultForm();
+            showSection(dashboardSection);
+        } catch(error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    async function saveEditedPublishedResultAsDraft() {
+        if (!schoolId) return;
+        try {
+            const data = {
+                examName: examNameInput.value,
+                class: examClassInput.value,
+                session: examSessionSelect.value,
+                examDate: examDateInput.value,
+                subjects,
+                students,
+                createdAt: serverTimestamp(),
+                originalResultId: editingPublishedResultId
+            };
+            await addDoc(collection(db, "schools", schoolId, "draft_results"), data);
+            showToast('Saved as draft!');
+            resetCreateResultForm();
+            showSection(dashboardSection);
+        } catch(error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
     // ===== LOAD DRAFTS =====
     async function loadDraftResults() {
-        if (!schoolId) return;
+        if (!schoolId) {
+            draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
+            return;
+        }
         try {
             const q = query(collection(db, "schools", schoolId, "draft_results"), orderBy("createdAt", "desc"));
             const snap = await getDocs(q);
-            const container = document.getElementById('draftResultsList');
-            container.innerHTML = '';
+            draftResultsList.innerHTML = '';
             if (snap.empty) {
-                container.innerHTML = '<div class="col-12"><p class="text-center text-muted">No drafts found.</p></div>';
+                draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No drafts found.</p></div>';
                 return;
             }
             snap.forEach(doc => {
                 const d = doc.data();
-                container.innerHTML += `
-                    <div class="col-md-6 col-lg-4 mb-3">
+                draftResultsList.innerHTML += `
+                    <div class="col-6 col-md-4 col-lg-3 mb-2">
                         <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">${d.examName || 'Unnamed'}</h5>
-                                <p class="card-text text-muted">Subjects: ${d.subjects?.length || 0} | Students: ${d.students?.length || 0}</p>
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}">Edit</button>
-                                    <button class="btn btn-sm btn-danger delete-draft" data-id="${doc.id}">Delete</button>
+                            <div class="card-body p-2">
+                                <h6 class="card-title mb-0" style="font-size:0.75rem;">${d.examName || 'Unnamed'}</h6>
+                                <p class="card-text text-muted" style="font-size:0.65rem;">📚 ${d.class || ''} | ${d.students?.length || 0} students</p>
+                                <div class="d-flex gap-1 flex-wrap">
+                                    <button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">Edit</button>
+                                    <button class="btn btn-sm btn-danger delete-draft" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">Del</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
             });
-            document.querySelectorAll('.edit-draft').forEach(btn => btn.addEventListener('click', e => alert('Edit draft: ' + e.target.dataset.id)));
-            document.querySelectorAll('.delete-draft').forEach(btn => btn.addEventListener('click', e => alert('Delete draft: ' + e.target.dataset.id)));
+            document.querySelectorAll('.edit-draft').forEach(btn => btn.addEventListener('click', e => editDraft(e.target.dataset.id)));
+            document.querySelectorAll('.delete-draft').forEach(btn => btn.addEventListener('click', e => deleteDraft(e.target.dataset.id)));
         } catch(error) {
             console.error('Error:', error);
+        }
+    }
+
+    async function editDraft(id) {
+        if (!schoolId) return;
+        try {
+            const snap = await getDocs(query(collection(db, "schools", schoolId, "draft_results"), where("__name__", "==", id)));
+            if (snap.empty) return;
+            const data = snap.docs[0].data();
+            examNameInput.value = data.examName || '';
+            examClassInput.value = data.class || '';
+            examSessionSelect.value = data.session || '2026-2027';
+            examDateInput.value = data.examDate || '';
+            subjects = data.subjects || [];
+            
+            subjectCountInput.value = subjects.length;
+            generateSubjectFieldsBtn.click();
+            
+            setTimeout(() => {
+                const nameInputs = document.querySelectorAll('.subject-name');
+                const totalInputs = document.querySelectorAll('.subject-total');
+                subjects.forEach((subject, index) => {
+                    if (nameInputs[index]) nameInputs[index].value = subject.name;
+                    if (totalInputs[index]) totalInputs[index].value = subject.total;
+                });
+                nextToStudentEntryBtn.click();
+                students = data.students || [];
+                renderStudents();
+                editingDraftId = id;
+                isEditingPublishedResult = false;
+                hasChanges = false;
+                updateButtonVisibility();
+                showSection(createResultSection);
+            }, 200);
+        } catch(error) {
+            alert('Error loading draft: ' + error.message);
+        }
+    }
+
+    async function deleteDraft(id) {
+        if (!schoolId) return;
+        if (confirm('Delete this draft?')) {
+            try {
+                await deleteDoc(doc(db, "schools", schoolId, "draft_results", id));
+                showToast('Draft deleted');
+                loadDraftResults();
+            } catch(error) {
+                alert('Error: ' + error.message);
+            }
         }
     }
 
     // ===== LOAD PUBLISHED =====
     async function loadOldResults() {
-        if (!schoolId) return;
+        if (!schoolId) {
+            oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
+            return;
+        }
         try {
             const q = query(collection(db, "schools", schoolId, "results"), orderBy("createdAt", "desc"));
             const snap = await getDocs(q);
-            const container = document.getElementById('oldResultsList');
-            container.innerHTML = '';
+            oldResultsList.innerHTML = '';
             if (snap.empty) {
-                container.innerHTML = '<div class="col-12"><p class="text-center text-muted">No published results found.</p></div>';
+                oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No published results found.</p></div>';
                 return;
             }
             snap.forEach(doc => {
                 const d = doc.data();
                 const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString('en-IN') : 'Unknown';
-                const demoBadge = d.isDemo ? '<span class="demo-badge">🎯 Demo</span>' : '';
-                container.innerHTML += `
-                    <div class="col-md-6 col-lg-4 mb-3">
+                const demoBadge = d.isDemo ? '<span class="demo-badge">Demo</span>' : '';
+                oldResultsList.innerHTML += `
+                    <div class="col-6 col-md-4 col-lg-3 mb-2">
                         <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">${d.examName || 'Unnamed'} ${demoBadge}</h5>
-                                <p class="card-text text-muted">${date} | Students: ${d.students?.length || 0}</p>
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <button class="btn btn-sm btn-primary view-result" data-id="${doc.id}">View</button>
-                                    <button class="btn btn-sm btn-warning edit-result" data-id="${doc.id}">Edit</button>
-                                    <button class="btn btn-sm btn-danger delete-result" data-id="${doc.id}">Delete</button>
+                            <div class="card-body p-2">
+                                <h6 class="card-title mb-0" style="font-size:0.75rem;">${d.examName || 'Unnamed'} ${demoBadge}</h6>
+                                <p class="card-text text-muted" style="font-size:0.65rem;">📚 ${d.class || ''} | ${d.students?.length || 0} students</p>
+                                <div class="d-flex gap-1 flex-wrap">
+                                    <button class="btn btn-sm btn-primary view-result" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">View</button>
+                                    <button class="btn btn-sm btn-warning edit-result" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">Edit</button>
+                                    <button class="btn btn-sm btn-danger delete-result" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">Del</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
             });
+            document.querySelectorAll('.view-result').forEach(btn => btn.addEventListener('click', e => viewResult(e.target.dataset.id)));
+            document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editResult(e.target.dataset.id)));
+            document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deleteResult(e.target.dataset.id)));
         } catch(error) {
             console.error('Error:', error);
         }
+    }
+
+    // ===== VIEW RESULT =====
+    async function viewResult(id) {
+        if (!schoolId) return;
+        try {
+            const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
+            if (snap.empty) return;
+            const data = snap.docs[0].data();
+            window._currentResultData = data;
+            window._currentExamName = data.examName;
+            
+            const sorted = [...data.students].sort((a,b) => {
+                let ta=0, ma=0, tb=0, mb=0;
+                data.subjects.forEach(s => { ta += a.marks[s.name]||0; ma += s.total; tb += b.marks[s.name]||0; mb += s.total; });
+                return (tb/mb) - (ta/ma);
+            });
+
+            const demoTag = data.isDemo ? ' 🎯 (Demo)' : '';
+            resultModalTitle.textContent = data.examName + demoTag;
+            
+            let html = `<p><strong>Total Students:</strong> ${data.students.length}</p>`;
+            if (data.isDemo) {
+                html += `<div class="alert alert-info" style="font-size:0.8rem;">This is a demo result.</div>`;
+            }
+            if (sorted.length) html += `<div class="alert alert-success" style="font-size:0.8rem;">🏆 Top: ${sorted[0].name} (Roll: ${sorted[0].rollNo})</div>`;
+            html += `<div class="table-responsive"><table class="table table-striped" style="font-size:0.75rem;"><thead><tr><th>Rank</th><th>Roll</th><th>Name</th><th>Father</th>`;
+            data.subjects.forEach(s => html += `<th>${s.name}</th>`);
+            html += `<th>Total</th><th>%</th></tr></thead><tbody>`;
+            sorted.forEach((s, idx) => {
+                let total=0, maxTotal=0;
+                html += `<tr${idx===0?' style="background:#fff3cd;font-weight:500;"':''}><td><strong>#${idx+1}</strong></td><td>${s.rollNo}</td><td>${s.name}${idx===0?' 🏆':''}</td><td>${s.fatherName||'-'}</td>`;
+                data.subjects.forEach(sub => {
+                    const mark = s.marks[sub.name] || 0;
+                    total += mark; maxTotal += sub.total;
+                    html += `<td>${mark}/${sub.total}</td>`;
+                });
+                const percent = maxTotal ? ((total/maxTotal)*100).toFixed(2) : 0;
+                html += `<td><strong>${total}/${maxTotal}</strong></td><td><strong>${percent}%</strong></td></tr>`;
+            });
+            html += `</tbody></table></div>`;
+            resultDetails.innerHTML = html;
+            resultModal.show();
+        } catch(error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    // ===== EDIT PUBLISHED RESULT =====
+    async function editResult(id) {
+        if (!schoolId) return;
+        try {
+            const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
+            if (snap.empty) return;
+            const data = snap.docs[0].data();
+            examNameInput.value = data.examName || '';
+            examClassInput.value = data.class || '';
+            examSessionSelect.value = data.session || '2026-2027';
+            examDateInput.value = data.examDate || '';
+            subjects = data.subjects || [];
+            
+            subjectCountInput.value = subjects.length;
+            generateSubjectFieldsBtn.click();
+            
+            setTimeout(() => {
+                const nameInputs = document.querySelectorAll('.subject-name');
+                const totalInputs = document.querySelectorAll('.subject-total');
+                subjects.forEach((subject, index) => {
+                    if (nameInputs[index]) nameInputs[index].value = subject.name;
+                    if (totalInputs[index]) totalInputs[index].value = subject.total;
+                });
+                nextToStudentEntryBtn.click();
+                students = data.students || [];
+                renderStudents();
+                editingDraftId = null;
+                isEditingPublishedResult = true;
+                editingPublishedResultId = id;
+                hasChanges = false;
+                updateButtonVisibility();
+                showSection(createResultSection);
+            }, 200);
+        } catch(error) {
+            alert('Error loading result: ' + error.message);
+        }
+    }
+
+    // ===== DELETE PUBLISHED RESULT =====
+    async function deleteResult(id) {
+        if (!schoolId) return;
+        if (confirm('Delete this published result permanently?')) {
+            try {
+                await deleteDoc(doc(db, "schools", schoolId, "results", id));
+                showToast('Result deleted');
+                loadOldResults();
+            } catch(error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    }
+
+    // ===== PDF DOWNLOAD =====
+    downloadPdfBtn.addEventListener('click', () => {
+        const data = window._currentResultData;
+        const name = window._currentExamName;
+        if (!data) return;
+        
+        if (typeof window.jspdf === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            script.onload = function() {
+                const script2 = document.createElement('script');
+                script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js';
+                script2.onload = function() { generatePDF(data, name); };
+                document.head.appendChild(script2);
+            };
+            document.head.appendChild(script);
+            return;
+        }
+        generatePDF(data, name);
+    });
+
+    function generatePDF(data, name) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        doc.setFontSize(18);
+        doc.text(`GYAN SEVA - ${name}`, 14, 15);
+        
+        const sorted = [...data.students].sort((a,b) => {
+            let ta=0, ma=0, tb=0, mb=0;
+            data.subjects.forEach(s => { ta += a.marks[s.name]||0; ma += s.total; tb += b.marks[s.name]||0; mb += s.total; });
+            return (tb/mb) - (ta/ma);
+        });
+        
+        let columns = [{ header: 'Rank', dataKey: 'rank' }, { header: 'Roll', dataKey: 'roll' }, { header: 'Name', dataKey: 'name' }, { header: 'Father', dataKey: 'father' }];
+        data.subjects.forEach(s => columns.push({ header: `${s.name}`, dataKey: s.name }));
+        columns.push({ header: 'Total', dataKey: 'total' }, { header: '%', dataKey: 'percent' });
+        
+        const rows = sorted.map((s, idx) => {
+            let row = { rank: idx+1, roll: s.rollNo, name: s.name, father: s.fatherName||'-' };
+            let total=0, maxTotal=0;
+            data.subjects.forEach(sub => {
+                const mark = s.marks[sub.name]||0;
+                row[sub.name] = `${mark}/${sub.total}`;
+                total+=mark; maxTotal+=sub.total;
+            });
+            row.total = `${total}/${maxTotal}`;
+            row.percent = maxTotal ? `${((total/maxTotal)*100).toFixed(2)}%` : '0%';
+            return row;
+        });
+        
+        doc.autoTable({ 
+            startY: 25, 
+            head: [columns.map(c=>c.header)], 
+            body: rows.map(r=>columns.map(c=>r[c.dataKey])), 
+            styles: { fontSize: 8 }, 
+            headStyles: { fillColor: [41,128,185] } 
+        });
+        doc.save(`${name}_Results.pdf`);
+        showToast('PDF Downloaded');
     }
 
     console.log('✅ Manage Results Loaded for School ID:', schoolId);
