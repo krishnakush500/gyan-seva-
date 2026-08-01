@@ -29,11 +29,11 @@
       min-height:100vh;
     }
 
-    /* ===== HEADER - SMALLER HEIGHT ===== */
+    /* ===== HEADER - SMALLER BLUE AREA ===== */
     .header { 
       background:linear-gradient(to right,#1a237e,#283593,#303f9f); 
       color:white; 
-      padding:15px 20px 18px;
+      padding:12px 15px;
       text-align:center; 
       position:relative; 
       overflow:hidden; 
@@ -45,7 +45,6 @@
       justify-content: center;
       gap: 4px;
     }
-    /* 🔥 BIG LOGO - SAME SIZE */
     .header-logo {
       width: 100px;
       height: 100px;
@@ -53,14 +52,12 @@
       object-fit: cover;
       border: 3px solid rgba(255,255,255,0.3);
       transition: transform 0.3s;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      margin-bottom: 2px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     .header-logo:hover {
       transform: scale(1.05);
       border-color: #ffc107;
     }
-    /* 🔥 TEXT - CLEAN LINES */
     .header-text {
       text-align: center;
       width: 100%;
@@ -69,20 +66,19 @@
       font-size:1.8rem;
       font-weight:700; 
       line-height:1.2; 
-      margin-bottom: 1px;
       letter-spacing: 0.5px;
     }
     .location { 
       font-size:0.9rem; 
       opacity: 0.85;
-      margin-bottom: 2px;
+      font-weight: 400;
     }
     .director-info-header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0px;
-      margin-top: 1px;
+      gap: 1px;
+      margin-top: 2px;
     }
     .director-details-header {
       display: flex;
@@ -90,29 +86,31 @@
       align-items: center;
     }
     .director-details-header .label {
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       opacity: 0.6;
       text-transform: uppercase;
       letter-spacing: 1.5px;
+      font-weight: 400;
     }
     .director-details-header .name {
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 600;
     }
-    .director-details-header .phone {
+    .director-details-header .phone-email {
       font-size: 0.8rem;
       opacity: 0.85;
+      font-weight: 400;
     }
-    .director-details-header .phone i {
-      margin-right: 4px;
+    .director-details-header .phone-email i {
+      margin: 0 4px;
     }
 
-    /* ===== YELLOW PATTI - THINNER ===== */
+    /* ===== YELLOW PATTI - THIN, NO EMOJI, NOT BOLD ===== */
     .marquee-container {
       background:#ffc107;
       overflow:hidden;
       position:relative;
-      height:38px;
+      height:34px;
       display:flex;
       align-items:center;
       padding:0 15px;
@@ -122,7 +120,7 @@
       animation: marquee 20s linear infinite;
       white-space:nowrap;
       font-weight:400;
-      font-size:1rem;
+      font-size:0.95rem;
       color:#1a237e;
       letter-spacing: 0.5px;
     }
@@ -157,7 +155,7 @@
       background: #f0f7ff;
     }
     .tab-btn i {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       color: #ffc107;
     }
     .tab-btn:hover {
@@ -171,27 +169,11 @@
       min-height: 400px;
     }
 
-    /* Results Section */
+    /* Results Section - 🔥 NO HEADING HERE, ONLY TAB */
     .results-section {
       padding: 20px 15px;
       background: #f9f9f9;
       min-height: 500px;
-    }
-    .section-title {
-      font-size: 1.4rem;
-      color: #1a237e;
-      text-align: center;
-      margin-bottom: 18px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #1a237e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .section-title i {
-      color: #ffc107;
-      font-size: 1.6rem;
     }
     .results-list {
       display: grid;
@@ -457,180 +439,58 @@
     
     /* ===== 🔥 RESPONSIVE ===== */
     
-    /* Laptop / Desktop */
     @media (min-width: 769px) {
-      .header { padding: 18px 20px 22px; }
-      .header-logo {
-        width: 110px;
-        height: 110px;
-      }
-      .school-name {
-        font-size: 2rem;
-      }
-      .location {
-        font-size: 0.95rem;
-      }
-      .director-details-header .name {
-        font-size: 1rem;
-      }
-      .director-details-header .phone {
-        font-size: 0.85rem;
-      }
-      .marquee-container {
-        height: 40px;
-      }
-      .marquee-content {
-        font-size: 1.05rem;
-      }
-      .results-list {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      }
+      .header { padding: 14px 20px; }
+      .header-logo { width: 110px; height: 110px; }
+      .school-name { font-size: 2rem; }
+      .location { font-size: 0.95rem; }
+      .director-details-header .name { font-size: 1.05rem; }
+      .director-details-header .phone-email { font-size: 0.85rem; }
+      .marquee-content { font-size: 1rem; }
+      .results-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
     }
     
-    /* Tablet */
     @media (max-width: 768px) and (min-width: 481px) {
-      .header { padding: 15px 15px 18px; }
-      .header-logo {
-        width: 90px;
-        height: 90px;
-      }
-      .school-name {
-        font-size: 1.7rem;
-      }
-      .location {
-        font-size: 0.85rem;
-      }
-      .marquee-container {
-        height: 36px;
-      }
-      .marquee-content {
-        font-size: 0.95rem;
-      }
-      .results-list {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      }
+      .header { padding: 12px 15px; }
+      .header-logo { width: 95px; height: 95px; }
+      .school-name { font-size: 1.7rem; }
+      .location { font-size: 0.85rem; }
+      .marquee-content { font-size: 0.9rem; }
+      .results-list { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
     }
     
-    /* 🔥 Mobile Phone */
     @media (max-width: 480px) {
       body { padding: 0; }
       .container { border-radius: 0; box-shadow: none; margin: 0; width: 100%; }
-      
-      .header { 
-        padding: 12px 10px 14px; 
-      }
-      .header-logo {
-        width: 75px;
-        height: 75px;
-        border-width: 2px;
-      }
-      .school-name {
-        font-size: 1.4rem;
-        line-height: 1.2;
-      }
-      .location {
-        font-size: 0.75rem;
-        margin-bottom: 1px;
-      }
-      .director-details-header .label {
-        font-size: 0.55rem;
-        letter-spacing: 1px;
-      }
-      .director-details-header .name {
-        font-size: 0.85rem;
-      }
-      .director-details-header .phone {
-        font-size: 0.7rem;
-      }
-      
-      /* 🔥 Yellow Patti - Thin on Mobile */
-      .marquee-container {
-        height: 32px;
-        padding: 0 10px;
-      }
-      .marquee-content {
-        font-size: 0.8rem;
-        font-weight: 400;
-      }
-      
-      /* Tab - Mobile */
-      .tab-btn {
-        padding: 10px 16px;
-        font-size: 0.9rem;
-        gap: 5px;
-      }
-      .tab-btn i {
-        font-size: 1rem;
-      }
-      
-      /* Results - Mobile */
-      .section-title {
-        font-size: 1.1rem;
-      }
-      .section-title i {
-        font-size: 1.2rem;
-      }
-      .results-list {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-      .result-item {
-        padding: 10px;
-      }
-      .exam-name {
-        font-size: 0.85rem;
-      }
-      
-      /* Roll Input - Mobile */
-      .roll-input-section h3 {
-        font-size: 0.85rem;
-      }
-      .input-group input {
-        max-width: 100%;
-        font-size: 0.85rem;
-        padding: 8px 10px;
-      }
-      .result-btn {
-        font-size: 0.85rem;
-        padding: 8px 12px;
-      }
-      
-      /* Contact - Mobile */
-      .contact-info {
-        flex-direction: column;
-        gap: 8px;
-      }
-      .contact-item {
-        padding: 8px 12px;
-        justify-content: center;
-      }
+      .header { padding: 10px 10px; }
+      .header-logo { width: 75px; height: 75px; border-width: 2px; }
+      .school-name { font-size: 1.4rem; }
+      .location { font-size: 0.75rem; }
+      .director-details-header .label { font-size: 0.55rem; }
+      .director-details-header .name { font-size: 0.85rem; }
+      .director-details-header .phone-email { font-size: 0.7rem; }
+      .marquee-container { height: 30px; padding: 0 10px; }
+      .marquee-content { font-size: 0.8rem; }
+      .tab-btn { padding: 10px 16px; font-size: 0.9rem; gap: 6px; }
+      .tab-btn i { font-size: 1.1rem; }
+      .results-list { grid-template-columns: 1fr; gap: 10px; }
+      .result-item { padding: 10px; }
+      .exam-name { font-size: 0.85rem; }
+      .roll-input-section h3 { font-size: 0.85rem; }
+      .input-group input { max-width: 100%; font-size: 0.85rem; padding: 10px; }
+      .result-btn { font-size: 0.85rem; padding: 10px 14px; }
+      .contact-info { flex-direction: column; gap: 8px; }
+      .contact-item { padding: 8px 12px; justify-content: center; }
     }
     
-    /* Very Small Phones */
     @media (max-width: 360px) {
-      .header-logo {
-        width: 65px;
-        height: 65px;
-      }
-      .school-name {
-        font-size: 1.2rem;
-      }
-      .location {
-        font-size: 0.7rem;
-      }
-      .director-details-header .name {
-        font-size: 0.75rem;
-      }
-      .director-details-header .phone {
-        font-size: 0.65rem;
-      }
-      .marquee-content {
-        font-size: 0.7rem;
-      }
-      .tab-btn {
-        font-size: 0.8rem;
-        padding: 8px 12px;
-      }
+      .header-logo { width: 65px; height: 65px; }
+      .school-name { font-size: 1.2rem; }
+      .location { font-size: 0.65rem; }
+      .director-details-header .name { font-size: 0.75rem; }
+      .director-details-header .phone-email { font-size: 0.6rem; }
+      .marquee-content { font-size: 0.7rem; }
+      .tab-btn { font-size: 0.8rem; padding: 8px 12px; }
     }
   </style>
 </head>
@@ -651,50 +511,42 @@
   </div>
 
   <div class="container">
-    <!-- ===== HEADER - SMALLER HEIGHT ===== -->
+    <!-- ===== HEADER ===== -->
     <div class="header">
       <div class="header-content">
         <img id="schoolLogo" class="header-logo" src="https://via.placeholder.com/110?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/110?text=Logo'">
         <div class="header-text">
-          <!-- Line 1: School Name - Bold -->
           <h1 class="school-name" id="schoolName">Loading...</h1>
-          <!-- Line 2: Address - Single Line -->
           <p class="location" id="schoolLocation">📍 Loading location...</p>
-          <!-- Line 3: CEO & Founder - Single Line -->
           <div class="director-info-header">
             <div class="director-details-header">
               <span class="label" id="directorTitle">CEO & FOUNDER</span>
               <span class="name" id="directorName">Loading...</span>
-            </div>
-          </div>
-          <!-- Line 4: Phone & Email - Single Line -->
-          <div class="director-info-header">
-            <div class="director-details-header">
-              <span class="phone" id="directorPhone"><i class="fas fa-phone"></i> Loading... &nbsp;|&nbsp; <i class="fas fa-envelope"></i> Loading...</span>
+              <span class="phone-email" id="directorContact"><i class="fas fa-phone"></i> Loading... <i class="fas fa-envelope"></i> loading@email.com</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ===== YELLOW PATTI - THINNER, NO BOLD, NO EMOJI ===== -->
+    <!-- ===== YELLOW PATTI ===== -->
     <div class="marquee-container">
       <div class="marquee-content" id="marqueeContent">
-        <span id="promoCoachingName">Loading...</span> - Quality Education & Excellence - Join Us for a Bright Future
+        <span id="promoCoachingName">Loading...</span> — Quality Education & Excellence — Join Us for a Bright Future!
       </div>
     </div>
 
-    <!-- ===== SINGLE TAB - ONLY RESULTS ===== -->
+    <!-- ===== SINGLE TAB - ONLY "Exam Results" ===== -->
     <div class="main-tabs">
       <button class="tab-btn active" id="results-tab">
         <i class="fas fa-chart-line"></i> Exam Results
       </button>
     </div>
 
-    <!-- Results Content -->
+    <!-- ===== RESULTS CONTENT - NO HEADING DUPLICATE ===== -->
     <div class="tab-content active" id="results-content">
       <div class="results-section">
-        <h2 class="section-title"><i class="fas fa-chart-line"></i> Exam Results</h2>
+        <!-- 🔥 NO "Exam Results" Heading Here - Only Tab -->
         <div class="loading" id="loading-results">
           <i class="fas fa-spinner fa-spin"></i> Loading available results...
         </div>
@@ -770,8 +622,8 @@
         document.getElementById('schoolName').textContent = 'Error: No ID';
         document.getElementById('schoolLocation').textContent = '📍 Please provide valid coaching ID';
         document.getElementById('directorName').textContent = 'Not Found';
-        document.getElementById('directorPhone').innerHTML = '<i class="fas fa-phone"></i> N/A &nbsp;|&nbsp; <i class="fas fa-envelope"></i> N/A';
         document.getElementById('promoCoachingName').textContent = 'Institute';
+        document.getElementById('directorContact').innerHTML = '<i class="fas fa-phone"></i> N/A <i class="fas fa-envelope"></i> N/A';
         return;
       }
 
@@ -783,18 +635,17 @@
           schoolData = docSnap.data();
           schoolId = coachingId;
           
-          // Update UI with school data
           const name = schoolData.coachingName || schoolData.name || 'Institute';
           const location = schoolData.location || 'Location not available';
           const director = schoolData.director || 'Director';
           const phone = schoolData.phone || 'N/A';
-          const email = schoolData.directorEmail || schoolData.email || 'N/A';
+          const email = schoolData.directorEmail || 'N/A';
           const logo = schoolData.logoUrl || '';
           
           document.getElementById('schoolName').textContent = name;
           document.getElementById('schoolLocation').textContent = '📍 ' + location;
           document.getElementById('directorName').textContent = director;
-          document.getElementById('directorPhone').innerHTML = '<i class="fas fa-phone"></i> ' + phone + ' &nbsp;|&nbsp; <i class="fas fa-envelope"></i> ' + email;
+          document.getElementById('directorContact').innerHTML = '<i class="fas fa-phone"></i> ' + phone + ' <i class="fas fa-envelope"></i> ' + email;
           document.getElementById('footerSchoolName').textContent = name;
           document.getElementById('promoCoachingName').textContent = name;
           
@@ -802,23 +653,21 @@
             document.getElementById('schoolLogo').src = logo;
           }
           
-          // Load results
           fetchAllResults();
-          
           console.log('✅ School loaded:', name);
         } else {
           document.getElementById('schoolName').textContent = 'School Not Found';
           document.getElementById('schoolLocation').textContent = '📍 Please check the link';
           document.getElementById('directorName').textContent = 'Not Found';
-          document.getElementById('directorPhone').innerHTML = '<i class="fas fa-phone"></i> N/A &nbsp;|&nbsp; <i class="fas fa-envelope"></i> N/A';
           document.getElementById('promoCoachingName').textContent = 'Institute';
+          document.getElementById('directorContact').innerHTML = '<i class="fas fa-phone"></i> N/A <i class="fas fa-envelope"></i> N/A';
         }
       } catch (error) {
         console.error('Error loading school:', error);
         document.getElementById('schoolName').textContent = 'Error Loading';
         document.getElementById('schoolLocation').textContent = '📍 Please try again later';
-        document.getElementById('directorName').textContent = 'Error';
         document.getElementById('promoCoachingName').textContent = 'Institute';
+        document.getElementById('directorContact').innerHTML = '<i class="fas fa-phone"></i> N/A <i class="fas fa-envelope"></i> N/A';
       }
     }
 
@@ -1048,8 +897,8 @@
           document.getElementById('schoolName').textContent = 'No School Selected';
           document.getElementById('schoolLocation').textContent = '📍 Please provide valid coaching ID in URL';
           document.getElementById('directorName').textContent = 'Not Found';
-          document.getElementById('directorPhone').innerHTML = '<i class="fas fa-phone"></i> N/A &nbsp;|&nbsp; <i class="fas fa-envelope"></i> N/A';
           document.getElementById('promoCoachingName').textContent = 'Institute';
+          document.getElementById('directorContact').innerHTML = '<i class="fas fa-phone"></i> N/A <i class="fas fa-envelope"></i> N/A';
           document.getElementById('loading-results').innerHTML = '<div class="error">No school ID provided. Please check the link.</div>';
         }
       }
