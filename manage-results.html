@@ -92,7 +92,6 @@
         .save-changes-btn { background-color: #0dcaf0; border-color: #0dcaf0; color: white; }
         .save-changes-btn:hover { background-color: #0bb6d9; border-color: #0bb6d9; color: white; }
         
-        /* ===== STEP 1 SUMMARY ===== */
         .exam-summary {
             background: #f0f7ff;
             border-radius: 10px;
@@ -121,7 +120,6 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        /* ===== STUDENT LIST ===== */
         .student-list-container {
             max-height: 250px;
             overflow-y: auto;
@@ -152,7 +150,6 @@
         .student-compact .actions .del-btn:hover { background: #fee2e2; color: #dc2626; }
         .student-empty { padding: 20px; text-align: center; color: #94a3b8; font-size: 0.8rem; }
         
-        /* ===== EDIT MODAL ===== */
         .edit-modal .modal-content { border-radius: 16px; }
         .edit-modal .modal-header { padding: 12px 16px; background: #1a237e; color: white; border-radius: 16px 16px 0 0; }
         .edit-modal .modal-header .btn-close { filter: brightness(0) invert(1); }
@@ -589,7 +586,7 @@
     const summarySubjects = document.getElementById('summarySubjects');
     const editExamDetailsBtn = document.getElementById('editExamDetailsBtn');
     
-    // 🔥 Edit Modal Elements
+    // Edit Modal Elements
     const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
     const modalExamName = document.getElementById('modalExamName');
     const modalExamClass = document.getElementById('modalExamClass');
@@ -742,9 +739,8 @@
         summarySubjects.textContent = subjects.length || 0;
     }
 
-    // ===== 🔥 EDIT EXAM DETAILS - OPEN MODAL =====
+    // ===== EDIT EXAM DETAILS - OPEN MODAL =====
     editExamDetailsBtn.addEventListener('click', () => {
-        // Populate modal with current values
         modalExamName.value = examNameInput.value.trim();
         modalExamClass.value = examClassInput.value.trim();
         modalExamSession.value = examSessionSelect.value;
@@ -752,7 +748,7 @@
         editExamModal.show();
     });
 
-    // ===== 🔥 SAVE EXAM DETAILS FROM MODAL =====
+    // ===== SAVE EXAM DETAILS FROM MODAL =====
     saveExamDetailsBtn.addEventListener('click', () => {
         const newName = modalExamName.value.trim();
         const newClass = modalExamClass.value.trim();
@@ -763,15 +759,12 @@
         if (!newClass) { alert('Please enter Class'); return; }
         if (!newDate) { alert('Please select Exam Date'); return; }
         
-        // Update main fields
         examNameInput.value = newName;
         examClassInput.value = newClass;
         examSessionSelect.value = newSession;
         examDateInput.value = newDate;
         
-        // Update summary
         updateSummary();
-        
         editExamModal.hide();
         showToast('Exam details updated!');
         hasChanges = true;
@@ -1181,25 +1174,32 @@
         }
     }
 
-    // ===== LOAD PUBLISHED =====
+    // ===== 🔥 LOAD PUBLISHED RESULTS (FIXED - DEMO RESULTS SHOW) =====
     async function loadOldResults() {
         if (!schoolId) {
             oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
             return;
         }
         try {
+            // 🔥 School-specific path se saare results fetch karo (demo + normal)
             const q = query(collection(db, "schools", schoolId, "results"), orderBy("createdAt", "desc"));
             const snap = await getDocs(q);
-            oldResultsList.innerHTML = '';
+            const container = document.getElementById('oldResultsList');
+            container.innerHTML = '';
+            
             if (snap.empty) {
-                oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No published results found.</p></div>';
+                container.innerHTML = '<div class="col-12"><p class="text-center text-muted">No published results found.</p></div>';
                 return;
             }
+            
             snap.forEach(doc => {
                 const d = doc.data();
                 const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString('en-IN') : 'Unknown';
-                const demoBadge = d.isDemo ? '<span class="demo-badge">Demo</span>' : '';
-                oldResultsList.innerHTML += `
+                
+                // 🔥 Demo badge agar isDemo true hai toh
+                const demoBadge = d.isDemo ? '<span class="demo-badge">🎯 Demo</span>' : '';
+                
+                container.innerHTML += `
                     <div class="col-6 col-md-4 col-lg-3 mb-2">
                         <div class="card h-100">
                             <div class="card-body p-2">
@@ -1215,11 +1215,15 @@
                     </div>
                 `;
             });
+            
+            // 🔥 Event listeners attach karo
             document.querySelectorAll('.view-result').forEach(btn => btn.addEventListener('click', e => viewResult(e.target.dataset.id)));
             document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editResult(e.target.dataset.id)));
             document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deleteResult(e.target.dataset.id)));
+            
         } catch(error) {
-            console.error('Error:', error);
+            console.error('Error loading results:', error);
+            oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Error loading results.</p></div>';
         }
     }
 
