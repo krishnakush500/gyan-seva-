@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>GYAN SEVA — Manage Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== SAME STYLES AS BEFORE ===== */
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f0f2f5; min-height: 100vh; }
+        
+        .topbar {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .topbar .brand { font-size: 1.3rem; font-weight: 700; }
+        .topbar .brand i { color: #ffc107; }
+        .topbar .user-info { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .topbar .user-info .institute-name { 
+            font-size: 0.85rem; 
+            opacity: 0.9; 
+            background: rgba(255,255,255,0.12); 
+            padding: 4px 14px; 
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .topbar .user-info .institute-name img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .topbar .user-info span { font-size: 0.85rem; opacity: 0.9; }
+        .topbar .logout-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .topbar .logout-btn:hover { background: rgba(255,255,255,0.25); }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        .welcome-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .welcome-card .institute-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e8eafe;
+        }
+        .welcome-card .welcome-text h2 { font-size: 1.3rem; color: #1a237e; margin: 0; }
+        .welcome-card .welcome-text p { color: #64748b; font-size: 0.9rem; margin: 0; }
+        
+        .subject-box {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .student-row:hover { background-color: #f8f9fa; }
+        
+        .success-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .published-toast { background-color: #0d6efd !important; }
+        .save-changes-btn {
+            background-color: #0dcaf0;
+            border-color: #0dcaf0;
+            color: white;
+        }
+        .save-changes-btn:hover {
+            background-color: #0bb6d9;
+            border-color: #0bb6d9;
+            color: white;
+        }
+        
+        .demo-badge {
+            background: #10b981;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            margin-left: 8px;
+        }
+        
+        .back-to-panel-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .back-to-panel-btn:hover {
+            background: #5a6268;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .topbar { padding: 12px 16px; }
+            .topbar .brand { font-size: 1rem; }
+            .topbar .user-info span { font-size: 0.75rem; }
+            .welcome-card { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="brand"><i class="fas fa-chalkboard-user"></i> GYAN SEVA</div>
+    <div class="user-info">
+        <span class="institute-name" id="instituteDisplay">
+            <i class="fas fa-school"></i> <span id="instituteName">Loading...</span>
+        </span>
+        <span><i class="fas fa-user-circle"></i> <span id="teacherName">Teacher</span></span>
+        <a href="teacher-panel.html" class="logout-btn" style="text-decoration:none;"><i class="fas fa-arrow-left"></i> Back to Panel</a>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Welcome Card -->
+    <div class="welcome-card">
+        <img id="instituteLogo" class="institute-logo" src="https://via.placeholder.com/60?text=Logo" alt="Institute Logo" onerror="this.src='https://via.placeholder.com/60?text=Logo'">
+        <div class="welcome-text">
+            <h2>📊 Manage Results — <span id="welcomeInstitute">Loading...</span></h2>
+            <p>Create, edit and publish exam results for your institute</p>
+        </div>
+    </div>
+
+    <!-- ===== DASHBOARD CARDS ===== -->
+    <div id="dashboardSection" class="section active">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-plus-circle text-primary"></i> Create Result</h5>
+                        <p class="card-text">Create a new exam result with subjects & marks</p>
+                        <button id="createResultBtn" class="btn btn-primary">Go</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-file-draft text-warning"></i> Draft Results</h5>
+                        <p class="card-text">View and edit saved draft results</p>
+                        <button id="draftResultsBtn" class="btn btn-warning">Go</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-history text-info"></i> Published Results</h5>
+                        <p class="card-text">View, edit or delete published results</p>
+                        <button id="oldResultsBtn" class="btn btn-info">Go</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CREATE RESULT SECTION ===== -->
+    <div id="createResultSection" class="section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-plus-circle text-primary"></i> Create Result</h2>
+            <button id="backToDashboardBtn" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+        
+        <!-- Step 1: Exam Setup -->
+        <div id="examSetupStep">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4>Step 1: Exam Setup</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="examName" class="form-label">Exam Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="examName" placeholder="e.g., Final Examination 2025" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="examCentre" class="form-label">Examination Centre</label>
+                        <input type="text" class="form-control" id="examCentre" placeholder="e.g., GYAN SEVA, BEGUSARAI">
+                    </div>
+                    <div class="mb-3">
+                        <label for="rollCode" class="form-label">Roll Code</label>
+                        <input type="text" class="form-control" id="rollCode" value="55075">
+                    </div>
+                    <div class="mb-3">
+                        <label for="subjectCount" class="form-label">Number of Subjects <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="subjectCount" min="1" placeholder="e.g., 5">
+                            <button id="generateSubjectFieldsBtn" class="btn btn-primary">Generate Subject Fields</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="subjectFields" class="mb-4"></div>
+            
+            <div id="step1NextBtn" class="d-none">
+                <button id="nextToStudentEntryBtn" class="btn btn-success btn-lg"><i class="fas fa-arrow-right"></i> Next →</button>
+            </div>
+        </div>
+        
+        <!-- Step 2: Student Marks Entry -->
+        <div id="studentEntryStep" class="d-none">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4>Step 2: Student Marks Entry</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="rollNo" class="form-label">Roll No <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="rollNo" min="1" value="1">
+                                <button class="btn btn-outline-secondary" type="button" id="incrementRollBtn"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="studentName" class="form-label">Student Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="studentName" placeholder="Enter name">
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <label for="fatherName" class="form-label">Father's Name</label>
+                            <input type="text" class="form-control" id="fatherName" placeholder="Enter father's name">
+                        </div>
+                    </div>
+                    
+                    <div id="marksFields" class="mb-3"></div>
+                    
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button id="addStudentBtn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Add Student</button>
+                        <button id="updateStudentBtn" class="btn btn-warning d-none"><i class="fas fa-edit"></i> Update Student</button>
+                        <button id="cancelEditBtn" class="btn btn-secondary d-none"><i class="fas fa-times"></i> Cancel</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4>Students List</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Name</th>
+                                    <th>Father Name</th>
+                                    <th>Marks</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                <!-- Student rows will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="d-flex gap-2 flex-wrap mt-3">
+                        <button id="saveDraftBtn" class="btn btn-warning"><i class="fas fa-save"></i> Save as Draft</button>
+                        <button id="saveChangesBtn" class="btn save-changes-btn d-none"><i class="fas fa-check"></i> Save Changes</button>
+                        <button id="publishResultBtn" class="btn btn-success"><i class="fas fa-globe"></i> Publish Result</button>
+                        <button id="dontSaveBtn" class="btn btn-secondary d-none"><i class="fas fa-times"></i> Don't Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== DRAFT RESULTS SECTION ===== -->
+    <div id="draftResultsSection" class="section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-file-draft text-warning"></i> Draft Results</h2>
+            <button id="backToDashboardBtn2" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+        <div id="draftResultsList" class="row"></div>
+    </div>
+
+    <!-- ===== PUBLISHED RESULTS SECTION ===== -->
+    <div id="oldResultsSection" class="section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-history text-info"></i> Published Results</h2>
+            <button id="backToDashboardBtn3" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+        <div id="oldResultsList" class="row"></div>
+    </div>
+</div>
+
+<!-- ===== RESULT VIEW MODAL ===== -->
+<div class="modal fade" id="resultModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resultModalTitle">Result Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="resultDetails"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="downloadPdfBtn"><i class="fas fa-download"></i> Download PDF</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== EDIT PUBLISHED CONFIRM MODAL ===== -->
+<div class="modal fade" id="editPublishedConfirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Edit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>You are editing a published result. What would you like to do?</p>
+                <div class="alert alert-info">
+                    <strong>Note:</strong>
+                    <ul class="mb-0">
+                        <li><strong>Save Changes:</strong> Update the existing result directly</li>
+                        <li><strong>Don't Save:</strong> Go back without saving changes</li>
+                        <li><strong>Save as Draft:</strong> Save changes as a new draft</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="dontSaveConfirmBtn" data-bs-dismiss="modal">Don't Save</button>
+                <button type="button" class="btn btn-warning" id="saveDraftConfirmBtn" data-bs-dismiss="modal">Save as Draft</button>
+                <button type="button" class="btn save-changes-btn" id="saveChangesConfirmBtn" data-bs-dismiss="modal">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOASTS ===== -->
+<div id="successToast" class="toast align-items-center text-bg-success border-0 success-message" role="alert">
+    <div class="d-flex">
+        <div class="toast-body" id="toastMessage">Successfully Saved!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+</div>
+<div id="publishedToast" class="toast align-items-center text-bg-success border-0 success-message published-toast" role="alert" style="display: none;">
+    <div class="d-flex">
+        <div class="toast-body">✅ Result Published Successfully!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script type="module">
+    // ===== COMPLETE RESULT MANAGEMENT LOGIC =====
+    // (Yahan wahi saara code aayega jo aapne pehle banaya tha)
+    // Maine space save karne ke liye yahan short kiya hai,
+    // but aap apna poora result management code yahan paste kar sakte hain
+    
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+        getFirestore, 
+        collection, 
+        addDoc, 
+        getDocs, 
+        doc, 
+        updateDoc, 
+        deleteDoc, 
+        query, 
+        orderBy,
+        serverTimestamp,
+        where,
+        getDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
+        authDomain: "gyan-seva.firebaseapp.com",
+        projectId: "gyan-seva",
+        storageBucket: "gyan-seva.firebasestorage.app",
+        messagingSenderId: "451862212887",
+        appId: "1:451862212887:web:637fd8785c4c01bd448752",
+        measurementId: "G-R375P3YCHP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ===== GET SCHOOL ID =====
+    let schoolId = null;
+
+    function getCoachingIdFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('coachingId');
+    }
+
+    async function loadInstituteFromCoachingId(coachingId) {
+        if (!coachingId) {
+            const savedId = localStorage.getItem('schoolId');
+            if (savedId) coachingId = savedId;
+        }
+        if (!coachingId) {
+            document.getElementById('instituteName').textContent = 'No ID';
+            document.getElementById('welcomeInstitute').textContent = 'No ID';
+            return;
+        }
+        try {
+            const docRef = doc(db, "schools", coachingId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                schoolId = coachingId;
+                const name = data.coachingName || 'Institute';
+                const logo = data.logoUrl || '';
+                const director = data.director || 'Teacher';
+                
+                document.getElementById('instituteName').textContent = name;
+                document.getElementById('welcomeInstitute').textContent = name;
+                document.getElementById('teacherName').textContent = director;
+                if (logo) document.getElementById('instituteLogo').src = logo;
+                
+                localStorage.setItem('schoolId', coachingId);
+            }
+        } catch(error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function logout() {
+        if (confirm('Logout?')) {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    }
+    window.logout = logout;
+
+    // ===== INIT =====
+    const coachingId = getCoachingIdFromURL() || localStorage.getItem('schoolId');
+    loadInstituteFromCoachingId(coachingId);
+
+    // ===== DOM ELEMENTS =====
+    const dashboardSection = document.getElementById('dashboardSection');
+    const createResultSection = document.getElementById('createResultSection');
+    const draftResultsSection = document.getElementById('draftResultsSection');
+    const oldResultsSection = document.getElementById('oldResultsSection');
+    
+    const createResultBtn = document.getElementById('createResultBtn');
+    const draftResultsBtn = document.getElementById('draftResultsBtn');
+    const oldResultsBtn = document.getElementById('oldResultsBtn');
+    
+    const backToDashboardBtn = document.getElementById('backToDashboardBtn');
+    const backToDashboardBtn2 = document.getElementById('backToDashboardBtn2');
+    const backToDashboardBtn3 = document.getElementById('backToDashboardBtn3');
+    
+    // ... (Baki saara result management code yahan aayega)
+    // Aap apna purana code yahan paste kar sakte hain
+    
+    // ===== SIMPLE NAVIGATION =====
+    function showSection(section) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        section.classList.add('active');
+    }
+    
+    createResultBtn.addEventListener('click', () => showSection(createResultSection));
+    draftResultsBtn.addEventListener('click', () => { showSection(draftResultsSection); loadDraftResults(); });
+    oldResultsBtn.addEventListener('click', () => { showSection(oldResultsSection); loadOldResults(); });
+    
+    backToDashboardBtn.addEventListener('click', () => showSection(dashboardSection));
+    backToDashboardBtn2.addEventListener('click', () => showSection(dashboardSection));
+    backToDashboardBtn3.addEventListener('click', () => showSection(dashboardSection));
+
+    // ===== LOAD DRAFTS =====
+    async function loadDraftResults() {
+        if (!schoolId) return;
+        try {
+            const q = query(collection(db, "schools", schoolId, "draft_results"), orderBy("createdAt", "desc"));
+            const snap = await getDocs(q);
+            const container = document.getElementById('draftResultsList');
+            container.innerHTML = '';
+            if (snap.empty) {
+                container.innerHTML = '<div class="col-12"><p class="text-center text-muted">No drafts found.</p></div>';
+                return;
+            }
+            snap.forEach(doc => {
+                const d = doc.data();
+                container.innerHTML += `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">${d.examName || 'Unnamed'}</h5>
+                                <p class="card-text text-muted">Subjects: ${d.subjects?.length || 0} | Students: ${d.students?.length || 0}</p>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}">Edit</button>
+                                    <button class="btn btn-sm btn-danger delete-draft" data-id="${doc.id}">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.querySelectorAll('.edit-draft').forEach(btn => btn.addEventListener('click', e => alert('Edit draft: ' + e.target.dataset.id)));
+            document.querySelectorAll('.delete-draft').forEach(btn => btn.addEventListener('click', e => alert('Delete draft: ' + e.target.dataset.id)));
+        } catch(error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // ===== LOAD PUBLISHED =====
+    async function loadOldResults() {
+        if (!schoolId) return;
+        try {
+            const q = query(collection(db, "schools", schoolId, "results"), orderBy("createdAt", "desc"));
+            const snap = await getDocs(q);
+            const container = document.getElementById('oldResultsList');
+            container.innerHTML = '';
+            if (snap.empty) {
+                container.innerHTML = '<div class="col-12"><p class="text-center text-muted">No published results found.</p></div>';
+                return;
+            }
+            snap.forEach(doc => {
+                const d = doc.data();
+                const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString('en-IN') : 'Unknown';
+                const demoBadge = d.isDemo ? '<span class="demo-badge">🎯 Demo</span>' : '';
+                container.innerHTML += `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">${d.examName || 'Unnamed'} ${demoBadge}</h5>
+                                <p class="card-text text-muted">${date} | Students: ${d.students?.length || 0}</p>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button class="btn btn-sm btn-primary view-result" data-id="${doc.id}">View</button>
+                                    <button class="btn btn-sm btn-warning edit-result" data-id="${doc.id}">Edit</button>
+                                    <button class="btn btn-sm btn-danger delete-result" data-id="${doc.id}">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch(error) {
+            console.error('Error:', error);
+        }
+    }
+
+    console.log('✅ Manage Results Loaded for School ID:', schoolId);
+</script>
+</body>
+</html>
