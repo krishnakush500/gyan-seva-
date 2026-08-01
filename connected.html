@@ -22,7 +22,7 @@
     .stat-count { background:#2563eb; color:white; padding:6px 16px; border-radius:40px; font-weight:600; }
     .refresh-btn { background:#f1f5f9; border:none; padding:8px 20px; border-radius:40px; cursor:pointer; font-weight:500; }
     .refresh-btn:hover { background:#e2e8f0; }
-    .coachings-container { max-height:600px; overflow-y:auto; }
+    .coachings-container { max-height:550px; overflow-y:auto; }
     .coaching-card { background:#f8fafc; border-radius:24px; padding:20px; margin-bottom:16px; border:1px solid #e2e8f0; transition:0.3s; }
     .coaching-card:hover { border-color:#2563eb; box-shadow:0 4px 12px rgba(37,99,235,0.08); }
     .coaching-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
@@ -32,8 +32,10 @@
     .coaching-details { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; font-size:0.85rem; color:#475569; }
     .coaching-details i { width:20px; color:#2563eb; }
     .action-buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
-    .btn-panel { background:#2563eb; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
-    .btn-panel:hover { background:#1d4ed8; color:white; }
+    .btn-dashboard { background:#2563eb; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .btn-dashboard:hover { background:#1d4ed8; color:white; }
+    .btn-admin { background:#dc2626; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .btn-admin:hover { background:#b91c1c; color:white; }
     .btn-whatsapp { background:#25D366; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-whatsapp:hover { background:#1da851; color:white; }
     .btn-edit { background:#f59e0b; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
@@ -44,15 +46,8 @@
     .empty-state i { font-size:3rem; margin-bottom:15px; display:block; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
     .demo-badge { background:#10b981; color:white; padding:2px 10px; border-radius:30px; font-size:0.6rem; margin-left:8px; }
-    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center; }
-    .modal-content { background:white; border-radius:32px; padding:28px; max-width:500px; width:90%; }
-    .modal-content h3 { color:#1e293b; margin-bottom:15px; }
-    .modal-content input { width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px; }
-    .modal-buttons { display:flex; gap:12px; margin-top:20px; justify-content:flex-end; }
-    .modal-buttons button { padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; }
-    .btn-cancel-modal { background:#94a3b8; color:white; }
-    .btn-save-modal { background:#10b981; color:white; }
-    @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .btn-panel,.btn-whatsapp,.btn-edit,.btn-delete{ text-align:center; justify-content:center; } }
+    .whatsapp-link-sent { background:#d1fae5; color:#065f46; padding:2px 10px; border-radius:30px; font-size:0.6rem; margin-left:8px; }
+    @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .btn-dashboard,.btn-admin,.btn-edit,.btn-delete,.btn-whatsapp{ text-align:center; justify-content:center; } }
   </style>
 </head>
 <body>
@@ -62,6 +57,7 @@
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
     <a href="connected.html" class="active"><i class="fas fa-handshake"></i> Connected</a>
     <a href="add-customer.html"><i class="fas fa-plus-circle"></i> Add Customer</a>
+    <a href="teacher-panel.html"><i class="fas fa-chalkboard-user"></i> Teacher Panel</a>
   </div>
 
   <div class="connected-card">
@@ -85,17 +81,17 @@
 </div>
 
 <!-- Edit Modal -->
-<div id="editModal" class="modal">
-  <div class="modal-content">
-    <h3><i class="fas fa-edit" style="color:#f59e0b;"></i> Edit Coaching</h3>
-    <input type="text" id="editName" placeholder="Coaching Name">
-    <input type="text" id="editDirector" placeholder="Director">
-    <input type="text" id="editPhone" placeholder="Phone">
-    <input type="text" id="editLocation" placeholder="Location">
-    <input type="text" id="editLogo" placeholder="Logo URL">
-    <div class="modal-buttons">
-      <button class="btn-cancel-modal" onclick="closeEditModal()">Cancel</button>
-      <button class="btn-save-modal" onclick="saveCoachingEdit()">Save</button>
+<div id="editModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+  <div class="modal-content" style="background:white; border-radius:32px; padding:28px; max-width:500px; width:90%;">
+    <h3 style="color:#1e293b; margin-bottom:15px;"><i class="fas fa-edit" style="color:#f59e0b;"></i> Edit Coaching</h3>
+    <input type="text" id="editName" placeholder="Coaching Name" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editDirector" placeholder="Director" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editPhone" placeholder="Phone" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editLocation" placeholder="Location" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="text" id="editLogo" placeholder="Logo URL" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <div style="display:flex; gap:12px; margin-top:20px; justify-content:flex-end;">
+      <button onclick="closeEditModal()" style="padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; background:#94a3b8; color:white;">Cancel</button>
+      <button onclick="saveCoachingEdit()" style="padding:10px 20px; border-radius:40px; border:none; cursor:pointer; font-weight:600; background:#10b981; color:white;">Save</button>
     </div>
   </div>
 </div>
@@ -107,20 +103,20 @@
 
   let currentEditId = null;
 
-  // ===== WHATSAPP SHARE FUNCTION - Fixed =====
+  // ===== 🔥 FIXED: WHATSAPP SHARE FUNCTION =====
   window.shareOnWhatsApp = function(phone, name, coachingId) {
-    // Clean phone number - remove spaces, +, etc.
-    let cleanPhone = phone.toString().replace(/\s/g, '').replace(/\+/g, '');
-    // Ensure it starts with 91 for India
-    if (!cleanPhone.startsWith('91') && cleanPhone.length === 10) {
-      cleanPhone = '91' + cleanPhone;
+    // 🔥 Get the base URL dynamically
+    let baseUrl = window.location.origin;
+    
+    // 🔥 Fix for GitHub Pages - remove trailing slash if any
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.slice(0, -1);
     }
     
-    // Create dashboard link
-    const baseUrl = window.location.origin;
+    // 🔥 Create full dashboard link
     const dashboardLink = `${baseUrl}/teacher-panel.html?coachingId=${coachingId}`;
     
-    // Create message
+    // 🔥 Create message with coaching-specific link
     const message = `📚 *Namaste ${name} Team!*
 
 🎯 Your GYAN SEVA Admin Panel is ready!
@@ -136,10 +132,10 @@ For any help, contact GYAN SEVA Support.
 
 *GYAN SEVA* — Connected, Served, Growing 📈`;
 
-    // WhatsApp URL - Fixed encoding
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    // 🔥 WhatsApp URL with phone number
+    const whatsappUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
     
-    // Open WhatsApp
+    // 🔥 Open WhatsApp
     window.open(whatsappUrl, '_blank');
   };
 
@@ -228,10 +224,6 @@ For any help, contact GYAN SEVA Support.
         const logoHtml = c.logoUrl ? `<img src="${c.logoUrl}" onerror="this.style.display='none'">` : '';
         const demoBadge = c.demoResultsAdded ? `<span class="demo-badge">✅ Demo</span>` : '';
         
-        // Clean phone number for WhatsApp
-        const phone = c.phone || '';
-        const cleanPhone = phone.toString().replace(/\s/g, '').replace(/\+/g, '');
-        
         html += `
           <div class="coaching-card">
             <div class="coaching-header">
@@ -240,19 +232,19 @@ For any help, contact GYAN SEVA Support.
             </div>
             <div class="coaching-details">
               <div><i class="fas fa-user-tie"></i> ${c.director || 'Director'}</div>
-              <div><i class="fas fa-phone"></i> ${phone || 'N/A'}</div>
+              <div><i class="fas fa-phone"></i> ${c.phone || 'N/A'}</div>
               <div><i class="fas fa-location-dot"></i> ${c.location || 'Location'}</div>
               <div><i class="fas fa-chart-line"></i> ${resultsCount} Results</div>
               ${c.directorEmail ? `<div><i class="fas fa-envelope"></i> ${c.directorEmail}</div>` : ''}
             </div>
             <div class="action-buttons">
-              <a href="teacher-panel.html?coachingId=${id}" class="btn-panel" target="_blank">
+              <a href="teacher-panel.html?coachingId=${id}" class="btn-dashboard" target="_blank">
                 <i class="fas fa-tachometer-alt"></i> Open Panel
               </a>
-              <button class="btn-whatsapp" onclick="shareOnWhatsApp('${cleanPhone}','${(c.coachingName||'').replace(/'/g,"\\'")}','${id}')">
+              <button class="btn-whatsapp" onclick="shareOnWhatsApp('${c.phone}','${(c.coachingName||'').replace(/'/g,"\\'")}','${id}')">
                 <i class="fab fa-whatsapp"></i> Share Link
               </button>
-              <button class="btn-edit" onclick="openEditModal('${id}','${(c.coachingName||'').replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${phone}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logoUrl||'').replace(/'/g,"\\'")}')">
+              <button class="btn-edit" onclick="openEditModal('${id}','${(c.coachingName||'').replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone||''}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logoUrl||'').replace(/'/g,"\\'")}')">
                 <i class="fas fa-pen"></i> Edit
               </button>
               <button class="btn-delete" onclick="deleteCoaching('${id}','${(c.coachingName||'').replace(/'/g,"\\'")}')">
