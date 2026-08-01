@@ -32,21 +32,56 @@
     .coaching-details { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; font-size:0.85rem; color:#475569; }
     .coaching-details i { width:20px; color:#2563eb; }
     .action-buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
-    .btn-dashboard { background:#2563eb; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
-    .btn-dashboard:hover { background:#1d4ed8; color:white; }
+    
+    /* 🔥 NEW BUTTONS */
+    .btn-dashboard { background:#8b5cf6; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
+    .btn-dashboard:hover { background:#7c3aed; color:white; }
+    
     .btn-admin { background:#dc2626; color:white; padding:8px 18px; border-radius:40px; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
     .btn-admin:hover { background:#b91c1c; color:white; }
+    
     .btn-whatsapp { background:#25D366; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-whatsapp:hover { background:#1da851; color:white; }
+    
     .btn-edit { background:#f59e0b; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-edit:hover { background:#d97706; }
+    
     .btn-delete { background:#dc2626; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-delete:hover { background:#b91c1c; }
+    
     .empty-state { text-align:center; padding:50px 20px; color:#94a3b8; }
     .empty-state i { font-size:3rem; margin-bottom:15px; display:block; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
     .demo-badge { background:#10b981; color:white; padding:2px 10px; border-radius:30px; font-size:0.6rem; margin-left:8px; }
-    @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .btn-dashboard,.btn-admin,.btn-edit,.btn-delete,.btn-whatsapp{ text-align:center; justify-content:center; } }
+    
+    /* 🔥 NEW: Copy Link Toast */
+    .copy-toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #10b981;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      z-index: 1000;
+      animation: slideUp 0.3s ease;
+    }
+    .copy-toast i { font-size: 1.2rem; }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    @media (max-width:640px){ 
+      .coaching-details{ flex-direction:column; gap:8px; } 
+      .action-buttons{ flex-direction:column; } 
+      .btn-dashboard,.btn-admin,.btn-edit,.btn-delete,.btn-whatsapp{ text-align:center; justify-content:center; } 
+    }
   </style>
 </head>
 <body>
@@ -79,6 +114,12 @@
   <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
 </div>
 
+<!-- Copy Link Toast -->
+<div id="copyToast" class="copy-toast">
+  <i class="fas fa-check-circle"></i>
+  <span id="copyToastMessage">Link copied to clipboard!</span>
+</div>
+
 <!-- Edit Modal -->
 <div id="editModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
   <div class="modal-content" style="background:white; border-radius:32px; padding:28px; max-width:500px; width:90%;">
@@ -102,63 +143,88 @@
 
   let currentEditId = null;
 
-  // ===== 🔥 FIXED: GET CORRECT BASE URL =====
+  // ===== GET BASE URL =====
   function getBaseUrl() {
-    // 🔥 Method 1: Try to get from window.location
     let baseUrl = window.location.origin;
-    
-    // 🔥 Method 2: If on GitHub Pages with subdirectory
     const pathname = window.location.pathname;
     if (pathname.includes('/') && !pathname.endsWith('/')) {
-      // Remove the last part (file name) to get the directory
       const parts = pathname.split('/');
-      parts.pop(); // Remove the file name
+      parts.pop();
       const repoPath = parts.join('/');
-      
-      // Check if we're on GitHub Pages
       if (baseUrl.includes('github.io')) {
-        // For GitHub Pages with subdirectory: https://username.github.io/repo/
         baseUrl = baseUrl + repoPath;
       }
     }
-    
-    // Remove trailing slash if any
     if (baseUrl.endsWith('/')) {
       baseUrl = baseUrl.slice(0, -1);
     }
-    
-    console.log('🔗 Base URL:', baseUrl);
     return baseUrl;
   }
 
-  // ===== 🔥 FIXED: WHATSAPP SHARE FUNCTION =====
-  window.shareOnWhatsApp = function(phone, name, coachingId) {
-    // 🔥 Get correct base URL
+  // ===== COPY LINK FUNCTION =====
+  window.copyDashboardLink = function(coachingId, name) {
     const baseUrl = getBaseUrl();
+    const link = `${baseUrl}/dashboard.html?id=${coachingId}`;
     
-    // 🔥 Create full dashboard link with coaching ID
-    const dashboardLink = `${baseUrl}/teacher-panel.html?coachingId=${coachingId}`;
+    // Copy to clipboard
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(link).then(() => {
+        showCopyToast(`✅ Dashboard link for "${name}" copied!`);
+      }).catch(() => {
+        // Fallback
+        copyLinkFallback(link, name);
+      });
+    } else {
+      // Fallback
+      copyLinkFallback(link, name);
+    }
+  };
+
+  function copyLinkFallback(link, name) {
+    const textArea = document.createElement('textarea');
+    textArea.value = link;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      showCopyToast(`✅ Dashboard link for "${name}" copied!`);
+    } catch (err) {
+      showCopyToast(`❌ Failed to copy. Please copy manually: ${link}`);
+    }
+    document.body.removeChild(textArea);
+  }
+
+  function showCopyToast(message) {
+    document.getElementById('copyToastMessage').textContent = message;
+    const toast = document.getElementById('copyToast');
+    toast.style.display = 'flex';
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 3000);
+  }
+
+  // ===== WHATSAPP SHARE =====
+  window.shareOnWhatsApp = function(phone, name, coachingId) {
+    const baseUrl = getBaseUrl();
+    const dashboardLink = `${baseUrl}/dashboard.html?id=${coachingId}`;
+    const adminLink = `${baseUrl}/teacher-panel.html?coachingId=${coachingId}`;
     
-    // 🔥 Create message
     const message = `📚 *Namaste ${name} Team!*
 
-🎯 Your GYAN SEVA Admin Panel is ready!
+🎯 Your GYAN SEVA portals are ready!
 
-🔗 *Dashboard Link:* ${dashboardLink}
+🔗 *Student Dashboard:* ${dashboardLink}
+👨‍🏫 *Teacher Admin Panel:* ${adminLink}
 
-📊 You can:
-✅ Manage Results (Create, Edit, Publish)
-✅ Conduct Online Tests
-✅ View Student Performance
+📊 Students can:
+✅ Check Exam Results
+✅ View Online Tests
 
 For any help, contact GYAN SEVA Support.
 
 *GYAN SEVA* — Connected, Served, Growing 📈`;
 
-    // 🔥 WhatsApp URL
     const whatsappUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
-    
-    // 🔥 Open WhatsApp
     window.open(whatsappUrl, '_blank');
   };
 
@@ -261,15 +327,28 @@ For any help, contact GYAN SEVA Support.
               ${c.directorEmail ? `<div><i class="fas fa-envelope"></i> ${c.directorEmail}</div>` : ''}
             </div>
             <div class="action-buttons">
-              <a href="teacher-panel.html?coachingId=${id}" class="btn-dashboard" target="_blank">
-                <i class="fas fa-tachometer-alt"></i> Open Panel
+              <!-- 🔥 NEW: Dashboard Button -->
+              <a href="dashboard.html?id=${id}" class="btn-dashboard" target="_blank">
+                <i class="fas fa-globe"></i> Dashboard
               </a>
+              
+              <!-- 🔥 NEW: Copy Dashboard Link Button -->
+              <button class="btn-dashboard" onclick="copyDashboardLink('${id}','${(c.coachingName||'').replace(/'/g,"\\'")}')" style="background:#6366f1;">
+                <i class="fas fa-copy"></i> Copy Link
+              </button>
+              
+              <a href="teacher-panel.html?coachingId=${id}" class="btn-admin" target="_blank">
+                <i class="fas fa-user-shield"></i> Admin Panel
+              </a>
+              
               <button class="btn-whatsapp" onclick="shareOnWhatsApp('${c.phone}','${(c.coachingName||'').replace(/'/g,"\\'")}','${id}')">
                 <i class="fab fa-whatsapp"></i> Share Link
               </button>
+              
               <button class="btn-edit" onclick="openEditModal('${id}','${(c.coachingName||'').replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone||''}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logoUrl||'').replace(/'/g,"\\'")}')">
                 <i class="fas fa-pen"></i> Edit
               </button>
+              
               <button class="btn-delete" onclick="deleteCoaching('${id}','${(c.coachingName||'').replace(/'/g,"\\'")}')">
                 <i class="fas fa-trash-alt"></i> Delete
               </button>
