@@ -116,7 +116,7 @@
       background: white;
       border-radius: 12px;
       box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-      padding: 15px;
+      padding: 20px;
       position: relative;
       overflow-x: auto;
       display: none;
@@ -125,7 +125,7 @@
     .result-card-header {
       text-align: center;
       margin-bottom: 15px;
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       border-bottom: 2px solid #1a237e;
       display: flex;
       align-items: center;
@@ -143,6 +143,7 @@
       overflow: hidden;
       background: white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      flex-shrink: 0;
     }
     
     .result-logo img {
@@ -157,13 +158,13 @@
     
     .result-title h2 {
       color: #1a237e;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       font-size: 1.2rem;
     }
     
     .result-title h3 {
       color: #b21f1f;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       font-size: 1rem;
     }
     
@@ -172,29 +173,46 @@
       font-size: 0.8rem;
     }
     
+    /* 🔥 STUDENT INFO - 2 COLUMN LAYOUT */
     .student-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
       margin-bottom: 15px;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 10px 12px;
     }
     
-    .info-row {
+    .info-item {
       display: flex;
       flex-direction: column;
-      margin-bottom: 6px;
-      padding: 6px 10px;
-      background: #f5f5f5;
-      border-radius: 5px;
+      padding: 4px 8px;
+      border-radius: 4px;
     }
     
-    .info-label {
+    .info-item .label {
       font-weight: 600;
       color: #1a237e;
-      font-size: 0.85rem;
-      margin-bottom: 2px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.7;
     }
     
-    .info-value {
-      color: #333;
+    .info-item .value {
+      color: #1e293b;
       font-size: 0.9rem;
+      font-weight: 500;
+      word-break: break-word;
+    }
+    
+    /* 🔥 DIVIDER LINE */
+    .info-divider {
+      grid-column: 1 / -1;
+      height: 1px;
+      background: #e2e8f0;
+      margin: 2px 0;
     }
     
     .marks-table {
@@ -322,6 +340,19 @@
       .marks-table { min-width: 320px; }
       .marks-table th, .marks-table td { padding: 6px; font-size: 0.75rem; }
       .action-btn { padding: 8px 16px; font-size: 0.75rem; }
+      
+      /* 🔥 Mobile - Student Info 1 Column */
+      .student-info {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        padding: 8px 10px;
+      }
+      .info-item {
+        padding: 2px 6px;
+      }
+      .info-item .value {
+        font-size: 0.85rem;
+      }
     }
     
     @media print {
@@ -383,18 +414,32 @@
       </div>
     </div>
     
-    <div class="student-info">
-      <div class="info-row">
-        <span class="info-label">Student Name:</span>
-        <span class="info-value" id="studentName">-</span>
+    <!-- 🔥 STUDENT INFO - 2 COLUMN LAYOUT -->
+    <div class="student-info" id="studentInfo">
+      <div class="info-item">
+        <span class="label">👤 Student Name</span>
+        <span class="value" id="studentName">-</span>
       </div>
-      <div class="info-row">
-        <span class="info-label">Father's Name:</span>
-        <span class="info-value" id="fatherName">-</span>
+      <div class="info-item">
+        <span class="label">📋 Roll Number</span>
+        <span class="value" id="studentRoll">-</span>
       </div>
-      <div class="info-row">
-        <span class="info-label">Roll Number:</span>
-        <span class="info-value" id="studentRoll">-</span>
+      <div class="info-item">
+        <span class="label">👨‍👦 Father's Name</span>
+        <span class="value" id="fatherName">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">📚 Class</span>
+        <span class="value" id="studentClass">-</span>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <span class="label">📅 Exam Date</span>
+        <span class="value" id="examDate">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">📆 Session</span>
+        <span class="value" id="examSession">-</span>
       </div>
     </div>
     
@@ -436,19 +481,22 @@
   const studentRoll = decodeURIComponent(urlParams.get('roll') || '-');
   const fatherName = decodeURIComponent(urlParams.get('father') || '-');
   const examName = decodeURIComponent(urlParams.get('exam') || 'Examination');
-  const examDate = decodeURIComponent(urlParams.get('date') || '');
+  const examDate = decodeURIComponent(urlParams.get('date') || 'Not Specified');
+  const studentClass = decodeURIComponent(urlParams.get('class') || 'Not Specified');
+  const examSession = decodeURIComponent(urlParams.get('session') || '2026-2027');
   const subjects = JSON.parse(decodeURIComponent(urlParams.get('subjects') || '[]'));
   const marks = JSON.parse(decodeURIComponent(urlParams.get('marks') || '{}'));
   const totalPercent = decodeURIComponent(urlParams.get('percent') || '0');
   const division = decodeURIComponent(urlParams.get('division') || '-');
   
-  // Coaching info from localStorage (with fallback)
+  // Coaching info from localStorage
   const coachingName = localStorage.getItem('coachingName') || 'MODERN ACADEMY BEGUSARAI';
   const directorName = localStorage.getItem('directorName') || 'RAMAN SIR';
   const coachingLogo = localStorage.getItem('coachingLogo') || 'https://i.ibb.co/d4ybLkFS/logo-modern.jpg';
   const coachingPhone = localStorage.getItem('directorPhone') || '+91 8252658421';
+  const directorEmail = localStorage.getItem('directorEmail') || 'info@modernacademy.com';
   
-  // Hide loading after 1 second (simulate loading)
+  // Hide loading after 1 second
   setTimeout(() => {
     const loadingOverlay = document.getElementById('loadingOverlay');
     if (loadingOverlay) {
@@ -464,12 +512,15 @@
   
   document.getElementById('coachingName').innerText = coachingName;
   document.getElementById('directorName').innerText = directorName;
-  document.getElementById('examName').innerText = examDate ? `${examName} | ${examDate}` : examName;
+  document.getElementById('examName').innerText = examName; // 🔥 Sirf exam name, date nahi
   document.getElementById('studentName').innerText = studentName;
   document.getElementById('studentRoll').innerText = studentRoll;
   document.getElementById('fatherName').innerText = fatherName;
+  document.getElementById('studentClass').innerText = studentClass;
+  document.getElementById('examDate').innerText = examDate;
+  document.getElementById('examSession').innerText = examSession;
   document.getElementById('totalPercentage').innerHTML = `Total Percentage: ${totalPercent}%`;
-  document.getElementById('coachingMention').innerHTML = `<p>This result is published by ${coachingName} | Director: ${directorName}</p><p>For queries: ${coachingPhone}</p>`;
+  document.getElementById('coachingMention').innerHTML = `<p>This result is published by ${coachingName} | Director: ${directorName}</p><p>For queries: ${coachingPhone} | ${directorEmail}</p>`;
   
   // Division with color
   const divisionBox = document.getElementById('divisionBox');
@@ -543,11 +594,9 @@
     clone.style.background = 'white';
     clone.style.boxShadow = 'none';
     
-    // Remove action buttons if any inside clone
     const actionDiv = clone.querySelector('.action-buttons');
     if (actionDiv) actionDiv.remove();
     
-    // Fix logo for PDF
     const cloneLogo = clone.querySelector('#coachingLogo');
     if (cloneLogo) {
       cloneLogo.crossOrigin = 'Anonymous';
@@ -562,7 +611,6 @@
     return clone;
   }
   
-  // Wait for image to load
   function waitForImageLoad(img) {
     return new Promise((resolve) => {
       if (img.complete && img.naturalWidth > 0) {
@@ -575,7 +623,6 @@
     });
   }
   
-  // Download PDF function
   async function downloadResultPDF() {
     const btn = document.querySelector('.btn-download');
     const originalText = btn.innerHTML;
@@ -620,9 +667,8 @@
     }
   }
   
-  // Share on WhatsApp
   function shareOnWhatsApp() {
-    const shareText = `📢 *Result Published* 📢\n\n🏫 *${coachingName}*\n📚 *${examName}*\n\n👨‍🎓 Student: ${studentName}\n📝 Roll No: ${studentRoll}\n📊 Percentage: ${totalPercent}%\n📞 Contact: ${coachingPhone}`;
+    const shareText = `📢 *Result Published* 📢\n\n🏫 *${coachingName}*\n📚 *${examName}*\n📅 *${examDate}*\n\n👨‍🎓 Student: ${studentName}\n📝 Roll No: ${studentRoll}\n📊 Percentage: ${totalPercent}%\n📞 Contact: ${coachingPhone}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappUrl, '_blank');
   }
