@@ -47,6 +47,7 @@
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
     <a href="connected.html"><i class="fas fa-handshake"></i> Connected</a>
     <a href="add-customer.html" class="active"><i class="fas fa-plus-circle"></i> Add Customer</a>
+    <a href="teacher-panel.html"><i class="fas fa-chalkboard-user"></i> Teacher Panel</a>
   </div>
 
   <div class="add-card">
@@ -119,7 +120,6 @@
 
   let selectedLogoFile = null;
 
-  // ===== INDIAN NAMES FOR DEMO =====
   const INDIAN_NAMES = [
     { name: "Aarav Sharma", father: "Mr. Rajesh Sharma" },
     { name: "Vivaan Singh", father: "Mr. Suresh Singh" },
@@ -143,7 +143,6 @@
     ];
 
     const demoResults = [];
-
     const students1 = INDIAN_NAMES.slice(0, 10).map((p, i) => {
       const marks = {};
       subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 54) + 45; });
@@ -229,12 +228,11 @@
     setTimeout(() => { toast.style.display = 'none'; }, 4000);
   }
 
-  // ===== SAVE SCHOOL =====
   window.saveSchoolToFirebase = async () => {
     const name = document.getElementById('addSchoolName').value.trim();
     const location = document.getElementById('addSchoolLocation').value.trim();
     const director = document.getElementById('addSchoolDirector').value.trim();
-    let phone = document.getElementById('addSchoolPhone').value.trim();
+    const phone = document.getElementById('addSchoolPhone').value.trim();
     const email = document.getElementById('addSchoolEmail').value.trim();
 
     if(!name || !location || !director || !phone || !email) {
@@ -245,12 +243,6 @@
     if(!email.includes('@')) {
       alert('Please enter a valid email address');
       return;
-    }
-
-    // Clean phone number
-    phone = phone.replace(/\s/g, '').replace(/\+/g, '');
-    if (!phone.startsWith('91') && phone.length === 10) {
-      phone = '91' + phone;
     }
 
     const user = auth.currentUser;
@@ -316,8 +308,13 @@
         });
       }
 
-      // ===== SEND WHATSAPP WITH CORRECT LINK =====
-      const baseUrl = window.location.origin;
+      // 🔥 FIXED: Get base URL dynamically
+      let baseUrl = window.location.origin;
+      if (baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.slice(0, -1);
+      }
+      
+      // 🔥 Create correct dashboard link
       const dashboardLink = `${baseUrl}/teacher-panel.html?coachingId=${schoolId}`;
       
       const message = `📚 *Namaste ${name} Team!*
@@ -333,7 +330,7 @@
 
 *GYAN SEVA* — Connected, Served, Growing 📈`;
 
-      const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+      const whatsappUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
 
       showToast('✅ Institute added successfully! Demo results created.');
