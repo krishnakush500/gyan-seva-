@@ -46,7 +46,6 @@
     .empty-state i { font-size:3rem; margin-bottom:15px; display:block; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
     .demo-badge { background:#10b981; color:white; padding:2px 10px; border-radius:30px; font-size:0.6rem; margin-left:8px; }
-    .whatsapp-link-sent { background:#d1fae5; color:#065f46; padding:2px 10px; border-radius:30px; font-size:0.6rem; margin-left:8px; }
     @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .btn-dashboard,.btn-admin,.btn-edit,.btn-delete,.btn-whatsapp{ text-align:center; justify-content:center; } }
   </style>
 </head>
@@ -103,20 +102,44 @@
 
   let currentEditId = null;
 
-  // ===== 🔥 FIXED: WHATSAPP SHARE FUNCTION =====
-  window.shareOnWhatsApp = function(phone, name, coachingId) {
-    // 🔥 Get the base URL dynamically
+  // ===== 🔥 FIXED: GET CORRECT BASE URL =====
+  function getBaseUrl() {
+    // 🔥 Method 1: Try to get from window.location
     let baseUrl = window.location.origin;
     
-    // 🔥 Fix for GitHub Pages - remove trailing slash if any
+    // 🔥 Method 2: If on GitHub Pages with subdirectory
+    const pathname = window.location.pathname;
+    if (pathname.includes('/') && !pathname.endsWith('/')) {
+      // Remove the last part (file name) to get the directory
+      const parts = pathname.split('/');
+      parts.pop(); // Remove the file name
+      const repoPath = parts.join('/');
+      
+      // Check if we're on GitHub Pages
+      if (baseUrl.includes('github.io')) {
+        // For GitHub Pages with subdirectory: https://username.github.io/repo/
+        baseUrl = baseUrl + repoPath;
+      }
+    }
+    
+    // Remove trailing slash if any
     if (baseUrl.endsWith('/')) {
       baseUrl = baseUrl.slice(0, -1);
     }
     
-    // 🔥 Create full dashboard link
+    console.log('🔗 Base URL:', baseUrl);
+    return baseUrl;
+  }
+
+  // ===== 🔥 FIXED: WHATSAPP SHARE FUNCTION =====
+  window.shareOnWhatsApp = function(phone, name, coachingId) {
+    // 🔥 Get correct base URL
+    const baseUrl = getBaseUrl();
+    
+    // 🔥 Create full dashboard link with coaching ID
     const dashboardLink = `${baseUrl}/teacher-panel.html?coachingId=${coachingId}`;
     
-    // 🔥 Create message with coaching-specific link
+    // 🔥 Create message
     const message = `📚 *Namaste ${name} Team!*
 
 🎯 Your GYAN SEVA Admin Panel is ready!
@@ -132,7 +155,7 @@ For any help, contact GYAN SEVA Support.
 
 *GYAN SEVA* — Connected, Served, Growing 📈`;
 
-    // 🔥 WhatsApp URL with phone number
+    // 🔥 WhatsApp URL
     const whatsappUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
     
     // 🔥 Open WhatsApp
