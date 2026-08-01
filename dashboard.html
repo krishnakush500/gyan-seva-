@@ -29,84 +29,88 @@
       min-height:100vh;
     }
 
-    /* Header */
+    /* ===== HEADER - ONLY ONE PLACE ===== */
     .header { 
       background:linear-gradient(to right,#1a237e,#283593,#303f9f); 
       color:white; 
-      padding:20px 15px;
+      padding:25px 20px;
       text-align:center; 
       position:relative; 
       overflow:hidden; 
     }
-    .school-name { 
-      font-size:1.8rem;
-      font-weight:700; 
-      line-height:1.2; 
+    .header-content {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 20px;
       flex-wrap: wrap;
     }
-    .school-name img {
-      width: 50px;
-      height: 50px;
+    .header-logo {
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid rgba(255,255,255,0.3);
+      border: 3px solid rgba(255,255,255,0.3);
+      transition: transform 0.3s;
+    }
+    .header-logo:hover {
+      transform: scale(1.05);
+      border-color: #ffc107;
+    }
+    .header-text {
+      text-align: left;
+    }
+    .school-name { 
+      font-size:2rem;
+      font-weight:700; 
+      line-height:1.2; 
+      margin-bottom: 4px;
     }
     .location { 
-      font-size:0.95rem; 
-      margin-bottom:10px; 
+      font-size:1rem; 
       opacity: 0.9;
+      margin-bottom: 8px;
     }
-    .director-info { 
-      display:flex; 
-      align-items:center; 
-      justify-content:center; 
-      margin-top:15px; 
-      flex-wrap:wrap; 
+    .director-info-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 5px;
     }
-    .director-photo { 
-      width:90px;
-      height:90px; 
-      border-radius:50%; 
-      border:3px solid white;
-      overflow:hidden; 
-      margin-right:12px; 
-      transition:transform 0.3s; 
+    .director-photo-sm {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      object-fit: cover;
+      cursor: pointer;
+      transition: 0.3s;
     }
-    .director-photo:hover { 
-      transform:scale(1.05); 
-      box-shadow:0 0 15px rgba(255,255,255,0.5); 
+    .director-photo-sm:hover {
+      border-color: #ffc107;
+      transform: scale(1.05);
     }
-    .director-photo img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
+    .director-details-header {
+      display: flex;
+      flex-direction: column;
     }
-    .director-details{
-      text-align:left;
+    .director-details-header .label {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-    .director-details h2{
-      font-size:0.9rem; 
-      margin-bottom:4px;
-      opacity: 0.8;
-      font-weight: 400;
-    }
-    .director-details h3{
-      font-size:1.1rem; 
-      margin-bottom:4px; 
-      color: white;
-      cursor: default;
+    .director-details-header .name {
+      font-size: 1rem;
       font-weight: 600;
     }
-    .director-details p{
-      font-size:0.85rem;
+    .director-details-header .phone {
+      font-size: 0.85rem;
       opacity: 0.9;
     }
-    .director-details p i {
-      margin-right: 6px;
+    .director-details-header .phone i {
+      margin-right: 5px;
     }
 
     /* Moving Notice Text */
@@ -581,11 +585,11 @@
     @media (max-width: 768px) {
       body { padding: 0; }
       .container { border-radius: 0; box-shadow: none; margin: 0; width: 100%; }
-      .school-name { font-size: 1.5rem; }
-      .header { padding: 15px 10px; }
-      .director-info { flex-direction: column; text-align: center; }
-      .director-photo { margin-right: 0; margin-bottom: 8px; width: 80px; height: 80px; }
-      .director-details { text-align: center; }
+      .header-content { flex-direction: column; text-align: center; }
+      .header-text { text-align: center; }
+      .school-name { font-size: 1.6rem; }
+      .header { padding: 18px 12px; }
+      .director-info-header { justify-content: center; }
       .tab-btn { padding: 14px 8px; font-size: 0.9rem; }
       .tests-list, .results-list { grid-template-columns: 1fr; }
       .contact-info { flex-direction: column; gap: 8px; }
@@ -596,6 +600,7 @@
       .school-name { font-size: 1.3rem; }
       .section-title { font-size: 1.2rem; }
       .tab-btn { padding: 12px 6px; font-size: 0.85rem; }
+      .header-logo { width: 60px; height: 60px; }
     }
   </style>
 </head>
@@ -616,30 +621,33 @@
   </div>
 
   <div class="container">
+    <!-- ===== HEADER - ONLY ONE PLACE ===== -->
     <div class="header">
-      <h1 class="school-name">
-        <img id="schoolLogo" src="https://via.placeholder.com/50?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/50?text=Logo'">
-        <span id="schoolName">Loading...</span>
-      </h1>
-      <p class="location" id="schoolLocation">📍 Loading location...</p>
-      <div class="director-info">
-        <div class="director-photo" onclick="openPasswordModal()">
-          <img id="directorPhoto" src="https://via.placeholder.com/90?text=Director" alt="Director" onerror="this.src='https://via.placeholder.com/90?text=Director'">
-        </div>
-        <div class="director-details">
-          <h2 id="directorTitle">CEO & FOUNDER</h2>
-          <h3 id="directorName">Loading...</h3>
-          <p id="directorPhone"><i class="fas fa-phone"></i> Call: Loading...</p>
+      <div class="header-content">
+        <img id="schoolLogo" class="header-logo" src="https://via.placeholder.com/80?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/80?text=Logo'">
+        <div class="header-text">
+          <h1 class="school-name" id="schoolName">Loading...</h1>
+          <p class="location" id="schoolLocation">📍 Loading location...</p>
+          <div class="director-info-header">
+            <img id="directorPhoto" class="director-photo-sm" src="https://via.placeholder.com/45?text=DP" alt="Director" onclick="openPasswordModal()" onerror="this.src='https://via.placeholder.com/45?text=DP'">
+            <div class="director-details-header">
+              <span class="label" id="directorTitle">CEO & FOUNDER</span>
+              <span class="name" id="directorName">Loading...</span>
+              <span class="phone" id="directorPhone"><i class="fas fa-phone"></i> Loading...</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- Marquee -->
     <div class="marquee-container">
       <div class="marquee-content" id="marqueeContent">
         <span>📢 Loading notices... &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
       </div>
     </div>
 
+    <!-- Tabs -->
     <div class="main-tabs">
       <button class="tab-btn active" id="results-tab" onclick="switchTab('results')">
         <i class="fas fa-chart-line"></i> Check Results
@@ -649,6 +657,7 @@
       </button>
     </div>
 
+    <!-- Results Content -->
     <div class="tab-content active" id="results-content">
       <div class="results-section">
         <h2 class="section-title"><i class="fas fa-graduation-cap"></i> 📊 Exam Results</h2>
@@ -673,6 +682,7 @@
       </div>
     </div>
 
+    <!-- Tests Content -->
     <div class="tab-content" id="tests-content">
       <div class="tests-section">
         <h2 class="section-title"><i class="fas fa-laptop-code"></i> Online Live Tests</h2>
@@ -687,7 +697,7 @@
       </div>
     </div>
 
-    <!-- Developer Contact Section -->
+    <!-- Developer Contact -->
     <div class="developer-contact">
       <h3><i class="fas fa-laptop-code"></i> Website Development Contact</h3>
       <p>This website was developed by:</p>
@@ -763,7 +773,7 @@
           document.getElementById('schoolName').textContent = name;
           document.getElementById('schoolLocation').textContent = '📍 ' + location;
           document.getElementById('directorName').textContent = director;
-          document.getElementById('directorPhone').innerHTML = '<i class="fas fa-phone"></i> Call: ' + phone;
+          document.getElementById('directorPhone').innerHTML = '<i class="fas fa-phone"></i> ' + phone;
           document.getElementById('footerSchoolName').textContent = name;
           
           if (logo) {
@@ -958,7 +968,6 @@
         return;
       }
       
-      // Open result page
       const template = selectedExamData.template || 'result';
       let url;
       if (template === 'result1') {
@@ -972,6 +981,12 @@
 
     // ===== TAB SWITCH =====
     function switchTab(tabName) {
+      if (tabName === 'tests') {
+        // Open online tests in new tab
+        window.open('onlinetest.html', '_blank');
+        return;
+      }
+      
       document.getElementById('results-tab').classList.toggle('active', tabName === 'results');
       document.getElementById('tests-tab').classList.toggle('active', tabName === 'tests');
       document.getElementById('results-content').classList.toggle('active', tabName === 'results');
@@ -979,14 +994,6 @@
       
       if (tabName === 'results' && allResults.length === 0) {
         fetchAllResults();
-      }
-      if (tabName === 'tests') {
-        // Open online tests in new tab
-        window.open('onlinetest.html', '_blank');
-        // Switch back to results tab
-        setTimeout(() => {
-          switchTab('results');
-        }, 100);
       }
     }
 
@@ -1060,7 +1067,6 @@
         loadSchoolData(coachingId);
         localStorage.setItem('currentSchoolId', coachingId);
       } else {
-        // Try to get from localStorage
         const savedId = localStorage.getItem('currentSchoolId');
         if (savedId) {
           loadSchoolData(savedId);
