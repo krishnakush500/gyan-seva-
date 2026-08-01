@@ -173,6 +173,15 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
+        .demo-badge {
+            background: #10b981;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            margin-left: 8px;
+        }
+        
         @media (max-width: 768px) {
             .topbar { padding: 12px 16px; }
             .topbar .brand { font-size: 1rem; }
@@ -649,6 +658,8 @@
                 localStorage.setItem('instituteName', name);
                 localStorage.setItem('teacher_name', director);
                 localStorage.setItem('isTeacherLoggedIn', 'true');
+                
+                console.log('✅ Institute loaded:', name);
             } else {
                 alert('Institute not found!');
             }
@@ -674,7 +685,8 @@
     }
     window.logout = logout;
 
-    // ===== DOM ELEMENTS =====    const dashboardSection = document.getElementById('dashboardSection');
+    // ===== DOM ELEMENTS =====
+    const dashboardSection = document.getElementById('dashboardSection');
     const createResultSection = document.getElementById('createResultSection');
     const draftResultsSection = document.getElementById('draftResultsSection');
     const oldResultsSection = document.getElementById('oldResultsSection');
@@ -1104,7 +1116,8 @@
                 rollCode: rollCodeInput.value || '55075',
                 subjects,
                 students,
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                isDemo: false // Not a demo result
             };
             await addDoc(collection(db, "schools", schoolId, "results"), data);
             if (editingDraftId) {
@@ -1160,7 +1173,7 @@
         }
     }
 
-    // ===== LOAD DRAFTS =====
+    // ===== 🔥 FIXED: LOAD DRAFTS (School-Specific Path) =====
     async function loadDraftResults() {
         if (!schoolId) {
             draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
@@ -1181,7 +1194,7 @@
                 card.innerHTML = `
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">${d.examName}</h5>
+                            <h5 class="card-title">${d.examName || 'Unnamed'}</h5>
                             <p class="card-text text-muted">Subjects: ${d.subjects?.length || 0} | Students: ${d.students?.length || 0}</p>
                             <div class="d-flex gap-2 flex-wrap">
                                 <button class="btn btn-sm btn-primary edit-draft" data-id="${doc.id}">Edit</button>
@@ -1195,6 +1208,7 @@
             document.querySelectorAll('.edit-draft').forEach(btn => btn.addEventListener('click', e => editDraft(e.target.dataset.id)));
             document.querySelectorAll('.delete-draft').forEach(btn => btn.addEventListener('click', e => deleteDraft(e.target.dataset.id)));
         } catch(error) {
+            console.error('Error loading drafts:', error);
             draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Error loading drafts.</p></div>';
         }
     }
@@ -1247,44 +1261,62 @@
         }
     }
 
-    // ===== LOAD PUBLISHED RESULTS =====
+    // ===== 🔥 FIXED: LOAD PUBLISHED RESULTS (School-Specific Path) =====
     async function loadOldResults() {
         if (!schoolId) {
             oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
             return;
         }
         try {
+            // 🔥 FIX: Use school-specific path
             const q = query(collection(db, "schools", schoolId, "results"), orderBy("createdAt", "desc"));
             const snap = await getDocs(q);
             oldResultsList.innerHTML = '';
+            
             if (snap.empty) {
                 oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No published results found.</p></div>';
                 return;
             }
+            
             snap.forEach(doc => {
                 const d = doc.data();
-                const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString() : 'Unknown';
+                const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                }) : 'Unknown';
+                
+                // 🔥 Demo badge if it's a demo result
+                const demoBadge = d.isDemo ? '<span class="demo-badge">🎯 Demo</span>' : '';
+                
                 const card = document.createElement('div');
                 card.className = 'col-md-6 col-lg-4 mb-3';
                 card.innerHTML = `
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">${d.examName || 'Unnamed Exam'}</h5>
-                            <p class="card-text text-muted">${date} | Students: ${d.students?.length || 0}</p>
+                            <h5 class="card-title">${d.examName || 'Unnamed Exam'} ${demoBadge}</h5>
+                            <p class="card-text text-muted">
+                                <i class="fas fa-calendar-alt"></i> ${date} 
+                                | <i class="fas fa-users"></i> ${d.students?.length || 0} students
+                                | <i class="fas fa-book"></i> ${d.subjects?.length || 0} subjects
+                            </p>
                             <div class="d-flex gap-2 flex-wrap">
-                                <button class="btn btn-sm btn-primary view-result" data-id="${doc.id}">View</button>
-                                <button class="btn btn-sm btn-warning edit-result" data-id="${doc.id}">Edit</button>
-                                <button class="btn btn-sm btn-danger delete-result" data-id="${doc.id}">Delete</button>
+                                <button class="btn btn-sm btn-primary view-result" data-id="${doc.id}"><i class="fas fa-eye"></i> View</button>
+                                <button class="btn btn-sm btn-warning edit-result" data-id="${doc.id}"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn btn-sm btn-danger delete-result" data-id="${doc.id}"><i class="fas fa-trash"></i> Delete</button>
                             </div>
                         </div>
                     </div>
                 `;
                 oldResultsList.appendChild(card);
             });
+            
             document.querySelectorAll('.view-result').forEach(btn => btn.addEventListener('click', e => viewResult(e.target.dataset.id)));
             document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editResult(e.target.dataset.id)));
             document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deleteResult(e.target.dataset.id)));
+            
         } catch(error) {
+            console.error('Error loading results:', error);
             oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Error loading results.</p></div>';
         }
     }
@@ -1305,8 +1337,13 @@
                 return (tb/mb) - (ta/ma);
             });
 
-            resultModalTitle.textContent = data.examName + ' (Ranked)';
+            const demoTag = data.isDemo ? ' 🎯 (Demo)' : '';
+            resultModalTitle.textContent = data.examName + demoTag + ' (Ranked)';
+            
             let html = `<p><strong>Total Students:</strong> ${data.students.length}</p>`;
+            if (data.isDemo) {
+                html += `<div class="alert alert-info"><i class="fas fa-info-circle"></i> This is a demo result to help you get started.</div>`;
+            }
             if (sorted.length) html += `<div class="alert alert-success">🏆 Top: ${sorted[0].name} (Roll: ${sorted[0].rollNo})</div>`;
             html += `<div class="table-responsive"><table class="table table-striped"><thead><tr><th>Rank</th><th>Roll</th><th>Name</th><th>Father</th>`;
             data.subjects.forEach(s => html += `<th>${s.name}</th>`);
@@ -1443,6 +1480,13 @@
     }
 
     console.log('✅ Admin Panel Loaded for School ID:', schoolId);
+    
+    // Load results after school is loaded
+    setTimeout(() => {
+        if (schoolId) {
+            loadOldResults();
+        }
+    }, 1000);
 </script>
 </body>
 </html>
