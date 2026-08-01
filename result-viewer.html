@@ -173,46 +173,50 @@
       font-size: 0.8rem;
     }
     
-    /* 🔥 STUDENT INFO - 2 COLUMN LAYOUT */
+    /* 🔥 STUDENT INFO - SAME DESIGN AS MARKS TABLE */
     .student-info {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      width: 100%;
+      border-collapse: collapse;
       margin-bottom: 15px;
-      background: #f8fafc;
+      border: 1px solid #ddd;
       border-radius: 8px;
-      padding: 10px 12px;
+      overflow: hidden;
     }
     
-    .info-item {
-      display: flex;
-      flex-direction: column;
-      padding: 4px 8px;
-      border-radius: 4px;
+    .student-info table {
+      width: 100%;
+      border-collapse: collapse;
     }
     
-    .info-item .label {
+    .student-info td {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      font-size: 0.85rem;
+    }
+    
+    .student-info .label-cell {
       font-weight: 600;
       color: #1a237e;
-      font-size: 0.7rem;
+      background: #f0f4ff;
+      width: 35%;
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      opacity: 0.7;
     }
     
-    .info-item .value {
+    .student-info .value-cell {
       color: #1e293b;
-      font-size: 0.9rem;
       font-weight: 500;
-      word-break: break-word;
+      background: white;
+      width: 65%;
     }
     
-    /* 🔥 DIVIDER LINE */
-    .info-divider {
-      grid-column: 1 / -1;
-      height: 1px;
-      background: #e2e8f0;
-      margin: 2px 0;
+    .student-info tr:nth-child(even) .label-cell {
+      background: #e8edf5;
+    }
+    
+    .student-info tr:nth-child(even) .value-cell {
+      background: #fafafa;
     }
     
     .marks-table {
@@ -220,6 +224,9 @@
       border-collapse: collapse;
       margin-bottom: 15px;
       min-width: 400px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
     }
     
     .marks-table th {
@@ -228,11 +235,12 @@
       padding: 10px 8px;
       text-align: left;
       font-size: 0.85rem;
+      border: 1px solid #1a237e;
     }
     
     .marks-table td {
       padding: 8px;
-      border-bottom: 1px solid #ddd;
+      border: 1px solid #ddd;
       font-size: 0.85rem;
     }
     
@@ -244,6 +252,10 @@
       background: #e8f5e8 !important;
       font-weight: 600;
       color: #1a237e;
+    }
+    
+    .total-marks td {
+      border: 1px solid #c3e6cb;
     }
     
     .grade-a-plus { background: #d4edda; color: #155724; font-weight: 600; text-align: center; border-radius: 20px; display: inline-block; padding: 2px 10px; }
@@ -341,17 +353,17 @@
       .marks-table th, .marks-table td { padding: 6px; font-size: 0.75rem; }
       .action-btn { padding: 8px 16px; font-size: 0.75rem; }
       
-      /* 🔥 Mobile - Student Info 1 Column */
-      .student-info {
-        grid-template-columns: 1fr;
-        gap: 4px;
-        padding: 8px 10px;
+      .student-info td {
+        padding: 6px 8px;
+        font-size: 0.75rem;
       }
-      .info-item {
-        padding: 2px 6px;
+      .student-info .label-cell {
+        width: 40%;
+        font-size: 0.7rem;
       }
-      .info-item .value {
-        font-size: 0.85rem;
+      .student-info .value-cell {
+        width: 60%;
+        font-size: 0.8rem;
       }
     }
     
@@ -361,6 +373,10 @@
       .result-card { box-shadow: none; border-radius: 0; padding: 0; }
       .marks-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .grade-a-plus, .grade-a, .grade-b-plus, .grade-b, .grade-c, .grade-d, .grade-f {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .student-info td {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -414,33 +430,34 @@
       </div>
     </div>
     
-    <!-- 🔥 STUDENT INFO - 2 COLUMN LAYOUT -->
-    <div class="student-info" id="studentInfo">
-      <div class="info-item">
-        <span class="label">👤 Student Name</span>
-        <span class="value" id="studentName">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">📋 Roll Number</span>
-        <span class="value" id="studentRoll">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">👨‍👦 Father's Name</span>
-        <span class="value" id="fatherName">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">📚 Class</span>
-        <span class="value" id="studentClass">-</span>
-      </div>
-      <div class="info-divider"></div>
-      <div class="info-item">
-        <span class="label">📅 Exam Date</span>
-        <span class="value" id="examDate">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">📆 Session</span>
-        <span class="value" id="examSession">-</span>
-      </div>
+    <!-- 🔥 STUDENT INFO - TABLE STYLE (Same as Marks Table) -->
+    <div class="student-info">
+      <table>
+        <tr>
+          <td class="label-cell">👤 Student Name</td>
+          <td class="value-cell" id="studentName">-</td>
+        </tr>
+        <tr>
+          <td class="label-cell">📋 Roll Number</td>
+          <td class="value-cell" id="studentRoll">-</td>
+        </tr>
+        <tr>
+          <td class="label-cell">👨‍👦 Father's Name</td>
+          <td class="value-cell" id="fatherName">-</td>
+        </tr>
+        <tr>
+          <td class="label-cell">📚 Class</td>
+          <td class="value-cell" id="studentClass">-</td>
+        </tr>
+        <tr>
+          <td class="label-cell">📅 Exam Date</td>
+          <td class="value-cell" id="examDate">-</td>
+        </tr>
+        <tr>
+          <td class="label-cell">📆 Session</td>
+          <td class="value-cell" id="examSession">-</td>
+        </tr>
+      </table>
     </div>
     
     <table class="marks-table">
@@ -512,7 +529,7 @@
   
   document.getElementById('coachingName').innerText = coachingName;
   document.getElementById('directorName').innerText = directorName;
-  document.getElementById('examName').innerText = examName; // 🔥 Sirf exam name, date nahi
+  document.getElementById('examName').innerText = examName;
   document.getElementById('studentName').innerText = studentName;
   document.getElementById('studentRoll').innerText = studentRoll;
   document.getElementById('fatherName').innerText = fatherName;
