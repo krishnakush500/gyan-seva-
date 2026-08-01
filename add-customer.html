@@ -134,6 +134,7 @@
     { name: "Rahul Verma", father: "Mr. Sanjay Verma" }
   ];
 
+  // ===== 🔥 UPDATED: Demo Results with Exam Date, Session & Class =====
   function generateDemoResults(schoolName, directorName) {
     const subjects = [
       { name: "Mathematics", total: 100 },
@@ -144,10 +145,18 @@
     ];
 
     const demoResults = [];
+
+    // ===== DEMO RESULT 1: Mid-Term Examination =====
     const students1 = INDIAN_NAMES.slice(0, 10).map((p, i) => {
       const marks = {};
       subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 54) + 45; });
-      return { rollNo: i + 1, name: p.name, fatherName: p.father, marks };
+      return { 
+        rollNo: i + 1, 
+        name: p.name, 
+        fatherName: p.father, 
+        marks,
+        class: "10th" // 🔥 Added class per student
+      };
     });
     demoResults.push({
       examName: "Mid-Term Examination 2024-25",
@@ -156,13 +165,24 @@
       subjects,
       students: students1,
       createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
-      isDemo: true
+      isDemo: true,
+      // 🔥 NEW FIELDS
+      examDate: "15 Jan 2025",
+      session: "2026-2027",
+      class: "10th"
     });
 
+    // ===== DEMO RESULT 2: Unit Test 1 =====
     const students2 = INDIAN_NAMES.slice(3, 13).map((p, i) => {
       const marks = {};
       subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 50) + 35; });
-      return { rollNo: i + 1, name: p.name, fatherName: p.father, marks };
+      return { 
+        rollNo: i + 1, 
+        name: p.name, 
+        fatherName: p.father, 
+        marks,
+        class: "10th"
+      };
     });
     demoResults.push({
       examName: "Unit Test 1 - 2024-25",
@@ -171,13 +191,23 @@
       subjects,
       students: students2,
       createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
-      isDemo: true
+      isDemo: true,
+      examDate: "10 Jan 2025",
+      session: "2026-2027",
+      class: "10th"
     });
 
+    // ===== DEMO RESULT 3: Pre-Board Examination =====
     const students3 = INDIAN_NAMES.slice(0, 8).map((p, i) => {
       const marks = {};
       subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 40) + 55; });
-      return { rollNo: i + 1, name: p.name, fatherName: p.father, marks };
+      return { 
+        rollNo: i + 1, 
+        name: p.name, 
+        fatherName: p.father, 
+        marks,
+        class: "10th"
+      };
     });
     demoResults.push({
       examName: "Pre-Board Examination 2024-25",
@@ -186,7 +216,10 @@
       subjects,
       students: students3,
       createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      isDemo: true
+      isDemo: true,
+      examDate: "05 Jan 2025",
+      session: "2026-2027",
+      class: "10th"
     });
 
     return demoResults;
@@ -229,7 +262,6 @@
     setTimeout(() => { toast.style.display = 'none'; }, 4000);
   }
 
-  // ===== 🔥 FIXED: GET CORRECT BASE URL =====
   function getBaseUrl() {
     let baseUrl = window.location.origin;
     const pathname = window.location.pathname;
@@ -315,6 +347,7 @@
         isActive: true
       });
 
+      // 🔥 Demo results now have examDate, session, class
       const demoResults = generateDemoResults(name, director);
       for (const result of demoResults) {
         await addDoc(collection(db, "schools", schoolId, "results"), {
@@ -324,11 +357,14 @@
           subjects: result.subjects,
           students: result.students,
           createdAt: result.createdAt,
-          isDemo: true
+          isDemo: true,
+          // 🔥 NEW FIELDS SAVED TO FIREBASE
+          examDate: result.examDate,
+          session: result.session,
+          class: result.class
         });
       }
 
-      // 🔥 FIXED: Get correct base URL
       const baseUrl = getBaseUrl();
       const dashboardLink = `${baseUrl}/teacher-panel.html?coachingId=${schoolId}`;
       
