@@ -47,7 +47,6 @@
     <a href="index.html"><i class="fas fa-home"></i> Home</a>
     <a href="connected.html"><i class="fas fa-handshake"></i> Connected</a>
     <a href="add-customer.html" class="active"><i class="fas fa-plus-circle"></i> Add Customer</a>
-    <a href="teacher-panel.html"><i class="fas fa-chalkboard-user"></i> Teacher Panel</a>
   </div>
 
   <div class="add-card">
@@ -145,7 +144,6 @@
 
     const demoResults = [];
 
-    // Result 1: Mid-Term
     const students1 = INDIAN_NAMES.slice(0, 10).map((p, i) => {
       const marks = {};
       subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 54) + 45; });
@@ -161,7 +159,6 @@
       isDemo: true
     });
 
-    // Result 2: Unit Test
     const students2 = INDIAN_NAMES.slice(3, 13).map((p, i) => {
       const marks = {};
       subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 50) + 35; });
@@ -177,7 +174,6 @@
       isDemo: true
     });
 
-    // Result 3: Pre-Board
     const students3 = INDIAN_NAMES.slice(0, 8).map((p, i) => {
       const marks = {};
       subjects.forEach(s => { marks[s.name] = Math.floor(Math.random() * 40) + 55; });
@@ -196,7 +192,6 @@
     return demoResults;
   }
 
-  // ===== LOGO UPLOAD =====
   window.previewLogo = (event) => {
     const file = event.target.files[0];
     if(file) {
@@ -239,7 +234,7 @@
     const name = document.getElementById('addSchoolName').value.trim();
     const location = document.getElementById('addSchoolLocation').value.trim();
     const director = document.getElementById('addSchoolDirector').value.trim();
-    const phone = document.getElementById('addSchoolPhone').value.trim();
+    let phone = document.getElementById('addSchoolPhone').value.trim();
     const email = document.getElementById('addSchoolEmail').value.trim();
 
     if(!name || !location || !director || !phone || !email) {
@@ -250,6 +245,12 @@
     if(!email.includes('@')) {
       alert('Please enter a valid email address');
       return;
+    }
+
+    // Clean phone number
+    phone = phone.replace(/\s/g, '').replace(/\+/g, '');
+    if (!phone.startsWith('91') && phone.length === 10) {
+      phone = '91' + phone;
     }
 
     const user = auth.currentUser;
@@ -275,11 +276,9 @@
     }
 
     try {
-      // Create unique school ID
       const schoolRef = doc(collection(db, "schools"));
       const schoolId = schoolRef.id;
 
-      // 1. Save School
       const schoolData = {
         coachingName: name,
         location: location,
@@ -296,7 +295,6 @@
       };
       await setDoc(schoolRef, schoolData);
 
-      // 2. Add Teacher
       await setDoc(doc(db, "schools", schoolId, "teachers", user.uid), {
         name: director,
         email: email,
@@ -305,7 +303,6 @@
         isActive: true
       });
 
-      // 3. Add Demo Results
       const demoResults = generateDemoResults(name, director);
       for (const result of demoResults) {
         await addDoc(collection(db, "schools", schoolId, "results"), {
@@ -319,8 +316,10 @@
         });
       }
 
-      // 4. Send WhatsApp message with dashboard link
-      const dashboardLink = `${window.location.origin}/teacher-panel.html?coachingId=${schoolId}`;
+      // ===== SEND WHATSAPP WITH CORRECT LINK =====
+      const baseUrl = window.location.origin;
+      const dashboardLink = `${baseUrl}/teacher-panel.html?coachingId=${schoolId}`;
+      
       const message = `📚 *Namaste ${name} Team!*
 
 🎯 Your GYAN SEVA Admin Panel is ready!
@@ -334,14 +333,11 @@
 
 *GYAN SEVA* — Connected, Served, Growing 📈`;
 
-      const whatsappUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
-      
-      // Open WhatsApp in new tab
+      const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
 
       showToast('✅ Institute added successfully! Demo results created.');
       
-      // Reset form
       document.getElementById('addSchoolName').value = '';
       document.getElementById('addSchoolLocation').value = '';
       document.getElementById('addSchoolDirector').value = '';
@@ -354,7 +350,6 @@
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-save"></i> Add Another Institute';
 
-      // Redirect after 3 seconds
       setTimeout(() => {
         window.location.href = 'connected.html';
       }, 3000);
@@ -366,7 +361,6 @@
     }
   };
 
-  // ===== LOGIN CHECK =====
   onAuthStateChanged(auth, (user) => {
     if(user) {
       console.log('Logged in:', user.uid);
