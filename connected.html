@@ -51,32 +51,10 @@
     .btn-submit { background:#10b981; color:white; }
     .btn-submit:hover { background:#059669; }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
+    .demo-badge { background:#10b981; color:white; padding:2px 10px; border-radius:30px; font-size:0.6rem; margin-left:8px; }
+    .loading-spinner { display:inline-block; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
     @media (max-width:640px){ .coaching-details{ flex-direction:column; gap:8px; } .action-buttons{ flex-direction:column; } .btn-dashboard,.btn-admin,.btn-edit,.btn-delete,.btn-whatsapp{ text-align:center; justify-content:center; } }
-    
-    /* Toast notification */
-    .toast-notification {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #10b981;
-      color: white;
-      padding: 16px 32px;
-      border-radius: 50px;
-      font-weight: 600;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      z-index: 9999;
-      display: none;
-      align-items: center;
-      gap: 12px;
-      animation: slideUp 0.5s ease;
-      max-width: 90%;
-    }
-    .toast-notification.error { background: #dc2626; }
-    @keyframes slideUp {
-      from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-      to { transform: translateX(-50%) translateY(0); opacity: 1; }
-    }
   </style>
 </head>
 <body>
@@ -110,12 +88,6 @@
     </div>
   </div>
   <footer><i class="fas fa-heart" style="color:#2563eb;"></i> GYAN SEVA — Connected, Served, Growing</footer>
-</div>
-
-<!-- Toast Notification -->
-<div class="toast-notification" id="toastNotification">
-  <i class="fas fa-check-circle"></i>
-  <span id="toastMessage">Success!</span>
 </div>
 
 <!-- Add School Modal -->
@@ -172,7 +144,7 @@
 
 <script type="module">
   import { db, auth } from './firebase-config.js';
-  import { collection, getDocs, deleteDoc, doc, updateDoc, addDoc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, deleteDoc, doc, updateDoc, setDoc, getDoc, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const SUPABASE_URL = "https://qfmmgeodabytpuzkarrb.supabase.co";
@@ -180,18 +152,6 @@
 
   let currentEditId = null;
   let selectedLogoFile = null;
-
-  // ===== TOAST FUNCTION =====
-  function showToast(message, isError = false) {
-    const toast = document.getElementById('toastNotification');
-    const toastMsg = document.getElementById('toastMessage');
-    toastMsg.textContent = message;
-    toast.className = 'toast-notification' + (isError ? ' error' : '');
-    toast.style.display = 'flex';
-    setTimeout(() => {
-      toast.style.display = 'none';
-    }, 4000);
-  }
 
   // ===== INDIAN URBAN NAMES FOR DEMO DATA =====
   const INDIAN_NAMES = [
@@ -218,7 +178,7 @@
   ];
 
   // ===== GENERATE DEMO RESULTS =====
-  function generateDemoResults(schoolId, schoolName, directorName) {
+  function generateDemoResults(schoolName, directorName) {
     const subjects = [
       { name: "Mathematics", total: 100 },
       { name: "Science", total: 100 },
@@ -358,7 +318,7 @@
     document.getElementById('addSchoolModal').style.display = 'none';
   };
 
-  // ===== SAVE SCHOOL WITH DEMO RESULTS (USING addDoc) =====
+  // ===== 🔥 FIXED: SAVE SCHOOL WITH UNIQUE ID =====
   window.saveSchoolToFirebase = async () => {
     const name = document.getElementById('addSchoolName').value.trim();
     const location = document.getElementById('addSchoolLocation').value.trim();
@@ -367,18 +327,18 @@
     const email = document.getElementById('addSchoolEmail').value.trim();
 
     if(!name || !location || !director || !phone || !email) {
-      showToast('Please fill all required fields (including email)', true);
+      alert('Please fill all required fields (including email)');
       return;
     }
 
     if(!email.includes('@')) {
-      showToast('Please enter a valid email address', true);
+      alert('Please enter a valid email address');
       return;
     }
 
     const user = auth.currentUser;
     if(!user) {
-      showToast('Please login first', true);
+      alert('Please login first');
       return;
     }
 
@@ -388,14 +348,18 @@
       try {
         logoUrl = await uploadToSupabase(selectedLogoFile);
       } catch(error) {
-        showToast('Logo upload failed: ' + error.message, true);
+        alert('Logo upload failed: ' + error.message);
         return;
       }
     }
 
     try {
-      // ===== 🔥 IMPORTANT: Use addDoc to create NEW document =====
-      const schoolRef = await addDoc(collection(db, "schools"), {
+      // 🔥 FIX: Generate a unique document ID for each school
+      const schoolRef = doc(collection(db, "schools"));
+      const schoolId = schoolRef.id; // Unique ID generated by Firestore
+
+      // 1. Save School Data with unique ID
+      const schoolData = {
         coachingName: name,
         location: location,
         director: director,
@@ -406,26 +370,26 @@
         createdAt: Date.now(),
         subscriptionStatus: 'active',
         subscriptionPlan: 'free_trial',
-        demoResultsAdded: true
-      });
+        demoResultsAdded: true,
+        schoolId: schoolId // Store the unique ID
+      };
 
-      const schoolId = schoolRef.id;
-
-      // ===== Add Teacher (Director) =====
-      await addDoc(collection(db, "schools", schoolId, "teachers"), {
+      await setDoc(schoolRef, schoolData);
+      
+      // 2. Add Teacher (Director) - store in subcollection
+      await setDoc(doc(db, "schools", schoolId, "teachers", user.uid), {
         name: director,
         email: email,
         role: 'director',
         joinedAt: Date.now(),
-        isActive: true,
-        createdBy: user.uid
+        isActive: true
       });
 
-      // ===== 🔥 ADD 3 DEMO RESULTS =====
-      const demoResults = generateDemoResults(schoolId, name, director);
+      // 3. 🔥 ADD 3 DEMO RESULTS
+      const demoResults = generateDemoResults(name, director);
       
       for (const result of demoResults) {
-        await addDoc(collection(db, "schools", schoolId, "results"), {
+        const resultData = {
           examName: result.examName,
           examCentre: result.examCentre,
           rollCode: result.rollCode,
@@ -433,25 +397,28 @@
           students: result.students,
           createdAt: result.createdAt,
           isDemo: true
-        });
+        };
+        // Use addDoc to auto-generate result ID
+        await addDoc(collection(db, "schools", schoolId, "results"), resultData);
       }
 
-      showToast(`✅ "${name}" created successfully with 3 demo results!`);
+      alert('✅ Institute created successfully with 3 demo results!');
       closeAddSchoolModal();
       loadConnectedCoachings();
     } catch(error) {
-      showToast('Error: ' + error.message, true);
+      alert('Error: ' + error.message);
+      console.error('Error:', error);
     }
   };
 
   // ===== EDIT FUNCTIONS =====
   window.openEditModal = (id, name, dir, phone, loc, logo) => {
     currentEditId = id;
-    document.getElementById('editName').value = name;
-    document.getElementById('editDirector').value = dir;
-    document.getElementById('editPhone').value = phone;
-    document.getElementById('editLocation').value = loc;
-    document.getElementById('editLogo').value = logo;
+    document.getElementById('editName').value = name || '';
+    document.getElementById('editDirector').value = dir || '';
+    document.getElementById('editPhone').value = phone || '';
+    document.getElementById('editLocation').value = loc || '';
+    document.getElementById('editLogo').value = logo || '';
     document.getElementById('editModal').style.display = 'flex';
   };
 
@@ -463,18 +430,18 @@
     if(!currentEditId) return;
     try {
       const data = {
-        coachingName: document.getElementById('editName').value,
-        director: document.getElementById('editDirector').value,
-        phone: document.getElementById('editPhone').value,
-        location: document.getElementById('editLocation').value,
-        logoUrl: document.getElementById('editLogo').value
+        coachingName: document.getElementById('editName').value.trim(),
+        director: document.getElementById('editDirector').value.trim(),
+        phone: document.getElementById('editPhone').value.trim(),
+        location: document.getElementById('editLocation').value.trim(),
+        logoUrl: document.getElementById('editLogo').value.trim()
       };
       await updateDoc(doc(db, "schools", currentEditId), data);
       closeEditModal();
       loadConnectedCoachings();
-      showToast('✅ Updated successfully!');
+      alert('✅ Updated!');
     } catch(error) {
-      showToast('Error: ' + error.message, true);
+      alert('Error: ' + error.message);
     }
   };
 
@@ -482,31 +449,22 @@
   window.deleteCoaching = async (id, name) => {
     if(confirm(`Delete "${name}" permanently? This deletes ALL results!`)) {
       try {
-        // Delete all results
+        // Delete all results subcollection
         const resultsSnap = await getDocs(collection(db, "schools", id, "results"));
         for(const r of resultsSnap.docs) {
           await deleteDoc(doc(db, "schools", id, "results", r.id));
         }
-        
-        // Delete all drafts
-        const draftsSnap = await getDocs(collection(db, "schools", id, "draft_results"));
-        for(const d of draftsSnap.docs) {
-          await deleteDoc(doc(db, "schools", id, "draft_results", d.id));
-        }
-        
-        // Delete all teachers
+        // Delete all teachers subcollection
         const teachersSnap = await getDocs(collection(db, "schools", id, "teachers"));
         for(const t of teachersSnap.docs) {
           await deleteDoc(doc(db, "schools", id, "teachers", t.id));
         }
-        
-        // Delete school document
+        // Delete the school document
         await deleteDoc(doc(db, "schools", id));
-        
-        showToast(`✅ "${name}" deleted successfully!`);
+        alert(`"${name}" deleted!`);
         loadConnectedCoachings();
       } catch(error) {
-        showToast('Error: ' + error.message, true);
+        alert('Error deleting: ' + error.message);
       }
     }
   };
@@ -529,12 +487,17 @@
         const id = d.id;
         
         // Get results count
-        const resultsSnap = await getDocs(collection(db, "schools", id, "results"));
-        const resultsCount = resultsSnap.size;
+        let resultsCount = 0;
+        try {
+          const resultsSnap = await getDocs(collection(db, "schools", id, "results"));
+          resultsCount = resultsSnap.size;
+        } catch(e) {
+          resultsCount = 0;
+        }
         
         const logoHtml = c.logoUrl ? `<img src="${c.logoUrl}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none'">` : '';
         
-        const demoBadge = c.demoResultsAdded ? `<span style="background:#10b981; color:white; padding:2px 10px; border-radius:30px; font-size:0.6rem; margin-left:8px;">✅ Demo</span>` : '';
+        const demoBadge = c.demoResultsAdded ? `<span class="demo-badge">✅ Demo</span>` : '';
         
         html += `
           <div class="coaching-card">
@@ -562,7 +525,7 @@
               <button class="btn-delete" onclick="deleteCoaching('${id}','${(c.coachingName||'').replace(/'/g,"\\'")}')">
                 <i class="fas fa-trash-alt"></i> Delete
               </button>
-              <a href="https://wa.me/91${c.phone}?text=Namaste%20${encodeURIComponent(c.coachingName)}%20team" target="_blank" class="btn-whatsapp">
+              <a href="https://wa.me/91${c.phone}?text=Namaste%20${encodeURIComponent(c.coachingName||'')}%20team" target="_blank" class="btn-whatsapp">
                 <i class="fab fa-whatsapp"></i> WhatsApp
               </a>
             </div>
