@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f0f2f5; min-height: 100vh; font-size: 14px; }
+        body { background: #f0f2f5; min-height: 100vh; }
         
         .topbar {
             background: linear-gradient(135deg, #1a237e, #283593);
@@ -156,27 +156,199 @@
         .edit-modal .modal-body { padding: 16px; }
         .edit-modal .modal-footer { padding: 12px 16px; }
         
-        @media (max-width: 768px) {
-            .topbar { padding: 8px 12px; }
-            .topbar .brand { font-size: 0.85rem; }
-            .topbar .user-info span { font-size: 0.65rem; }
-            .container { padding: 8px 6px; }
-            .welcome-card { padding: 10px 12px; }
-            .welcome-card .welcome-text h2 { font-size: 0.9rem; }
-            .card-body { padding: 10px 12px; }
-            .form-control, .form-select { font-size: 0.75rem; padding: 5px 8px; }
-            .btn { font-size: 0.7rem; padding: 5px 10px; }
-            .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
-            .student-compact { font-size: 0.65rem; padding: 4px 8px; }
-            .student-compact .info .marks-text { font-size: 0.55rem; }
+        /* ======================================== */
+        /* 🔥 MOBILE FIRST - DEFAULT (Small) */
+        /* ======================================== */
+        body { font-size: 14px; }
+        .container { padding: 8px 6px; }
+        .topbar .brand { font-size: 0.85rem; }
+        .topbar .user-info span { font-size: 0.65rem; }
+        .welcome-card { padding: 10px 12px; }
+        .welcome-card .welcome-text h2 { font-size: 0.9rem; }
+        .card-body { padding: 10px 12px; }
+        .form-control, .form-select { font-size: 0.75rem; padding: 5px 8px; }
+        .btn { font-size: 0.7rem; padding: 5px 10px; }
+        .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
+        .student-compact { font-size: 0.65rem; padding: 4px 8px; }
+        .student-compact .info .marks-text { font-size: 0.55rem; }
+        .modal-dialog { margin: 10px; }
+        
+        /* ======================================== */
+        /* 🔥 TABLET (768px - 1024px) */
+        /* ======================================== */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            body { font-size: 15px; }
+            .container { padding: 12px 16px; max-width: 100%; }
+            .topbar { padding: 12px 20px; }
+            .topbar .brand { font-size: 1.1rem; }
+            .topbar .user-info span { font-size: 0.8rem; }
+            .topbar .user-info .institute-name { font-size: 0.8rem; padding: 4px 14px; }
+            .topbar .logout-btn { font-size: 0.8rem; padding: 5px 16px; }
+            
+            .welcome-card { padding: 14px 20px; }
+            .welcome-card .institute-logo { width: 50px; height: 50px; }
+            .welcome-card .welcome-text h2 { font-size: 1.1rem; }
+            .welcome-card .welcome-text p { font-size: 0.85rem; }
+            
+            .card-header { padding: 12px 18px; font-size: 0.95rem; }
+            .card-body { padding: 14px 18px; }
+            
+            .form-label { font-size: 0.85rem; }
+            .form-control, .form-select { font-size: 0.9rem; padding: 8px 12px; }
+            .form-control-sm, .form-select-sm { font-size: 0.85rem; padding: 6px 10px; }
+            
+            .btn { font-size: 0.85rem; padding: 8px 18px; }
+            .btn-sm { font-size: 0.75rem; padding: 6px 14px; }
+            .btn-lg { font-size: 1rem; padding: 10px 24px; }
+            
+            .exam-summary { font-size: 0.85rem; padding: 12px 16px; }
+            .exam-summary .edit-btn { font-size: 1rem; }
+            
+            .student-compact { font-size: 0.85rem; padding: 8px 14px; }
+            .student-compact .info .marks-text { font-size: 0.75rem; }
+            .student-list-container { max-height: 300px; }
+            
+            .subject-box { padding: 12px; }
+            .subject-box .form-label { font-size: 0.8rem; }
+            
+            .demo-badge { font-size: 0.65rem; padding: 2px 10px; }
+            .modal-dialog { margin: 20px auto; }
         }
         
+        /* ======================================== */
+        /* 🔥 DESKTOP / LAPTOP (> 1024px) */
+        /* ======================================== */
+        @media (min-width: 1025px) {
+            body { font-size: 16px; }
+            .container { 
+                padding: 20px 30px; 
+                max-width: 1200px; 
+                margin: 0 auto; 
+            }
+            .topbar { padding: 14px 30px; }
+            .topbar .brand { font-size: 1.3rem; }
+            .topbar .user-info span { font-size: 0.9rem; }
+            .topbar .user-info .institute-name { font-size: 0.9rem; padding: 5px 18px; }
+            .topbar .logout-btn { font-size: 0.85rem; padding: 6px 20px; }
+            
+            .welcome-card { 
+                padding: 18px 24px; 
+                border-radius: 16px;
+                margin-bottom: 20px;
+            }
+            .welcome-card .institute-logo { width: 60px; height: 60px; }
+            .welcome-card .welcome-text h2 { font-size: 1.3rem; }
+            .welcome-card .welcome-text p { font-size: 0.95rem; }
+            
+            .card { border-radius: 14px; }
+            .card-header { 
+                padding: 14px 20px; 
+                font-size: 1rem; 
+                font-weight: 700;
+            }
+            .card-body { padding: 18px 22px; }
+            
+            .form-label { font-size: 0.9rem; margin-bottom: 4px; }
+            .form-control, .form-select { 
+                font-size: 0.95rem; 
+                padding: 10px 14px; 
+                border-radius: 10px;
+            }
+            .form-control-sm, .form-select-sm { 
+                font-size: 0.9rem; 
+                padding: 8px 12px; 
+            }
+            
+            .btn { 
+                font-size: 0.9rem; 
+                padding: 10px 22px; 
+                border-radius: 10px;
+            }
+            .btn-sm { 
+                font-size: 0.8rem; 
+                padding: 6px 16px; 
+            }
+            .btn-lg { 
+                font-size: 1.05rem; 
+                padding: 12px 28px; 
+            }
+            
+            .exam-summary { 
+                font-size: 0.9rem; 
+                padding: 14px 20px; 
+                border-radius: 12px;
+                margin-bottom: 18px;
+            }
+            .exam-summary .edit-btn { 
+                font-size: 1.1rem; 
+                padding: 4px 12px;
+            }
+            .exam-summary .info { gap: 8px 18px; }
+            
+            .student-compact { 
+                font-size: 0.9rem; 
+                padding: 10px 16px; 
+            }
+            .student-compact .info .marks-text { 
+                font-size: 0.8rem; 
+            }
+            .student-list-container { 
+                max-height: 350px; 
+                border-radius: 10px;
+            }
+            .student-compact .actions button { 
+                font-size: 0.85rem; 
+                padding: 4px 10px;
+            }
+            
+            .subject-box { 
+                padding: 14px; 
+                border-radius: 10px;
+                margin-bottom: 10px;
+            }
+            .subject-box .form-label { font-size: 0.85rem; }
+            
+            .demo-badge { 
+                font-size: 0.7rem; 
+                padding: 2px 12px; 
+            }
+            
+            .modal-dialog { margin: 30px auto; }
+            .modal-content { border-radius: 18px; }
+            .edit-modal .modal-header { padding: 16px 20px; }
+            .edit-modal .modal-body { padding: 20px; }
+            .edit-modal .modal-footer { padding: 16px 20px; }
+            
+            .success-message { 
+                font-size: 0.9rem; 
+                padding: 12px 24px; 
+                bottom: 25px;
+                right: 25px;
+            }
+            
+            /* Dashboard Cards - Desktop */
+            .dashboard-cards .card { padding: 10px; }
+            .dashboard-cards .card-body h6 { font-size: 1rem; }
+            .dashboard-cards .card-body .btn { font-size: 0.85rem; padding: 8px 20px; }
+        }
+        
+        /* ======================================== */
+        /* 🔥 VERY SMALL MOBILE (< 480px) */
+        /* ======================================== */
         @media (max-width: 480px) {
             .topbar .user-info .institute-name { font-size: 0.6rem; padding: 2px 8px; }
             .student-compact { flex-wrap: wrap; gap: 4px; }
             .student-compact .info { gap: 6px; }
             .exam-summary { flex-direction: column; align-items: stretch; }
             .exam-summary .edit-btn { align-self: flex-end; }
+            .container { padding: 6px 4px; }
+            .welcome-card { padding: 8px 10px; }
+            .welcome-card .institute-logo { width: 32px; height: 32px; }
+            .welcome-card .welcome-text h2 { font-size: 0.8rem; }
+            .card-body { padding: 8px 10px; }
+            .btn { font-size: 0.65rem; padding: 4px 8px; }
+            .form-control, .form-select { font-size: 0.7rem; padding: 4px 6px; }
+            .student-compact { font-size: 0.6rem; padding: 4px 6px; }
         }
     </style>
 </head>
@@ -207,7 +379,7 @@
 
     <!-- ===== DASHBOARD CARDS ===== -->
     <div id="dashboardSection" class="section active">
-        <div class="row g-2">
+        <div class="row g-2 dashboard-cards">
             <div class="col-4">
                 <div class="card text-center h-100">
                     <div class="card-body">
@@ -289,7 +461,7 @@
         
         <!-- Step 2: Student Marks Entry -->
         <div id="studentEntryStep" class="d-none">
-            <!-- 🔥 Exam Summary - Step 1 Data -->
+            <!-- Exam Summary - Step 1 Data -->
             <div class="exam-summary" id="examSummary">
                 <div class="info">
                     <span><strong id="summaryExamName">-</strong></span>
@@ -336,7 +508,7 @@
                 </div>
             </div>
             
-            <!-- 🔥 Student List - Compact with Scroll -->
+            <!-- Student List - Compact with Scroll -->
             <div class="card">
                 <div class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
                     <h6 class="mb-0">📋 Students (<span id="studentCount">0</span>)</h6>
@@ -376,7 +548,7 @@
     </div>
 </div>
 
-<!-- ===== 🔥 EDIT EXAM DETAILS MODAL (Step 2) ===== -->
+<!-- ===== EDIT EXAM DETAILS MODAL (Step 2) ===== -->
 <div class="modal fade edit-modal" id="editExamModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -1174,14 +1346,13 @@
         }
     }
 
-    // ===== 🔥 LOAD PUBLISHED RESULTS (FIXED - DEMO RESULTS SHOW) =====
+    // ===== LOAD PUBLISHED RESULTS =====
     async function loadOldResults() {
         if (!schoolId) {
             oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
             return;
         }
         try {
-            // 🔥 School-specific path se saare results fetch karo (demo + normal)
             const q = query(collection(db, "schools", schoolId, "results"), orderBy("createdAt", "desc"));
             const snap = await getDocs(q);
             const container = document.getElementById('oldResultsList');
@@ -1195,8 +1366,6 @@
             snap.forEach(doc => {
                 const d = doc.data();
                 const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString('en-IN') : 'Unknown';
-                
-                // 🔥 Demo badge agar isDemo true hai toh
                 const demoBadge = d.isDemo ? '<span class="demo-badge">🎯 Demo</span>' : '';
                 
                 container.innerHTML += `
@@ -1216,7 +1385,6 @@
                 `;
             });
             
-            // 🔥 Event listeners attach karo
             document.querySelectorAll('.view-result').forEach(btn => btn.addEventListener('click', e => viewResult(e.target.dataset.id)));
             document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editResult(e.target.dataset.id)));
             document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deleteResult(e.target.dataset.id)));
