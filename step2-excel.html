@@ -76,21 +76,35 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             border: 1px solid #e2e8f0;
         }
+        
+        /* 🔥 Table Wrapper - Fixed Header */
+        .excel-table-wrapper {
+            overflow-y: auto;
+            max-height: 450px;
+        }
+        
         .excel-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
         }
         
+        /* 🔥 Header - Fixed Position */
+        .excel-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
         /* 🔥 ALL CELLS - SAME SIZE */
         .excel-table th,
         .excel-table td {
-            padding: 6px 8px;
+            padding: 8px 10px;
             border: 1px solid #d0d8e8;
             text-align: center;
             vertical-align: middle;
-            height: 38px;
-            font-size: 0.8rem;
+            height: 42px;
+            font-size: 0.85rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -101,9 +115,6 @@
             background: #1a237e;
             color: white;
             font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
         
         /* 🔥 Data Rows */
@@ -114,28 +125,28 @@
             background: #f5f8ff;
         }
         
-        /* 🔥 Column Widths - Fixed */
-        .col-serial { width: 40px; min-width: 35px; max-width: 45px; }
-        .col-roll { width: 60px; min-width: 50px; max-width: 70px; }
-        .col-name { width: 130px; min-width: 100px; }
-        .col-father { width: 120px; min-width: 90px; }
-        .col-subject { width: 80px; min-width: 65px; }
-        .col-total { width: 60px; min-width: 50px; max-width: 70px; }
-        .col-actions { width: 70px; min-width: 60px; max-width: 80px; }
+        /* 🔥 Column Widths - Bigger for Full Words */
+        .col-serial { width: 50px; min-width: 45px; max-width: 55px; }
+        .col-roll { width: 70px; min-width: 60px; max-width: 80px; }
+        .col-name { width: 160px; min-width: 140px; }
+        .col-father { width: 150px; min-width: 130px; }
+        .col-subject { width: 110px; min-width: 95px; }
+        .col-total { width: 70px; min-width: 60px; max-width: 80px; }
+        .col-actions { width: 80px; min-width: 70px; max-width: 90px; }
         
         /* 🔥 Serial Number */
         .excel-table .row-label {
             font-weight: 600;
             color: #1a237e;
             background: #f8faff;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
         
         /* 🔥 Roll Number */
         .excel-table .row-roll {
             font-weight: 700;
             color: #1a237e;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
         
         /* 🔥 Input Fields - Excel Style */
@@ -144,8 +155,8 @@
         .excel-table .row-marks input {
             width: 100%;
             border: none;
-            padding: 2px 4px;
-            font-size: 0.8rem;
+            padding: 4px 6px;
+            font-size: 0.85rem;
             background: transparent;
             text-align: center;
             outline: none;
@@ -166,7 +177,7 @@
             outline-offset: -1px;
         }
         .excel-table .row-marks input {
-            max-width: 55px;
+            max-width: 65px;
             margin: 0 auto;
         }
         
@@ -177,9 +188,9 @@
         .excel-table .row-actions button {
             background: none;
             border: none;
-            padding: 2px 6px;
+            padding: 2px 8px;
             cursor: pointer;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             border-radius: 4px;
             transition: 0.2s;
         }
@@ -192,6 +203,11 @@
             font-weight: 700;
             color: #1a237e;
             border-top: 2px solid #1a237e;
+        }
+        
+        /* 🔥 Empty State - Hidden */
+        .empty-state {
+            display: none;
         }
         
         /* ===== ADD ROW AREA ===== */
@@ -215,8 +231,8 @@
             outline: none;
         }
         .add-row-area .roll-input { width: 50px; text-align: center; }
-        .add-row-area .name-input { width: 120px; }
-        .add-row-area .father-input { width: 100px; }
+        .add-row-area .name-input { width: 130px; }
+        .add-row-area .father-input { width: 110px; }
         .add-row-area .marks-input { width: 55px; text-align: center; }
         
         .btn-excel { 
@@ -250,19 +266,19 @@
             .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
             .excel-table th,
             .excel-table td { 
-                padding: 4px 4px; 
-                height: 32px;
+                padding: 4px 6px; 
+                height: 34px;
                 font-size: 0.7rem;
             }
-            .col-name { width: 80px; min-width: 60px; }
-            .col-father { width: 70px; min-width: 50px; }
-            .col-subject { width: 60px; min-width: 50px; }
-            .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
+            .col-name { width: 100px; min-width: 80px; }
+            .col-father { width: 90px; min-width: 70px; }
+            .col-subject { width: 75px; min-width: 65px; }
+            .excel-table .row-marks input { max-width: 45px; font-size: 0.65rem; }
             .excel-table .row-name input { font-size: 0.65rem; }
             .excel-table .row-father input { font-size: 0.65rem; }
             .add-row-area input { font-size: 0.65rem; }
-            .add-row-area .name-input { width: 70px; }
-            .add-row-area .father-input { width: 60px; }
+            .add-row-area .name-input { width: 80px; }
+            .add-row-area .father-input { width: 70px; }
             .btn-excel { font-size: 0.6rem; padding: 3px 8px; }
         }
         
@@ -270,16 +286,16 @@
             .container { max-width: 1200px; margin: 0 auto; }
             .excel-table th,
             .excel-table td { 
-                padding: 8px 12px; 
-                height: 42px;
+                padding: 10px 14px; 
+                height: 46px;
                 font-size: 0.9rem;
             }
-            .col-name { width: 160px; min-width: 130px; }
-            .col-father { width: 140px; min-width: 110px; }
-            .col-subject { width: 100px; min-width: 80px; }
-            .excel-table .row-marks input { max-width: 70px; }
-            .add-row-area .name-input { width: 160px; }
-            .add-row-area .father-input { width: 130px; }
+            .col-name { width: 180px; min-width: 150px; }
+            .col-father { width: 160px; min-width: 135px; }
+            .col-subject { width: 120px; min-width: 105px; }
+            .excel-table .row-marks input { max-width: 75px; }
+            .add-row-area .name-input { width: 170px; }
+            .add-row-area .father-input { width: 140px; }
             .btn-excel { font-size: 0.8rem; padding: 6px 16px; }
         }
     </style>
@@ -312,7 +328,7 @@
 
     <!-- Excel Sheet -->
     <div class="excel-container">
-        <div style="overflow-x:auto; max-height: 500px; overflow-y: auto;">
+        <div class="excel-table-wrapper" id="tableWrapper">
             <table class="excel-table" id="excelTable">
                 <thead id="tableHead">
                     <tr id="tableHeader">
@@ -326,12 +342,7 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr id="emptyRow">
-                        <td colspan="100%" style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
-                            <i class="fas fa-plus-circle" style="font-size:1.2rem; display:block; margin-bottom:8px;"></i>
-                            No students added yet.<br>Add rows below using the input fields.
-                        </td>
-                    </tr>
+                    <!-- Students will be rendered here -->
                 </tbody>
                 <tfoot id="tableFoot" style="display:none;">
                     <tr class="total-row">
@@ -526,15 +537,9 @@
     }
     
     function renderTable() {
+        // 🔥 Empty state - show nothing, just empty table
         if (students.length === 0) {
-            tableBody.innerHTML = `
-                <tr id="emptyRow">
-                    <td colspan="100%" style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
-                        <i class="fas fa-plus-circle" style="font-size:1.2rem; display:block; margin-bottom:8px;"></i>
-                        No students added yet.<br>Add rows below using the input fields.
-                    </td>
-                </tr>
-            `;
+            tableBody.innerHTML = '';
             tableFoot.style.display = 'none';
             return;
         }
@@ -552,7 +557,7 @@
                 const mark = s.marks[sub.name] || 0;
                 total += mark;
                 allTotals[subIdx] += mark;
-                marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:55px;"></td>`;
+                marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:65px;"></td>`;
             });
             grandTotalSum += total;
             html += `
