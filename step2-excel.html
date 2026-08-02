@@ -68,7 +68,7 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        /* ===== EXCEL SHEET STYLE TABLE ===== */
+        /* ===== EXCEL SHEET - PERFECT HEADER ===== */
         .excel-container {
             background: white;
             border-radius: 12px;
@@ -81,11 +81,16 @@
             border-collapse: collapse;
             font-size: 0.8rem;
         }
+        .excel-table th,
+        .excel-table td {
+            padding: 6px 8px;
+            border: 1px solid #dce5f5;
+            text-align: center;
+            vertical-align: middle;
+        }
         .excel-table th {
             background: #1a237e;
             color: white;
-            padding: 8px 10px;
-            text-align: center;
             font-weight: 600;
             font-size: 0.75rem;
             white-space: nowrap;
@@ -94,26 +99,23 @@
             z-index: 10;
         }
         .excel-table td {
-            padding: 4px 6px;
-            border-bottom: 1px solid #eef2f7;
-            vertical-align: middle;
+            background: white;
         }
-        .excel-table tr:hover td { background: #f5f8ff; }
+        .excel-table tr:hover td {
+            background: #f5f8ff;
+        }
         
+        /* 🔥 Student Row Cells */
         .excel-table .row-label {
             font-weight: 600;
             color: #1a237e;
-            text-align: center;
             background: #f8faff;
-            font-size: 0.7rem;
-            white-space: nowrap;
+            font-size: 0.75rem;
         }
         .excel-table .row-roll {
             font-weight: 700;
             color: #1a237e;
-            text-align: center;
-            font-size: 0.75rem;
-            min-width: 45px;
+            font-size: 0.8rem;
         }
         .excel-table .row-name input,
         .excel-table .row-father input,
@@ -124,7 +126,16 @@
             border-radius: 4px;
             font-size: 0.75rem;
             background: transparent;
+            text-align: center;
             transition: 0.2s;
+        }
+        .excel-table .row-name input {
+            text-align: left;
+            min-width: 80px;
+        }
+        .excel-table .row-father input {
+            text-align: left;
+            min-width: 70px;
         }
         .excel-table .row-name input:hover,
         .excel-table .row-father input:hover,
@@ -141,11 +152,11 @@
             box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
         }
         .excel-table .row-marks input {
-            text-align: center;
-            max-width: 60px;
+            max-width: 55px;
         }
+        
+        /* 🔥 Actions */
         .excel-table .row-actions {
-            text-align: center;
             white-space: nowrap;
         }
         .excel-table .row-actions button {
@@ -160,6 +171,7 @@
         .excel-table .row-actions .edit-btn:hover { background: #fef3c7; color: #d97706; }
         .excel-table .row-actions .del-btn:hover { background: #fee2e2; color: #dc2626; }
         
+        /* 🔥 Total Row */
         .excel-table .total-row td {
             background: #e8f0fe !important;
             font-weight: 700;
@@ -167,7 +179,7 @@
             border-top: 2px solid #1a237e;
         }
         
-        /* ===== FLOATING ADD ROW ===== */
+        /* ===== ADD ROW AREA ===== */
         .add-row-area {
             padding: 10px 14px;
             background: #fafcff;
@@ -199,7 +211,7 @@
             font-weight: 600; 
         }
         
-        /* ===== BUTTONS ===== */
+        /* ===== ACTION BAR ===== */
         .action-bar {
             padding: 12px 14px;
             background: white;
@@ -216,15 +228,17 @@
         .edit-modal .modal-body { padding: 16px; }
         .edit-modal .modal-footer { padding: 12px 16px; }
         
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             body { padding: 8px; }
             .topbar { padding: 8px 12px; }
             .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
             .excel-table { font-size: 0.7rem; }
-            .excel-table th { font-size: 0.6rem; padding: 5px 4px; }
+            .excel-table th { font-size: 0.6rem; padding: 4px 4px; }
             .excel-table td { padding: 3px 4px; }
             .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
-            .excel-table .row-name input { font-size: 0.65rem; }
+            .excel-table .row-name input { font-size: 0.65rem; min-width: 50px; }
+            .excel-table .row-father input { font-size: 0.65rem; min-width: 40px; }
             .add-row-area input { font-size: 0.65rem; }
             .add-row-area .name-input { width: 70px; }
             .add-row-area .father-input { width: 60px; }
@@ -247,7 +261,7 @@
 
 <!-- TOP BAR -->
 <div class="topbar">
-    <div class="brand"><i class="fas fa-chart-simple"></i> GYAN SEVA — Excel Entry</div>
+    <div class="brand"><i class="fas fa-table"></i> GYAN SEVA — Excel Entry</div>
     <div>
         <a href="manage-results.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
     </div>
@@ -273,7 +287,7 @@
     <div class="excel-container">
         <div style="overflow-x:auto; max-height: 500px; overflow-y: auto;">
             <table class="excel-table" id="excelTable">
-                <thead>
+                <thead id="tableHead">
                     <tr id="tableHeader">
                         <th style="width:35px; min-width:30px;">#</th>
                         <th style="width:60px; min-width:50px;">Roll No</th>
