@@ -68,7 +68,7 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        /* ===== EXCEL SHEET - PERFECT HEADER ===== */
+        /* ===== 🔥 EXCEL SHEET - PERFECT ===== */
         .excel-container {
             background: white;
             border-radius: 12px;
@@ -79,25 +79,34 @@
         .excel-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8rem;
+            table-layout: fixed;
         }
+        
+        /* 🔥 ALL CELLS - SAME SIZE */
         .excel-table th,
         .excel-table td {
             padding: 6px 8px;
-            border: 1px solid #dce5f5;
+            border: 1px solid #d0d8e8;
             text-align: center;
             vertical-align: middle;
+            height: 38px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+        
+        /* 🔥 Header - Sirf Background Color Alag */
         .excel-table th {
             background: #1a237e;
             color: white;
             font-weight: 600;
-            font-size: 0.75rem;
-            white-space: nowrap;
             position: sticky;
             top: 0;
             z-index: 10;
         }
+        
+        /* 🔥 Data Rows */
         .excel-table td {
             background: white;
         }
@@ -105,54 +114,60 @@
             background: #f5f8ff;
         }
         
-        /* 🔥 Student Row Cells */
+        /* 🔥 Column Widths - Fixed */
+        .col-serial { width: 40px; min-width: 35px; max-width: 45px; }
+        .col-roll { width: 60px; min-width: 50px; max-width: 70px; }
+        .col-name { width: 130px; min-width: 100px; }
+        .col-father { width: 120px; min-width: 90px; }
+        .col-subject { width: 80px; min-width: 65px; }
+        .col-total { width: 60px; min-width: 50px; max-width: 70px; }
+        .col-actions { width: 70px; min-width: 60px; max-width: 80px; }
+        
+        /* 🔥 Serial Number */
         .excel-table .row-label {
             font-weight: 600;
             color: #1a237e;
             background: #f8faff;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
         }
+        
+        /* 🔥 Roll Number */
         .excel-table .row-roll {
             font-weight: 700;
             color: #1a237e;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
+        
+        /* 🔥 Input Fields - Excel Style */
         .excel-table .row-name input,
         .excel-table .row-father input,
         .excel-table .row-marks input {
             width: 100%;
-            border: 1px solid transparent;
-            padding: 4px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            border: none;
+            padding: 2px 4px;
+            font-size: 0.8rem;
             background: transparent;
             text-align: center;
-            transition: 0.2s;
+            outline: none;
+            border-radius: 0;
+            font-family: inherit;
         }
         .excel-table .row-name input {
             text-align: left;
-            min-width: 80px;
         }
         .excel-table .row-father input {
             text-align: left;
-            min-width: 70px;
-        }
-        .excel-table .row-name input:hover,
-        .excel-table .row-father input:hover,
-        .excel-table .row-marks input:hover {
-            border-color: #dce8f5;
-            background: white;
         }
         .excel-table .row-name input:focus,
         .excel-table .row-father input:focus,
         .excel-table .row-marks input:focus {
-            border-color: #1a237e;
             background: white;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
+            outline: 2px solid #1a237e;
+            outline-offset: -1px;
         }
         .excel-table .row-marks input {
             max-width: 55px;
+            margin: 0 auto;
         }
         
         /* 🔥 Actions */
@@ -233,23 +248,35 @@
             body { padding: 8px; }
             .topbar { padding: 8px 12px; }
             .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
-            .excel-table { font-size: 0.7rem; }
-            .excel-table th { font-size: 0.6rem; padding: 4px 4px; }
-            .excel-table td { padding: 3px 4px; }
+            .excel-table th,
+            .excel-table td { 
+                padding: 4px 4px; 
+                height: 32px;
+                font-size: 0.7rem;
+            }
+            .col-name { width: 80px; min-width: 60px; }
+            .col-father { width: 70px; min-width: 50px; }
+            .col-subject { width: 60px; min-width: 50px; }
             .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
-            .excel-table .row-name input { font-size: 0.65rem; min-width: 50px; }
-            .excel-table .row-father input { font-size: 0.65rem; min-width: 40px; }
+            .excel-table .row-name input { font-size: 0.65rem; }
+            .excel-table .row-father input { font-size: 0.65rem; }
             .add-row-area input { font-size: 0.65rem; }
             .add-row-area .name-input { width: 70px; }
             .add-row-area .father-input { width: 60px; }
             .btn-excel { font-size: 0.6rem; padding: 3px 8px; }
         }
         
-        @media (min-width: 768px) {
+        @media (min-width: 769px) {
             .container { max-width: 1200px; margin: 0 auto; }
-            .excel-table { font-size: 0.9rem; }
-            .excel-table th { font-size: 0.85rem; padding: 10px 14px; }
-            .excel-table td { padding: 6px 10px; }
+            .excel-table th,
+            .excel-table td { 
+                padding: 8px 12px; 
+                height: 42px;
+                font-size: 0.9rem;
+            }
+            .col-name { width: 160px; min-width: 130px; }
+            .col-father { width: 140px; min-width: 110px; }
+            .col-subject { width: 100px; min-width: 80px; }
             .excel-table .row-marks input { max-width: 70px; }
             .add-row-area .name-input { width: 160px; }
             .add-row-area .father-input { width: 130px; }
@@ -289,13 +316,13 @@
             <table class="excel-table" id="excelTable">
                 <thead id="tableHead">
                     <tr id="tableHeader">
-                        <th style="width:35px; min-width:30px;">#</th>
-                        <th style="width:60px; min-width:50px;">Roll No</th>
-                        <th style="min-width:100px;">Student Name</th>
-                        <th style="min-width:90px;">Father Name</th>
-                        <th id="subjectHeader"></th>
-                        <th style="width:60px; min-width:50px;">Total</th>
-                        <th style="width:70px; min-width:60px;">Actions</th>
+                        <th class="col-serial">#</th>
+                        <th class="col-roll">Roll No</th>
+                        <th class="col-name">Student Name</th>
+                        <th class="col-father">Father Name</th>
+                        <th class="col-subject" id="subjectHeader"></th>
+                        <th class="col-total">Total</th>
+                        <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -308,11 +335,13 @@
                 </tbody>
                 <tfoot id="tableFoot" style="display:none;">
                     <tr class="total-row">
-                        <td colspan="3" style="text-align:right; padding-right:10px;">Total Students: <span id="totalStudents">0</span></td>
-                        <td></td>
-                        <td id="totalMarks"></td>
-                        <td id="grandTotal" style="text-align:center;"></td>
-                        <td></td>
+                        <td class="col-serial"></td>
+                        <td class="col-roll"></td>
+                        <td class="col-name" style="text-align:right; padding-right:10px;">Total: <span id="totalStudents">0</span></td>
+                        <td class="col-father"></td>
+                        <td class="col-subject" id="totalMarks"></td>
+                        <td class="col-total" id="grandTotal" style="text-align:center;"></td>
+                        <td class="col-actions"></td>
                     </tr>
                 </tfoot>
             </table>
@@ -474,10 +503,11 @@
         summaryStudents.textContent = students.length || 0;
     }
     
+    // ===== 🔥 HEADER - Subject Name + Total in Same Line =====
     function renderSubjectHeader() {
         let html = '';
-        subjects.forEach((s, i) => {
-            html += `<th style="min-width:70px; text-align:center;">${s.name}<br><span style="font-weight:400;font-size:0.6rem;">/${s.total}</span></th>`;
+        subjects.forEach((s) => {
+            html += `<th class="col-subject">${s.name} (${s.total})</th>`;
         });
         subjectHeader.innerHTML = html;
     }
@@ -499,7 +529,7 @@
         if (students.length === 0) {
             tableBody.innerHTML = `
                 <tr id="emptyRow">
-                    <td colspan="${4 + subjects.length + 1 + 1}" style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
+                    <td colspan="100%" style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
                         <i class="fas fa-plus-circle" style="font-size:1.2rem; display:block; margin-bottom:8px;"></i>
                         No students added yet.<br>Add rows below using the input fields.
                     </td>
@@ -532,7 +562,7 @@
                     <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${s.name}"></td>
                     <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${s.fatherName || ''}"></td>
                     ${marksHtml}
-                    <td style="text-align:center; font-weight:600; color:#1a237e;">${total}</td>
+                    <td class="row-total" style="text-align:center; font-weight:600; color:#1a237e;">${total}</td>
                     <td class="row-actions">
                         <button class="edit-btn" onclick="editStudent(${idx})"><i class="fas fa-edit"></i></button>
                         <button class="del-btn" onclick="deleteStudent(${idx})"><i class="fas fa-trash-alt"></i></button>
@@ -544,16 +574,18 @@
         // Total row
         let totalHtml = '';
         allTotals.forEach((subTotal) => {
-            totalHtml += `<td style="text-align:center; font-weight:700; color:#1a237e;">${subTotal}</td>`;
+            totalHtml += `<td class="col-subject" style="text-align:center; font-weight:700; color:#1a237e;">${subTotal}</td>`;
         });
         
         html += `
             <tr class="total-row">
-                <td colspan="3" style="text-align:right; padding-right:10px; font-weight:700;">Total: ${students.length} students</td>
-                <td></td>
+                <td class="col-serial"></td>
+                <td class="col-roll"></td>
+                <td class="col-name" style="text-align:right; padding-right:10px; font-weight:700;">Total: ${students.length}</td>
+                <td class="col-father"></td>
                 ${totalHtml}
-                <td style="text-align:center; font-weight:700; color:#1a237e;">${grandTotalSum}</td>
-                <td></td>
+                <td class="col-total" style="text-align:center; font-weight:700; color:#1a237e;">${grandTotalSum}</td>
+                <td class="col-actions"></td>
             </tr>
         `;
         
