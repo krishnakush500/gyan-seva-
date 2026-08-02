@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>GYAN SEVA — Step 2 (Excel Sheet)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f0f2f5; min-height: 100vh; padding: 15px; }
+        
+        .topbar {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        .topbar .brand { font-size: 1rem; font-weight: 700; }
+        .topbar .brand i { color: #ffc107; }
+        .topbar .back-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 4px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .topbar .back-btn:hover { background: rgba(255,255,255,0.25); color: white; }
+        
+        .container { max-width: 100%; margin: 0 auto; }
+        
+        /* ===== EXAM SUMMARY ===== */
+        .exam-summary {
+            background: #f0f7ff;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            border: 1px solid #dce8f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 0.75rem;
+        }
+        .exam-summary .info { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+        .exam-summary .info span { color: #1a237e; }
+        .exam-summary .info strong { color: #0f172a; font-weight: 600; }
+        .exam-summary .edit-btn {
+            background: none;
+            border: none;
+            color: #1a237e;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+        .exam-summary .edit-btn:hover { background: #dce8f5; }
+        
+        /* ===== EXCEL SHEET STYLE TABLE ===== */
+        .excel-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+        }
+        .excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .excel-table th {
+            background: #1a237e;
+            color: white;
+            padding: 8px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .excel-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid #eef2f7;
+            vertical-align: middle;
+        }
+        .excel-table tr:hover td { background: #f5f8ff; }
+        
+        .excel-table .row-label {
+            font-weight: 600;
+            color: #1a237e;
+            text-align: center;
+            background: #f8faff;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+        .excel-table .row-roll {
+            font-weight: 700;
+            color: #1a237e;
+            text-align: center;
+            font-size: 0.75rem;
+            min-width: 45px;
+        }
+        .excel-table .row-name input,
+        .excel-table .row-father input,
+        .excel-table .row-marks input {
+            width: 100%;
+            border: 1px solid transparent;
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            background: transparent;
+            transition: 0.2s;
+        }
+        .excel-table .row-name input:hover,
+        .excel-table .row-father input:hover,
+        .excel-table .row-marks input:hover {
+            border-color: #dce8f5;
+            background: white;
+        }
+        .excel-table .row-name input:focus,
+        .excel-table .row-father input:focus,
+        .excel-table .row-marks input:focus {
+            border-color: #1a237e;
+            background: white;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
+        }
+        .excel-table .row-marks input {
+            text-align: center;
+            max-width: 60px;
+        }
+        .excel-table .row-actions {
+            text-align: center;
+            white-space: nowrap;
+        }
+        .excel-table .row-actions button {
+            background: none;
+            border: none;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+        .excel-table .row-actions .edit-btn:hover { background: #fef3c7; color: #d97706; }
+        .excel-table .row-actions .del-btn:hover { background: #fee2e2; color: #dc2626; }
+        
+        .excel-table .total-row td {
+            background: #e8f0fe !important;
+            font-weight: 700;
+            color: #1a237e;
+            border-top: 2px solid #1a237e;
+        }
+        
+        /* ===== FLOATING ADD ROW ===== */
+        .add-row-area {
+            padding: 10px 14px;
+            background: #fafcff;
+            border-top: 1px solid #eef2f7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .add-row-area input {
+            padding: 5px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+        .add-row-area input:focus {
+            border-color: #1a237e;
+            outline: none;
+        }
+        .add-row-area .roll-input { width: 50px; text-align: center; }
+        .add-row-area .name-input { width: 120px; }
+        .add-row-area .father-input { width: 100px; }
+        .add-row-area .marks-input { width: 55px; text-align: center; }
+        
+        .btn-excel { 
+            font-size: 0.7rem; 
+            padding: 4px 12px; 
+            border-radius: 6px; 
+            font-weight: 600; 
+        }
+        
+        /* ===== BUTTONS ===== */
+        .action-bar {
+            padding: 12px 14px;
+            background: white;
+            border-top: 1px solid #eef2f7;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .edit-modal .modal-content { border-radius: 16px; }
+        .edit-modal .modal-header { padding: 12px 16px; background: #1a237e; color: white; border-radius: 16px 16px 0 0; }
+        .edit-modal .modal-header .btn-close { filter: brightness(0) invert(1); }
+        .edit-modal .modal-body { padding: 16px; }
+        .edit-modal .modal-footer { padding: 12px 16px; }
+        
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .topbar { padding: 8px 12px; }
+            .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
+            .excel-table { font-size: 0.7rem; }
+            .excel-table th { font-size: 0.65rem; padding: 5px 6px; }
+            .excel-table td { padding: 3px 4px; }
+            .excel-table .row-marks input { max-width: 45px; font-size: 0.7rem; }
+            .excel-table .row-name input { font-size: 0.7rem; }
+            .add-row-area input { font-size: 0.7rem; }
+            .add-row-area .name-input { width: 80px; }
+            .add-row-area .father-input { width: 70px; }
+            .btn-excel { font-size: 0.65rem; padding: 3px 8px; }
+        }
+        
+        @media (min-width: 768px) {
+            .container { max-width: 1200px; margin: 0 auto; }
+            .excel-table { font-size: 0.9rem; }
+            .excel-table th { font-size: 0.85rem; padding: 10px 14px; }
+            .excel-table td { padding: 6px 10px; }
+            .excel-table .row-marks input { max-width: 70px; }
+            .add-row-area .name-input { width: 160px; }
+            .add-row-area .father-input { width: 130px; }
+            .add-row-area .marks-input { width: 65px; }
+            .btn-excel { font-size: 0.8rem; padding: 6px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="brand"><i class="fas fa-chart-simple"></i> GYAN SEVA — Excel Entry</div>
+    <div>
+        <a href="manage-results.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Exam Summary -->
+    <div class="exam-summary" id="examSummary">
+        <div class="info">
+            <span>📝 <strong id="summaryExamName">-</strong></span>
+            <span>📚 <strong id="summaryClass">-</strong></span>
+            <span>📅 <strong id="summaryDate">-</strong></span>
+            <span>📆 <strong id="summarySession">-</strong></span>
+            <span>📋 <strong id="summarySubjects">0</strong> subjects</span>
+            <span>👨‍🎓 <strong id="summaryStudents">0</strong> students</span>
+        </div>
+        <button class="edit-btn" id="editExamDetailsBtn" title="Edit Exam Details">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+    </div>
+
+    <!-- Excel Sheet -->
+    <div class="excel-container">
+        <div style="overflow-x:auto; max-height: 500px; overflow-y: auto;">
+            <table class="excel-table" id="excelTable">
+                <thead>
+                    <tr id="tableHeader">
+                        <th style="width:30px;">#</th>
+                        <th style="width:45px;">Roll</th>
+                        <th style="min-width:100px;">Student Name</th>
+                        <th style="min-width:80px;">Father's Name</th>
+                        <th id="subjectHeader"></th>
+                        <th style="width:70px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr id="emptyRow">
+                        <td colspan="100%" style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
+                            <i class="fas fa-plus-circle" style="font-size:1.2rem; display:block; margin-bottom:8px;"></i>
+                            No students added yet.<br>Add rows below using the input fields.
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot id="tableFoot" style="display:none;">
+                    <tr class="total-row">
+                        <td colspan="4" style="text-align:right; padding-right:10px;">Total Students: <span id="totalStudents">0</span></td>
+                        <td id="totalMarks"></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <!-- Add Row Area -->
+        <div class="add-row-area">
+            <input type="number" class="roll-input" id="newRoll" placeholder="Roll" value="1">
+            <input type="text" class="name-input" id="newName" placeholder="Student Name">
+            <input type="text" class="father-input" id="newFather" placeholder="Father">
+            <span id="marksInputs"></span>
+            <button class="btn btn-primary btn-excel" id="addRowBtn"><i class="fas fa-plus"></i> Add</button>
+            <button class="btn btn-warning btn-excel d-none" id="updateRowBtn"><i class="fas fa-edit"></i> Update</button>
+            <button class="btn btn-secondary btn-excel d-none" id="cancelEditBtn">Cancel</button>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-bar">
+            <button class="btn btn-warning btn-excel" id="saveDraftBtn"><i class="fas fa-save"></i> Save as Draft</button>
+            <button class="btn btn-success btn-excel" id="publishResultBtn"><i class="fas fa-globe"></i> Publish Result</button>
+            <button class="btn btn-secondary btn-excel" id="clearAllBtn"><i class="fas fa-trash-alt"></i> Clear All</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== EDIT EXAM DETAILS MODAL ===== -->
+<div class="modal fade edit-modal" id="editExamModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title"><i class="fas fa-edit"></i> Edit Exam Details</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="form-label">Exam Name</label>
+                    <input type="text" class="form-control" id="modalExamName" style="font-size:0.85rem;">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Class</label>
+                    <input type="text" class="form-control" id="modalExamClass" style="font-size:0.85rem;">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Session</label>
+                    <select class="form-select" id="modalExamSession" style="font-size:0.85rem;">
+                        <option value="2026-2027">2026-2027</option>
+                        <option value="2027-2028">2027-2028</option>
+                        <option value="2028-2029">2028-2029</option>
+                        <option value="2029-2030">2029-2030</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Exam Date</label>
+                    <input type="date" class="form-control" id="modalExamDate" style="font-size:0.85rem;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary btn-sm" id="saveExamDetailsBtn"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+        getFirestore, 
+        collection, 
+        addDoc, 
+        getDocs, 
+        doc, 
+        updateDoc, 
+        deleteDoc, 
+        query, 
+        orderBy,
+        serverTimestamp,
+        where,
+        getDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
+        authDomain: "gyan-seva.firebaseapp.com",
+        projectId: "gyan-seva",
+        storageBucket: "gyan-seva.firebasestorage.app",
+        messagingSenderId: "451862212887",
+        appId: "1:451862212887:web:637fd8785c4c01bd448752",
+        measurementId: "G-R375P3YCHP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let schoolId = localStorage.getItem('schoolId');
+    let examData = JSON.parse(localStorage.getItem('examData') || '{}');
+    
+    let subjects = examData.subjects || [];
+    let students = examData.students || [];
+    let editingIndex = null;
+    let isEditingDraft = examData.isEditingDraft || false;
+    let draftId = examData.draftId || null;
+    let isEditingPublished = examData.isEditingPublished || false;
+    let publishedId = examData.publishedId || null;
+    
+    // ===== DOM =====
+    const summaryExamName = document.getElementById('summaryExamName');
+    const summaryClass = document.getElementById('summaryClass');
+    const summaryDate = document.getElementById('summaryDate');
+    const summarySession = document.getElementById('summarySession');
+    const summarySubjects = document.getElementById('summarySubjects');
+    const summaryStudents = document.getElementById('summaryStudents');
+    
+    const tableBody = document.getElementById('tableBody');
+    const tableFoot = document.getElementById('tableFoot');
+    const totalStudents = document.getElementById('totalStudents');
+    const totalMarks = document.getElementById('totalMarks');
+    const subjectHeader = document.getElementById('subjectHeader');
+    const marksInputs = document.getElementById('marksInputs');
+    
+    const newRoll = document.getElementById('newRoll');
+    const newName = document.getElementById('newName');
+    const newFather = document.getElementById('newFather');
+    const addRowBtn = document.getElementById('addRowBtn');
+    const updateRowBtn = document.getElementById('updateRowBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    const publishResultBtn = document.getElementById('publishResultBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    
+    const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
+    const modalExamName = document.getElementById('modalExamName');
+    const modalExamClass = document.getElementById('modalExamClass');
+    const modalExamSession = document.getElementById('modalExamSession');
+    const modalExamDate = document.getElementById('modalExamDate');
+    const saveExamDetailsBtn = document.getElementById('saveExamDetailsBtn');
+    const editExamDetailsBtn = document.getElementById('editExamDetailsBtn');
+    
+    // ===== INIT =====
+    function init() {
+        updateSummary();
+        renderSubjectHeader();
+        renderMarksInputs();
+        renderTable();
+        updateRollNumber();
+    }
+    
+    function updateSummary() {
+        summaryExamName.textContent = examData.examName || '-';
+        summaryClass.textContent = examData.examClass || '-';
+        summaryDate.textContent = examData.examDate ? new Date(examData.examDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
+        summarySession.textContent = examData.examSession || '-';
+        summarySubjects.textContent = subjects.length || 0;
+        summaryStudents.textContent = students.length || 0;
+    }
+    
+    function renderSubjectHeader() {
+        let html = '';
+        subjects.forEach((s, i) => {
+            html += `<th style="min-width:70px; text-align:center;">${s.name}<br><span style="font-weight:400;font-size:0.6rem;">/${s.total}</span></th>`;
+        });
+        subjectHeader.innerHTML = html + '<th style="width:60px; text-align:center;">Total</th>';
+    }
+    
+    function renderMarksInputs() {
+        let html = '';
+        subjects.forEach((s) => {
+            html += `<input type="number" class="marks-input new-mark" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="width:55px;">`;
+        });
+        marksInputs.innerHTML = html;
+    }
+    
+    function updateRollNumber() {
+        const maxRoll = students.reduce((max, s) => Math.max(max, s.rollNo || 0), 0);
+        newRoll.value = maxRoll + 1;
+    }
+    
+    function renderTable() {
+        if (students.length === 0) {
+            tableBody.innerHTML = `
+                <tr id="emptyRow">
+                    <td colspan="${4 + subjects.length + 1}" style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
+                        <i class="fas fa-plus-circle" style="font-size:1.2rem; display:block; margin-bottom:8px;"></i>
+                        No students added yet.<br>Add rows below using the input fields.
+                    </td>
+                </tr>
+            `;
+            tableFoot.style.display = 'none';
+            return;
+        }
+        
+        tableFoot.style.display = 'table-footer-group';
+        let html = '';
+        students.forEach((s, idx) => {
+            let marksHtml = '';
+            let total = 0;
+            subjects.forEach(sub => {
+                const mark = s.marks[sub.name] || 0;
+                total += mark;
+                marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:55px;"></td>`;
+            });
+            html += `
+                <tr>
+                    <td class="row-label">${idx + 1}</td>
+                    <td class="row-roll">${s.rollNo}</td>
+                    <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${s.name}"></td>
+                    <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${s.fatherName || ''}"></td>
+                    ${marksHtml}
+                    <td class="row-actions">
+                        <button class="edit-btn" onclick="editStudent(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="del-btn" onclick="deleteStudent(${idx})"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        // Total row
+        let totalHtml = '';
+        let allTotals = [];
+        subjects.forEach((sub, i) => {
+            let subTotal = 0;
+            students.forEach(s => { subTotal += (s.marks[sub.name] || 0); });
+            allTotals.push(subTotal);
+            totalHtml += `<td style="text-align:center; font-weight:700; color:#1a237e;">${subTotal}</td>`;
+        });
+        const grandTotal = allTotals.reduce((a, b) => a + b, 0);
+        
+        html += `
+            <tr class="total-row">
+                <td colspan="4" style="text-align:right; padding-right:10px; font-weight:700;">Total: ${students.length} students</td>
+                ${totalHtml}
+                <td style="text-align:center; font-weight:700; color:#1a237e;">${grandTotal}</td>
+            </tr>
+        `;
+        
+        tableBody.innerHTML = html;
+        totalStudents.textContent = students.length;
+        
+        // 🔥 Auto-save on input change
+        document.querySelectorAll('.name-input, .father-input, .mark-input').forEach(input => {
+            input.addEventListener('change', () => {
+                const idx = parseInt(input.dataset.idx);
+                if (!isNaN(idx) && students[idx]) {
+                    if (input.classList.contains('name-input')) {
+                        students[idx].name = input.value;
+                    } else if (input.classList.contains('father-input')) {
+                        students[idx].fatherName = input.value;
+                    } else if (input.classList.contains('mark-input')) {
+                        const sub = input.dataset.subject;
+                        students[idx].marks[sub] = parseInt(input.value) || 0;
+                    }
+                    renderTable();
+                    updateSummary();
+                }
+            });
+        });
+    }
+    
+    // ===== ADD STUDENT =====
+    addRowBtn.addEventListener('click', () => {
+        const roll = parseInt(newRoll.value) || 1;
+        const name = newName.value.trim();
+        const father = newFather.value.trim();
+        
+        if (!name) { alert('Please enter student name'); return; }
+        
+        const marks = {};
+        document.querySelectorAll('.new-mark').forEach(input => {
+            const sub = input.dataset.subject;
+            marks[sub] = parseInt(input.value) || 0;
+        });
+        
+        students.push({ rollNo: roll, name, fatherName: father, marks });
+        renderTable();
+        updateSummary();
+        updateRollNumber();
+        newName.value = '';
+        newFather.value = '';
+        document.querySelectorAll('.new-mark').forEach(input => input.value = '');
+    });
+    
+    // ===== EDIT STUDENT =====
+    window.editStudent = function(idx) {
+        const s = students[idx];
+        editingIndex = idx;
+        newRoll.value = s.rollNo;
+        newName.value = s.name;
+        newFather.value = s.fatherName || '';
+        document.querySelectorAll('.new-mark').forEach(input => {
+            const sub = input.dataset.subject;
+            input.value = s.marks[sub] || 0;
+        });
+        addRowBtn.classList.add('d-none');
+        updateRowBtn.classList.remove('d-none');
+        cancelEditBtn.classList.remove('d-none');
+    };
+    
+    updateRowBtn.addEventListener('click', () => {
+        if (editingIndex === null) return;
+        const roll = parseInt(newRoll.value) || 1;
+        const name = newName.value.trim();
+        const father = newFather.value.trim();
+        if (!name) { alert('Enter name'); return; }
+        
+        const marks = {};
+        document.querySelectorAll('.new-mark').forEach(input => {
+            const sub = input.dataset.subject;
+            marks[sub] = parseInt(input.value) || 0;
+        });
+        
+        students[editingIndex] = { rollNo: roll, name, fatherName: father, marks };
+        renderTable();
+        updateSummary();
+        cancelEdit();
+    });
+    
+    cancelEditBtn.addEventListener('click', cancelEdit);
+    function cancelEdit() {
+        editingIndex = null;
+        newName.value = '';
+        newFather.value = '';
+        document.querySelectorAll('.new-mark').forEach(input => input.value = '');
+        addRowBtn.classList.remove('d-none');
+        updateRowBtn.classList.add('d-none');
+        cancelEditBtn.classList.add('d-none');
+        updateRollNumber();
+    }
+    
+    window.deleteStudent = function(idx) {
+        if (confirm('Delete this student?')) {
+            students.splice(idx, 1);
+            renderTable();
+            updateSummary();
+            updateRollNumber();
+        }
+    };
+    
+    // ===== CLEAR ALL =====
+    clearAllBtn.addEventListener('click', () => {
+        if (confirm('Delete all students?')) {
+            students = [];
+            renderTable();
+            updateSummary();
+            updateRollNumber();
+        }
+    });
+    
+    // ===== EDIT EXAM DETAILS =====
+    editExamDetailsBtn.addEventListener('click', () => {
+        modalExamName.value = examData.examName || '';
+        modalExamClass.value = examData.examClass || '';
+        modalExamSession.value = examData.examSession || '2026-2027';
+        modalExamDate.value = examData.examDate || '';
+        editExamModal.show();
+    });
+    
+    saveExamDetailsBtn.addEventListener('click', () => {
+        examData.examName = modalExamName.value.trim();
+        examData.examClass = modalExamClass.value.trim();
+        examData.examSession = modalExamSession.value;
+        examData.examDate = modalExamDate.value;
+        updateSummary();
+        editExamModal.hide();
+        showToast('Exam details updated!');
+    });
+    
+    // ===== SAVE DRAFT =====
+    saveDraftBtn.addEventListener('click', async () => {
+        if (!examData.examName) { alert('Please enter exam name'); return; }
+        if (students.length === 0) { alert('Please add at least one student'); return; }
+        if (!schoolId) { alert('Institute not found'); return; }
+        
+        try {
+            const data = {
+                examName: examData.examName,
+                class: examData.examClass,
+                session: examData.examSession,
+                examDate: examData.examDate,
+                subjects: subjects,
+                students: students,
+                createdAt: serverTimestamp()
+            };
+            
+            if (isEditingDraft && draftId) {
+                await updateDoc(doc(db, "schools", schoolId, "draft_results", draftId), data);
+                showToast('Draft updated!');
+            } else {
+                await addDoc(collection(db, "schools", schoolId, "draft_results"), data);
+                showToast('Draft saved!');
+            }
+            
+            setTimeout(() => {
+                window.close();
+                window.location.href = 'manage-results.html';
+            }, 1500);
+        } catch(error) {
+            alert('Error: ' + error.message);
+        }
+    });
+    
+    // ===== PUBLISH RESULT =====
+    publishResultBtn.addEventListener('click', async () => {
+        if (!examData.examName) { alert('Please enter exam name'); return; }
+        if (students.length === 0) { alert('Please add at least one student'); return; }
+        if (!schoolId) { alert('Institute not found'); return; }
+        
+        if (isEditingPublished) {
+            if (!confirm('Update the existing published result?')) return;
+        }
+        
+        try {
+            const data = {
+                examName: examData.examName,
+                class: examData.examClass,
+                session: examData.examSession,
+                examDate: examData.examDate,
+                subjects: subjects,
+                students: students,
+                isDemo: false
+            };
+            
+            if (isEditingPublished && publishedId) {
+                data.updatedAt = serverTimestamp();
+                await updateDoc(doc(db, "schools", schoolId, "results", publishedId), data);
+                showToast('Result updated!');
+            } else {
+                data.createdAt = serverTimestamp();
+                await addDoc(collection(db, "schools", schoolId, "results"), data);
+                if (isEditingDraft && draftId) {
+                    await deleteDoc(doc(db, "schools", schoolId, "draft_results", draftId));
+                }
+                showToast('Result published!');
+            }
+            
+            setTimeout(() => {
+                window.close();
+                window.location.href = 'manage-results.html';
+            }, 1500);
+        } catch(error) {
+            alert('Error: ' + error.message);
+        }
+    });
+    
+    function showToast(message) {
+        alert(message);
+    }
+    
+    // ===== INIT =====
+    init();
+    console.log('✅ Step 2 Excel Loaded:', examData);
+</script>
+</body>
+</html>
