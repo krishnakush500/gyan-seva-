@@ -123,21 +123,14 @@
         }
         
         /* ===== COLUMN WIDTHS ===== */
-        .col-serial { width: 45px; min-width: 40px; max-width: 50px; }
         .col-roll { width: 65px; min-width: 55px; max-width: 75px; }
-        .col-name { width: 150px; min-width: 130px; }
-        .col-father { width: 140px; min-width: 120px; }
-        .col-subject { width: 100px; min-width: 85px; }
+        .col-name { width: 180px; min-width: 140px; }
+        .col-father { width: 160px; min-width: 120px; }
+        .col-subject { width: 110px; min-width: 85px; }
         .col-total { width: 65px; min-width: 55px; max-width: 75px; }
-        .col-actions { width: 75px; min-width: 65px; max-width: 85px; }
+        .col-actions { width: 90px; min-width: 80px; max-width: 100px; }
         
         /* ===== DATA ROWS ===== */
-        .excel-table .row-label {
-            font-weight: 600;
-            color: #1a237e;
-            background: #f8faff;
-            font-size: 0.8rem;
-        }
         .excel-table .row-roll {
             font-weight: 600;
             color: #1a237e;
@@ -182,55 +175,64 @@
             margin: 0 auto;
         }
         
-        /* ===== ADD ROW BUTTON ===== */
-        .btn-add-row {
-            background: #e8f0fe;
-            border: none;
-            padding: 2px 12px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #1a237e;
-            cursor: pointer;
-            transition: 0.2s;
-            height: 28px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .btn-add-row:hover {
-            background: #d0ddf5;
-        }
-        
-        /* ===== ACTIONS ===== */
+        /* ===== ACTIONS - Edit & Delete Buttons ===== */
         .excel-table .row-actions {
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
         .excel-table .row-actions button {
             background: none;
             border: none;
-            padding: 2px 6px;
+            padding: 4px 8px;
             cursor: pointer;
             font-size: 0.75rem;
             border-radius: 4px;
             transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
         }
-        .excel-table .row-actions .edit-btn:hover { background: #fef3c7; color: #d97706; }
-        .excel-table .row-actions .del-btn:hover { background: #fee2e2; color: #dc2626; }
+        .excel-table .row-actions .edit-btn {
+            color: #d97706;
+        }
+        .excel-table .row-actions .edit-btn:hover { 
+            background: #fef3c7; 
+        }
+        .excel-table .row-actions .del-btn {
+            color: #dc2626;
+        }
+        .excel-table .row-actions .del-btn:hover { 
+            background: #fee2e2; 
+        }
         
-        /* ===== TOTAL ROW ===== */
-        .excel-table .total-row td {
-            background: #e8f0fe !important;
-            font-weight: 700;
+        /* ===== ADD ROW BUTTON ===== */
+        .btn-add-row {
+            background: #e8f0fe;
+            border: none;
+            padding: 4px 16px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: #1a237e;
-            border-top: 2px solid #1a237e;
-            border-bottom: 2px solid #1a237e;
+            cursor: pointer;
+            transition: 0.2s;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-add-row:hover {
+            background: #d0ddf5;
         }
         
         /* ===== ADD ROW (LAST ROW) ===== */
         .excel-table .add-row td {
             background: #f8faff;
             border-top: 1px dashed #1a237e;
+            padding: 6px 8px;
         }
         .excel-table .add-row input {
             width: 100%;
@@ -243,6 +245,18 @@
             border-radius: 0;
             font-family: inherit;
             height: 30px;
+        }
+        .excel-table .add-row .roll-input-add {
+            font-weight: 600;
+            color: #1a237e;
+        }
+        
+        /* ===== PLUS ICON CELL ===== */
+        .plus-cell {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a237e;
+            cursor: default;
         }
         
         /* ===== ACTION BAR ===== */
@@ -279,15 +293,17 @@
                 height: 32px;
                 font-size: 0.7rem;
             }
-            .col-name { width: 90px; min-width: 70px; }
-            .col-father { width: 80px; min-width: 60px; }
-            .col-subject { width: 70px; min-width: 60px; }
+            .col-name { width: 100px; min-width: 70px; }
+            .col-father { width: 90px; min-width: 60px; }
+            .col-subject { width: 75px; min-width: 60px; }
+            .col-actions { width: 70px; min-width: 60px; }
             .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
             .excel-table .row-name input { font-size: 0.65rem; }
             .excel-table .row-father input { font-size: 0.65rem; }
             .excel-table .add-row input { font-size: 0.65rem; }
-            .btn-add-row { font-size: 0.6rem; padding: 1px 8px; height: 24px; }
+            .btn-add-row { font-size: 0.6rem; padding: 2px 10px; height: 28px; }
             .btn-excel { font-size: 0.6rem; padding: 3px 8px; }
+            .excel-table .row-actions button { font-size: 0.65rem; padding: 2px 4px; }
         }
         
         @media (min-width: 769px) {
@@ -298,11 +314,12 @@
                 height: 42px;
                 font-size: 0.9rem;
             }
-            .col-name { width: 180px; min-width: 150px; }
-            .col-father { width: 160px; min-width: 135px; }
-            .col-subject { width: 115px; min-width: 100px; }
+            .col-name { width: 200px; min-width: 160px; }
+            .col-father { width: 170px; min-width: 135px; }
+            .col-subject { width: 120px; min-width: 100px; }
+            .col-actions { width: 100px; min-width: 85px; }
             .excel-table .row-marks input { max-width: 70px; }
-            .btn-add-row { font-size: 0.8rem; padding: 2px 16px; height: 32px; }
+            .btn-add-row { font-size: 0.85rem; padding: 4px 20px; height: 36px; }
             .btn-excel { font-size: 0.85rem; padding: 6px 18px; }
         }
     </style>
@@ -339,12 +356,11 @@
             <table class="excel-table" id="excelTable">
                 <thead id="tableHead">
                     <tr id="tableHeader">
-                        <!-- 🔥 Fixed Columns -->
-                        <th class="col-serial">#</th>
+                        <!-- 🔥 Fixed Columns (No # column) -->
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <!-- 🔥 Subject Columns will be inserted here dynamically -->
+                        <!-- 🔥 Subject Columns inserted dynamically -->
                         <th class="col-total">Total</th>
                         <th class="col-actions">Actions</th>
                     </tr>
@@ -353,26 +369,15 @@
                     <!-- Students will be rendered here -->
                 </tbody>
                 <tfoot id="tableFoot">
-                    <!-- 🔥 Total Row -->
-                    <tr class="total-row" id="totalRow">
-                        <td class="col-serial"></td>
-                        <td class="col-roll"></td>
-                        <td class="col-name" style="text-align:right; padding-right:10px;">Total: <span id="totalStudents">0</span></td>
-                        <td class="col-father"></td>
-                        <!-- Subject totals will be inserted here -->
-                        <td class="col-total" id="grandTotal" style="text-align:center;">0</td>
-                        <td class="col-actions"></td>
-                    </tr>
-                    <!-- 🔥 Add Row (Last Row) -->
+                    <!-- 🔥 Add Row (Last Row with + icon) -->
                     <tr class="add-row" id="addRow">
-                        <td class="col-serial" style="font-weight:600; color:#1a237e;">+</td>
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father"></td>
-                        <!-- Subject inputs will be inserted here -->
+                        <!-- Subject inputs inserted dynamically -->
                         <td class="col-total"></td>
                         <td class="col-actions">
-                            <button class="btn-add-row" id="addRowBtn"><i class="fas fa-plus"></i> Add</button>
+                            <button class="btn-add-row" id="addRowBtn"><i class="fas fa-plus"></i> Add Row</button>
                         </td>
                     </tr>
                 </tfoot>
@@ -482,10 +487,8 @@
     
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
-    const totalRow = document.getElementById('totalRow');
     const addRow = document.getElementById('addRow');
     const totalStudents = document.getElementById('totalStudents');
-    const grandTotal = document.getElementById('grandTotal');
     
     const newRoll = document.getElementById('newRoll');
     const newName = document.getElementById('newName');
@@ -505,14 +508,11 @@
     
     // ===== BUILD HEADER DYNAMICALLY =====
     function buildHeader() {
-        // Clear existing subject headers (keep fixed columns)
-        const fixedHeaders = tableHeader.querySelectorAll('.col-serial, .col-roll, .col-name, .col-father, .col-total, .col-actions');
-        
         // Remove old subject headers
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
         
-        // Get reference to Total column (col-total)
+        // Get reference to Total column
         const totalTh = tableHeader.querySelector('.col-total');
         
         // Insert subject headers before Total
@@ -521,25 +521,6 @@
             th.className = 'col-subject';
             th.textContent = `${s.name} (${s.total})`;
             tableHeader.insertBefore(th, totalTh);
-        });
-    }
-    
-    // ===== BUILD TOTAL ROW =====
-    function buildTotalRow() {
-        // Remove old subject total cells
-        const oldSubjectTotals = totalRow.querySelectorAll('.col-subject-total');
-        oldSubjectTotals.forEach(el => el.remove());
-        
-        // Get reference to grandTotal cell
-        const grandTotalTd = totalRow.querySelector('.col-total');
-        
-        // Insert subject total cells before grandTotal
-        subjects.forEach(() => {
-            const td = document.createElement('td');
-            td.className = 'col-subject-total';
-            td.style.cssText = 'text-align:center; font-weight:700; color:#1a237e;';
-            td.textContent = '0';
-            totalRow.insertBefore(td, grandTotalTd);
         });
     }
     
@@ -565,36 +546,30 @@
     function renderTable() {
         if (students.length === 0) {
             tableBody.innerHTML = '';
-            updateTotals();
+            updateSummary();
             return;
         }
         
         let html = '';
-        let allTotals = [];
-        subjects.forEach(() => allTotals.push(0));
-        let grandTotalSum = 0;
         
         students.forEach((s, idx) => {
             let marksHtml = '';
             let total = 0;
-            subjects.forEach((sub, subIdx) => {
+            subjects.forEach((sub) => {
                 const mark = s.marks[sub.name] || 0;
                 total += mark;
-                allTotals[subIdx] += mark;
                 marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:60px; width:100%;"></td>`;
             });
-            grandTotalSum += total;
             html += `
                 <tr>
-                    <td class="row-label">${idx + 1}</td>
                     <td class="row-roll">${s.rollNo}</td>
                     <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${s.name}" style="width:100%;"></td>
                     <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${s.fatherName || ''}" style="width:100%;"></td>
                     ${marksHtml}
                     <td style="text-align:center; font-weight:600; color:#1a237e;">${total}</td>
                     <td class="row-actions">
-                        <button class="edit-btn" onclick="editStudent(${idx})"><i class="fas fa-edit"></i></button>
-                        <button class="del-btn" onclick="deleteStudent(${idx})"><i class="fas fa-trash-alt"></i></button>
+                        <button class="edit-btn" onclick="editStudent(${idx})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="del-btn" onclick="deleteStudent(${idx})"><i class="fas fa-trash-alt"></i> Del</button>
                     </td>
                 </tr>
             `;
@@ -602,9 +577,7 @@
         
         tableBody.innerHTML = html;
         totalStudents.textContent = students.length;
-        
-        // Update totals
-        updateTotals(allTotals, grandTotalSum);
+        updateSummary();
         
         // Auto-save on input change
         document.querySelectorAll('.name-input, .father-input, .mark-input').forEach(input => {
@@ -626,21 +599,6 @@
         });
     }
     
-    function updateTotals(allTotals = null, grandTotalSum = null) {
-        if (allTotals) {
-            const subjectTotalCells = totalRow.querySelectorAll('.col-subject-total');
-            subjectTotalCells.forEach((cell, idx) => {
-                cell.textContent = allTotals[idx] || 0;
-            });
-            grandTotal.textContent = grandTotalSum || 0;
-        } else {
-            // Reset totals
-            const subjectTotalCells = totalRow.querySelectorAll('.col-subject-total');
-            subjectTotalCells.forEach(cell => cell.textContent = '0');
-            grandTotal.textContent = '0';
-        }
-    }
-    
     function updateSummary() {
         summaryExamName.textContent = examData.examName || '-';
         summaryClass.textContent = examData.examClass || '-';
@@ -658,7 +616,6 @@
     // ===== INIT =====
     function init() {
         buildHeader();
-        buildTotalRow();
         buildAddRow();
         updateSummary();
         renderTable();
@@ -721,9 +678,8 @@
             input.value = s.marks[sub] || 0;
         });
         addRowBtn.innerHTML = '<i class="fas fa-save"></i> Update';
-        addRowBtn.classList.add('btn-warning');
-        addRowBtn.classList.remove('btn-primary');
-        // Focus on name input
+        addRowBtn.style.background = '#fef3c7';
+        addRowBtn.style.color = '#d97706';
         newName.focus();
     };
     
@@ -732,9 +688,9 @@
         newName.value = '';
         newFather.value = '';
         document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
-        addRowBtn.innerHTML = '<i class="fas fa-plus"></i> Add';
-        addRowBtn.classList.remove('btn-warning');
-        addRowBtn.classList.add('btn-primary');
+        addRowBtn.innerHTML = '<i class="fas fa-plus"></i> Add Row';
+        addRowBtn.style.background = '#e8f0fe';
+        addRowBtn.style.color = '#1a237e';
         updateRollNumber();
     }
     
