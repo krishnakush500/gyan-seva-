@@ -81,7 +81,6 @@
         .form-control-sm, .form-select-sm { font-size: 0.75rem; padding: 4px 8px; }
         .btn { font-size: 0.78rem; padding: 6px 14px; border-radius: 8px; font-weight: 600; }
         .btn-sm { font-size: 0.7rem; padding: 4px 10px; }
-        .btn-lg { font-size: 0.9rem; padding: 8px 20px; }
         
         .demo-badge { background: #10b981; color: white; padding: 1px 8px; border-radius: 30px; font-size: 0.55rem; margin-left: 6px; }
         
@@ -90,140 +89,6 @@
         .save-changes-btn { background-color: #0dcaf0; border-color: #0dcaf0; color: white; }
         .save-changes-btn:hover { background-color: #0bb6d9; border-color: #0bb6d9; color: white; }
         
-        .exam-summary {
-            background: #f0f7ff;
-            border-radius: 10px;
-            padding: 10px 14px;
-            margin-bottom: 14px;
-            border: 1px solid #dce8f5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-            font-size: 0.75rem;
-        }
-        .exam-summary .info { display: flex; flex-wrap: wrap; gap: 4px 12px; }
-        .exam-summary .info span { color: #1a237e; }
-        .exam-summary .info strong { color: #0f172a; font-weight: 600; }
-        .exam-summary .edit-btn {
-            background: none;
-            border: none;
-            color: #1a237e;
-            cursor: pointer;
-            font-size: 0.85rem;
-            padding: 2px 8px;
-            border-radius: 6px;
-            transition: 0.3s;
-        }
-        .exam-summary .edit-btn:hover { background: #dce8f5; }
-        
-        /* ===== EXCEL SHEET STYLE ===== */
-        .excel-container {
-            overflow-x: auto;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            background: white;
-        }
-        .excel-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.75rem;
-            min-width: 600px;
-        }
-        .excel-table th {
-            background: #1a237e;
-            color: white;
-            padding: 6px 8px;
-            text-align: left;
-            font-weight: 600;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 5;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .excel-table th .sub-label {
-            font-weight: 400;
-            opacity: 0.7;
-            font-size: 0.6rem;
-            display: block;
-        }
-        .excel-table td {
-            padding: 4px 6px;
-            border-bottom: 1px solid #eef2f7;
-            vertical-align: middle;
-        }
-        .excel-table tr:hover td {
-            background: #f5f8ff;
-        }
-        .excel-table .excel-input {
-            width: 100%;
-            border: none;
-            background: transparent;
-            padding: 4px 4px;
-            font-size: 0.75rem;
-            border-radius: 4px;
-            transition: 0.2s;
-            min-width: 40px;
-        }
-        .excel-table .excel-input:focus {
-            outline: 2px solid #1a237e;
-            background: white;
-            box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
-        }
-        .excel-table .excel-input.roll-input { width: 40px; text-align: center; }
-        .excel-table .excel-input.name-input { min-width: 80px; }
-        .excel-table .excel-input.father-input { min-width: 80px; }
-        .excel-table .excel-input.mark-input { width: 50px; text-align: center; }
-        .excel-table .row-actions {
-            display: flex;
-            gap: 2px;
-            white-space: nowrap;
-        }
-        .excel-table .row-actions button {
-            background: none;
-            border: none;
-            padding: 2px 6px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            border-radius: 4px;
-            transition: 0.2s;
-        }
-        .excel-table .row-actions .edit-row:hover { background: #fef3c7; color: #d97706; }
-        .excel-table .row-actions .del-row:hover { background: #fee2e2; color: #dc2626; }
-        .excel-table .row-actions .save-row { color: #10b981; }
-        .excel-table .row-actions .save-row:hover { background: #d1fae5; }
-        .excel-table .row-actions .cancel-row { color: #6b7280; }
-        .excel-table .row-actions .cancel-row:hover { background: #f3f4f6; }
-        
-        .excel-footer {
-            padding: 10px;
-            background: #f8fafc;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .excel-footer .student-count {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-right: auto;
-        }
-        .excel-footer .student-count strong { color: #1a237e; }
-        
-        .edit-modal .modal-content { border-radius: 16px; }
-        .edit-modal .modal-header { padding: 12px 16px; background: #1a237e; color: white; border-radius: 16px 16px 0 0; }
-        .edit-modal .modal-header .btn-close { filter: brightness(0) invert(1); }
-        .edit-modal .modal-body { padding: 16px; }
-        .edit-modal .modal-footer { padding: 12px 16px; }
-        
-        /* ======================================== */
-        /* RESPONSIVE */
-        /* ======================================== */
         @media (max-width: 768px) {
             .topbar { padding: 8px 12px; }
             .topbar .brand { font-size: 0.85rem; }
@@ -234,34 +99,17 @@
             .card-body { padding: 10px 12px; }
             .form-control, .form-select { font-size: 0.75rem; padding: 5px 8px; }
             .btn { font-size: 0.7rem; padding: 5px 10px; }
-            .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
-            .excel-table { font-size: 0.65rem; min-width: 500px; }
-            .excel-table th { font-size: 0.6rem; padding: 4px 6px; }
-            .excel-table td { padding: 3px 4px; }
-            .excel-table .excel-input { font-size: 0.65rem; padding: 2px 3px; }
-            .excel-table .excel-input.mark-input { width: 40px; }
-            .excel-table .excel-input.roll-input { width: 35px; }
         }
         
-        @media (max-width: 480px) {
-            .topbar .user-info .institute-name { font-size: 0.6rem; padding: 2px 8px; }
-            .exam-summary { flex-direction: column; align-items: stretch; }
-            .exam-summary .edit-btn { align-self: flex-end; }
-            .excel-table { min-width: 400px; font-size: 0.6rem; }
-            .excel-table .excel-input.mark-input { width: 35px; }
-            .excel-footer { flex-direction: column; align-items: stretch; }
-            .excel-footer .student-count { text-align: center; }
-        }
-        
-        @media (min-width: 1025px) {
-            .container { padding: 20px 30px; max-width: 1200px; margin: 0 auto; }
-            .excel-table { font-size: 0.85rem; }
-            .excel-table th { font-size: 0.8rem; padding: 10px 14px; }
-            .excel-table td { padding: 8px 10px; }
-            .excel-table .excel-input { font-size: 0.85rem; padding: 6px 8px; }
-            .excel-table .excel-input.mark-input { width: 70px; }
-            .excel-table .excel-input.roll-input { width: 50px; }
-            .exam-summary { font-size: 0.9rem; padding: 14px 20px; }
+        @media (min-width: 768px) {
+            body { font-size: 15px; }
+            .container { padding: 16px 20px; max-width: 1200px; margin: 0 auto; }
+            .topbar { padding: 12px 24px; }
+            .topbar .brand { font-size: 1.2rem; }
+            .welcome-card .welcome-text h2 { font-size: 1.2rem; }
+            .card-body { padding: 16px 20px; }
+            .form-control, .form-select { font-size: 0.9rem; padding: 8px 12px; }
+            .btn { font-size: 0.85rem; padding: 8px 18px; }
         }
     </style>
 </head>
@@ -320,108 +168,57 @@
         </div>
     </div>
 
-    <!-- ===== CREATE RESULT SECTION ===== -->
+    <!-- ===== STEP 1: EXAM SETUP ===== -->
     <div id="createResultSection" class="section">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <h5 class="mb-0"><i class="fas fa-plus-circle text-primary"></i> Create Result</h5>
             <button id="backToDashboardBtn" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></button>
         </div>
         
-        <!-- Step 1: Exam Setup -->
-        <div id="examSetupStep">
-            <div class="card mb-3">
-                <div class="card-header bg-primary text-white py-2">
-                    <h6 class="mb-0">📋 Step 1: Exam Setup</h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-2">
-                        <label class="form-label">Exam Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="examName" placeholder="e.g., Final Exam 2025">
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Class <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="examClass" placeholder="e.g., 10th, 12th">
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Session <span class="text-danger">*</span></label>
-                        <select class="form-select" id="examSession">
-                            <option value="2026-2027">2026-2027</option>
-                            <option value="2027-2028">2027-2028</option>
-                            <option value="2028-2029">2028-2029</option>
-                            <option value="2029-2030">2029-2030</option>
-                        </select>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Exam Date <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" id="examDate">
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Number of Subjects <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <input type="number" class="form-control" id="subjectCount" min="1" placeholder="e.g., 5">
-                            <button id="generateSubjectFieldsBtn" class="btn btn-primary btn-sm">Generate</button>
-                        </div>
-                    </div>
-                </div>
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white py-2">
+                <h6 class="mb-0">📋 Step 1: Exam Setup</h6>
             </div>
-            
-            <div id="subjectFields" class="mb-3"></div>
-            
-            <div id="step1NextBtn" class="d-none text-center">
-                <button id="nextToStudentEntryBtn" class="btn btn-success btn-sm"><i class="fas fa-arrow-right"></i> Next →</button>
+            <div class="card-body">
+                <div class="mb-2">
+                    <label class="form-label">Exam Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="examName" placeholder="e.g., Final Exam 2025">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Class <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="examClass" placeholder="e.g., 10th, 12th">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Session <span class="text-danger">*</span></label>
+                    <select class="form-select" id="examSession">
+                        <option value="2026-2027">2026-2027</option>
+                        <option value="2027-2028">2027-2028</option>
+                        <option value="2028-2029">2028-2029</option>
+                        <option value="2029-2030">2029-2030</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Exam Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="examDate">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Number of Subjects <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="subjectCount" min="1" placeholder="e.g., 5">
+                        <button id="generateSubjectFieldsBtn" class="btn btn-primary btn-sm">Generate</button>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Step 2: Excel Sheet Style -->
-        <div id="studentEntryStep" class="d-none">
-            <!-- Exam Summary -->
-            <div class="exam-summary" id="examSummary">
-                <div class="info">
-                    <span><strong id="summaryExamName">-</strong></span>
-                    <span>📚 <strong id="summaryClass">-</strong></span>
-                    <span>📅 <strong id="summaryDate">-</strong></span>
-                    <span>📆 <strong id="summarySession">-</strong></span>
-                    <span>📋 <strong id="summarySubjects">0</strong> subjects</span>
-                </div>
-                <button class="edit-btn" id="editExamDetailsBtn" title="Edit Exam Details">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
-            </div>
-            
-            <!-- Excel Sheet -->
-            <div class="card">
-                <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0"><i class="fas fa-table"></i> Excel Sheet — Enter Student Data</h6>
-                    <span id="studentCount" class="badge bg-light text-dark">0 students</span>
-                </div>
-                <div class="card-body p-0">
-                    <div class="excel-container">
-                        <table class="excel-table" id="excelTable">
-                            <thead>
-                                <tr id="excelHeader">
-                                    <th style="width:40px;">#</th>
-                                    <th style="min-width:80px;">Roll</th>
-                                    <th style="min-width:100px;">Student Name</th>
-                                    <th style="min-width:100px;">Father's Name</th>
-                                    <!-- Subjects will be added here dynamically -->
-                                    <th style="width:80px; text-align:center;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="excelBody">
-                                <!-- Rows will be added here -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="excel-footer">
-                        <span class="student-count">👨‍🎓 <strong id="footerStudentCount">0</strong> students added</span>
-                        <button id="addRowBtn" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Row</button>
-                        <button id="saveDraftBtn" class="btn btn-warning btn-sm"><i class="fas fa-save"></i> Draft</button>
-                        <button id="saveChangesBtn" class="btn save-changes-btn btn-sm d-none"><i class="fas fa-check"></i> Save</button>
-                        <button id="publishResultBtn" class="btn btn-success btn-sm"><i class="fas fa-globe"></i> Publish</button>
-                        <button id="dontSaveBtn" class="btn btn-secondary btn-sm d-none">Cancel</button>
-                    </div>
-                </div>
-            </div>
+        <!-- 🔥 Subject Fields - Auto Scroll Target -->
+        <div id="subjectFields" class="mb-3"></div>
+        
+        <div id="step1NextBtn" class="d-none text-center">
+            <button id="nextToStudentEntryBtn" class="btn btn-success btn-sm">
+                <i class="fas fa-arrow-right"></i> Next → 
+                <span style="font-size:0.6rem;opacity:0.7;">(Go to Excel Sheet)</span>
+            </button>
         </div>
     </div>
 
@@ -441,45 +238,6 @@
             <button id="backToDashboardBtn3" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></button>
         </div>
         <div id="oldResultsList" class="row g-2"></div>
-    </div>
-</div>
-
-<!-- ===== EDIT EXAM DETAILS MODAL ===== -->
-<div class="modal fade edit-modal" id="editExamModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title"><i class="fas fa-edit"></i> Edit Exam Details</h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-2">
-                    <label class="form-label">Exam Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="modalExamName" placeholder="e.g., Final Exam 2025">
-                </div>
-                <div class="mb-2">
-                    <label class="form-label">Class <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="modalExamClass" placeholder="e.g., 10th, 12th">
-                </div>
-                <div class="mb-2">
-                    <label class="form-label">Session <span class="text-danger">*</span></label>
-                    <select class="form-select" id="modalExamSession">
-                        <option value="2026-2027">2026-2027</option>
-                        <option value="2027-2028">2027-2028</option>
-                        <option value="2028-2029">2028-2029</option>
-                        <option value="2029-2030">2029-2030</option>
-                    </select>
-                </div>
-                <div class="mb-2">
-                    <label class="form-label">Exam Date <span class="text-danger">*</span></label>
-                    <input type="date" class="form-control" id="modalExamDate">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary btn-sm" id="saveExamDetailsBtn"><i class="fas fa-save"></i> Save Changes</button>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -633,9 +391,6 @@
     const backToDashboardBtn2 = document.getElementById('backToDashboardBtn2');
     const backToDashboardBtn3 = document.getElementById('backToDashboardBtn3');
     
-    // Step 1 Elements
-    const examSetupStep = document.getElementById('examSetupStep');
-    const studentEntryStep = document.getElementById('studentEntryStep');
     const examNameInput = document.getElementById('examName');
     const examClassInput = document.getElementById('examClass');
     const examSessionSelect = document.getElementById('examSession');
@@ -645,33 +400,6 @@
     const subjectFields = document.getElementById('subjectFields');
     const step1NextBtn = document.getElementById('step1NextBtn');
     const nextToStudentEntryBtn = document.getElementById('nextToStudentEntryBtn');
-    
-    // Step 1 Summary
-    const summaryExamName = document.getElementById('summaryExamName');
-    const summaryClass = document.getElementById('summaryClass');
-    const summaryDate = document.getElementById('summaryDate');
-    const summarySession = document.getElementById('summarySession');
-    const summarySubjects = document.getElementById('summarySubjects');
-    const editExamDetailsBtn = document.getElementById('editExamDetailsBtn');
-    
-    // Edit Modal
-    const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
-    const modalExamName = document.getElementById('modalExamName');
-    const modalExamClass = document.getElementById('modalExamClass');
-    const modalExamSession = document.getElementById('modalExamSession');
-    const modalExamDate = document.getElementById('modalExamDate');
-    const saveExamDetailsBtn = document.getElementById('saveExamDetailsBtn');
-    
-    // Step 2 - Excel Elements
-    const excelBody = document.getElementById('excelBody');
-    const excelHeader = document.getElementById('excelHeader');
-    const addRowBtn = document.getElementById('addRowBtn');
-    const studentCount = document.getElementById('studentCount');
-    const footerStudentCount = document.getElementById('footerStudentCount');
-    const saveDraftBtn = document.getElementById('saveDraftBtn');
-    const saveChangesBtn = document.getElementById('saveChangesBtn');
-    const publishResultBtn = document.getElementById('publishResultBtn');
-    const dontSaveBtn = document.getElementById('dontSaveBtn');
     
     const draftResultsList = document.getElementById('draftResultsList');
     const oldResultsList = document.getElementById('oldResultsList');
@@ -690,14 +418,8 @@
     const publishedToast = new bootstrap.Toast(document.getElementById('publishedToast'));
     const toastMessage = document.getElementById('toastMessage');
 
-    // ===== APP STATE =====
     let subjects = [];
-    let students = [];
-    let editingRowIndex = null;
     let editingDraftId = null;
-    let isEditingPublishedResult = false;
-    let editingPublishedResultId = null;
-    let hasChanges = false;
 
     function showSection(section) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -714,27 +436,9 @@
     draftResultsBtn.addEventListener('click', () => { loadDraftResults(); showSection(draftResultsSection); });
     oldResultsBtn.addEventListener('click', () => { loadOldResults(); showSection(oldResultsSection); });
     
-    backToDashboardBtn.addEventListener('click', () => {
-        if (isEditingPublishedResult && hasChanges) {
-            editPublishedConfirmModal.show();
-        } else {
-            resetCreateResultForm();
-            showSection(dashboardSection);
-        }
-    });
+    backToDashboardBtn.addEventListener('click', () => { resetCreateResultForm(); showSection(dashboardSection); });
     backToDashboardBtn2.addEventListener('click', () => showSection(dashboardSection));
     backToDashboardBtn3.addEventListener('click', () => showSection(dashboardSection));
-
-    // ===== CONFIRM MODAL =====
-    dontSaveConfirmBtn.addEventListener('click', () => { resetCreateResultForm(); showSection(dashboardSection); });
-    saveDraftConfirmBtn.addEventListener('click', () => {
-        if (validateResultData()) saveEditedPublishedResultAsDraft();
-        else showSection(dashboardSection);
-    });
-    saveChangesConfirmBtn.addEventListener('click', () => {
-        if (validateResultData()) updateExistingPublishedResult();
-        else showSection(dashboardSection);
-    });
 
     // ===== STEP 1: GENERATE SUBJECTS =====
     generateSubjectFieldsBtn.addEventListener('click', () => {
@@ -755,11 +459,11 @@
                 <div class="row g-1">
                     <div class="col-7">
                         <label class="form-label" style="font-size:0.7rem;">Subject ${i+1}</label>
-                        <input type="text" class="form-control form-control-sm subject-name" placeholder="e.g., Math" required>
+                        <input type="text" class="form-control form-control-sm subject-name" placeholder="e.g., Enter subject name" required>
                     </div>
                     <div class="col-5">
                         <label class="form-label" style="font-size:0.7rem;">Total Marks</label>
-                        <input type="number" class="form-control form-control-sm subject-total" min="1" value="50" required>
+                        <input type="number" class="form-control form-control-sm subject-total" min="1" value="100" required>
                     </div>
                 </div>
             `;
@@ -767,13 +471,13 @@
         }
         step1NextBtn.classList.remove('d-none');
         
-        // 🔥 AUTO SCROLL TO SUBJECT FIELDS
+        // 🔥 Auto scroll to subject fields
         setTimeout(() => {
             subjectFields.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 200);
+        }, 100);
     });
 
-    // ===== STEP 1: NEXT =====
+    // ===== STEP 1: NEXT → GO TO EXCEL SHEET =====
     nextToStudentEntryBtn.addEventListener('click', () => {
         const nameInputs = document.querySelectorAll('.subject-name');
         const totalInputs = document.querySelectorAll('.subject-total');
@@ -789,292 +493,20 @@
         
         if (!valid) { alert('Please fill all subject fields correctly'); return; }
         
-        updateSummary();
-        buildExcelSheet();
-        examSetupStep.classList.add('d-none');
-        studentEntryStep.classList.remove('d-none');
-        setupChangeTracking();
+        // 🔥 Save data to localStorage for step2
+        const examData = {
+            examName: examNameInput.value.trim(),
+            examClass: examClassInput.value.trim(),
+            examSession: examSessionSelect.value,
+            examDate: examDateInput.value,
+            subjects: subjects
+        };
+        localStorage.setItem('examData', JSON.stringify(examData));
+        localStorage.setItem('schoolId', schoolId);
+        
+        // 🔥 Open step2-excel.html in new tab
+        window.open('step2-excel.html', '_blank');
     });
-
-    // ===== UPDATE SUMMARY =====
-    function updateSummary() {
-        summaryExamName.textContent = examNameInput.value.trim() || '-';
-        summaryClass.textContent = examClassInput.value.trim() || '-';
-        summaryDate.textContent = examDateInput.value ? new Date(examDateInput.value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
-        summarySession.textContent = examSessionSelect.value || '-';
-        summarySubjects.textContent = subjects.length || 0;
-    }
-
-    // ===== EDIT EXAM DETAILS =====
-    editExamDetailsBtn.addEventListener('click', () => {
-        modalExamName.value = examNameInput.value.trim();
-        modalExamClass.value = examClassInput.value.trim();
-        modalExamSession.value = examSessionSelect.value;
-        modalExamDate.value = examDateInput.value;
-        editExamModal.show();
-    });
-
-    saveExamDetailsBtn.addEventListener('click', () => {
-        const newName = modalExamName.value.trim();
-        const newClass = modalExamClass.value.trim();
-        const newSession = modalExamSession.value;
-        const newDate = modalExamDate.value;
-        
-        if (!newName) { alert('Please enter Exam Name'); return; }
-        if (!newClass) { alert('Please enter Class'); return; }
-        if (!newDate) { alert('Please select Exam Date'); return; }
-        
-        examNameInput.value = newName;
-        examClassInput.value = newClass;
-        examSessionSelect.value = newSession;
-        examDateInput.value = newDate;
-        
-        updateSummary();
-        editExamModal.hide();
-        showToast('Exam details updated!');
-        hasChanges = true;
-        updateButtonVisibility();
-    });
-
-    // ===== BUILD EXCEL SHEET =====
-    function buildExcelSheet() {
-        // Build header with subjects
-        let headerHtml = `
-            <th style="width:40px;">#</th>
-            <th style="min-width:60px;">Roll</th>
-            <th style="min-width:100px;">Student Name</th>
-            <th style="min-width:100px;">Father's Name</th>
-        `;
-        subjects.forEach((sub, idx) => {
-            headerHtml += `<th style="min-width:60px; text-align:center;">${sub.name}<span class="sub-label">/${sub.total}</span></th>`;
-        });
-        headerHtml += `<th style="width:80px; text-align:center;">Actions</th>`;
-        excelHeader.innerHTML = headerHtml;
-        
-        // Render existing students
-        renderExcelRows();
-        updateStudentCount();
-    }
-
-    // ===== RENDER EXCEL ROWS =====
-    function renderExcelRows() {
-        if (students.length === 0) {
-            excelBody.innerHTML = `
-                <tr>
-                    <td colspan="${subjects.length + 5}" style="text-align:center; padding:30px; color:#94a3b8;">
-                        <i class="fas fa-plus-circle" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>
-                        Click "Add Row" to enter student data
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-        
-        let html = '';
-        students.forEach((s, idx) => {
-            const isEditing = (editingRowIndex === idx);
-            html += `<tr id="row-${idx}" style="${isEditing ? 'background:#fefce8;' : ''}">`;
-            html += `<td style="text-align:center; font-weight:600; color:#64748b;">${idx + 1}</td>`;
-            
-            if (isEditing) {
-                // Edit mode - inputs
-                html += `
-                    <td><input type="number" class="excel-input roll-input" id="edit-roll-${idx}" value="${s.rollNo}" min="1"></td>
-                    <td><input type="text" class="excel-input name-input" id="edit-name-${idx}" value="${s.name}" placeholder="Name"></td>
-                    <td><input type="text" class="excel-input father-input" id="edit-father-${idx}" value="${s.fatherName || ''}" placeholder="Father"></td>
-                `;
-                subjects.forEach((sub, subIdx) => {
-                    const mark = s.marks[sub.name] || '';
-                    html += `<td><input type="number" class="excel-input mark-input" id="edit-mark-${idx}-${subIdx}" value="${mark}" min="0" max="${sub.total}" placeholder="0"></td>`;
-                });
-                html += `
-                    <td style="text-align:center;">
-                        <div class="row-actions" style="justify-content:center;">
-                            <button class="save-row" onclick="saveRow(${idx})" title="Save"><i class="fas fa-check"></i></button>
-                            <button class="cancel-row" onclick="cancelEdit(${idx})" title="Cancel"><i class="fas fa-times"></i></button>
-                        </div>
-                    </td>
-                `;
-            } else {
-                // View mode - show data
-                html += `<td style="text-align:center; font-weight:500;">${s.rollNo}</td>`;
-                html += `<td><strong>${s.name}</strong></td>`;
-                html += `<td>${s.fatherName || '-'}</td>`;
-                subjects.forEach(sub => {
-                    const mark = s.marks[sub.name] || 0;
-                    html += `<td style="text-align:center;">${mark}</td>`;
-                });
-                html += `
-                    <td style="text-align:center;">
-                        <div class="row-actions" style="justify-content:center;">
-                            <button class="edit-row" onclick="editRow(${idx})" title="Edit"><i class="fas fa-edit"></i></button>
-                            <button class="del-row" onclick="deleteRow(${idx})" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                    </td>
-                `;
-            }
-            
-            html += `</tr>`;
-        });
-        excelBody.innerHTML = html;
-    }
-
-    // ===== UPDATE STUDENT COUNT =====
-    function updateStudentCount() {
-        const count = students.length;
-        studentCount.textContent = count + ' students';
-        footerStudentCount.textContent = count;
-    }
-
-    // ===== ADD ROW =====
-    addRowBtn.addEventListener('click', () => {
-        // Cancel any ongoing edit
-        if (editingRowIndex !== null) {
-            if (!confirm('You have an unsaved edit. Cancel it?')) return;
-            editingRowIndex = null;
-        }
-        
-        // Get next roll number
-        const nextRoll = students.length > 0 ? Math.max(...students.map(s => s.rollNo)) + 1 : 1;
-        
-        // Add empty student
-        const marks = {};
-        subjects.forEach(sub => { marks[sub.name] = ''; });
-        students.push({ rollNo: nextRoll, name: '', fatherName: '', marks });
-        
-        // Edit the newly added row
-        editingRowIndex = students.length - 1;
-        renderExcelRows();
-        updateStudentCount();
-        hasChanges = true;
-        updateButtonVisibility();
-        
-        // Focus on name input of new row
-        setTimeout(() => {
-            const nameInput = document.getElementById(`edit-name-${editingRowIndex}`);
-            if (nameInput) nameInput.focus();
-        }, 100);
-    });
-
-    // ===== EDIT ROW =====
-    window.editRow = function(index) {
-        if (editingRowIndex !== null) {
-            if (!confirm('You have an unsaved edit. Cancel it?')) return;
-            editingRowIndex = null;
-        }
-        editingRowIndex = index;
-        renderExcelRows();
-        setTimeout(() => {
-            const nameInput = document.getElementById(`edit-name-${index}`);
-            if (nameInput) nameInput.focus();
-        }, 100);
-    };
-
-    // ===== SAVE ROW =====
-    window.saveRow = function(index) {
-        const rollInput = document.getElementById(`edit-roll-${index}`);
-        const nameInput = document.getElementById(`edit-name-${index}`);
-        const fatherInput = document.getElementById(`edit-father-${index}`);
-        
-        const rollNo = parseInt(rollInput.value);
-        const name = nameInput.value.trim();
-        const fatherName = fatherInput.value.trim();
-        
-        if (!name) { alert('Please enter student name'); return; }
-        if (!rollNo || rollNo < 1) { alert('Please enter valid roll number'); return; }
-        
-        // Check duplicate roll number
-        const duplicate = students.some((s, idx) => idx !== index && s.rollNo === rollNo);
-        if (duplicate) { alert('Roll number already exists!'); return; }
-        
-        const marks = {};
-        let valid = true;
-        subjects.forEach((sub, subIdx) => {
-            const markInput = document.getElementById(`edit-mark-${index}-${subIdx}`);
-            const mark = parseInt(markInput.value);
-            if (isNaN(mark) || mark < 0) { 
-                valid = false; 
-                alert(`Please enter valid marks for ${sub.name}`); 
-                return; 
-            }
-            if (mark > sub.total) { 
-                valid = false; 
-                alert(`Marks for ${sub.name} cannot exceed ${sub.total}`); 
-                return; 
-            }
-            marks[sub.name] = mark;
-        });
-        if (!valid) return;
-        
-        students[index] = { rollNo, name, fatherName, marks };
-        editingRowIndex = null;
-        renderExcelRows();
-        updateStudentCount();
-        hasChanges = true;
-        updateButtonVisibility();
-        showToast('Student saved!');
-    };
-
-    // ===== CANCEL EDIT =====
-    window.cancelEdit = function(index) {
-        // If student is empty (newly added), remove it
-        const s = students[index];
-        if (!s.name && !s.fatherName && subjects.every(sub => !s.marks[sub.name])) {
-            students.splice(index, 1);
-        }
-        editingRowIndex = null;
-        renderExcelRows();
-        updateStudentCount();
-    };
-
-    // ===== DELETE ROW =====
-    window.deleteRow = function(index) {
-        if (!confirm('Delete this student?')) return;
-        if (editingRowIndex === index) editingRowIndex = null;
-        students.splice(index, 1);
-        renderExcelRows();
-        updateStudentCount();
-        hasChanges = true;
-        updateButtonVisibility();
-        showToast('Student deleted');
-    };
-
-    function setupChangeTracking() {
-        // Track changes in Excel inputs
-        document.addEventListener('input', (e) => {
-            if (e.target.closest('.excel-input')) {
-                hasChanges = true;
-                updateButtonVisibility();
-            }
-        });
-    }
-
-    function updateButtonVisibility() {
-        if (isEditingPublishedResult) {
-            saveDraftBtn.classList.add('d-none');
-            publishResultBtn.classList.add('d-none');
-            saveChangesBtn.classList.remove('d-none');
-            dontSaveBtn.classList.remove('d-none');
-        } else {
-            saveDraftBtn.classList.remove('d-none');
-            publishResultBtn.classList.remove('d-none');
-            saveChangesBtn.classList.add('d-none');
-            dontSaveBtn.classList.add('d-none');
-        }
-    }
-
-    function validateResultData() {
-        if (!examNameInput.value.trim()) { alert('Please enter exam name'); return false; }
-        if (!examClassInput.value.trim()) { alert('Please enter class'); return false; }
-        if (!examDateInput.value) { alert('Please select exam date'); return false; }
-        
-        // Check if any student has empty name
-        const emptyStudent = students.some(s => !s.name.trim());
-        if (emptyStudent) { alert('Please fill all student names or delete empty rows'); return false; }
-        
-        if (students.length === 0) { alert('Please add at least one student'); return false; }
-        return true;
-    }
 
     function resetCreateResultForm() {
         examNameInput.value = '';
@@ -1084,130 +516,7 @@
         subjectCountInput.value = '';
         subjectFields.innerHTML = '';
         step1NextBtn.classList.add('d-none');
-        examSetupStep.classList.remove('d-none');
-        studentEntryStep.classList.add('d-none');
-        students = [];
-        editingRowIndex = null;
-        editingDraftId = null;
-        isEditingPublishedResult = false;
-        editingPublishedResultId = null;
-        hasChanges = false;
-        renderExcelRows();
-        updateStudentCount();
-        updateButtonVisibility();
-    }
-
-    // ===== GET STUDENTS DATA =====
-    function getStudentsData() {
-        return students.map(s => ({
-            rollNo: s.rollNo,
-            name: s.name,
-            fatherName: s.fatherName || '',
-            marks: s.marks
-        }));
-    }
-
-    // ===== SAVE DRAFT =====
-    saveDraftBtn.addEventListener('click', async () => {
-        if (!validateResultData()) return;
-        if (!schoolId) { alert('Institute not found'); return; }
-        try {
-            const data = {
-                examName: examNameInput.value,
-                class: examClassInput.value,
-                session: examSessionSelect.value,
-                examDate: examDateInput.value,
-                subjects,
-                students: getStudentsData(),
-                createdAt: serverTimestamp()
-            };
-            const ref = collection(db, "schools", schoolId, "draft_results");
-            if (editingDraftId) {
-                await updateDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId), data);
-                showToast('Draft updated!');
-            } else {
-                await addDoc(ref, data);
-                showToast('Draft saved!');
-            }
-            resetCreateResultForm();
-            showSection(dashboardSection);
-        } catch(error) {
-            alert('Error: ' + error.message);
-        }
-    });
-
-    // ===== PUBLISH RESULT =====
-    publishResultBtn.addEventListener('click', async () => {
-        if (!validateResultData()) return;
-        if (!schoolId) { alert('Institute not found'); return; }
-        if (isEditingPublishedResult) {
-            alert('Please use "Save Changes" button.');
-            return;
-        }
-        try {
-            const data = {
-                examName: examNameInput.value,
-                class: examClassInput.value,
-                session: examSessionSelect.value,
-                examDate: examDateInput.value,
-                subjects,
-                students: getStudentsData(),
-                createdAt: serverTimestamp(),
-                isDemo: false
-            };
-            await addDoc(collection(db, "schools", schoolId, "results"), data);
-            if (editingDraftId) {
-                await deleteDoc(doc(db, "schools", schoolId, "draft_results", editingDraftId));
-            }
-            publishedToast.show();
-            resetCreateResultForm();
-            showSection(dashboardSection);
-        } catch(error) {
-            alert('Error: ' + error.message);
-        }
-    });
-
-    async function updateExistingPublishedResult() {
-        if (!schoolId || !editingPublishedResultId) return;
-        try {
-            const data = {
-                examName: examNameInput.value,
-                class: examClassInput.value,
-                session: examSessionSelect.value,
-                examDate: examDateInput.value,
-                subjects,
-                students: getStudentsData(),
-                updatedAt: serverTimestamp()
-            };
-            await updateDoc(doc(db, "schools", schoolId, "results", editingPublishedResultId), data);
-            showToast('Result updated!');
-            resetCreateResultForm();
-            showSection(dashboardSection);
-        } catch(error) {
-            alert('Error: ' + error.message);
-        }
-    }
-
-    async function saveEditedPublishedResultAsDraft() {
-        if (!schoolId) return;
-        try {
-            const data = {
-                examName: examNameInput.value,
-                class: examClassInput.value,
-                session: examSessionSelect.value,
-                examDate: examDateInput.value,
-                subjects,
-                students: getStudentsData(),
-                createdAt: serverTimestamp(),
-                originalResultId: editingPublishedResultId
-            };
-            await addDoc(collection(db, "schools", schoolId, "draft_results"), data);
-            showToast('Saved as draft!');
-            resetCreateResultForm();
-            showSection(dashboardSection);
-        } catch(error) {
-            alert('Error: ' + error.message);
-        }
+        subjects = [];
     }
 
     // ===== LOAD DRAFTS =====
@@ -1254,37 +563,22 @@
             const snap = await getDocs(query(collection(db, "schools", schoolId, "draft_results"), where("__name__", "==", id)));
             if (snap.empty) return;
             const data = snap.docs[0].data();
-            examNameInput.value = data.examName || '';
-            examClassInput.value = data.class || '';
-            examSessionSelect.value = data.session || '2026-2027';
-            examDateInput.value = data.examDate || '';
-            subjects = data.subjects || [];
             
-            subjectCountInput.value = subjects.length;
-            generateSubjectFieldsBtn.click();
+            // Store data and open step2
+            const examData = {
+                examName: data.examName || '',
+                examClass: data.class || '',
+                examSession: data.session || '2026-2027',
+                examDate: data.examDate || '',
+                subjects: data.subjects || [],
+                students: data.students || [],
+                draftId: id,
+                isEditingDraft: true
+            };
+            localStorage.setItem('examData', JSON.stringify(examData));
+            localStorage.setItem('schoolId', schoolId);
             
-            setTimeout(() => {
-                const nameInputs = document.querySelectorAll('.subject-name');
-                const totalInputs = document.querySelectorAll('.subject-total');
-                subjects.forEach((subject, index) => {
-                    if (nameInputs[index]) nameInputs[index].value = subject.name;
-                    if (totalInputs[index]) totalInputs[index].value = subject.total;
-                });
-                nextToStudentEntryBtn.click();
-                students = data.students || [];
-                // Convert old format if needed
-                students = students.map(s => ({
-                    ...s,
-                    marks: s.marks || {}
-                }));
-                renderExcelRows();
-                updateStudentCount();
-                editingDraftId = id;
-                isEditingPublishedResult = false;
-                hasChanges = false;
-                updateButtonVisibility();
-                showSection(createResultSection);
-            }, 200);
+            window.open('step2-excel.html', '_blank');
         } catch(error) {
             alert('Error loading draft: ' + error.message);
         }
@@ -1320,7 +614,7 @@
             snap.forEach(doc => {
                 const d = doc.data();
                 const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString('en-IN') : 'Unknown';
-                const demoBadge = d.isDemo ? '<span class="demo-badge">Demo</span>' : '';
+                const demoBadge = d.isDemo ? '<span class="demo-badge">🎯 Demo</span>' : '';
                 oldResultsList.innerHTML += `
                     <div class="col-6 col-md-4 col-lg-3 mb-2">
                         <div class="card h-100">
@@ -1338,14 +632,13 @@
                 `;
             });
             document.querySelectorAll('.view-result').forEach(btn => btn.addEventListener('click', e => viewResult(e.target.dataset.id)));
-            document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editResult(e.target.dataset.id)));
-            document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deleteResult(e.target.dataset.id)));
+            document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editPublishedResult(e.target.dataset.id)));
+            document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deletePublishedResult(e.target.dataset.id)));
         } catch(error) {
             console.error('Error:', error);
         }
     }
 
-    // ===== VIEW RESULT =====
     async function viewResult(id) {
         if (!schoolId) return;
         try {
@@ -1391,51 +684,33 @@
         }
     }
 
-    // ===== EDIT PUBLISHED RESULT =====
-    async function editResult(id) {
+    async function editPublishedResult(id) {
         if (!schoolId) return;
         try {
             const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
             if (snap.empty) return;
             const data = snap.docs[0].data();
-            examNameInput.value = data.examName || '';
-            examClassInput.value = data.class || '';
-            examSessionSelect.value = data.session || '2026-2027';
-            examDateInput.value = data.examDate || '';
-            subjects = data.subjects || [];
             
-            subjectCountInput.value = subjects.length;
-            generateSubjectFieldsBtn.click();
+            const examData = {
+                examName: data.examName || '',
+                examClass: data.class || '',
+                examSession: data.session || '2026-2027',
+                examDate: data.examDate || '',
+                subjects: data.subjects || [],
+                students: data.students || [],
+                publishedId: id,
+                isEditingPublished: true
+            };
+            localStorage.setItem('examData', JSON.stringify(examData));
+            localStorage.setItem('schoolId', schoolId);
             
-            setTimeout(() => {
-                const nameInputs = document.querySelectorAll('.subject-name');
-                const totalInputs = document.querySelectorAll('.subject-total');
-                subjects.forEach((subject, index) => {
-                    if (nameInputs[index]) nameInputs[index].value = subject.name;
-                    if (totalInputs[index]) totalInputs[index].value = subject.total;
-                });
-                nextToStudentEntryBtn.click();
-                students = data.students || [];
-                students = students.map(s => ({
-                    ...s,
-                    marks: s.marks || {}
-                }));
-                renderExcelRows();
-                updateStudentCount();
-                editingDraftId = null;
-                isEditingPublishedResult = true;
-                editingPublishedResultId = id;
-                hasChanges = false;
-                updateButtonVisibility();
-                showSection(createResultSection);
-            }, 200);
+            window.open('step2-excel.html', '_blank');
         } catch(error) {
             alert('Error loading result: ' + error.message);
         }
     }
 
-    // ===== DELETE PUBLISHED RESULT =====
-    async function deleteResult(id) {
+    async function deletePublishedResult(id) {
         if (!schoolId) return;
         if (confirm('Delete this published result permanently?')) {
             try {
