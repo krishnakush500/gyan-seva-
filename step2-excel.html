@@ -92,11 +92,14 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
+        .excel-table th:last-child { border-right: none; }
         .excel-table td {
             padding: 4px 6px;
             border-bottom: 1px solid #eef2f7;
             vertical-align: middle;
+            text-align: center;
         }
         .excel-table tr:hover td { background: #f5f8ff; }
         
@@ -107,6 +110,7 @@
             background: #f8faff;
             font-size: 0.7rem;
             white-space: nowrap;
+            border-right: 1px solid #eef2f7;
         }
         .excel-table .row-roll {
             font-weight: 700;
@@ -114,6 +118,7 @@
             text-align: center;
             font-size: 0.75rem;
             min-width: 45px;
+            border-right: 1px solid #eef2f7;
         }
         .excel-table .row-name input,
         .excel-table .row-father input,
@@ -124,6 +129,7 @@
             border-radius: 4px;
             font-size: 0.75rem;
             background: transparent;
+            text-align: center;
             transition: 0.2s;
         }
         .excel-table .row-name input:hover,
@@ -141,12 +147,12 @@
             box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
         }
         .excel-table .row-marks input {
-            text-align: center;
-            max-width: 60px;
+            max-width: 55px;
         }
         .excel-table .row-actions {
             text-align: center;
             white-space: nowrap;
+            border-left: 1px solid #eef2f7;
         }
         .excel-table .row-actions button {
             background: none;
@@ -182,15 +188,16 @@
             border: 1px solid #e2e8f0;
             border-radius: 6px;
             font-size: 0.75rem;
+            text-align: center;
         }
         .add-row-area input:focus {
             border-color: #1a237e;
             outline: none;
         }
-        .add-row-area .roll-input { width: 50px; text-align: center; }
-        .add-row-area .name-input { width: 120px; }
-        .add-row-area .father-input { width: 100px; }
-        .add-row-area .marks-input { width: 55px; text-align: center; }
+        .add-row-area .roll-input { width: 50px; }
+        .add-row-area .name-input { width: 130px; text-align: left; }
+        .add-row-area .father-input { width: 110px; text-align: left; }
+        .add-row-area .marks-input { width: 55px; }
         
         .btn-excel { 
             font-size: 0.7rem; 
@@ -221,22 +228,22 @@
             .topbar { padding: 8px 12px; }
             .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
             .excel-table { font-size: 0.7rem; }
-            .excel-table th { font-size: 0.65rem; padding: 5px 6px; }
+            .excel-table th { font-size: 0.6rem; padding: 4px 4px; }
             .excel-table td { padding: 3px 4px; }
-            .excel-table .row-marks input { max-width: 45px; font-size: 0.7rem; }
-            .excel-table .row-name input { font-size: 0.7rem; }
-            .add-row-area input { font-size: 0.7rem; }
+            .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
+            .excel-table .row-name input { font-size: 0.65rem; }
+            .add-row-area input { font-size: 0.65rem; }
             .add-row-area .name-input { width: 80px; }
             .add-row-area .father-input { width: 70px; }
-            .btn-excel { font-size: 0.65rem; padding: 3px 8px; }
+            .btn-excel { font-size: 0.6rem; padding: 3px 8px; }
         }
         
         @media (min-width: 768px) {
             .container { max-width: 1200px; margin: 0 auto; }
             .excel-table { font-size: 0.9rem; }
-            .excel-table th { font-size: 0.85rem; padding: 10px 14px; }
+            .excel-table th { font-size: 0.8rem; padding: 10px 14px; }
             .excel-table td { padding: 6px 10px; }
-            .excel-table .row-marks input { max-width: 70px; }
+            .excel-table .row-marks input { max-width: 65px; }
             .add-row-area .name-input { width: 160px; }
             .add-row-area .father-input { width: 130px; }
             .add-row-area .marks-input { width: 65px; }
@@ -248,7 +255,7 @@
 
 <!-- TOP BAR -->
 <div class="topbar">
-    <div class="brand"><i class="fas fa-chart-simple"></i> GYAN SEVA — Excel Entry</div>
+    <div class="brand"><i class="fas fa-table"></i> GYAN SEVA — Excel Entry</div>
     <div>
         <a href="manage-results.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
     </div>
@@ -276,12 +283,13 @@
             <table class="excel-table" id="excelTable">
                 <thead>
                     <tr id="tableHeader">
-                        <th style="width:30px;">#</th>
-                        <th style="width:45px;">Roll</th>
-                        <th style="min-width:100px;">Student Name</th>
-                        <th style="min-width:80px;">Father's Name</th>
-                        <th id="subjectHeader"></th>
-                        <th style="width:70px;">Actions</th>
+                        <th style="width:30px; min-width:30px;">#</th>
+                        <th style="width:45px; min-width:45px;">Roll</th>
+                        <th style="min-width:120px; text-align:left; padding-left:10px;">👤 Student Name</th>
+                        <th style="min-width:100px; text-align:left; padding-left:10px;">👨‍👦 Father's Name</th>
+                        <th id="subjectHeader" style="text-align:center;"></th>
+                        <th style="width:75px; min-width:75px; text-align:center;">⚡ Total</th>
+                        <th style="width:70px; min-width:70px; text-align:center;">🔧 Actions</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -294,8 +302,9 @@
                 </tbody>
                 <tfoot id="tableFoot" style="display:none;">
                     <tr class="total-row">
-                        <td colspan="4" style="text-align:right; padding-right:10px;">Total Students: <span id="totalStudents">0</span></td>
+                        <td colspan="4" style="text-align:right; padding-right:10px;">📊 Total Students: <span id="totalStudents">0</span></td>
                         <td id="totalMarks"></td>
+                        <td style="text-align:center; font-weight:700;" id="grandTotal">0</td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -306,7 +315,7 @@
         <div class="add-row-area">
             <input type="number" class="roll-input" id="newRoll" placeholder="Roll" value="1">
             <input type="text" class="name-input" id="newName" placeholder="Student Name">
-            <input type="text" class="father-input" id="newFather" placeholder="Father">
+            <input type="text" class="father-input" id="newFather" placeholder="Father's Name">
             <span id="marksInputs"></span>
             <button class="btn btn-primary btn-excel" id="addRowBtn"><i class="fas fa-plus"></i> Add</button>
             <button class="btn btn-warning btn-excel d-none" id="updateRowBtn"><i class="fas fa-edit"></i> Update</button>
@@ -374,8 +383,6 @@
         doc, 
         updateDoc, 
         deleteDoc, 
-        query, 
-        orderBy,
         serverTimestamp,
         where,
         getDoc
@@ -417,7 +424,7 @@
     const tableBody = document.getElementById('tableBody');
     const tableFoot = document.getElementById('tableFoot');
     const totalStudents = document.getElementById('totalStudents');
-    const totalMarks = document.getElementById('totalMarks');
+    const grandTotal = document.getElementById('grandTotal');
     const subjectHeader = document.getElementById('subjectHeader');
     const marksInputs = document.getElementById('marksInputs');
     
@@ -462,7 +469,7 @@
         subjects.forEach((s, i) => {
             html += `<th style="min-width:70px; text-align:center;">${s.name}<br><span style="font-weight:400;font-size:0.6rem;">/${s.total}</span></th>`;
         });
-        subjectHeader.innerHTML = html + '<th style="width:60px; text-align:center;">Total</th>';
+        subjectHeader.innerHTML = html;
     }
     
     function renderMarksInputs() {
@@ -482,7 +489,7 @@
         if (students.length === 0) {
             tableBody.innerHTML = `
                 <tr id="emptyRow">
-                    <td colspan="${4 + subjects.length + 1}" style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
+                    <td colspan="${4 + subjects.length + 2}" style="text-align:center; padding:30px; color:#94a3b8; font-size:0.85rem;">
                         <i class="fas fa-plus-circle" style="font-size:1.2rem; display:block; margin-bottom:8px;"></i>
                         No students added yet.<br>Add rows below using the input fields.
                     </td>
@@ -494,21 +501,28 @@
         
         tableFoot.style.display = 'table-footer-group';
         let html = '';
+        let allSubTotals = subjects.map(() => 0);
+        let grandTotalValue = 0;
+        
         students.forEach((s, idx) => {
             let marksHtml = '';
-            let total = 0;
-            subjects.forEach(sub => {
+            let studentTotal = 0;
+            subjects.forEach((sub, subIdx) => {
                 const mark = s.marks[sub.name] || 0;
-                total += mark;
+                studentTotal += mark;
+                allSubTotals[subIdx] += mark;
                 marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:55px;"></td>`;
             });
+            grandTotalValue += studentTotal;
+            
             html += `
                 <tr>
                     <td class="row-label">${idx + 1}</td>
                     <td class="row-roll">${s.rollNo}</td>
-                    <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${s.name}"></td>
-                    <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${s.fatherName || ''}"></td>
+                    <td class="row-name" style="text-align:left; padding-left:8px;"><input type="text" class="name-input" data-idx="${idx}" value="${s.name}" style="text-align:left;"></td>
+                    <td class="row-father" style="text-align:left; padding-left:8px;"><input type="text" class="father-input" data-idx="${idx}" value="${s.fatherName || ''}" style="text-align:left;"></td>
                     ${marksHtml}
+                    <td style="text-align:center; font-weight:600; color:#1a237e;">${studentTotal}</td>
                     <td class="row-actions">
                         <button class="edit-btn" onclick="editStudent(${idx})"><i class="fas fa-edit"></i></button>
                         <button class="del-btn" onclick="deleteStudent(${idx})"><i class="fas fa-trash-alt"></i></button>
@@ -519,27 +533,24 @@
         
         // Total row
         let totalHtml = '';
-        let allTotals = [];
-        subjects.forEach((sub, i) => {
-            let subTotal = 0;
-            students.forEach(s => { subTotal += (s.marks[sub.name] || 0); });
-            allTotals.push(subTotal);
+        allSubTotals.forEach((subTotal) => {
             totalHtml += `<td style="text-align:center; font-weight:700; color:#1a237e;">${subTotal}</td>`;
         });
-        const grandTotal = allTotals.reduce((a, b) => a + b, 0);
         
         html += `
             <tr class="total-row">
-                <td colspan="4" style="text-align:right; padding-right:10px; font-weight:700;">Total: ${students.length} students</td>
+                <td colspan="4" style="text-align:right; padding-right:10px; font-weight:700;">📊 Total: ${students.length} students</td>
                 ${totalHtml}
-                <td style="text-align:center; font-weight:700; color:#1a237e;">${grandTotal}</td>
+                <td style="text-align:center; font-weight:700; color:#1a237e;">${grandTotalValue}</td>
+                <td></td>
             </tr>
         `;
         
         tableBody.innerHTML = html;
         totalStudents.textContent = students.length;
+        grandTotal.textContent = grandTotalValue;
         
-        // 🔥 Auto-save on input change
+        // Auto-save on input change
         document.querySelectorAll('.name-input, .father-input, .mark-input').forEach(input => {
             input.addEventListener('change', () => {
                 const idx = parseInt(input.dataset.idx);
@@ -664,7 +675,7 @@
         examData.examDate = modalExamDate.value;
         updateSummary();
         editExamModal.hide();
-        showToast('Exam details updated!');
+        alert('Exam details updated!');
     });
     
     // ===== SAVE DRAFT =====
@@ -686,10 +697,10 @@
             
             if (isEditingDraft && draftId) {
                 await updateDoc(doc(db, "schools", schoolId, "draft_results", draftId), data);
-                showToast('Draft updated!');
+                alert('Draft updated!');
             } else {
                 await addDoc(collection(db, "schools", schoolId, "draft_results"), data);
-                showToast('Draft saved!');
+                alert('Draft saved!');
             }
             
             setTimeout(() => {
@@ -725,14 +736,14 @@
             if (isEditingPublished && publishedId) {
                 data.updatedAt = serverTimestamp();
                 await updateDoc(doc(db, "schools", schoolId, "results", publishedId), data);
-                showToast('Result updated!');
+                alert('Result updated!');
             } else {
                 data.createdAt = serverTimestamp();
                 await addDoc(collection(db, "schools", schoolId, "results"), data);
                 if (isEditingDraft && draftId) {
                     await deleteDoc(doc(db, "schools", schoolId, "draft_results", draftId));
                 }
-                showToast('Result published!');
+                alert('Result published!');
             }
             
             setTimeout(() => {
@@ -743,10 +754,6 @@
             alert('Error: ' + error.message);
         }
     });
-    
-    function showToast(message) {
-        alert(message);
-    }
     
     // ===== INIT =====
     init();
