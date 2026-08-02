@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>GYAN SEVA — Step 2 (Excel Sheet)</title>
+    <title>GYAN SEVA — Excel Entry</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f0f2f5; min-height: 100vh; padding: 15px; }
+        body { background: #e8ecf1; min-height: 100vh; padding: 10px; }
         
+        /* ===== TOP BAR ===== */
         .topbar {
             background: linear-gradient(135deg, #1a237e, #283593);
             color: white;
-            padding: 10px 16px;
+            padding: 8px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 8px;
-            border-radius: 12px;
-            margin-bottom: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
         }
-        .topbar .brand { font-size: 1rem; font-weight: 700; }
+        .topbar .brand { font-size: 0.95rem; font-weight: 700; }
         .topbar .brand i { color: #ffc107; }
         .topbar .back-btn {
             background: rgba(255,255,255,0.15);
@@ -42,16 +43,16 @@
         /* ===== EXAM SUMMARY ===== */
         .exam-summary {
             background: #f0f7ff;
-            border-radius: 10px;
-            padding: 10px 14px;
-            margin-bottom: 14px;
+            border-radius: 8px;
+            padding: 8px 14px;
+            margin-bottom: 10px;
             border: 1px solid #dce8f5;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 6px;
-            font-size: 0.75rem;
+            gap: 4px;
+            font-size: 0.7rem;
         }
         .exam-summary .info { display: flex; flex-wrap: wrap; gap: 4px 12px; }
         .exam-summary .info span { color: #1a237e; }
@@ -61,60 +62,60 @@
             border: none;
             color: #1a237e;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             padding: 2px 8px;
             border-radius: 6px;
             transition: 0.3s;
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        /* ===== 🔥 EXCEL SHEET - PERFECT ===== */
+        /* ===== 🔥 EXCEL SHEET - PURE TABLE ===== */
         .excel-container {
             background: white;
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
+            border: 1px solid #c8d0dc;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
         
-        /* 🔥 Table Wrapper - Fixed Header */
+        /* 🔥 Table Wrapper - Scroll Only Body */
         .excel-table-wrapper {
             overflow-y: auto;
-            max-height: 450px;
+            max-height: 520px;
         }
         
         .excel-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
+            font-size: 0.85rem;
         }
         
-        /* 🔥 Header - Fixed Position */
+        /* 🔥 ALL CELLS - Same Size */
+        .excel-table th,
+        .excel-table td {
+            padding: 6px 8px;
+            border: 1px solid #c8d0dc;
+            text-align: center;
+            vertical-align: middle;
+            height: 38px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* 🔥 Header - Sticky */
         .excel-table thead {
             position: sticky;
             top: 0;
             z-index: 100;
         }
         
-        /* 🔥 ALL CELLS - SAME SIZE */
-        .excel-table th,
-        .excel-table td {
-            padding: 8px 10px;
-            border: 1px solid #d0d8e8;
-            text-align: center;
-            vertical-align: middle;
-            height: 42px;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        /* 🔥 Header - Sirf Background Color Alag */
         .excel-table th {
             background: #1a237e;
             color: white;
             font-weight: 600;
+            font-size: 0.8rem;
         }
         
         /* 🔥 Data Rows */
@@ -122,31 +123,31 @@
             background: white;
         }
         .excel-table tr:hover td {
-            background: #f5f8ff;
+            background: #f0f5ff;
         }
         
-        /* 🔥 Column Widths - Bigger for Full Words */
-        .col-serial { width: 50px; min-width: 45px; max-width: 55px; }
-        .col-roll { width: 70px; min-width: 60px; max-width: 80px; }
-        .col-name { width: 160px; min-width: 140px; }
-        .col-father { width: 150px; min-width: 130px; }
-        .col-subject { width: 110px; min-width: 95px; }
-        .col-total { width: 70px; min-width: 60px; max-width: 80px; }
-        .col-actions { width: 80px; min-width: 70px; max-width: 90px; }
+        /* 🔥 Column Widths */
+        .col-serial { width: 45px; min-width: 40px; max-width: 50px; }
+        .col-roll { width: 65px; min-width: 55px; max-width: 75px; }
+        .col-name { width: 150px; min-width: 130px; }
+        .col-father { width: 140px; min-width: 120px; }
+        .col-subject { width: 100px; min-width: 85px; }
+        .col-total { width: 65px; min-width: 55px; max-width: 75px; }
+        .col-actions { width: 75px; min-width: 65px; max-width: 85px; }
         
         /* 🔥 Serial Number */
         .excel-table .row-label {
             font-weight: 600;
             color: #1a237e;
             background: #f8faff;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         
         /* 🔥 Roll Number */
         .excel-table .row-roll {
-            font-weight: 700;
+            font-weight: 600;
             color: #1a237e;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         /* 🔥 Input Fields - Excel Style */
@@ -155,13 +156,14 @@
         .excel-table .row-marks input {
             width: 100%;
             border: none;
-            padding: 4px 6px;
+            padding: 2px 4px;
             font-size: 0.85rem;
             background: transparent;
             text-align: center;
             outline: none;
             border-radius: 0;
             font-family: inherit;
+            height: 30px;
         }
         .excel-table .row-name input {
             text-align: left;
@@ -172,13 +174,33 @@
         .excel-table .row-name input:focus,
         .excel-table .row-father input:focus,
         .excel-table .row-marks input:focus {
-            background: white;
+            background: #e8f0fe;
             outline: 2px solid #1a237e;
             outline-offset: -1px;
         }
         .excel-table .row-marks input {
-            max-width: 65px;
+            max-width: 60px;
             margin: 0 auto;
+        }
+        
+        /* 🔥 Add Row Button */
+        .btn-add-row {
+            background: #e8f0fe;
+            border: none;
+            padding: 2px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1a237e;
+            cursor: pointer;
+            transition: 0.2s;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-add-row:hover {
+            background: #d0ddf5;
         }
         
         /* 🔥 Actions */
@@ -188,9 +210,9 @@
         .excel-table .row-actions button {
             background: none;
             border: none;
-            padding: 2px 8px;
+            padding: 2px 6px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             border-radius: 4px;
             transition: 0.2s;
         }
@@ -203,54 +225,56 @@
             font-weight: 700;
             color: #1a237e;
             border-top: 2px solid #1a237e;
+            border-bottom: 2px solid #1a237e;
         }
         
-        /* 🔥 Empty State - Hidden */
-        .empty-state {
-            display: none;
+        /* 🔥 Add Row (Last Row) */
+        .excel-table .add-row td {
+            background: #f8faff;
+            border-top: 1px dashed #1a237e;
         }
-        
-        /* ===== ADD ROW AREA ===== */
-        .add-row-area {
-            padding: 10px 14px;
-            background: #fafcff;
-            border-top: 1px solid #eef2f7;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .add-row-area input {
-            padding: 5px 8px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 0.75rem;
-        }
-        .add-row-area input:focus {
-            border-color: #1a237e;
+        .excel-table .add-row input {
+            width: 100%;
+            border: none;
+            padding: 2px 4px;
+            font-size: 0.85rem;
+            background: transparent;
+            text-align: center;
             outline: none;
+            border-radius: 0;
+            font-family: inherit;
+            height: 30px;
         }
-        .add-row-area .roll-input { width: 50px; text-align: center; }
-        .add-row-area .name-input { width: 130px; }
-        .add-row-area .father-input { width: 110px; }
-        .add-row-area .marks-input { width: 55px; text-align: center; }
-        
-        .btn-excel { 
-            font-size: 0.7rem; 
-            padding: 4px 12px; 
-            border-radius: 6px; 
-            font-weight: 600; 
+        .excel-table .add-row .name-input-add {
+            text-align: left;
+        }
+        .excel-table .add-row .father-input-add {
+            text-align: left;
+        }
+        .excel-table .add-row input:focus {
+            background: #e8f0fe;
+            outline: 2px solid #1a237e;
+            outline-offset: -1px;
+        }
+        .excel-table .add-row .marks-input-add {
+            max-width: 60px;
+            margin: 0 auto;
         }
         
         /* ===== ACTION BAR ===== */
         .action-bar {
-            padding: 12px 14px;
-            background: white;
-            border-top: 1px solid #eef2f7;
+            padding: 10px 14px;
+            background: #f8faff;
+            border-top: 1px solid #e2e8f0;
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            border-radius: 0 0 12px 12px;
+        }
+        .btn-excel {
+            font-size: 0.75rem;
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-weight: 600;
         }
         
         .edit-modal .modal-content { border-radius: 16px; }
@@ -261,42 +285,41 @@
         
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            body { padding: 8px; }
-            .topbar { padding: 8px 12px; }
-            .exam-summary { font-size: 0.65rem; padding: 8px 10px; }
+            body { padding: 5px; }
+            .topbar { padding: 6px 10px; }
+            .topbar .brand { font-size: 0.8rem; }
+            .exam-summary { font-size: 0.6rem; padding: 6px 10px; }
             .excel-table th,
-            .excel-table td { 
-                padding: 4px 6px; 
-                height: 34px;
+            .excel-table td {
+                padding: 4px 5px;
+                height: 32px;
                 font-size: 0.7rem;
             }
-            .col-name { width: 100px; min-width: 80px; }
-            .col-father { width: 90px; min-width: 70px; }
-            .col-subject { width: 75px; min-width: 65px; }
-            .excel-table .row-marks input { max-width: 45px; font-size: 0.65rem; }
+            .col-name { width: 90px; min-width: 70px; }
+            .col-father { width: 80px; min-width: 60px; }
+            .col-subject { width: 70px; min-width: 60px; }
+            .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
             .excel-table .row-name input { font-size: 0.65rem; }
             .excel-table .row-father input { font-size: 0.65rem; }
-            .add-row-area input { font-size: 0.65rem; }
-            .add-row-area .name-input { width: 80px; }
-            .add-row-area .father-input { width: 70px; }
+            .excel-table .add-row input { font-size: 0.65rem; }
+            .btn-add-row { font-size: 0.6rem; padding: 1px 8px; height: 24px; }
             .btn-excel { font-size: 0.6rem; padding: 3px 8px; }
         }
         
         @media (min-width: 769px) {
             .container { max-width: 1200px; margin: 0 auto; }
             .excel-table th,
-            .excel-table td { 
-                padding: 10px 14px; 
-                height: 46px;
+            .excel-table td {
+                padding: 8px 12px;
+                height: 42px;
                 font-size: 0.9rem;
             }
             .col-name { width: 180px; min-width: 150px; }
             .col-father { width: 160px; min-width: 135px; }
-            .col-subject { width: 120px; min-width: 105px; }
-            .excel-table .row-marks input { max-width: 75px; }
-            .add-row-area .name-input { width: 170px; }
-            .add-row-area .father-input { width: 140px; }
-            .btn-excel { font-size: 0.8rem; padding: 6px 16px; }
+            .col-subject { width: 115px; min-width: 100px; }
+            .excel-table .row-marks input { max-width: 70px; }
+            .btn-add-row { font-size: 0.8rem; padding: 2px 16px; height: 32px; }
+            .btn-excel { font-size: 0.85rem; padding: 6px 18px; }
         }
     </style>
 </head>
@@ -344,8 +367,8 @@
                 <tbody id="tableBody">
                     <!-- Students will be rendered here -->
                 </tbody>
-                <tfoot id="tableFoot" style="display:none;">
-                    <tr class="total-row">
+                <tfoot id="tableFoot">
+                    <tr class="total-row" id="totalRow">
                         <td class="col-serial"></td>
                         <td class="col-roll"></td>
                         <td class="col-name" style="text-align:right; padding-right:10px;">Total: <span id="totalStudents">0</span></td>
@@ -354,19 +377,20 @@
                         <td class="col-total" id="grandTotal" style="text-align:center;"></td>
                         <td class="col-actions"></td>
                     </tr>
+                    <!-- 🔥 Add Row (Last Row) -->
+                    <tr class="add-row" id="addRow">
+                        <td class="col-serial" style="font-weight:600; color:#1a237e;">+</td>
+                        <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
+                        <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name"></td>
+                        <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father"></td>
+                        <td class="col-subject" id="marksInputs"></td>
+                        <td class="col-total"></td>
+                        <td class="col-actions">
+                            <button class="btn-add-row" id="addRowBtn"><i class="fas fa-plus"></i> Add</button>
+                        </td>
+                    </tr>
                 </tfoot>
             </table>
-        </div>
-        
-        <!-- Add Row Area -->
-        <div class="add-row-area">
-            <input type="number" class="roll-input" id="newRoll" placeholder="Roll" value="1">
-            <input type="text" class="name-input" id="newName" placeholder="Student Name">
-            <input type="text" class="father-input" id="newFather" placeholder="Father">
-            <span id="marksInputs"></span>
-            <button class="btn btn-primary btn-excel" id="addRowBtn"><i class="fas fa-plus"></i> Add</button>
-            <button class="btn btn-warning btn-excel d-none" id="updateRowBtn"><i class="fas fa-edit"></i> Update</button>
-            <button class="btn btn-secondary btn-excel d-none" id="cancelEditBtn">Cancel</button>
         </div>
         
         <!-- Action Buttons -->
@@ -471,7 +495,6 @@
     const summaryStudents = document.getElementById('summaryStudents');
     
     const tableBody = document.getElementById('tableBody');
-    const tableFoot = document.getElementById('tableFoot');
     const totalStudents = document.getElementById('totalStudents');
     const totalMarks = document.getElementById('totalMarks');
     const grandTotal = document.getElementById('grandTotal');
@@ -482,11 +505,9 @@
     const newName = document.getElementById('newName');
     const newFather = document.getElementById('newFather');
     const addRowBtn = document.getElementById('addRowBtn');
-    const updateRowBtn = document.getElementById('updateRowBtn');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishResultBtn = document.getElementById('publishResultBtn');
-    const clearAllBtn = document.getElementById('clearAllBtn');
     
     const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
     const modalExamName = document.getElementById('modalExamName');
@@ -514,7 +535,6 @@
         summaryStudents.textContent = students.length || 0;
     }
     
-    // ===== 🔥 HEADER - Subject Name + Total in Same Line =====
     function renderSubjectHeader() {
         let html = '';
         subjects.forEach((s) => {
@@ -526,7 +546,7 @@
     function renderMarksInputs() {
         let html = '';
         subjects.forEach((s) => {
-            html += `<input type="number" class="marks-input new-mark" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="width:55px;">`;
+            html += `<input type="number" class="marks-input-add" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
         });
         marksInputs.innerHTML = html;
     }
@@ -537,14 +557,14 @@
     }
     
     function renderTable() {
-        // 🔥 Empty state - show nothing, just empty table
         if (students.length === 0) {
             tableBody.innerHTML = '';
-            tableFoot.style.display = 'none';
+            totalStudents.textContent = '0';
+            totalMarks.innerHTML = '';
+            grandTotal.textContent = '0';
             return;
         }
         
-        tableFoot.style.display = 'table-footer-group';
         let html = '';
         let allTotals = [];
         subjects.forEach(() => allTotals.push(0));
@@ -557,17 +577,17 @@
                 const mark = s.marks[sub.name] || 0;
                 total += mark;
                 allTotals[subIdx] += mark;
-                marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:65px;"></td>`;
+                marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:60px; width:100%;"></td>`;
             });
             grandTotalSum += total;
             html += `
                 <tr>
                     <td class="row-label">${idx + 1}</td>
                     <td class="row-roll">${s.rollNo}</td>
-                    <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${s.name}"></td>
-                    <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${s.fatherName || ''}"></td>
+                    <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${s.name}" style="width:100%;"></td>
+                    <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${s.fatherName || ''}" style="width:100%;"></td>
                     ${marksHtml}
-                    <td class="row-total" style="text-align:center; font-weight:600; color:#1a237e;">${total}</td>
+                    <td style="text-align:center; font-weight:600; color:#1a237e;">${total}</td>
                     <td class="row-actions">
                         <button class="edit-btn" onclick="editStudent(${idx})"><i class="fas fa-edit"></i></button>
                         <button class="del-btn" onclick="deleteStudent(${idx})"><i class="fas fa-trash-alt"></i></button>
@@ -576,26 +596,16 @@
             `;
         });
         
-        // Total row
-        let totalHtml = '';
-        allTotals.forEach((subTotal) => {
-            totalHtml += `<td class="col-subject" style="text-align:center; font-weight:700; color:#1a237e;">${subTotal}</td>`;
-        });
-        
-        html += `
-            <tr class="total-row">
-                <td class="col-serial"></td>
-                <td class="col-roll"></td>
-                <td class="col-name" style="text-align:right; padding-right:10px; font-weight:700;">Total: ${students.length}</td>
-                <td class="col-father"></td>
-                ${totalHtml}
-                <td class="col-total" style="text-align:center; font-weight:700; color:#1a237e;">${grandTotalSum}</td>
-                <td class="col-actions"></td>
-            </tr>
-        `;
-        
         tableBody.innerHTML = html;
         totalStudents.textContent = students.length;
+        
+        // Update total row
+        let totalHtml = '';
+        allTotals.forEach((subTotal) => {
+            totalHtml += `<td style="text-align:center; font-weight:700; color:#1a237e;">${subTotal}</td>`;
+        });
+        totalMarks.innerHTML = totalHtml;
+        grandTotal.textContent = grandTotalSum;
         
         // 🔥 Auto-save on input change
         document.querySelectorAll('.name-input, .father-input, .mark-input').forEach(input => {
@@ -626,7 +636,7 @@
         if (!name) { alert('Please enter student name'); return; }
         
         const marks = {};
-        document.querySelectorAll('.new-mark').forEach(input => {
+        document.querySelectorAll('.marks-input-add').forEach(input => {
             const sub = input.dataset.subject;
             marks[sub] = parseInt(input.value) || 0;
         });
@@ -637,7 +647,7 @@
         updateRollNumber();
         newName.value = '';
         newFather.value = '';
-        document.querySelectorAll('.new-mark').forEach(input => input.value = '');
+        document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
     });
     
     // ===== EDIT STUDENT =====
@@ -647,43 +657,44 @@
         newRoll.value = s.rollNo;
         newName.value = s.name;
         newFather.value = s.fatherName || '';
-        document.querySelectorAll('.new-mark').forEach(input => {
+        document.querySelectorAll('.marks-input-add').forEach(input => {
             const sub = input.dataset.subject;
             input.value = s.marks[sub] || 0;
         });
-        addRowBtn.classList.add('d-none');
-        updateRowBtn.classList.remove('d-none');
-        cancelEditBtn.classList.remove('d-none');
+        addRowBtn.innerHTML = '<i class="fas fa-save"></i> Update';
+        addRowBtn.classList.add('btn-warning');
+        addRowBtn.classList.remove('btn-primary');
     };
     
-    updateRowBtn.addEventListener('click', () => {
-        if (editingIndex === null) return;
-        const roll = parseInt(newRoll.value) || 1;
-        const name = newName.value.trim();
-        const father = newFather.value.trim();
-        if (!name) { alert('Enter name'); return; }
-        
-        const marks = {};
-        document.querySelectorAll('.new-mark').forEach(input => {
-            const sub = input.dataset.subject;
-            marks[sub] = parseInt(input.value) || 0;
-        });
-        
-        students[editingIndex] = { rollNo: roll, name, fatherName: father, marks };
-        renderTable();
-        updateSummary();
-        cancelEdit();
+    // Override add button for update
+    addRowBtn.addEventListener('click', function handler() {
+        if (editingIndex !== null) {
+            const roll = parseInt(newRoll.value) || 1;
+            const name = newName.value.trim();
+            const father = newFather.value.trim();
+            if (!name) { alert('Enter name'); return; }
+            
+            const marks = {};
+            document.querySelectorAll('.marks-input-add').forEach(input => {
+                const sub = input.dataset.subject;
+                marks[sub] = parseInt(input.value) || 0;
+            });
+            
+            students[editingIndex] = { rollNo: roll, name, fatherName: father, marks };
+            renderTable();
+            updateSummary();
+            cancelEdit();
+        }
     });
     
-    cancelEditBtn.addEventListener('click', cancelEdit);
     function cancelEdit() {
         editingIndex = null;
         newName.value = '';
         newFather.value = '';
-        document.querySelectorAll('.new-mark').forEach(input => input.value = '');
-        addRowBtn.classList.remove('d-none');
-        updateRowBtn.classList.add('d-none');
-        cancelEditBtn.classList.add('d-none');
+        document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
+        addRowBtn.innerHTML = '<i class="fas fa-plus"></i> Add';
+        addRowBtn.classList.remove('btn-warning');
+        addRowBtn.classList.add('btn-primary');
         updateRollNumber();
     }
     
