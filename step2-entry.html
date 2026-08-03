@@ -123,6 +123,11 @@
         .auto-fetch-container .toggle-status.active {
             color: #1a237e;
         }
+        .auto-fetch-container .hint-text {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            margin-left: 4px;
+        }
         
         /* ===== EXCEL SHEET ===== */
         .excel-container {
@@ -134,8 +139,9 @@
         }
         
         .excel-table-wrapper {
-            overflow-y: auto;
+            overflow: auto;
             max-height: 420px;
+            position: relative;
         }
         
         .excel-table {
@@ -143,7 +149,45 @@
             border-collapse: collapse;
             table-layout: fixed;
             font-size: 0.85rem;
+            min-width: 600px;
         }
+        
+        /* 🔥 Fixed Columns - Roll No & Student Name */
+        .excel-table .col-roll,
+        .excel-table .col-name {
+            position: sticky;
+            z-index: 20;
+            background: white;
+        }
+        .excel-table .col-roll {
+            left: 0;
+            min-width: 70px;
+            width: 70px;
+            max-width: 80px;
+        }
+        .excel-table .col-name {
+            left: 70px;
+            min-width: 180px;
+            width: 200px;
+        }
+        
+        /* 🔥 Header Fixed Columns */
+        .excel-table thead .col-roll,
+        .excel-table thead .col-name {
+            background: #1a237e;
+            z-index: 30;
+        }
+        .excel-table thead .col-roll {
+            left: 0;
+        }
+        .excel-table thead .col-name {
+            left: 70px;
+        }
+        
+        /* 🔥 Other Columns */
+        .col-father { width: 170px; min-width: 130px; }
+        .col-subject { width: 120px; min-width: 95px; }
+        .col-actions { width: 110px; min-width: 95px; max-width: 130px; }
         
         .excel-table th,
         .excel-table td {
@@ -170,12 +214,6 @@
         }
         .excel-table td { background: white; }
         .excel-table tr:hover td { background: #f0f5ff; }
-        
-        .col-roll { width: 70px; min-width: 60px; max-width: 80px; }
-        .col-name { width: 200px; min-width: 150px; }
-        .col-father { width: 180px; min-width: 130px; }
-        .col-subject { width: 120px; min-width: 95px; }
-        .col-actions { width: 110px; min-width: 95px; max-width: 130px; }
         
         .excel-table .row-roll {
             font-weight: 600;
@@ -314,6 +352,20 @@
         .edit-modal .modal-body { padding: 16px; }
         .edit-modal .modal-footer { padding: 12px 16px; }
         
+        /* ===== CLASS DROPDOWN IN MODAL ===== */
+        .class-dropdown-modal {
+            font-size: 0.85rem;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            width: 100%;
+        }
+        .class-dropdown-modal:focus {
+            border-color: #1a237e;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
+        }
+        
         @media (max-width: 768px) {
             body { padding: 5px; }
             .topbar { padding: 6px 10px; }
@@ -325,8 +377,9 @@
                 height: 32px;
                 font-size: 0.7rem;
             }
-            .col-name { width: 100px; min-width: 70px; }
-            .col-father { width: 90px; min-width: 60px; }
+            .col-name { width: 120px; min-width: 80px; left: 60px; }
+            .col-roll { min-width: 55px; width: 60px; }
+            .col-father { width: 80px; min-width: 60px; }
             .col-subject { width: 75px; min-width: 60px; }
             .col-actions { width: 80px; min-width: 70px; }
             .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
@@ -337,6 +390,8 @@
             .auto-fetch-container .toggle-switch { width: 36px; height: 20px; }
             .auto-fetch-container .toggle-switch .toggle-slider { width: 16px; height: 16px; }
             .auto-fetch-container .toggle-switch.active .toggle-slider { left: 18px; }
+            .auto-fetch-container .hint-text { font-size: 0.55rem; }
+            .excel-table .col-name { left: 55px; }
         }
         
         @media (min-width: 769px) {
@@ -388,18 +443,16 @@
         </div>
     </div>
 
-    <!-- 🔥 Auto Fetch Toggle -->
+    <!-- 🔥 Auto Fetch Toggle - Default OFF -->
     <div class="auto-fetch-container">
         <label>
             <i class="fas fa-sync-alt"></i> Auto Fetch
         </label>
-        <div class="toggle-switch active" id="autoFetchToggle">
+        <div class="toggle-switch" id="autoFetchToggle">
             <div class="toggle-slider"></div>
         </div>
-        <span class="toggle-status active" id="autoFetchStatus">ON</span>
-        <span style="font-size:0.65rem; color:#94a3b8; margin-left:4px;">
-            (Roll number dalte hi student auto fill)
-        </span>
+        <span class="toggle-status" id="autoFetchStatus">OFF</span>
+        <span class="hint-text">(Auto fill student on roll number entry)</span>
     </div>
 
     <!-- Excel Sheet -->
@@ -421,8 +474,8 @@
                 <tfoot id="tableFoot">
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
-                        <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name"></td>
-                        <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father"></td>
+                        <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name" style="text-transform:capitalize;"></td>
+                        <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father" style="text-transform:capitalize;"></td>
                         <td class="col-subject" id="marksInputs"></td>
                         <td class="col-actions"></td>
                     </tr>
@@ -472,11 +525,26 @@
             <div class="modal-body">
                 <div class="mb-2">
                     <label class="form-label">Exam Name</label>
-                    <input type="text" class="form-control" id="modalExamName" style="font-size:0.85rem;">
+                    <input type="text" class="form-control" id="modalExamName" placeholder="e.g., Final Exam 2025" style="text-transform:capitalize; font-size:0.85rem;">
                 </div>
                 <div class="mb-2">
-                    <label class="form-label">Class</label>
-                    <input type="text" class="form-control" id="modalExamClass" style="font-size:0.85rem;">
+                    <label class="form-label">Class <span class="text-danger">*</span></label>
+                    <!-- 🔥 CLASS DROPDOWN (1 to 12) -->
+                    <select class="class-dropdown-modal" id="modalExamClass">
+                        <option value="">Select Class</option>
+                        <option value="1st">1st</option>
+                        <option value="2nd">2nd</option>
+                        <option value="3rd">3rd</option>
+                        <option value="4th">4th</option>
+                        <option value="5th">5th</option>
+                        <option value="6th">6th</option>
+                        <option value="7th">7th</option>
+                        <option value="8th">8th</option>
+                        <option value="9th">9th</option>
+                        <option value="10th">10th</option>
+                        <option value="11th">11th</option>
+                        <option value="12th">12th</option>
+                    </select>
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Session</label>
@@ -544,7 +612,7 @@
     let draftId = examData.draftId || null;
     let isEditingPublished = examData.isEditingPublished || false;
     let publishedId = examData.publishedId || null;
-    let autoFetchEnabled = true;
+    let autoFetchEnabled = false; // 🔥 Default OFF
     
     // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
@@ -583,6 +651,14 @@
     const editExamDetailsBtn = document.getElementById('editExamDetailsBtn');
     const editSubjectBtn = document.getElementById('editSubjectBtn');
     const saveSubjectBtn = document.getElementById('saveSubjectBtn');
+    
+    // ===== 🔥 AUTO CAPITALIZE FIRST LETTER =====
+    function capitalizeWords(text) {
+        return text.split(' ').map(word => {
+            if (word.length === 0) return word;
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        }).join(' ');
+    }
     
     // ===== 🔥 AUTO FETCH TOGGLE =====
     autoFetchToggle.addEventListener('click', () => {
@@ -639,7 +715,6 @@
         if (!classValue) return;
         
         try {
-            // Query students collection with roll, class, session
             const q = query(
                 collection(db, "schools", schoolId, "students"),
                 where("rollNo", "==", parseInt(rollNumber)),
@@ -650,8 +725,8 @@
             
             if (!snap.empty) {
                 const data = snap.docs[0].data();
-                nameInput.value = data.name || '';
-                fatherInput.value = data.fatherName || '';
+                nameInput.value = capitalizeWords(data.name || '');
+                fatherInput.value = capitalizeWords(data.fatherName || '');
             }
         } catch(error) {
             console.error('Auto fetch error:', error);
@@ -678,8 +753,8 @@
                     <td class="row-roll">
                         <input type="number" class="roll-input" data-idx="${idx}" value="${s.rollNo}" style="width:100%; border:none; background:transparent; text-align:center; font-weight:600; color:#1a237e; outline:none; font-size:0.85rem;">
                     </td>
-                    <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${s.name}" style="width:100%;"></td>
-                    <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${s.fatherName || ''}" style="width:100%;"></td>
+                    <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${capitalizeWords(s.name)}" style="width:100%; text-transform:capitalize;"></td>
+                    <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${capitalizeWords(s.fatherName || '')}" style="width:100%; text-transform:capitalize;"></td>
                     ${marksHtml}
                     <td class="row-actions">
                         <button class="clear-btn" onclick="clearStudent(${idx})"><i class="fas fa-eraser"></i> Clear</button>
@@ -700,18 +775,25 @@
                 const roll = parseInt(this.value);
                 if (!isNaN(idx) && students[idx]) {
                     students[idx].rollNo = roll;
-                    // Auto fetch
                     const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
                     const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
                     if (nameInput && fatherInput) {
                         await autoFetchStudent(roll, nameInput, fatherInput);
-                        // Update student data after auto fetch
                         students[idx].name = nameInput.value;
                         students[idx].fatherName = fatherInput.value;
                     }
                     renderTable();
                     updateSummary();
                 }
+            });
+        });
+        
+        // 🔥 Capitalize on input
+        document.querySelectorAll('.name-input, .father-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const cursorPos = this.selectionStart;
+                this.value = capitalizeWords(this.value);
+                this.setSelectionRange(cursorPos, cursorPos);
             });
         });
         
@@ -763,8 +845,8 @@
     addRowBtn.addEventListener('click', async () => {
         if (editingIndex !== null) {
             const roll = parseInt(newRoll.value) || 1;
-            const name = newName.value.trim();
-            const father = newFather.value.trim();
+            const name = capitalizeWords(newName.value.trim());
+            const father = capitalizeWords(newFather.value.trim());
             if (!name) { alert('Enter name'); return; }
             
             const marks = {};
@@ -781,8 +863,8 @@
         }
         
         const roll = parseInt(newRoll.value) || 1;
-        let name = newName.value.trim();
-        const father = newFather.value.trim();
+        let name = capitalizeWords(newName.value.trim());
+        const father = capitalizeWords(newFather.value.trim());
         
         // 🔥 Auto fetch if name is empty and autoFetch is ON
         if (!name && autoFetchEnabled && schoolId) {
@@ -799,9 +881,9 @@
                     const snap = await getDocs(q);
                     if (!snap.empty) {
                         const data = snap.docs[0].data();
-                        name = data.name || '';
+                        name = capitalizeWords(data.name || '');
                         newName.value = name;
-                        newFather.value = data.fatherName || '';
+                        newFather.value = capitalizeWords(data.fatherName || '');
                     }
                 } catch(e) {}
             }
@@ -815,7 +897,7 @@
             marks[sub] = parseInt(input.value) || 0;
         });
         
-        students.push({ rollNo: roll, name, fatherName: father || newFather.value.trim(), marks });
+        students.push({ rollNo: roll, name, fatherName: father || capitalizeWords(newFather.value.trim()), marks });
         renderTable();
         updateSummary();
         updateRollNumber();
@@ -867,8 +949,8 @@
     });
     
     saveExamDetailsBtn.addEventListener('click', () => {
-        examData.examName = modalExamName.value.trim();
-        examData.examClass = modalExamClass.value.trim();
+        examData.examName = capitalizeWords(modalExamName.value.trim());
+        examData.examClass = modalExamClass.value;
         examData.examSession = modalExamSession.value;
         examData.examDate = modalExamDate.value;
         updateSummary();
@@ -882,7 +964,7 @@
         subjects.forEach((s, idx) => {
             html += `
                 <div class="mb-2" style="display:flex; gap:8px; align-items:center;">
-                    <input type="text" class="form-control form-control-sm edit-subject-name" data-idx="${idx}" value="${s.name}" placeholder="Subject Name" style="flex:2;">
+                    <input type="text" class="form-control form-control-sm edit-subject-name" data-idx="${idx}" value="${s.name}" placeholder="Subject Name" style="flex:2; text-transform:capitalize;">
                     <input type="number" class="form-control form-control-sm edit-subject-total" data-idx="${idx}" value="${s.total}" placeholder="Total" style="flex:1; max-width:80px;">
                     <button class="btn btn-sm btn-danger remove-subject-btn" data-idx="${idx}"><i class="fas fa-times"></i></button>
                 </div>
@@ -893,6 +975,15 @@
         `;
         editSubjectBody.innerHTML = html;
         editSubjectModal.show();
+        
+        // 🔥 Capitalize subject names
+        document.querySelectorAll('.edit-subject-name').forEach(input => {
+            input.addEventListener('input', function() {
+                const cursorPos = this.selectionStart;
+                this.value = capitalizeWords(this.value);
+                this.setSelectionRange(cursorPos, cursorPos);
+            });
+        });
         
         document.querySelectorAll('.remove-subject-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -935,7 +1026,7 @@
         let valid = true;
         
         nameInputs.forEach((input, idx) => {
-            const name = input.value.trim();
+            const name = capitalizeWords(input.value.trim());
             const total = parseInt(totalInputs[idx].value);
             if (!name || isNaN(total) || total < 1) { valid = false; return; }
             newSubjects.push({ name, total });
@@ -1029,15 +1120,14 @@
             for (const student of students) {
                 const studentData = {
                     rollNo: student.rollNo,
-                    name: student.name,
-                    fatherName: student.fatherName || '',
+                    name: capitalizeWords(student.name),
+                    fatherName: capitalizeWords(student.fatherName || ''),
                     class: classValue,
                     session: sessionValue,
                     schoolId: schoolId,
                     updatedAt: serverTimestamp()
                 };
                 
-                // Check if student already exists with same roll + class + session
                 const q = query(
                     collection(db, "schools", schoolId, "students"),
                     where("rollNo", "==", student.rollNo),
