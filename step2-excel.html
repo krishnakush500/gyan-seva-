@@ -251,14 +251,6 @@
             color: #1a237e;
         }
         
-        /* ===== PLUS ICON CELL ===== */
-        .plus-cell {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #1a237e;
-            cursor: default;
-        }
-        
         /* ===== ACTION BAR ===== */
         .action-bar {
             padding: 10px 14px;
@@ -330,7 +322,7 @@
 <div class="topbar">
     <div class="brand"><i class="fas fa-table"></i> GYAN SEVA — Excel Entry</div>
     <div>
-        <a href="manage-results.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+        <a href="javascript:void(0)" class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</a>
     </div>
 </div>
 
@@ -356,11 +348,10 @@
             <table class="excel-table" id="excelTable">
                 <thead id="tableHead">
                     <tr id="tableHeader">
-                        <!-- 🔥 Fixed Columns (No # column) -->
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <!-- 🔥 Subject Columns inserted dynamically -->
+                        <th class="col-subject" id="subjectHeader"></th>
                         <th class="col-total">Total</th>
                         <th class="col-actions">Actions</th>
                     </tr>
@@ -369,12 +360,12 @@
                     <!-- Students will be rendered here -->
                 </tbody>
                 <tfoot id="tableFoot">
-                    <!-- 🔥 Add Row (Last Row with + icon) -->
+                    <!-- 🔥 Add Row (Last Row) -->
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father"></td>
-                        <!-- Subject inputs inserted dynamically -->
+                        <td class="col-subject" id="marksInputs"></td>
                         <td class="col-total"></td>
                         <td class="col-actions">
                             <button class="btn-add-row" id="addRowBtn"><i class="fas fa-plus"></i> Add Row</button>
@@ -487,6 +478,8 @@
     
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
+    const subjectHeader = document.getElementById('subjectHeader');
+    const marksInputs = document.getElementById('marksInputs');
     const addRow = document.getElementById('addRow');
     const totalStudents = document.getElementById('totalStudents');
     
@@ -505,40 +498,37 @@
     const modalExamDate = document.getElementById('modalExamDate');
     const saveExamDetailsBtn = document.getElementById('saveExamDetailsBtn');
     const editExamDetailsBtn = document.getElementById('editExamDetailsBtn');
+
+    // ===== 🔥 GO BACK FUNCTION - SAME TAB =====
+    window.goBack = function() {
+        const returnUrl = localStorage.getItem('returnToManageResults') || 'manage-results.html';
+        window.location.href = returnUrl;
+    };
     
     // ===== BUILD HEADER DYNAMICALLY =====
     function buildHeader() {
-        // Remove old subject headers
-        const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
-        oldSubjectHeaders.forEach(el => el.remove());
-        
-        // Get reference to Total column
-        const totalTh = tableHeader.querySelector('.col-total');
-        
-        // Insert subject headers before Total
+        subjectHeader.innerHTML = '';
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
             th.textContent = `${s.name} (${s.total})`;
-            tableHeader.insertBefore(th, totalTh);
+            subjectHeader.appendChild(th);
         });
     }
     
     // ===== BUILD ADD ROW =====
     function buildAddRow() {
-        // Remove old subject input cells
-        const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
-        oldSubjectInputs.forEach(el => el.remove());
-        
-        // Get reference to total cell
-        const totalTd = addRow.querySelector('.col-total');
-        
-        // Insert subject input cells before Total
+        marksInputs.innerHTML = '';
         subjects.forEach((s) => {
-            const td = document.createElement('td');
-            td.className = 'col-subject-input';
-            td.innerHTML = `<input type="number" class="marks-input-add" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
-            addRow.insertBefore(td, totalTd);
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'marks-input-add';
+            input.dataset.subject = s.name;
+            input.min = 0;
+            input.max = s.total;
+            input.placeholder = '0';
+            input.style.cssText = 'max-width:60px; width:100%;';
+            marksInputs.appendChild(input);
         });
     }
     
@@ -758,7 +748,6 @@
             }
             
             setTimeout(() => {
-                window.close();
                 window.location.href = 'manage-results.html';
             }, 1500);
         } catch(error) {
@@ -801,7 +790,6 @@
             }
             
             setTimeout(() => {
-                window.close();
                 window.location.href = 'manage-results.html';
             }, 1500);
         } catch(error) {
