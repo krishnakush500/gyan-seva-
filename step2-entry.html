@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>GYAN SEVA — Excel Entry</title>
+    <title>GYAN SEVA — Entry Sheet</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -67,6 +67,48 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
+        /* 🔥 Auto Fetch Button */
+        .auto-fetch-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0;
+            padding: 6px 12px;
+            background: #e8f0fe;
+            border-radius: 6px;
+            border: 1px solid #dce8f5;
+        }
+        .auto-fetch-container label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1a237e;
+            margin: 0;
+        }
+        .auto-fetch-container input {
+            padding: 4px 8px;
+            border: 1px solid #dce5f5;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            width: 120px;
+        }
+        .auto-fetch-container .fetch-btn {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .auto-fetch-container .fetch-btn:hover {
+            background: #283593;
+        }
+        .auto-fetch-container .fetch-status {
+            font-size: 0.65rem;
+            color: #dc2626;
+        }
+        
         /* ===== EXCEL SHEET ===== */
         .excel-container {
             background: white;
@@ -78,7 +120,7 @@
         
         .excel-table-wrapper {
             overflow-y: auto;
-            max-height: 480px;
+            max-height: 420px;
         }
         
         .excel-table {
@@ -88,7 +130,6 @@
             font-size: 0.85rem;
         }
         
-        /* ===== ALL CELLS - SAME HEIGHT & PADDING ===== */
         .excel-table th,
         .excel-table td {
             padding: 6px 8px;
@@ -101,42 +142,32 @@
             text-overflow: ellipsis;
         }
         
-        /* ===== HEADER - STICKY ===== */
         .excel-table thead {
             position: sticky;
             top: 0;
             z-index: 100;
         }
-        
         .excel-table th {
             background: #1a237e;
             color: white;
             font-weight: 600;
             font-size: 0.8rem;
         }
+        .excel-table td { background: white; }
+        .excel-table tr:hover td { background: #f0f5ff; }
         
-        .excel-table td {
-            background: white;
-        }
-        .excel-table tr:hover td {
-            background: #f0f5ff;
-        }
-        
-        /* ===== COLUMN WIDTHS (No Total Column) ===== */
         .col-roll { width: 70px; min-width: 60px; max-width: 80px; }
         .col-name { width: 200px; min-width: 150px; }
         .col-father { width: 180px; min-width: 130px; }
         .col-subject { width: 120px; min-width: 95px; }
         .col-actions { width: 110px; min-width: 95px; max-width: 130px; }
         
-        /* ===== DATA ROWS ===== */
         .excel-table .row-roll {
             font-weight: 600;
             color: #1a237e;
             font-size: 0.85rem;
         }
         
-        /* ===== INPUT FIELDS ===== */
         .excel-table .row-name input,
         .excel-table .row-father input,
         .excel-table .row-marks input,
@@ -153,13 +184,9 @@
             height: 30px;
         }
         .excel-table .row-name input,
-        .excel-table .add-row .name-input-add {
-            text-align: left;
-        }
+        .excel-table .add-row .name-input-add { text-align: left; }
         .excel-table .row-father input,
-        .excel-table .add-row .father-input-add {
-            text-align: left;
-        }
+        .excel-table .add-row .father-input-add { text-align: left; }
         .excel-table .row-name input:focus,
         .excel-table .row-father input:focus,
         .excel-table .row-marks input:focus,
@@ -174,7 +201,6 @@
             margin: 0 auto;
         }
         
-        /* ===== ACTIONS - Clear & Delete Buttons ===== */
         .excel-table .row-actions {
             white-space: nowrap;
             display: flex;
@@ -194,20 +220,11 @@
             align-items: center;
             gap: 3px;
         }
-        .excel-table .row-actions .clear-btn {
-            color: #d97706;
-        }
-        .excel-table .row-actions .clear-btn:hover { 
-            background: #fef3c7; 
-        }
-        .excel-table .row-actions .del-btn {
-            color: #dc2626;
-        }
-        .excel-table .row-actions .del-btn:hover { 
-            background: #fee2e2; 
-        }
+        .excel-table .row-actions .clear-btn { color: #d97706; }
+        .excel-table .row-actions .clear-btn:hover { background: #fef3c7; }
+        .excel-table .row-actions .del-btn { color: #dc2626; }
+        .excel-table .row-actions .del-btn:hover { background: #fee2e2; }
         
-        /* ===== ADD ROW (LAST ROW) ===== */
         .excel-table .add-row td {
             background: #f8faff;
             border-top: 1px dashed #1a237e;
@@ -230,7 +247,6 @@
             color: #1a237e;
         }
         
-        /* ===== 🔥 ADD ROW BUTTON - ALAG SE NICHE ===== */
         .add-row-btn-container {
             padding: 10px 14px;
             background: #f8faff;
@@ -252,15 +268,9 @@
             align-items: center;
             gap: 8px;
         }
-        .btn-add-row:hover {
-            background: #d0ddf5;
-            transform: scale(1.02);
-        }
-        .btn-add-row i {
-            font-size: 1rem;
-        }
+        .btn-add-row:hover { background: #d0ddf5; transform: scale(1.02); }
+        .btn-add-row i { font-size: 1rem; }
         
-        /* ===== ACTION BAR ===== */
         .action-bar {
             padding: 10px 14px;
             background: #f8faff;
@@ -276,13 +286,19 @@
             font-weight: 600;
         }
         
+        /* 🔥 Edit Subject Modal */
+        .edit-subject-modal .modal-content { border-radius: 16px; }
+        .edit-subject-modal .modal-header { padding: 12px 16px; background: #1a237e; color: white; border-radius: 16px 16px 0 0; }
+        .edit-subject-modal .modal-header .btn-close { filter: brightness(0) invert(1); }
+        .edit-subject-modal .modal-body { padding: 16px; }
+        .edit-subject-modal .modal-footer { padding: 12px 16px; }
+        
         .edit-modal .modal-content { border-radius: 16px; }
         .edit-modal .modal-header { padding: 12px 16px; background: #1a237e; color: white; border-radius: 16px 16px 0 0; }
         .edit-modal .modal-header .btn-close { filter: brightness(0) invert(1); }
         .edit-modal .modal-body { padding: 16px; }
         .edit-modal .modal-footer { padding: 12px 16px; }
         
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             body { padding: 5px; }
             .topbar { padding: 6px 10px; }
@@ -299,12 +315,10 @@
             .col-subject { width: 75px; min-width: 60px; }
             .col-actions { width: 80px; min-width: 70px; }
             .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
-            .excel-table .row-name input { font-size: 0.65rem; }
-            .excel-table .row-father input { font-size: 0.65rem; }
-            .excel-table .add-row input { font-size: 0.65rem; }
             .btn-add-row { font-size: 0.7rem; padding: 4px 14px; }
             .btn-excel { font-size: 0.6rem; padding: 3px 8px; }
-            .excel-table .row-actions button { font-size: 0.6rem; padding: 2px 4px; }
+            .auto-fetch-container input { width: 80px; font-size: 0.65rem; }
+            .auto-fetch-container .fetch-btn { font-size: 0.6rem; padding: 2px 8px; }
         }
         
         @media (min-width: 769px) {
@@ -329,7 +343,7 @@
 
 <!-- TOP BAR -->
 <div class="topbar">
-    <div class="brand"><i class="fas fa-table"></i> GYAN SEVA — Excel Entry</div>
+    <div class="brand"><i class="fas fa-table"></i> GYAN SEVA — Entry Sheet</div>
     <div>
         <a href="manage-results.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
     </div>
@@ -346,9 +360,22 @@
             <span>📋 <strong id="summarySubjects">0</strong> subjects</span>
             <span>👨‍🎓 <strong id="summaryStudents">0</strong> students</span>
         </div>
-        <button class="edit-btn" id="editExamDetailsBtn" title="Edit Exam Details">
-            <i class="fas fa-pencil-alt"></i>
-        </button>
+        <div style="display:flex; gap:6px; align-items:center;">
+            <button class="edit-btn" id="editSubjectBtn" title="Edit Subjects">
+                <i class="fas fa-book"></i> Edit Subjects
+            </button>
+            <button class="edit-btn" id="editExamDetailsBtn" title="Edit Exam Details">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 🔥 Auto Fetch Section -->
+    <div class="auto-fetch-container">
+        <label><i class="fas fa-search"></i> Auto Fetch:</label>
+        <input type="number" id="fetchRoll" placeholder="Enter Roll No">
+        <button class="fetch-btn" id="fetchStudentBtn"><i class="fas fa-sync-alt"></i> Fetch</button>
+        <span class="fetch-status" id="fetchStatus"></span>
     </div>
 
     <!-- Excel Sheet -->
@@ -357,40 +384,55 @@
             <table class="excel-table" id="excelTable">
                 <thead id="tableHead">
                     <tr id="tableHeader">
-                        <!-- 🔥 Fixed Columns (No Total column) -->
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <!-- 🔥 Subject Columns inserted dynamically -->
+                        <th class="col-subject" id="subjectHeader"></th>
                         <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <!-- Students will be rendered here -->
+                    <!-- Students rendered here -->
                 </tbody>
                 <tfoot id="tableFoot">
-                    <!-- 🔥 Add Row (Last Row) -->
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father"></td>
-                        <!-- Subject inputs inserted dynamically -->
+                        <td class="col-subject" id="marksInputs"></td>
                         <td class="col-actions"></td>
                     </tr>
                 </tfoot>
             </table>
         </div>
         
-        <!-- 🔥 ADD ROW BUTTON - ALAG SE NICHE -->
         <div class="add-row-btn-container">
             <button class="btn-add-row" id="addRowBtn"><i class="fas fa-plus-circle"></i> Add New Row</button>
         </div>
         
-        <!-- Action Buttons -->
         <div class="action-bar">
             <button class="btn btn-warning btn-excel" id="saveDraftBtn"><i class="fas fa-save"></i> Save as Draft</button>
             <button class="btn btn-success btn-excel" id="publishResultBtn"><i class="fas fa-globe"></i> Publish Result</button>
             <button class="btn btn-secondary btn-excel" id="clearAllBtn"><i class="fas fa-trash-alt"></i> Clear All</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== EDIT SUBJECT MODAL ===== -->
+<div class="modal fade edit-subject-modal" id="editSubjectModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title"><i class="fas fa-book"></i> Edit Subjects</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="editSubjectBody">
+                <!-- Subjects will be rendered here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary btn-sm" id="saveSubjectBtn"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
         </div>
     </div>
 </div>
@@ -489,7 +531,9 @@
     
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
+    const subjectHeader = document.getElementById('subjectHeader');
     const addRow = document.getElementById('addRow');
+    const marksInputs = document.getElementById('marksInputs');
     
     const newRoll = document.getElementById('newRoll');
     const newName = document.getElementById('newName');
@@ -498,25 +542,27 @@
     const clearAllBtn = document.getElementById('clearAllBtn');
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishResultBtn = document.getElementById('publishResultBtn');
+    const fetchRoll = document.getElementById('fetchRoll');
+    const fetchStudentBtn = document.getElementById('fetchStudentBtn');
+    const fetchStatus = document.getElementById('fetchStatus');
     
     const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
+    const editSubjectModal = new bootstrap.Modal(document.getElementById('editSubjectModal'));
+    const editSubjectBody = document.getElementById('editSubjectBody');
     const modalExamName = document.getElementById('modalExamName');
     const modalExamClass = document.getElementById('modalExamClass');
     const modalExamSession = document.getElementById('modalExamSession');
     const modalExamDate = document.getElementById('modalExamDate');
     const saveExamDetailsBtn = document.getElementById('saveExamDetailsBtn');
     const editExamDetailsBtn = document.getElementById('editExamDetailsBtn');
+    const editSubjectBtn = document.getElementById('editSubjectBtn');
+    const saveSubjectBtn = document.getElementById('saveSubjectBtn');
     
-    // ===== BUILD HEADER DYNAMICALLY =====
+    // ===== BUILD HEADER =====
     function buildHeader() {
-        // Remove old subject headers
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
-        
-        // Get reference to Actions column
         const actionsTh = tableHeader.querySelector('.col-actions');
-        
-        // Insert subject headers before Actions
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
@@ -527,20 +573,24 @@
     
     // ===== BUILD ADD ROW =====
     function buildAddRow() {
-        // Remove old subject input cells
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
-        
-        // Get reference to Actions cell
         const actionsTd = addRow.querySelector('.col-actions');
-        
-        // Insert subject input cells before Actions
         subjects.forEach((s) => {
             const td = document.createElement('td');
             td.className = 'col-subject-input';
             td.innerHTML = `<input type="number" class="marks-input-add" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
             addRow.insertBefore(td, actionsTd);
         });
+    }
+    
+    // ===== BUILD MARKS INPUTS =====
+    function buildMarksInputs() {
+        let html = '';
+        subjects.forEach((s) => {
+            html += `<input type="number" class="marks-input-add" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
+        });
+        marksInputs.innerHTML = html;
     }
     
     // ===== RENDER STUDENTS =====
@@ -552,7 +602,6 @@
         }
         
         let html = '';
-        
         students.forEach((s, idx) => {
             let marksHtml = '';
             subjects.forEach((sub) => {
@@ -577,7 +626,6 @@
         summaryStudents.textContent = students.length;
         updateSummary();
         
-        // Auto-save on input change
         document.querySelectorAll('.name-input, .father-input, .mark-input').forEach(input => {
             input.addEventListener('change', () => {
                 const idx = parseInt(input.dataset.idx);
@@ -604,6 +652,7 @@
         summarySession.textContent = examData.examSession || '-';
         summarySubjects.textContent = subjects.length || 0;
         summaryStudents.textContent = students.length || 0;
+        subjectHeader.innerHTML = subjects.map(s => `${s.name} (${s.total})`).join(' | ');
     }
     
     function updateRollNumber() {
@@ -611,10 +660,52 @@
         newRoll.value = maxRoll + 1;
     }
     
+    // ===== 🔥 AUTO FETCH STUDENT =====
+    async function fetchStudentData() {
+        const roll = fetchRoll.value.trim();
+        if (!roll) {
+            fetchStatus.textContent = '⚠️ Enter roll number';
+            fetchStatus.style.color = '#dc2626';
+            return;
+        }
+        
+        fetchStatus.textContent = '⏳ Searching...';
+        fetchStatus.style.color = '#1a237e';
+        
+        try {
+            // Search in students collection
+            const q = query(collection(db, "schools", schoolId, "students"), where("rollNo", "==", parseInt(roll)));
+            const snap = await getDocs(q);
+            
+            if (snap.empty) {
+                fetchStatus.textContent = '❌ Student not found';
+                fetchStatus.style.color = '#dc2626';
+                return;
+            }
+            
+            const data = snap.docs[0].data();
+            newName.value = data.name || '';
+            newFather.value = data.fatherName || '';
+            fetchStatus.textContent = '✅ Student found!';
+            fetchStatus.style.color = '#16a34a';
+            
+            // Auto fill marks? No, teacher will enter marks
+        } catch(error) {
+            fetchStatus.textContent = '❌ Error: ' + error.message;
+            fetchStatus.style.color = '#dc2626';
+        }
+    }
+    
+    fetchStudentBtn.addEventListener('click', fetchStudentData);
+    fetchRoll.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') fetchStudentData();
+    });
+    
     // ===== INIT =====
     function init() {
         buildHeader();
         buildAddRow();
+        buildMarksInputs();
         updateSummary();
         renderTable();
         updateRollNumber();
@@ -623,7 +714,6 @@
     // ===== ADD STUDENT =====
     addRowBtn.addEventListener('click', () => {
         if (editingIndex !== null) {
-            // Update existing student
             const roll = parseInt(newRoll.value) || 1;
             const name = newName.value.trim();
             const father = newFather.value.trim();
@@ -642,7 +732,6 @@
             return;
         }
         
-        // Add new student
         const roll = parseInt(newRoll.value) || 1;
         const name = newName.value.trim();
         const father = newFather.value.trim();
@@ -662,17 +751,14 @@
         newName.value = '';
         newFather.value = '';
         document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
+        fetchStatus.textContent = '';
     });
     
-    // ===== 🧹 CLEAR STUDENT DATA =====
+    // ===== CLEAR STUDENT =====
     window.clearStudent = function(idx) {
         if (confirm(`Clear all data for student "${students[idx].name}"?`)) {
             const s = students[idx];
-            // Clear marks
-            subjects.forEach((sub) => {
-                s.marks[sub.name] = 0;
-            });
-            // Clear name and father
+            subjects.forEach((sub) => { s.marks[sub.name] = 0; });
             s.name = '';
             s.fatherName = '';
             renderTable();
@@ -680,7 +766,7 @@
         }
     };
     
-    // ===== 🗑️ DELETE STUDENT =====
+    // ===== DELETE STUDENT =====
     window.deleteStudent = function(idx) {
         const name = students[idx].name || 'this student';
         if (confirm(`Delete "${name}" permanently?`)) {
@@ -690,34 +776,6 @@
             updateRollNumber();
         }
     };
-    
-    // ===== EDIT STUDENT =====
-    window.editStudent = function(idx) {
-        const s = students[idx];
-        editingIndex = idx;
-        newRoll.value = s.rollNo;
-        newName.value = s.name;
-        newFather.value = s.fatherName || '';
-        document.querySelectorAll('.marks-input-add').forEach(input => {
-            const sub = input.dataset.subject;
-            input.value = s.marks[sub] || 0;
-        });
-        addRowBtn.innerHTML = '<i class="fas fa-save"></i> Update Row';
-        addRowBtn.style.background = '#fef3c7';
-        addRowBtn.style.color = '#d97706';
-        newName.focus();
-    };
-    
-    function cancelEdit() {
-        editingIndex = null;
-        newName.value = '';
-        newFather.value = '';
-        document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
-        addRowBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Row';
-        addRowBtn.style.background = '#e8f0fe';
-        addRowBtn.style.color = '#1a237e';
-        updateRollNumber();
-    }
     
     // ===== CLEAR ALL =====
     clearAllBtn.addEventListener('click', () => {
@@ -746,6 +804,88 @@
         updateSummary();
         editExamModal.hide();
         alert('Exam details updated!');
+    });
+    
+    // ===== 🔥 EDIT SUBJECTS =====
+    editSubjectBtn.addEventListener('click', () => {
+        let html = '';
+        subjects.forEach((s, idx) => {
+            html += `
+                <div class="mb-2" style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" class="form-control form-control-sm edit-subject-name" data-idx="${idx}" value="${s.name}" placeholder="Subject Name" style="flex:2;">
+                    <input type="number" class="form-control form-control-sm edit-subject-total" data-idx="${idx}" value="${s.total}" placeholder="Total" style="flex:1; max-width:80px;">
+                    <button class="btn btn-sm btn-danger remove-subject-btn" data-idx="${idx}"><i class="fas fa-times"></i></button>
+                </div>
+            `;
+        });
+        html += `
+            <button class="btn btn-sm btn-primary" id="addSubjectFieldBtn"><i class="fas fa-plus"></i> Add Subject</button>
+        `;
+        editSubjectBody.innerHTML = html;
+        editSubjectModal.show();
+        
+        // Remove subject
+        document.querySelectorAll('.remove-subject-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const idx = parseInt(this.dataset.idx);
+                if (subjects.length <= 1) {
+                    alert('You need at least one subject!');
+                    return;
+                }
+                subjects.splice(idx, 1);
+                editSubjectModal.hide();
+                // Rebuild UI
+                buildHeader();
+                buildAddRow();
+                buildMarksInputs();
+                renderTable();
+                updateSummary();
+                // Reopen modal
+                editSubjectBtn.click();
+            });
+        });
+        
+        // Add subject
+        document.getElementById('addSubjectFieldBtn').addEventListener('click', function() {
+            if (subjects.length >= 10) {
+                alert('Maximum 10 subjects allowed!');
+                return;
+            }
+            subjects.push({ name: 'New Subject', total: 100 });
+            editSubjectModal.hide();
+            buildHeader();
+            buildAddRow();
+            buildMarksInputs();
+            renderTable();
+            updateSummary();
+            editSubjectBtn.click();
+        });
+    });
+    
+    saveSubjectBtn.addEventListener('click', () => {
+        const nameInputs = document.querySelectorAll('.edit-subject-name');
+        const totalInputs = document.querySelectorAll('.edit-subject-total');
+        let newSubjects = [];
+        let valid = true;
+        
+        nameInputs.forEach((input, idx) => {
+            const name = input.value.trim();
+            const total = parseInt(totalInputs[idx].value);
+            if (!name || isNaN(total) || total < 1) { valid = false; return; }
+            newSubjects.push({ name, total });
+        });
+        
+        if (!valid) { alert('Please fill all subject fields correctly'); return; }
+        if (newSubjects.length === 0) { alert('Please add at least one subject'); return; }
+        
+        subjects = newSubjects;
+        editSubjectModal.hide();
+        buildHeader();
+        buildAddRow();
+        buildMarksInputs();
+        renderTable();
+        updateSummary();
+        alert('Subjects updated successfully!');
     });
     
     // ===== SAVE DRAFT =====
@@ -782,7 +922,7 @@
         }
     });
     
-    // ===== PUBLISH RESULT =====
+    // ===== 🔥 PUBLISH RESULT (With Student Data Save) =====
     publishResultBtn.addEventListener('click', async () => {
         if (!examData.examName) { alert('Please enter exam name'); return; }
         if (students.length === 0) { alert('Please add at least one student'); return; }
@@ -803,6 +943,7 @@
                 isDemo: false
             };
             
+            // 🔥 Save result
             if (isEditingPublished && publishedId) {
                 data.updatedAt = serverTimestamp();
                 await updateDoc(doc(db, "schools", schoolId, "results", publishedId), data);
@@ -816,6 +957,40 @@
                 alert('Result published!');
             }
             
+            // 🔥 Save each student's data to students collection
+            const classValue = examData.examClass || 'Not Specified';
+            const sessionValue = examData.examSession || '2026-2027';
+            
+            for (const student of students) {
+                const studentData = {
+                    rollNo: student.rollNo,
+                    name: student.name,
+                    fatherName: student.fatherName || '',
+                    class: classValue,
+                    session: sessionValue,
+                    schoolId: schoolId,
+                    createdAt: serverTimestamp()
+                };
+                
+                // Check if student already exists
+                const q = query(
+                    collection(db, "schools", schoolId, "students"),
+                    where("rollNo", "==", student.rollNo),
+                    where("class", "==", classValue)
+                );
+                const snap = await getDocs(q);
+                
+                if (snap.empty) {
+                    // New student - add
+                    await addDoc(collection(db, "schools", schoolId, "students"), studentData);
+                } else {
+                    // Update existing student
+                    await updateDoc(doc(db, "schools", schoolId, "students", snap.docs[0].id), studentData);
+                }
+            }
+            
+            alert('✅ Result published and student data saved!');
+            
             setTimeout(() => {
                 window.close();
                 window.location.href = 'manage-results.html';
@@ -827,7 +1002,7 @@
     
     // ===== INIT =====
     init();
-    console.log('✅ Step 2 Excel Loaded:', examData);
+    console.log('✅ Step 2 Entry Loaded:', examData);
 </script>
 </body>
 </html>
