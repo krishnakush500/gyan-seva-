@@ -86,6 +86,8 @@
         
         .success-message { position: fixed; bottom: 15px; right: 15px; z-index: 1000; font-size: 0.8rem; padding: 8px 16px; }
         .published-toast { background-color: #0d6efd !important; }
+        .save-changes-btn { background-color: #0dcaf0; border-color: #0dcaf0; color: white; }
+        .save-changes-btn:hover { background-color: #0bb6d9; border-color: #0bb6d9; color: white; }
         
         @media (max-width: 768px) {
             .topbar { padding: 8px 12px; }
@@ -209,7 +211,7 @@
             </div>
         </div>
         
-        <!-- Subject Fields -->
+        <!-- 🔥 Subject Fields - Auto Scroll Target -->
         <div id="subjectFields" class="mb-3"></div>
         
         <div id="step1NextBtn" class="d-none text-center">
@@ -417,6 +419,7 @@
     const toastMessage = document.getElementById('toastMessage');
 
     let subjects = [];
+    let editingDraftId = null;
 
     function showSection(section) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -468,12 +471,13 @@
         }
         step1NextBtn.classList.remove('d-none');
         
+        // 🔥 Auto scroll to subject fields
         setTimeout(() => {
             subjectFields.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
     });
 
-    // ===== 🔥 STEP 1: NEXT → SAME TAB (NO NEW TAB) =====
+    // ===== STEP 1: NEXT → GO TO EXCEL SHEET =====
     nextToStudentEntryBtn.addEventListener('click', () => {
         const nameInputs = document.querySelectorAll('.subject-name');
         const totalInputs = document.querySelectorAll('.subject-total');
@@ -489,7 +493,7 @@
         
         if (!valid) { alert('Please fill all subject fields correctly'); return; }
         
-        // Save data to localStorage for step2
+        // 🔥 Save data to localStorage for step2
         const examData = {
             examName: examNameInput.value.trim(),
             examClass: examClassInput.value.trim(),
@@ -500,11 +504,8 @@
         localStorage.setItem('examData', JSON.stringify(examData));
         localStorage.setItem('schoolId', schoolId);
         
-        // 🔥 SAME TAB MEIN LOAD - window.location.href use kar rahe hain
-        // Add current page URL as referrer so Step 2 can go back
-        localStorage.setItem('returnToManageResults', window.location.href);
-        
-        window.location.href = 'step2-excel.html';
+        // 🔥 Open step2-excel.html in new tab
+        window.open('step2-excel.html', '_blank');
     });
 
     function resetCreateResultForm() {
@@ -563,6 +564,7 @@
             if (snap.empty) return;
             const data = snap.docs[0].data();
             
+            // Store data and open step2
             const examData = {
                 examName: data.examName || '',
                 examClass: data.class || '',
@@ -575,10 +577,8 @@
             };
             localStorage.setItem('examData', JSON.stringify(examData));
             localStorage.setItem('schoolId', schoolId);
-            localStorage.setItem('returnToManageResults', window.location.href);
             
-            // 🔥 SAME TAB MEIN LOAD
-            window.location.href = 'step2-excel.html';
+            window.open('step2-excel.html', '_blank');
         } catch(error) {
             alert('Error loading draft: ' + error.message);
         }
@@ -703,10 +703,8 @@
             };
             localStorage.setItem('examData', JSON.stringify(examData));
             localStorage.setItem('schoolId', schoolId);
-            localStorage.setItem('returnToManageResults', window.location.href);
             
-            // 🔥 SAME TAB MEIN LOAD
-            window.location.href = 'step2-excel.html';
+            window.open('step2-excel.html', '_blank');
         } catch(error) {
             alert('Error loading result: ' + error.message);
         }
