@@ -75,7 +75,61 @@
         .card-header { padding: 10px 14px; font-size: 0.85rem; font-weight: 600; }
         .card-body { padding: 12px 14px; }
         
-        .subject-box { background: #f8f9fa; border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+        .subject-box { 
+            background: #f8f9fa; 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #e9ecef;
+        }
+        .subject-box .subject-fields {
+            display: flex;
+            flex: 1;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .subject-box .subject-fields .field-group {
+            flex: 1;
+            min-width: 120px;
+        }
+        .subject-box .subject-fields .field-group label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 2px;
+            display: block;
+        }
+        .subject-box .subject-fields .field-group input {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #dce5f5;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: white;
+        }
+        .subject-box .subject-fields .field-group input:focus {
+            border-color: #1a237e;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
+        }
+        .subject-box .delete-subject-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .subject-box .delete-subject-btn:hover {
+            background: #fee2e2;
+        }
+        
         .form-label { font-size: 0.75rem; font-weight: 600; margin-bottom: 2px; }
         .form-control, .form-select { font-size: 0.8rem; padding: 6px 10px; border-radius: 8px; }
         .form-control-sm, .form-select-sm { font-size: 0.75rem; padding: 4px 8px; }
@@ -89,6 +143,20 @@
         .save-changes-btn { background-color: #0dcaf0; border-color: #0dcaf0; color: white; }
         .save-changes-btn:hover { background-color: #0bb6d9; border-color: #0bb6d9; color: white; }
         
+        /* 🔥 Class Dropdown Fix */
+        .class-dropdown {
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            width: 100%;
+        }
+        .class-dropdown:focus {
+            border-color: #1a237e;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
+        }
+        
         @media (max-width: 768px) {
             .topbar { padding: 8px 12px; }
             .topbar .brand { font-size: 0.85rem; }
@@ -99,6 +167,10 @@
             .card-body { padding: 10px 12px; }
             .form-control, .form-select { font-size: 0.75rem; padding: 5px 8px; }
             .btn { font-size: 0.7rem; padding: 5px 10px; }
+            .subject-box { flex-wrap: wrap; }
+            .subject-box .subject-fields { flex-direction: column; gap: 6px; }
+            .subject-box .subject-fields .field-group { min-width: 100%; }
+            .class-dropdown { font-size: 0.75rem; padding: 5px 8px; }
         }
         
         @media (min-width: 768px) {
@@ -110,6 +182,7 @@
             .card-body { padding: 16px 20px; }
             .form-control, .form-select { font-size: 0.9rem; padding: 8px 12px; }
             .btn { font-size: 0.85rem; padding: 8px 18px; }
+            .class-dropdown { font-size: 0.9rem; padding: 8px 12px; }
         }
     </style>
 </head>
@@ -186,7 +259,22 @@
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Class <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="examClass" placeholder="e.g., 10th, 12th">
+                    <!-- 🔥 CLASS DROPDOWN (1 to 12) -->
+                    <select class="class-dropdown" id="examClass">
+                        <option value="">Select Class</option>
+                        <option value="1st">1st</option>
+                        <option value="2nd">2nd</option>
+                        <option value="3rd">3rd</option>
+                        <option value="4th">4th</option>
+                        <option value="5th">5th</option>
+                        <option value="6th">6th</option>
+                        <option value="7th">7th</option>
+                        <option value="8th">8th</option>
+                        <option value="9th">9th</option>
+                        <option value="10th">10th</option>
+                        <option value="11th">11th</option>
+                        <option value="12th">12th</option>
+                    </select>
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Session <span class="text-danger">*</span></label>
@@ -204,20 +292,21 @@
                 <div class="mb-2">
                     <label class="form-label">Number of Subjects <span class="text-danger">*</span></label>
                     <div class="input-group">
-                        <input type="number" class="form-control" id="subjectCount" min="1" placeholder="e.g., 5">
+                        <input type="number" class="form-control" id="subjectCount" min="1" max="10" placeholder="e.g., 5">
                         <button id="generateSubjectFieldsBtn" class="btn btn-primary btn-sm">Generate</button>
                     </div>
+                    <small style="color:#94a3b8; font-size:0.65rem;">Maximum 10 subjects allowed</small>
                 </div>
             </div>
         </div>
         
-        <!-- 🔥 Subject Fields - Auto Scroll Target -->
+        <!-- 🔥 Subject Fields with Delete Icon -->
         <div id="subjectFields" class="mb-3"></div>
         
         <div id="step1NextBtn" class="d-none text-center">
             <button id="nextToStudentEntryBtn" class="btn btn-success btn-sm">
                 <i class="fas fa-arrow-right"></i> Next → 
-                <span style="font-size:0.6rem;opacity:0.7;">(Go to Excel Sheet)</span>
+                <span style="font-size:0.6rem;opacity:0.7;">(Go to Entry Sheet)</span>
             </button>
         </div>
     </div>
@@ -392,7 +481,7 @@
     const backToDashboardBtn3 = document.getElementById('backToDashboardBtn3');
     
     const examNameInput = document.getElementById('examName');
-    const examClassInput = document.getElementById('examClass');
+    const examClassSelect = document.getElementById('examClass');
     const examSessionSelect = document.getElementById('examSession');
     const examDateInput = document.getElementById('examDate');
     const subjectCountInput = document.getElementById('subjectCount');
@@ -440,13 +529,40 @@
     backToDashboardBtn2.addEventListener('click', () => showSection(dashboardSection));
     backToDashboardBtn3.addEventListener('click', () => showSection(dashboardSection));
 
+    // ===== 🔥 DELETE SUBJECT =====
+    window.deleteSubject = function(index) {
+        if (confirm('Delete this subject?')) {
+            const boxes = subjectFields.querySelectorAll('.subject-box');
+            if (boxes.length > 1) {
+                boxes[index].remove();
+                // Update subjects array
+                const nameInputs = document.querySelectorAll('.subject-name');
+                const totalInputs = document.querySelectorAll('.subject-total');
+                subjects = [];
+                for (let i = 0; i < nameInputs.length; i++) {
+                    const name = nameInputs[i].value.trim();
+                    const total = parseInt(totalInputs[i].value);
+                    if (name && !isNaN(total) && total > 0) {
+                        subjects.push({ name, total });
+                    }
+                }
+                if (subjects.length === 0) {
+                    step1NextBtn.classList.add('d-none');
+                }
+            } else {
+                alert('You need at least one subject!');
+            }
+        }
+    };
+
     // ===== STEP 1: GENERATE SUBJECTS =====
     generateSubjectFieldsBtn.addEventListener('click', () => {
         const count = parseInt(subjectCountInput.value);
         if (count < 1) { alert('Please enter valid number of subjects'); return; }
+        if (count > 10) { alert('Maximum 10 subjects allowed!'); return; }
         
         if (!examNameInput.value.trim()) { alert('Please enter Exam Name'); return; }
-        if (!examClassInput.value.trim()) { alert('Please enter Class'); return; }
+        if (!examClassSelect.value) { alert('Please select Class'); return; }
         if (!examDateInput.value) { alert('Please select Exam Date'); return; }
         
         subjectFields.innerHTML = '';
@@ -456,18 +572,29 @@
             const box = document.createElement('div');
             box.className = 'subject-box';
             box.innerHTML = `
-                <div class="row g-1">
-                    <div class="col-7">
-                        <label class="form-label" style="font-size:0.7rem;">Subject ${i+1}</label>
-                        <input type="text" class="form-control form-control-sm subject-name" placeholder="e.g., Enter subject name" required>
+                <div class="subject-fields">
+                    <div class="field-group">
+                        <label>Subject ${i+1}</label>
+                        <input type="text" class="subject-name" placeholder="e.g., Mathematics" style="text-transform:capitalize;" required>
                     </div>
-                    <div class="col-5">
-                        <label class="form-label" style="font-size:0.7rem;">Total Marks</label>
-                        <input type="number" class="form-control form-control-sm subject-total" min="1" value="100" required>
+                    <div class="field-group">
+                        <label>Total Marks</label>
+                        <input type="number" class="subject-total" min="1" placeholder="Enter marks" required>
                     </div>
                 </div>
+                <button class="delete-subject-btn" onclick="deleteSubject(${i})" title="Delete Subject">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
             `;
             subjectFields.appendChild(box);
+            
+            // 🔥 Auto capitalize first letter on input
+            const nameInput = box.querySelector('.subject-name');
+            nameInput.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+                }
+            });
         }
         step1NextBtn.classList.remove('d-none');
         
@@ -477,7 +604,7 @@
         }, 100);
     });
 
-    // ===== STEP 1: NEXT → GO TO EXCEL SHEET =====
+    // ===== STEP 1: NEXT → GO TO ENTRY SHEET =====
     nextToStudentEntryBtn.addEventListener('click', () => {
         const nameInputs = document.querySelectorAll('.subject-name');
         const totalInputs = document.querySelectorAll('.subject-total');
@@ -496,7 +623,7 @@
         // 🔥 Save data to localStorage for step2
         const examData = {
             examName: examNameInput.value.trim(),
-            examClass: examClassInput.value.trim(),
+            examClass: examClassSelect.value,
             examSession: examSessionSelect.value,
             examDate: examDateInput.value,
             subjects: subjects
@@ -505,12 +632,12 @@
         localStorage.setItem('schoolId', schoolId);
         
         // 🔥 Open step2-excel.html in new tab
-        window.open('step2-excel.html', '_blank');
+        window.open('step2-entry.html', '_blank');
     });
 
     function resetCreateResultForm() {
         examNameInput.value = '';
-        examClassInput.value = '';
+        examClassSelect.value = '';
         examSessionSelect.value = '2026-2027';
         examDateInput.value = '';
         subjectCountInput.value = '';
@@ -578,7 +705,7 @@
             localStorage.setItem('examData', JSON.stringify(examData));
             localStorage.setItem('schoolId', schoolId);
             
-            window.open('step2-excel.html', '_blank');
+            window.open('step2-entry.html', '_blank');
         } catch(error) {
             alert('Error loading draft: ' + error.message);
         }
@@ -704,7 +831,7 @@
             localStorage.setItem('examData', JSON.stringify(examData));
             localStorage.setItem('schoolId', schoolId);
             
-            window.open('step2-excel.html', '_blank');
+            window.open('step2-entry.html', '_blank');
         } catch(error) {
             alert('Error loading result: ' + error.message);
         }
