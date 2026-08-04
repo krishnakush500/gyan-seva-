@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== ALL STYLES SAME ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #e8ecf1; min-height: 100vh; padding: 10px; }
         
@@ -761,7 +762,6 @@
         summaryStudents.textContent = students.length;
         updateSummary();
         
-        // 🔥 Event listeners attach
         attachEventListeners();
     }
     
@@ -832,7 +832,7 @@
         }
     }
     
-    // ===== MARK CHANGE - ONLY UPDATE DOM =====
+    // ===== 🔥 FIX: MARK CHANGE - STABLE LIKE OTHER COLUMNS =====
     function handleMarkChange(e) {
         const idx = parseInt(this.dataset.idx);
         if (!isNaN(idx) && students[idx]) {
@@ -846,7 +846,11 @@
                 return;
             }
             
+            // 🔥 Directly update students array (like roll no, name, father)
             students[idx].marks[sub] = val;
+            
+            // 🔥 Only update summary, NO TABLE RE-RENDER
+            // This keeps the column stable like Roll No, Name, Father
             updateSummary();
         }
     }
@@ -876,7 +880,7 @@
         updateRollNumber();
     }
     
-    // ===== 🔥 ADD STUDENT - FIXED WITH SCROLL =====
+    // ===== ADD STUDENT =====
     addRowBtn.addEventListener('click', async () => {
         // 🔥 FIRST: Save all existing rows' marks and data from inputs
         document.querySelectorAll('.mark-input').forEach(input => {
@@ -933,7 +937,6 @@
             updateSummary();
             cancelEdit();
             
-            // 🔥 Scroll to last row
             setTimeout(() => {
                 const lastRow = tableBody.lastElementChild;
                 if (lastRow) {
@@ -994,13 +997,12 @@
         newFather.value = '';
         document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
         
-        // 🔥 🔥 🔥 SCROLL TO NEWLY ADDED ROW
         setTimeout(() => {
             const lastRow = tableBody.lastElementChild;
             if (lastRow) {
                 lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-        }, 150);
+        }, 100);
     });
     
     // ===== CLEAR STUDENT =====
