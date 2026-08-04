@@ -836,6 +836,7 @@
         }
     }
     
+    // ===== 🔥 FIXED: MARK CHANGE HANDLER - NO renderTable() =====
     function handleMarkChange(e) {
         const idx = parseInt(this.dataset.idx);
         if (!isNaN(idx) && students[idx]) {
@@ -847,8 +848,9 @@
                 this.value = students[idx].marks[sub] || 0;
                 return;
             }
+            // 🔥 DIRECTLY UPDATE students array - NO renderTable()
             students[idx].marks[sub] = val;
-            renderTable();
+            // 🔥 Only update summary, don't re-render table
             updateSummary();
         }
     }
@@ -880,7 +882,7 @@
     
     // ===== 🔥 ADD STUDENT - FIXED =====
     addRowBtn.addEventListener('click', async () => {
-        // 🔥 FIRST: Save all existing rows' marks and data
+        // 🔥 FIRST: Save all existing rows' marks and data from inputs
         document.querySelectorAll('.mark-input').forEach(input => {
             const idx = parseInt(input.dataset.idx);
             if (!isNaN(idx) && students[idx]) {
