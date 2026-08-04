@@ -592,6 +592,7 @@
     let schoolId = localStorage.getItem('schoolId');
     let examData = JSON.parse(localStorage.getItem('examData') || '{}');
     
+    // 🔥 Subjects now have unique ID
     let subjects = examData.subjects || [];
     let students = examData.students || [];
     let editingIndex = null;
@@ -646,6 +647,20 @@
         }).join(' ');
     }
     
+    // ===== 🔥 GENERATE UNIQUE ID =====
+    function generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    }
+    
+    // ===== 🔥 ENSURE SUBJECTS HAVE ID =====
+    function ensureSubjectIds() {
+        subjects.forEach(sub => {
+            if (!sub.id) {
+                sub.id = generateId();
+            }
+        });
+    }
+    
     // ===== AUTO FETCH TOGGLE =====
     autoFetchToggle.addEventListener('click', () => {
         autoFetchEnabled = !autoFetchEnabled;
@@ -654,7 +669,7 @@
         autoFetchStatus.classList.toggle('active');
     });
     
-    // ===== BUILD HEADER =====
+    // ===== 🔥 BUILD HEADER =====
     function buildHeader() {
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
@@ -662,12 +677,13 @@
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
+            th.dataset.subjectId = s.id;
             th.textContent = `${s.name} (${s.total})`;
             tableHeader.insertBefore(th, actionsTh);
         });
     }
     
-    // ===== BUILD ADD ROW =====
+    // ===== 🔥 BUILD ADD ROW =====
     function buildAddRow() {
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
@@ -675,15 +691,17 @@
         subjects.forEach((s) => {
             const td = document.createElement('td');
             td.className = 'col-subject-input';
-            td.innerHTML = `<input type="number" class="marks-input-add" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
+            td.dataset.subjectId = s.id;
+            td.innerHTML = `<input type="number" class="marks-input-add" data-subject-id="${s.id}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
             addRow.insertBefore(td, actionsTd);
         });
     }
     
+    // ===== 🔥 BUILD MARKS INPUTS =====
     function buildMarksInputs() {
         let html = '';
         subjects.forEach((s) => {
-            html += `<input type="number" class="marks-input-add" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
+            html += `<input type="number" class="marks-input-add" data-subject-id="${s.id}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
         });
         marksInputs.innerHTML = html;
     }
@@ -716,7 +734,7 @@
         }
     }
     
-    // ===== 🔥 RENDER STUDENTS - FIXED =====
+    // ===== 🔥 RENDER STUDENTS - FIXED WITH SUBJECT ID =====
     function renderTable() {
         if (students.length === 0) {
             tableBody.innerHTML = '';
@@ -727,10 +745,10 @@
         let html = '';
         students.forEach((s, idx) => {
             let marksHtml = '';
-            // 🔥 FIX: subjects array ke order mein marks generate karo
+            // 🔥 Use subject ID to map marks
             subjects.forEach((sub) => {
-                const mark = s.marks[sub.name] || 0;
-                marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:60px; width:100%;"></td>`;
+                const mark = s.marks && s.marks[sub.id] !== undefined ? s.marks[sub.id] : 0;
+                marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject-id="${sub.id}" value="${mark}" min="0" max="${sub.total}" style="max-width:60px; width:100%;"></td>`;
             });
             
             const hasName = s.name && s.name.trim().length > 0;
@@ -756,7 +774,7 @@
         summaryStudents.textContent = students.length;
         updateSummary();
         
-        // 🔥 Event listeners attach karo
+        // 🔥 Event listeners
         document.querySelectorAll('.roll-input').forEach(input => {
             input.removeEventListener('change', handleRollChange);
             input.addEventListener('change', handleRollChange);
@@ -830,18 +848,23 @@
         }
     }
     
+    // ===== 🔥 FIXED: MARK CHANGE HANDLER =====
     function handleMarkChange(e) {
         const idx = parseInt(this.dataset.idx);
         if (!isNaN(idx) && students[idx]) {
-            const sub = this.dataset.subject;
-            const maxMarks = subjects.find(s => s.name === sub)?.total || 100;
+            const subjectId = this.dataset.subjectId;
+            const subject = subjects.find(s => s.id === subjectId);
+            if (!subject) return;
+            
             let val = parseInt(this.value) || 0;
-            if (val > maxMarks) {
-                alert(`${sub} marks cannot exceed ${maxMarks}`);
-                this.value = students[idx].marks[sub] || 0;
+            if (val > subject.total) {
+                alert(`${subject.name} marks cannot exceed ${subject.total}`);
+                this.value = students[idx].marks && students[idx].marks[subjectId] !== undefined ? students[idx].marks[subjectId] : 0;
                 return;
             }
-            students[idx].marks[sub] = val;
+            
+            if (!students[idx].marks) students[idx].marks = {};
+            students[idx].marks[subjectId] = val;
             renderTable();
             updateSummary();
         }
@@ -864,6 +887,7 @@
     
     // ===== INIT =====
     function init() {
+        ensureSubjectIds();
         buildHeader();
         buildAddRow();
         buildMarksInputs();
@@ -883,15 +907,16 @@
             const marks = {};
             let valid = true;
             document.querySelectorAll('.marks-input-add').forEach(input => {
-                const sub = input.dataset.subject;
+                const subjectId = input.dataset.subjectId;
+                const subject = subjects.find(s => s.id === subjectId);
+                if (!subject) return;
                 const val = parseInt(input.value) || 0;
-                const maxMarks = subjects.find(s => s.name === sub)?.total || 100;
-                if (val > maxMarks) {
-                    alert(`${sub} marks cannot exceed ${maxMarks}`);
+                if (val > subject.total) {
+                    alert(`${subject.name} marks cannot exceed ${subject.total}`);
                     valid = false;
                     return;
                 }
-                marks[sub] = val;
+                marks[subjectId] = val;
             });
             if (!valid) return;
             
@@ -940,15 +965,16 @@
         const marks = {};
         let valid = true;
         document.querySelectorAll('.marks-input-add').forEach(input => {
-            const sub = input.dataset.subject;
+            const subjectId = input.dataset.subjectId;
+            const subject = subjects.find(s => s.id === subjectId);
+            if (!subject) return;
             const val = parseInt(input.value) || 0;
-            const maxMarks = subjects.find(s => s.name === sub)?.total || 100;
-            if (val > maxMarks) {
-                alert(`${sub} marks cannot exceed ${maxMarks}`);
+            if (val > subject.total) {
+                alert(`${subject.name} marks cannot exceed ${subject.total}`);
                 valid = false;
                 return;
             }
-            marks[sub] = val;
+            marks[subjectId] = val;
         });
         if (!valid) return;
         
@@ -972,7 +998,7 @@
     window.clearStudent = function(idx) {
         if (confirm(`Clear all data for student "${students[idx].name}"?`)) {
             const s = students[idx];
-            subjects.forEach((sub) => { s.marks[sub.name] = 0; });
+            s.marks = {};
             s.name = '';
             s.fatherName = '';
             renderTable();
@@ -1055,6 +1081,7 @@
                 }
                 subjects.splice(idx, 1);
                 editSubjectModal.hide();
+                ensureSubjectIds();
                 buildHeader();
                 buildAddRow();
                 buildMarksInputs();
@@ -1069,7 +1096,7 @@
                 alert('Maximum 10 subjects allowed!');
                 return;
             }
-            subjects.push({ name: 'New Subject', total: 100 });
+            subjects.push({ name: 'New Subject', total: 100, id: generateId() });
             editSubjectModal.hide();
             buildHeader();
             buildAddRow();
@@ -1090,7 +1117,13 @@
             const name = capitalizeWords(input.value.trim());
             const total = parseInt(totalInputs[idx].value);
             if (!name || isNaN(total) || total < 1) { valid = false; return; }
-            newSubjects.push({ name, total });
+            // Preserve existing ID or generate new
+            const oldSubject = subjects[idx];
+            newSubjects.push({ 
+                name, 
+                total, 
+                id: oldSubject && oldSubject.id ? oldSubject.id : generateId() 
+            });
         });
         
         if (!valid) { alert('Please fill all subject fields correctly'); return; }
