@@ -128,7 +128,6 @@
             margin-left: 4px;
         }
         
-        /* ===== EXCEL SHEET ===== */
         .excel-container {
             background: white;
             border-radius: 8px;
@@ -151,7 +150,6 @@
             min-width: 600px;
         }
         
-        /* 🔥 FIXED COLUMNS - Roll No & Student Name (ALL ROWS) */
         .excel-table .col-roll,
         .excel-table .col-name {
             position: sticky !important;
@@ -215,12 +213,6 @@
         }
         .excel-table td { background: white; }
         .excel-table tr:hover td { background: #f0f5ff; }
-        
-        .excel-table .row-roll {
-            font-weight: 600;
-            color: #1a237e;
-            font-size: 0.85rem;
-        }
         
         .excel-table .row-name input,
         .excel-table .row-father input,
@@ -724,7 +716,7 @@
         }
     }
     
-    // ===== RENDER STUDENTS =====
+    // ===== 🔥 RENDER STUDENTS - FIXED =====
     function renderTable() {
         if (students.length === 0) {
             tableBody.innerHTML = '';
@@ -735,6 +727,7 @@
         let html = '';
         students.forEach((s, idx) => {
             let marksHtml = '';
+            // 🔥 FIX: subjects array ke order mein marks generate karo
             subjects.forEach((sub) => {
                 const mark = s.marks[sub.name] || 0;
                 marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:60px; width:100%;"></td>`;
@@ -763,7 +756,7 @@
         summaryStudents.textContent = students.length;
         updateSummary();
         
-        // 🔥 Event listeners for all inputs
+        // 🔥 Event listeners attach karo
         document.querySelectorAll('.roll-input').forEach(input => {
             input.removeEventListener('change', handleRollChange);
             input.addEventListener('change', handleRollChange);
