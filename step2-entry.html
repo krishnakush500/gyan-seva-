@@ -761,7 +761,7 @@
         summaryStudents.textContent = students.length;
         updateSummary();
         
-        // 🔥 Event listeners - attach once
+        // 🔥 Event listeners attach
         attachEventListeners();
     }
     
@@ -820,7 +820,6 @@
         const idx = parseInt(this.dataset.idx);
         if (!isNaN(idx) && students[idx]) {
             students[idx].name = this.value;
-            // Only update the specific row's display, not full table
             updateSummary();
         }
     }
@@ -856,8 +855,7 @@
             // 🔥 Update students array
             students[idx].marks[sub] = val;
             
-            // 🔥 Keep the input value as is (no re-render)
-            // Only update summary counts
+            // 🔥 Only update summary (NO TABLE RE-RENDER)
             updateSummary();
         }
     }
