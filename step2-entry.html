@@ -152,7 +152,7 @@
             min-width: 600px;
         }
         
-        /* 🔥 Fixed Columns - Roll No & Student Name (Always Visible) */
+        /* 🔥 Fixed Columns - Roll No & Student Name (All Rows) */
         .excel-table .col-roll,
         .excel-table .col-name {
             position: sticky;
@@ -171,7 +171,7 @@
             width: 200px;
         }
         
-        /* 🔥 Header Fixed Columns */
+        /* 🔥 Header Fixed Columns - Higher z-index */
         .excel-table thead .col-roll,
         .excel-table thead .col-name {
             background: #1a237e;
@@ -181,6 +181,19 @@
             left: 0;
         }
         .excel-table thead .col-name {
+            left: 70px;
+        }
+        
+        /* 🔥 Add Row Fixed Columns */
+        .excel-table tfoot .col-roll,
+        .excel-table tfoot .col-name {
+            background: #f8faff;
+            z-index: 25;
+        }
+        .excel-table tfoot .col-roll {
+            left: 0;
+        }
+        .excel-table tfoot .col-name {
             left: 70px;
         }
         
@@ -254,7 +267,7 @@
             margin: 0 auto;
         }
         
-        /* 🔥 Actions - Only show when student has name */
+        /* 🔥 Actions - Hidden by default */
         .excel-table .row-actions {
             white-space: nowrap;
             display: flex;
@@ -265,6 +278,10 @@
         .excel-table .row-actions.hidden {
             visibility: hidden;
         }
+        .excel-table .row-actions.visible {
+            visibility: visible;
+        }
+        
         .excel-table .row-actions button {
             background: none;
             border: none;
@@ -356,7 +373,6 @@
         .edit-modal .modal-body { padding: 16px; }
         .edit-modal .modal-footer { padding: 12px 16px; }
         
-        /* ===== CLASS DROPDOWN IN MODAL ===== */
         .class-dropdown-modal {
             font-size: 0.85rem;
             padding: 6px 10px;
@@ -381,8 +397,8 @@
                 height: 32px;
                 font-size: 0.7rem;
             }
-            .col-name { width: 120px; min-width: 80px; left: 55px; }
-            .col-roll { min-width: 50px; width: 55px; }
+            .col-name { width: 120px; min-width: 80px; left: 60px; }
+            .col-roll { min-width: 55px; width: 60px; }
             .col-father { width: 80px; min-width: 60px; }
             .col-subject { width: 75px; min-width: 60px; }
             .col-actions { width: 80px; min-width: 70px; }
@@ -395,6 +411,7 @@
             .auto-fetch-container .toggle-switch .toggle-slider { width: 16px; height: 16px; }
             .auto-fetch-container .toggle-switch.active .toggle-slider { left: 18px; }
             .auto-fetch-container .hint-text { font-size: 0.55rem; }
+            .excel-table .col-name { left: 55px; }
         }
         
         @media (min-width: 769px) {
@@ -532,7 +549,6 @@
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Class <span class="text-danger">*</span></label>
-                    <!-- 🔥 CLASS DROPDOWN (1 to 12) -->
                     <select class="class-dropdown-modal" id="modalExamClass">
                         <option value="">Select Class</option>
                         <option value="1st">1st</option>
@@ -630,7 +646,6 @@
     const subjectHeader = document.getElementById('subjectHeader');
     const addRow = document.getElementById('addRow');
     const marksInputs = document.getElementById('marksInputs');
-    const tableWrapper = document.getElementById('tableWrapper');
     
     const newRoll = document.getElementById('newRoll');
     const newName = document.getElementById('newName');
@@ -655,7 +670,6 @@
     const editSubjectBtn = document.getElementById('editSubjectBtn');
     const saveSubjectBtn = document.getElementById('saveSubjectBtn');
     
-    // ===== 🔥 AUTO CAPITALIZE =====
     function capitalizeWords(text) {
         return text.split(' ').map(word => {
             if (word.length === 0) return word;
@@ -663,7 +677,7 @@
         }).join(' ');
     }
     
-    // ===== 🔥 AUTO FETCH TOGGLE =====
+    // ===== AUTO FETCH TOGGLE =====
     autoFetchToggle.addEventListener('click', () => {
         autoFetchEnabled = !autoFetchEnabled;
         autoFetchToggle.classList.toggle('active');
@@ -697,7 +711,6 @@
         });
     }
     
-    // ===== BUILD MARKS INPUTS =====
     function buildMarksInputs() {
         let html = '';
         subjects.forEach((s) => {
@@ -706,7 +719,7 @@
         marksInputs.innerHTML = html;
     }
     
-    // ===== 🔥 AUTO FETCH =====
+    // ===== AUTO FETCH =====
     async function autoFetchStudent(rollNumber, nameInput, fatherInput) {
         if (!autoFetchEnabled) return;
         if (!rollNumber || rollNumber < 1) return;
@@ -728,27 +741,10 @@
                 const data = snap.docs[0].data();
                 nameInput.value = capitalizeWords(data.name || '');
                 fatherInput.value = capitalizeWords(data.fatherName || '');
-                // Update actions visibility
-                updateActionsVisibility();
             }
         } catch(error) {
             console.error('Auto fetch error:', error);
         }
-    }
-    
-    // ===== 🔥 UPDATE ACTIONS VISIBILITY =====
-    function updateActionsVisibility() {
-        document.querySelectorAll('#tableBody tr').forEach((row, idx) => {
-            const nameInput = row.querySelector('.name-input');
-            const actionsCell = row.querySelector('.row-actions');
-            if (nameInput && actionsCell) {
-                if (nameInput.value.trim() !== '') {
-                    actionsCell.classList.remove('hidden');
-                } else {
-                    actionsCell.classList.add('hidden');
-                }
-            }
-        });
     }
     
     // ===== RENDER STUDENTS =====
@@ -767,9 +763,9 @@
                 marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:60px; width:100%;"></td>`;
             });
             
-            // 🔥 Actions hidden if no name
-            const hasName = s.name && s.name.trim() !== '';
-            const actionsClass = hasName ? 'row-actions' : 'row-actions hidden';
+            // 🔥 Check if student has name - show/hide actions
+            const hasName = s.name && s.name.trim().length > 0;
+            const actionsClass = hasName ? 'visible' : 'hidden';
             
             html += `
                 <tr>
@@ -779,7 +775,7 @@
                     <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${capitalizeWords(s.name)}" style="width:100%; text-transform:capitalize;"></td>
                     <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${capitalizeWords(s.fatherName || '')}" style="width:100%; text-transform:capitalize;"></td>
                     ${marksHtml}
-                    <td class="${actionsClass}">
+                    <td class="row-actions ${actionsClass}">
                         <button class="clear-btn" onclick="clearStudent(${idx})"><i class="fas fa-eraser"></i> Clear</button>
                         <button class="del-btn" onclick="deleteStudent(${idx})"><i class="fas fa-trash-alt"></i> Delete</button>
                     </td>
@@ -817,26 +813,26 @@
                 const cursorPos = this.selectionStart;
                 this.value = capitalizeWords(this.value);
                 this.setSelectionRange(cursorPos, cursorPos);
-                // Update actions visibility
-                const row = this.closest('tr');
-                const actionsCell = row.querySelector('.row-actions');
-                if (actionsCell) {
-                    if (this.value.trim() !== '') {
-                        actionsCell.classList.remove('hidden');
-                    } else {
-                        actionsCell.classList.add('hidden');
-                    }
+            });
+        });
+        
+        // 🔥 Show/hide actions on name change
+        document.querySelectorAll('.name-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const idx = parseInt(this.dataset.idx);
+                if (!isNaN(idx) && students[idx]) {
+                    students[idx].name = this.value;
+                    renderTable();
+                    updateSummary();
                 }
             });
         });
         
-        document.querySelectorAll('.name-input, .father-input, .mark-input').forEach(input => {
+        document.querySelectorAll('.father-input, .mark-input').forEach(input => {
             input.addEventListener('change', () => {
                 const idx = parseInt(input.dataset.idx);
                 if (!isNaN(idx) && students[idx]) {
-                    if (input.classList.contains('name-input')) {
-                        students[idx].name = input.value;
-                    } else if (input.classList.contains('father-input')) {
+                    if (input.classList.contains('father-input')) {
                         students[idx].fatherName = input.value;
                     } else if (input.classList.contains('mark-input')) {
                         const sub = input.dataset.subject;
@@ -874,7 +870,7 @@
         updateRollNumber();
     }
     
-    // ===== 🔥 ADD STUDENT =====
+    // ===== ADD STUDENT =====
     addRowBtn.addEventListener('click', async () => {
         if (editingIndex !== null) {
             const roll = parseInt(newRoll.value) || 1;
@@ -885,19 +881,21 @@
             const marks = {};
             document.querySelectorAll('.marks-input-add').forEach(input => {
                 const sub = input.dataset.subject;
-                // 🔥 Preserve existing marks if any
-                const existingIdx = editingIndex;
-                if (existingIdx !== null && students[existingIdx]) {
-                    marks[sub] = students[existingIdx].marks[sub] || parseInt(input.value) || 0;
-                } else {
-                    marks[sub] = parseInt(input.value) || 0;
-                }
+                marks[sub] = parseInt(input.value) || 0;
             });
             
             students[editingIndex] = { rollNo: roll, name, fatherName: father, marks };
             renderTable();
             updateSummary();
             cancelEdit();
+            
+            // 🔥 Auto scroll to new row
+            setTimeout(() => {
+                const lastRow = tableBody.lastElementChild;
+                if (lastRow) {
+                    lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
             return;
         }
         
@@ -905,7 +903,6 @@
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
         
-        // 🔥 Auto fetch if name is empty and autoFetch is ON
         if (!name && autoFetchEnabled && schoolId) {
             const classValue = examData.examClass || '';
             const sessionValue = examData.examSession || '2026-2027';
