@@ -152,7 +152,7 @@
             min-width: 600px;
         }
         
-        /* 🔥 Fixed Columns - Roll No & Student Name */
+        /* 🔥 Fixed Columns - Roll No & Student Name (Always Visible) */
         .excel-table .col-roll,
         .excel-table .col-name {
             position: sticky;
@@ -254,12 +254,16 @@
             margin: 0 auto;
         }
         
+        /* 🔥 Actions - Only show when student has name */
         .excel-table .row-actions {
             white-space: nowrap;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
+        }
+        .excel-table .row-actions.hidden {
+            visibility: hidden;
         }
         .excel-table .row-actions button {
             background: none;
@@ -377,8 +381,8 @@
                 height: 32px;
                 font-size: 0.7rem;
             }
-            .col-name { width: 120px; min-width: 80px; left: 60px; }
-            .col-roll { min-width: 55px; width: 60px; }
+            .col-name { width: 120px; min-width: 80px; left: 55px; }
+            .col-roll { min-width: 50px; width: 55px; }
             .col-father { width: 80px; min-width: 60px; }
             .col-subject { width: 75px; min-width: 60px; }
             .col-actions { width: 80px; min-width: 70px; }
@@ -391,7 +395,6 @@
             .auto-fetch-container .toggle-switch .toggle-slider { width: 16px; height: 16px; }
             .auto-fetch-container .toggle-switch.active .toggle-slider { left: 18px; }
             .auto-fetch-container .hint-text { font-size: 0.55rem; }
-            .excel-table .col-name { left: 55px; }
         }
         
         @media (min-width: 769px) {
@@ -612,7 +615,7 @@
     let draftId = examData.draftId || null;
     let isEditingPublished = examData.isEditingPublished || false;
     let publishedId = examData.publishedId || null;
-    let autoFetchEnabled = false; // 🔥 Default OFF
+    let autoFetchEnabled = false;
     
     // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
@@ -627,6 +630,7 @@
     const subjectHeader = document.getElementById('subjectHeader');
     const addRow = document.getElementById('addRow');
     const marksInputs = document.getElementById('marksInputs');
+    const tableWrapper = document.getElementById('tableWrapper');
     
     const newRoll = document.getElementById('newRoll');
     const newName = document.getElementById('newName');
@@ -636,7 +640,6 @@
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishResultBtn = document.getElementById('publishResultBtn');
     
-    // 🔥 Auto Fetch Elements
     const autoFetchToggle = document.getElementById('autoFetchToggle');
     const autoFetchStatus = document.getElementById('autoFetchStatus');
     
@@ -652,7 +655,7 @@
     const editSubjectBtn = document.getElementById('editSubjectBtn');
     const saveSubjectBtn = document.getElementById('saveSubjectBtn');
     
-    // ===== 🔥 AUTO CAPITALIZE FIRST LETTER =====
+    // ===== 🔥 AUTO CAPITALIZE =====
     function capitalizeWords(text) {
         return text.split(' ').map(word => {
             if (word.length === 0) return word;
@@ -703,7 +706,7 @@
         marksInputs.innerHTML = html;
     }
     
-    // ===== 🔥 AUTO FETCH STUDENT BY ROLL NUMBER =====
+    // ===== 🔥 AUTO FETCH =====
     async function autoFetchStudent(rollNumber, nameInput, fatherInput) {
         if (!autoFetchEnabled) return;
         if (!rollNumber || rollNumber < 1) return;
@@ -711,7 +714,6 @@
         
         const classValue = examData.examClass || '';
         const sessionValue = examData.examSession || '2026-2027';
-        
         if (!classValue) return;
         
         try {
@@ -722,15 +724,31 @@
                 where("session", "==", sessionValue)
             );
             const snap = await getDocs(q);
-            
             if (!snap.empty) {
                 const data = snap.docs[0].data();
                 nameInput.value = capitalizeWords(data.name || '');
                 fatherInput.value = capitalizeWords(data.fatherName || '');
+                // Update actions visibility
+                updateActionsVisibility();
             }
         } catch(error) {
             console.error('Auto fetch error:', error);
         }
+    }
+    
+    // ===== 🔥 UPDATE ACTIONS VISIBILITY =====
+    function updateActionsVisibility() {
+        document.querySelectorAll('#tableBody tr').forEach((row, idx) => {
+            const nameInput = row.querySelector('.name-input');
+            const actionsCell = row.querySelector('.row-actions');
+            if (nameInput && actionsCell) {
+                if (nameInput.value.trim() !== '') {
+                    actionsCell.classList.remove('hidden');
+                } else {
+                    actionsCell.classList.add('hidden');
+                }
+            }
+        });
     }
     
     // ===== RENDER STUDENTS =====
@@ -748,6 +766,11 @@
                 const mark = s.marks[sub.name] || 0;
                 marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:60px; width:100%;"></td>`;
             });
+            
+            // 🔥 Actions hidden if no name
+            const hasName = s.name && s.name.trim() !== '';
+            const actionsClass = hasName ? 'row-actions' : 'row-actions hidden';
+            
             html += `
                 <tr>
                     <td class="row-roll">
@@ -756,7 +779,7 @@
                     <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${capitalizeWords(s.name)}" style="width:100%; text-transform:capitalize;"></td>
                     <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${capitalizeWords(s.fatherName || '')}" style="width:100%; text-transform:capitalize;"></td>
                     ${marksHtml}
-                    <td class="row-actions">
+                    <td class="${actionsClass}">
                         <button class="clear-btn" onclick="clearStudent(${idx})"><i class="fas fa-eraser"></i> Clear</button>
                         <button class="del-btn" onclick="deleteStudent(${idx})"><i class="fas fa-trash-alt"></i> Delete</button>
                     </td>
@@ -794,6 +817,16 @@
                 const cursorPos = this.selectionStart;
                 this.value = capitalizeWords(this.value);
                 this.setSelectionRange(cursorPos, cursorPos);
+                // Update actions visibility
+                const row = this.closest('tr');
+                const actionsCell = row.querySelector('.row-actions');
+                if (actionsCell) {
+                    if (this.value.trim() !== '') {
+                        actionsCell.classList.remove('hidden');
+                    } else {
+                        actionsCell.classList.add('hidden');
+                    }
+                }
             });
         });
         
@@ -841,7 +874,7 @@
         updateRollNumber();
     }
     
-    // ===== ADD STUDENT =====
+    // ===== 🔥 ADD STUDENT =====
     addRowBtn.addEventListener('click', async () => {
         if (editingIndex !== null) {
             const roll = parseInt(newRoll.value) || 1;
@@ -852,7 +885,13 @@
             const marks = {};
             document.querySelectorAll('.marks-input-add').forEach(input => {
                 const sub = input.dataset.subject;
-                marks[sub] = parseInt(input.value) || 0;
+                // 🔥 Preserve existing marks if any
+                const existingIdx = editingIndex;
+                if (existingIdx !== null && students[existingIdx]) {
+                    marks[sub] = students[existingIdx].marks[sub] || parseInt(input.value) || 0;
+                } else {
+                    marks[sub] = parseInt(input.value) || 0;
+                }
             });
             
             students[editingIndex] = { rollNo: roll, name, fatherName: father, marks };
@@ -904,6 +943,14 @@
         newName.value = '';
         newFather.value = '';
         document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
+        
+        // 🔥 Auto scroll to new row
+        setTimeout(() => {
+            const lastRow = tableBody.lastElementChild;
+            if (lastRow) {
+                lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 100);
     });
     
     // ===== CLEAR STUDENT =====
@@ -976,7 +1023,6 @@
         editSubjectBody.innerHTML = html;
         editSubjectModal.show();
         
-        // 🔥 Capitalize subject names
         document.querySelectorAll('.edit-subject-name').forEach(input => {
             input.addEventListener('input', function() {
                 const cursorPos = this.selectionStart;
@@ -1113,7 +1159,6 @@
                 alert('Result published!');
             }
             
-            // 🔥 Save student data to Firebase
             const classValue = examData.examClass || 'Not Specified';
             const sessionValue = examData.examSession || '2026-2027';
             
