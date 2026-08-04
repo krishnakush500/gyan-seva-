@@ -24,8 +24,15 @@
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
-        .topbar .brand { font-size: 1rem; font-weight: 700; }
+        .topbar .brand { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .topbar .brand i { color: #ffc107; }
+        .topbar .brand img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
         .topbar .user-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .topbar .user-info .institute-name { 
             font-size: 0.7rem; 
@@ -143,7 +150,6 @@
         .save-changes-btn { background-color: #0dcaf0; border-color: #0dcaf0; color: white; }
         .save-changes-btn:hover { background-color: #0bb6d9; border-color: #0bb6d9; color: white; }
         
-        /* 🔥 Class Dropdown Fix */
         .class-dropdown {
             font-size: 0.8rem;
             padding: 6px 10px;
@@ -188,9 +194,12 @@
 </head>
 <body>
 
-<!-- TOP BAR -->
+<!-- ===== 🔥 TOP BAR WITH LOGO & COACHING NAME ===== -->
 <div class="topbar">
-    <div class="brand"><i class="fas fa-chalkboard-user"></i> GYAN SEVA</div>
+    <div class="brand">
+        <img id="topbarLogo" src="https://via.placeholder.com/32?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/32?text=Logo'">
+        <span id="topbarInstituteName">Loading...</span>
+    </div>
     <div class="user-info">
         <span class="institute-name" id="instituteDisplay">
             <i class="fas fa-school"></i> <span id="instituteName">Loading...</span>
@@ -259,7 +268,6 @@
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Class <span class="text-danger">*</span></label>
-                    <!-- 🔥 CLASS DROPDOWN (1 to 12) -->
                     <select class="class-dropdown" id="examClass">
                         <option value="">Select Class</option>
                         <option value="1st">1st</option>
@@ -300,7 +308,6 @@
             </div>
         </div>
         
-        <!-- 🔥 Subject Fields with Delete Icon -->
         <div id="subjectFields" class="mb-3"></div>
         
         <div id="step1NextBtn" class="d-none text-center">
@@ -431,6 +438,7 @@
         if (!coachingId) {
             document.getElementById('instituteName').textContent = 'No ID';
             document.getElementById('welcomeInstitute').textContent = 'No ID';
+            document.getElementById('topbarInstituteName').textContent = 'No ID';
             return;
         }
         try {
@@ -443,10 +451,17 @@
                 const logo = schoolData.logoUrl || '';
                 const director = schoolData.director || 'Teacher';
                 
+                // 🔥 Update Top Bar
+                document.getElementById('topbarInstituteName').textContent = name;
                 document.getElementById('instituteName').textContent = name;
                 document.getElementById('welcomeInstitute').textContent = name;
                 document.getElementById('teacherName').textContent = director;
-                if (logo) document.getElementById('instituteLogo').src = logo;
+                
+                // 🔥 Update Logo
+                if (logo) {
+                    document.getElementById('topbarLogo').src = logo;
+                    document.getElementById('instituteLogo').src = logo;
+                }
                 
                 localStorage.setItem('schoolId', coachingId);
             }
@@ -529,13 +544,12 @@
     backToDashboardBtn2.addEventListener('click', () => showSection(dashboardSection));
     backToDashboardBtn3.addEventListener('click', () => showSection(dashboardSection));
 
-    // ===== 🔥 DELETE SUBJECT =====
+    // ===== DELETE SUBJECT =====
     window.deleteSubject = function(index) {
         if (confirm('Delete this subject?')) {
             const boxes = subjectFields.querySelectorAll('.subject-box');
             if (boxes.length > 1) {
                 boxes[index].remove();
-                // Update subjects array
                 const nameInputs = document.querySelectorAll('.subject-name');
                 const totalInputs = document.querySelectorAll('.subject-total');
                 subjects = [];
@@ -588,7 +602,6 @@
             `;
             subjectFields.appendChild(box);
             
-            // 🔥 Auto capitalize first letter on input
             const nameInput = box.querySelector('.subject-name');
             nameInput.addEventListener('input', function() {
                 if (this.value.length > 0) {
@@ -598,13 +611,12 @@
         }
         step1NextBtn.classList.remove('d-none');
         
-        // 🔥 Auto scroll to subject fields
         setTimeout(() => {
             subjectFields.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
     });
 
-    // ===== STEP 1: NEXT → GO TO ENTRY SHEET =====
+    // ===== STEP 1: NEXT =====
     nextToStudentEntryBtn.addEventListener('click', () => {
         const nameInputs = document.querySelectorAll('.subject-name');
         const totalInputs = document.querySelectorAll('.subject-total');
@@ -620,7 +632,6 @@
         
         if (!valid) { alert('Please fill all subject fields correctly'); return; }
         
-        // 🔥 Save data to localStorage for step2
         const examData = {
             examName: examNameInput.value.trim(),
             examClass: examClassSelect.value,
@@ -631,7 +642,6 @@
         localStorage.setItem('examData', JSON.stringify(examData));
         localStorage.setItem('schoolId', schoolId);
         
-        // 🔥 Open step2-excel.html in new tab
         window.open('step2-entry.html', '_blank');
     });
 
@@ -691,7 +701,6 @@
             if (snap.empty) return;
             const data = snap.docs[0].data();
             
-            // Store data and open step2
             const examData = {
                 examName: data.examName || '',
                 examClass: data.class || '',
