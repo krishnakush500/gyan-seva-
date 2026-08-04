@@ -186,7 +186,7 @@
         
         .col-father { width: 170px; min-width: 130px; }
         .col-subject { width: 120px; min-width: 95px; }
-        .col-actions { width: 110px; min-width: 95px; max-width: 130px; }
+        .col-actions { width: 120px; min-width: 100px; max-width: 140px; }
         
         .excel-table th,
         .excel-table td {
@@ -266,9 +266,9 @@
         .excel-table .row-actions button {
             background: none;
             border: none;
-            padding: 4px 6px;
+            padding: 4px 8px;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             border-radius: 4px;
             transition: 0.2s;
             display: inline-flex;
@@ -405,7 +405,7 @@
             .col-name { width: 220px; min-width: 170px; }
             .col-father { width: 190px; min-width: 145px; }
             .col-subject { width: 130px; min-width: 105px; }
-            .col-actions { width: 120px; min-width: 100px; }
+            .col-actions { width: 140px; min-width: 120px; }
             .excel-table .row-marks input { max-width: 70px; }
             .btn-add-row { font-size: 0.9rem; padding: 8px 30px; }
             .btn-excel { font-size: 0.85rem; padding: 6px 18px; }
@@ -460,19 +460,20 @@
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <!-- Subject columns inserted dynamically -->
-                        <th class="col-actions" id="actionHeader">Actions</th>
+                        <th class="col-subject" id="subjectHeader"></th>
+                        <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
                     <!-- Students rendered here -->
                 </tbody>
                 <tfoot id="tableFoot">
+                    <!-- 🔥 ADD ROW - No inputs in action column -->
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name" style="text-transform:capitalize;"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father" style="text-transform:capitalize;"></td>
-                        <!-- Subject inputs inserted dynamically -->
+                        <td class="col-subject" id="marksInputs"></td>
                         <td class="col-actions"></td>
                     </tr>
                 </tfoot>
@@ -662,14 +663,9 @@
     
     // ===== BUILD HEADER =====
     function buildHeader() {
-        // Remove old subject headers
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
-        
-        // Get reference to Actions column
         const actionsTh = tableHeader.querySelector('.col-actions');
-        
-        // Insert subject headers before Actions
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
@@ -680,14 +676,9 @@
     
     // ===== BUILD ADD ROW =====
     function buildAddRow() {
-        // Remove old subject input cells
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
-        
-        // Get reference to Actions cell
         const actionsTd = addRow.querySelector('.col-actions');
-        
-        // Insert subject input cells before Actions
         subjects.forEach((s) => {
             const td = document.createElement('td');
             td.className = 'col-subject-input';
@@ -887,7 +878,7 @@
     
     // ===== ADD STUDENT =====
     addRowBtn.addEventListener('click', async () => {
-        // Save all existing rows' marks
+        // 🔥 Save all existing rows' marks
         document.querySelectorAll('.mark-input').forEach(input => {
             const idx = parseInt(input.dataset.idx);
             if (!isNaN(idx) && students[idx]) {
