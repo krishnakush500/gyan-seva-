@@ -67,7 +67,6 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        /* 🔥 Auto Fetch Toggle */
         .auto-fetch-container {
             display: flex;
             align-items: center;
@@ -129,7 +128,6 @@
             margin-left: 4px;
         }
         
-        /* ===== EXCEL SHEET ===== */
         .excel-container {
             background: white;
             border-radius: 8px;
@@ -152,7 +150,6 @@
             min-width: 600px;
         }
         
-        /* 🔥 FIXED COLUMNS - Roll No & Student Name (ALL ROWS) */
         .excel-table .col-roll,
         .excel-table .col-name {
             position: sticky !important;
@@ -171,33 +168,22 @@
             width: 200px !important;
         }
         
-        /* 🔥 HEADER FIXED COLUMNS - Higher z-index */
         .excel-table thead .col-roll,
         .excel-table thead .col-name {
             background: #1a237e !important;
             z-index: 30 !important;
         }
-        .excel-table thead .col-roll {
-            left: 0 !important;
-        }
-        .excel-table thead .col-name {
-            left: 70px !important;
-        }
+        .excel-table thead .col-roll { left: 0 !important; }
+        .excel-table thead .col-name { left: 70px !important; }
         
-        /* 🔥 FOOTER (ADD ROW) FIXED COLUMNS */
         .excel-table tfoot .col-roll,
         .excel-table tfoot .col-name {
             background: #f8faff !important;
             z-index: 25 !important;
         }
-        .excel-table tfoot .col-roll {
-            left: 0 !important;
-        }
-        .excel-table tfoot .col-name {
-            left: 70px !important;
-        }
+        .excel-table tfoot .col-roll { left: 0 !important; }
+        .excel-table tfoot .col-name { left: 70px !important; }
         
-        /* 🔥 OTHER COLUMNS - Scrollable */
         .col-father { width: 170px; min-width: 130px; }
         .col-subject { width: 120px; min-width: 95px; }
         .col-actions { width: 110px; min-width: 95px; max-width: 130px; }
@@ -267,7 +253,8 @@
             margin: 0 auto;
         }
         
-        /* 🔥 Actions - Hidden by default */
+        .excel-table .row-actions.hidden { visibility: hidden; }
+        .excel-table .row-actions.visible { visibility: visible; }
         .excel-table .row-actions {
             white-space: nowrap;
             display: flex;
@@ -275,13 +262,6 @@
             justify-content: center;
             gap: 6px;
         }
-        .excel-table .row-actions.hidden {
-            visibility: hidden;
-        }
-        .excel-table .row-actions.visible {
-            visibility: visible;
-        }
-        
         .excel-table .row-actions button {
             background: none;
             border: none;
@@ -360,7 +340,6 @@
             font-weight: 600;
         }
         
-        /* ===== MODALS ===== */
         .edit-subject-modal .modal-content { border-radius: 16px; }
         .edit-subject-modal .modal-header { padding: 12px 16px; background: #1a237e; color: white; border-radius: 16px 16px 0 0; }
         .edit-subject-modal .modal-header .btn-close { filter: brightness(0) invert(1); }
@@ -443,7 +422,6 @@
 </div>
 
 <div class="container">
-    <!-- Exam Summary -->
     <div class="exam-summary" id="examSummary">
         <div class="info">
             <span>📝 <strong id="summaryExamName">-</strong></span>
@@ -454,28 +432,18 @@
             <span>👨‍🎓 <strong id="summaryStudents">0</strong> students</span>
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
-            <button class="edit-btn" id="editSubjectBtn" title="Edit Subjects">
-                <i class="fas fa-book"></i> Edit Subjects
-            </button>
-            <button class="edit-btn" id="editExamDetailsBtn" title="Edit Exam Details">
-                <i class="fas fa-pencil-alt"></i>
-            </button>
+            <button class="edit-btn" id="editSubjectBtn" title="Edit Subjects"><i class="fas fa-book"></i> Edit Subjects</button>
+            <button class="edit-btn" id="editExamDetailsBtn" title="Edit Exam Details"><i class="fas fa-pencil-alt"></i></button>
         </div>
     </div>
 
-    <!-- 🔥 Auto Fetch Toggle - Default OFF -->
     <div class="auto-fetch-container">
-        <label>
-            <i class="fas fa-sync-alt"></i> Auto Fetch
-        </label>
-        <div class="toggle-switch" id="autoFetchToggle">
-            <div class="toggle-slider"></div>
-        </div>
+        <label><i class="fas fa-sync-alt"></i> Auto Fetch</label>
+        <div class="toggle-switch" id="autoFetchToggle"><div class="toggle-slider"></div></div>
         <span class="toggle-status" id="autoFetchStatus">OFF</span>
         <span class="hint-text">(Auto fill student on roll number entry)</span>
     </div>
 
-    <!-- Excel Sheet -->
     <div class="excel-container">
         <div class="excel-table-wrapper" id="tableWrapper">
             <table class="excel-table" id="excelTable">
@@ -488,9 +456,7 @@
                         <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
-                    <!-- Students rendered here -->
-                </tbody>
+                <tbody id="tableBody"></tbody>
                 <tfoot id="tableFoot">
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
@@ -515,7 +481,7 @@
     </div>
 </div>
 
-<!-- ===== EDIT SUBJECT MODAL ===== -->
+<!-- MODALS -->
 <div class="modal fade edit-subject-modal" id="editSubjectModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -523,9 +489,7 @@
                 <h6 class="modal-title"><i class="fas fa-book"></i> Edit Subjects</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="editSubjectBody">
-                <!-- Subjects rendered here -->
-            </div>
+            <div class="modal-body" id="editSubjectBody"></div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
                 <button class="btn btn-primary btn-sm" id="saveSubjectBtn"><i class="fas fa-save"></i> Save Changes</button>
@@ -534,7 +498,6 @@
     </div>
 </div>
 
-<!-- ===== EDIT EXAM DETAILS MODAL ===== -->
 <div class="modal fade edit-modal" id="editExamModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -633,7 +596,6 @@
     let publishedId = examData.publishedId || null;
     let autoFetchEnabled = false;
     
-    // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
     const summaryClass = document.getElementById('summaryClass');
     const summaryDate = document.getElementById('summaryDate');
@@ -806,7 +768,6 @@
             });
         });
         
-        // 🔥 Capitalize on input
         document.querySelectorAll('.name-input, .father-input').forEach(input => {
             input.addEventListener('input', function() {
                 const cursorPos = this.selectionStart;
@@ -815,7 +776,6 @@
             });
         });
         
-        // 🔥 Show/hide actions on name change
         document.querySelectorAll('.name-input').forEach(input => {
             input.addEventListener('change', function() {
                 const idx = parseInt(this.dataset.idx);
@@ -835,7 +795,6 @@
                         students[idx].fatherName = input.value;
                     } else if (input.classList.contains('mark-input')) {
                         const sub = input.dataset.subject;
-                        // 🔥 VALIDATION: Max marks check
                         const maxMarks = subjects.find(s => s.name === sub)?.total || 100;
                         let val = parseInt(input.value) || 0;
                         if (val > maxMarks) {
@@ -867,7 +826,6 @@
         newRoll.value = maxRoll + 1;
     }
     
-    // ===== INIT =====
     function init() {
         buildHeader();
         buildAddRow();
@@ -877,7 +835,7 @@
         updateRollNumber();
     }
     
-    // ===== ADD STUDENT =====
+    // ===== 🔥 ADD STUDENT - FIXED MARKS MAPPING =====
     addRowBtn.addEventListener('click', async () => {
         if (editingIndex !== null) {
             const roll = parseInt(newRoll.value) || 1;
@@ -942,6 +900,7 @@
         
         if (!name) { alert('Please enter student name'); return; }
         
+        // 🔥 FIX: MARKS KO SAHI SUBJECT KE SAATH MAP KARO
         const marks = {};
         let valid = true;
         document.querySelectorAll('.marks-input-add').forEach(input => {
@@ -973,7 +932,6 @@
         }, 100);
     });
     
-    // ===== CLEAR STUDENT =====
     window.clearStudent = function(idx) {
         if (confirm(`Clear all data for student "${students[idx].name}"?`)) {
             const s = students[idx];
@@ -985,7 +943,6 @@
         }
     };
     
-    // ===== DELETE STUDENT =====
     window.deleteStudent = function(idx) {
         const name = students[idx].name || 'this student';
         if (confirm(`Delete "${name}" permanently?`)) {
@@ -996,7 +953,6 @@
         }
     };
     
-    // ===== CLEAR ALL =====
     clearAllBtn.addEventListener('click', () => {
         if (confirm('Delete all students?')) {
             students = [];
@@ -1006,7 +962,6 @@
         }
     });
     
-    // ===== EDIT EXAM DETAILS =====
     editExamDetailsBtn.addEventListener('click', () => {
         modalExamName.value = examData.examName || '';
         modalExamClass.value = examData.examClass || '';
@@ -1025,7 +980,6 @@
         alert('Exam details updated!');
     });
     
-    // ===== EDIT SUBJECTS =====
     editSubjectBtn.addEventListener('click', () => {
         let html = '';
         subjects.forEach((s, idx) => {
@@ -1037,9 +991,7 @@
                 </div>
             `;
         });
-        html += `
-            <button class="btn btn-sm btn-primary" id="addSubjectFieldBtn"><i class="fas fa-plus"></i> Add Subject</button>
-        `;
+        html += `<button class="btn btn-sm btn-primary" id="addSubjectFieldBtn"><i class="fas fa-plus"></i> Add Subject</button>`;
         editSubjectBody.innerHTML = html;
         editSubjectModal.show();
         
@@ -1111,7 +1063,6 @@
         alert('Subjects updated successfully!');
     });
     
-    // ===== SAVE DRAFT =====
     saveDraftBtn.addEventListener('click', async () => {
         if (!examData.examName) { alert('Please enter exam name'); return; }
         if (students.length === 0) { alert('Please add at least one student'); return; }
@@ -1145,7 +1096,6 @@
         }
     });
     
-    // ===== PUBLISH RESULT =====
     publishResultBtn.addEventListener('click', async () => {
         if (!examData.examName) { alert('Please enter exam name'); return; }
         if (students.length === 0) { alert('Please add at least one student'); return; }
@@ -1220,7 +1170,6 @@
         }
     });
     
-    // ===== INIT =====
     init();
     console.log('✅ Step 2 Entry Loaded:', examData);
 </script>
