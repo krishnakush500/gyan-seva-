@@ -460,8 +460,8 @@
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <th class="col-subject" id="subjectHeader"></th>
-                        <th class="col-actions">Actions</th>
+                        <!-- Subject columns inserted dynamically -->
+                        <th class="col-actions" id="actionHeader">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -472,7 +472,7 @@
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name" style="text-transform:capitalize;"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father" style="text-transform:capitalize;"></td>
-                        <td class="col-subject" id="marksInputs"></td>
+                        <!-- Subject inputs inserted dynamically -->
                         <td class="col-actions"></td>
                     </tr>
                 </tfoot>
@@ -662,9 +662,14 @@
     
     // ===== BUILD HEADER =====
     function buildHeader() {
+        // Remove old subject headers
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
+        
+        // Get reference to Actions column
         const actionsTh = tableHeader.querySelector('.col-actions');
+        
+        // Insert subject headers before Actions
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
@@ -675,9 +680,14 @@
     
     // ===== BUILD ADD ROW =====
     function buildAddRow() {
+        // Remove old subject input cells
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
+        
+        // Get reference to Actions cell
         const actionsTd = addRow.querySelector('.col-actions');
+        
+        // Insert subject input cells before Actions
         subjects.forEach((s) => {
             const td = document.createElement('td');
             td.className = 'col-subject-input';
@@ -722,7 +732,7 @@
         }
     }
     
-    // ===== 🔥 RENDER STUDENTS - SAME AS BEFORE =====
+    // ===== RENDER STUDENTS =====
     function renderTable() {
         if (students.length === 0) {
             tableBody.innerHTML = '';
@@ -831,7 +841,7 @@
         }
     }
     
-    // ===== 🔥 MARK CHANGE - NO TABLE RE-RENDER =====
+    // ===== MARK CHANGE =====
     function handleMarkChange(e) {
         const idx = parseInt(this.dataset.idx);
         if (!isNaN(idx) && students[idx]) {
@@ -845,10 +855,7 @@
                 return;
             }
             
-            // 🔥 Update students array
             students[idx].marks[sub] = val;
-            
-            // 🔥 Only update summary
             updateSummary();
         }
     }
@@ -878,9 +885,9 @@
         updateRollNumber();
     }
     
-    // ===== 🔥 ADD STUDENT - FIXED =====
+    // ===== ADD STUDENT =====
     addRowBtn.addEventListener('click', async () => {
-        // 🔥 Save all existing rows' marks
+        // Save all existing rows' marks
         document.querySelectorAll('.mark-input').forEach(input => {
             const idx = parseInt(input.dataset.idx);
             if (!isNaN(idx) && students[idx]) {
