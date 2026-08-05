@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== ALL EXISTING STYLES ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #e8ecf1; min-height: 100vh; padding: 10px; }
         
@@ -129,7 +128,6 @@
             margin-left: 4px;
         }
         
-        /* ===== EXCEL TABLE ===== */
         .excel-container {
             background: white;
             border-radius: 8px;
@@ -343,7 +341,6 @@
             font-weight: 600;
         }
         
-        /* ===== MODALS ===== */
         .edit-subject-modal .modal-content { border-radius: 16px; }
         .edit-subject-modal .modal-header { padding: 12px 16px; background: #1a237e; color: white; border-radius: 16px 16px 0 0; }
         .edit-subject-modal .modal-header .btn-close { filter: brightness(0) invert(1); }
@@ -369,79 +366,6 @@
             box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
         }
         
-        /* ===== 🔥 TOAST & PROGRESS BAR ===== */
-        .toast-container {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 9999;
-            min-width: 280px;
-            max-width: 400px;
-        }
-        .custom-toast {
-            background: white;
-            border-radius: 12px;
-            padding: 12px 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-            border-left: 4px solid #1a237e;
-            animation: slideIn 0.3s ease;
-            transform: translateX(0);
-        }
-        .custom-toast.success { border-left-color: #22c55e; }
-        .custom-toast.error { border-left-color: #ef4444; }
-        .custom-toast.info { border-left-color: #3b82f6; }
-        .custom-toast.warning { border-left-color: #f59e0b; }
-        
-        .custom-toast .toast-icon {
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-        .custom-toast.success .toast-icon { color: #22c55e; }
-        .custom-toast.error .toast-icon { color: #ef4444; }
-        .custom-toast.info .toast-icon { color: #3b82f6; }
-        .custom-toast.warning .toast-icon { color: #f59e0b; }
-        
-        .custom-toast .toast-content {
-            flex: 1;
-        }
-        .custom-toast .toast-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-        .custom-toast .toast-message {
-            font-size: 0.7rem;
-            color: #64748b;
-        }
-        .custom-toast .toast-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: #1a237e;
-            border-radius: 0 0 0 12px;
-            transition: width 0.1s linear;
-            width: 100%;
-        }
-        .custom-toast.success .toast-progress { background: #22c55e; }
-        .custom-toast.error .toast-progress { background: #ef4444; }
-        .custom-toast.info .toast-progress { background: #3b82f6; }
-        .custom-toast.warning .toast-progress { background: #f59e0b; }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100px); opacity: 0; }
-        }
-        
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             body { padding: 5px; }
             .topbar { padding: 6px 10px; }
@@ -468,7 +392,6 @@
             .auto-fetch-container .toggle-switch.active .toggle-slider { left: 18px; }
             .auto-fetch-container .hint-text { font-size: 0.55rem; }
             .excel-table .col-name { left: 55px; }
-            .toast-container { top: 70px; right: 10px; left: 10px; min-width: auto; }
         }
         
         @media (min-width: 769px) {
@@ -520,7 +443,6 @@
         </div>
     </div>
 
-    <!-- 🔥 Auto Fetch Toggle -->
     <div class="auto-fetch-container">
         <label><i class="fas fa-sync-alt"></i> Auto Fetch</label>
         <div class="toggle-switch" id="autoFetchToggle">
@@ -530,7 +452,6 @@
         <span class="hint-text">(Auto fill student on roll number entry)</span>
     </div>
 
-    <!-- Excel Sheet -->
     <div class="excel-container">
         <div class="excel-table-wrapper" id="tableWrapper">
             <table class="excel-table" id="excelTable">
@@ -539,7 +460,7 @@
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <th class="col-subject" id="subjectHeader"></th>
+                        <!-- 🔥 Subject Columns inserted dynamically -->
                         <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
@@ -547,11 +468,12 @@
                     <!-- Students rendered here -->
                 </tbody>
                 <tfoot id="tableFoot">
+                    <!-- 🔥 Add Row (Last Row) -->
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name" style="text-transform:capitalize;"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father" style="text-transform:capitalize;"></td>
-                        <td class="col-subject" id="marksInputs"></td>
+                        <!-- Subject inputs inserted dynamically -->
                         <td class="col-actions"></td>
                     </tr>
                 </tfoot>
@@ -570,10 +492,7 @@
     </div>
 </div>
 
-<!-- ===== 🔥 TOAST CONTAINER ===== -->
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- ===== MODALS ===== -->
+<!-- ===== EDIT SUBJECT MODAL ===== -->
 <div class="modal fade edit-subject-modal" id="editSubjectModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -590,6 +509,7 @@
     </div>
 </div>
 
+<!-- ===== EDIT EXAM DETAILS MODAL ===== -->
 <div class="modal fade edit-modal" id="editExamModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -724,8 +644,6 @@
     const editSubjectBtn = document.getElementById('editSubjectBtn');
     const saveSubjectBtn = document.getElementById('saveSubjectBtn');
     
-    const toastContainer = document.getElementById('toastContainer');
-    
     function capitalizeWords(text) {
         if (!text) return '';
         return text.split(' ').map(word => {
@@ -734,72 +652,24 @@
         }).join(' ');
     }
     
-    // ===== 🔥 TOAST SYSTEM =====
-    function showToast(title, message, type = 'info', duration = 1500) {
-        const icons = {
-            success: 'fa-check-circle',
-            error: 'fa-exclamation-circle',
-            warning: 'fa-triangle-exclamation',
-            info: 'fa-circle-info'
-        };
-        
-        const toast = document.createElement('div');
-        toast.className = `custom-toast ${type}`;
-        toast.innerHTML = `
-            <div class="toast-icon"><i class="fas ${icons[type] || icons.info}"></i></div>
-            <div class="toast-content">
-                <div class="toast-title">${title}</div>
-                <div class="toast-message">${message}</div>
-            </div>
-            <div class="toast-progress" style="width: 100%;"></div>
-        `;
-        
-        toastContainer.appendChild(toast);
-        
-        // Progress bar animation
-        const progress = toast.querySelector('.toast-progress');
-        const startTime = Date.now();
-        const interval = setInterval(() => {
-            const elapsed = Date.now() - startTime;
-            const remaining = Math.max(0, ((duration - elapsed) / duration) * 100);
-            progress.style.width = remaining + '%';
-            if (remaining <= 0) {
-                clearInterval(interval);
-            }
-        }, 50);
-        
-        // Auto remove after duration
-        setTimeout(() => {
-            toast.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.remove();
-                }
-            }, 300);
-        }, duration);
-        
-        return toast;
-    }
-    
     // ===== AUTO FETCH TOGGLE =====
     autoFetchToggle.addEventListener('click', () => {
         autoFetchEnabled = !autoFetchEnabled;
         autoFetchToggle.classList.toggle('active');
         autoFetchStatus.textContent = autoFetchEnabled ? 'ON' : 'OFF';
         autoFetchStatus.classList.toggle('active');
-        showToast(
-            autoFetchEnabled ? 'Auto Fetch ON' : 'Auto Fetch OFF',
-            autoFetchEnabled ? 'Student data will auto-fill on roll number entry' : 'Manual entry mode',
-            autoFetchEnabled ? 'success' : 'warning',
-            1200
-        );
     });
     
     // ===== BUILD HEADER =====
     function buildHeader() {
+        // 🔥 Remove old subject headers
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
+        
+        // 🔥 Get reference to Actions column
         const actionsTh = tableHeader.querySelector('.col-actions');
+        
+        // 🔥 Insert subject headers BEFORE Actions
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
@@ -810,9 +680,14 @@
     
     // ===== BUILD ADD ROW =====
     function buildAddRow() {
+        // 🔥 Remove old subject input cells
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
+        
+        // 🔥 Get reference to Actions cell
         const actionsTd = addRow.querySelector('.col-actions');
+        
+        // 🔥 Insert subject input cells BEFORE Actions
         subjects.forEach((s) => {
             const td = document.createElement('td');
             td.className = 'col-subject-input';
@@ -829,7 +704,7 @@
         marksInputs.innerHTML = html;
     }
     
-    // ===== 🔥 AUTO FETCH STUDENT WITH TOAST =====
+    // ===== AUTO FETCH =====
     async function autoFetchStudent(rollNumber, nameInput, fatherInput) {
         if (!autoFetchEnabled) return;
         if (!rollNumber || rollNumber < 1) return;
@@ -839,14 +714,6 @@
         const sessionValue = examData.examSession || '2026-2027';
         if (!classValue) return;
         
-        // 🔥 Show loading toast
-        const loadingToast = showToast(
-            '⏳ Searching...',
-            `Checking roll number ${rollNumber}`,
-            'info',
-            800
-        );
-        
         try {
             const q = query(
                 collection(db, "schools", schoolId, "students"),
@@ -855,59 +722,13 @@
                 where("session", "==", sessionValue)
             );
             const snap = await getDocs(q);
-            
-            // Remove loading toast
-            setTimeout(() => {
-                if (loadingToast.parentNode) {
-                    loadingToast.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => {
-                        if (loadingToast.parentNode) {
-                            loadingToast.remove();
-                        }
-                    }, 300);
-                }
-            }, 100);
-            
             if (!snap.empty) {
                 const data = snap.docs[0].data();
                 nameInput.value = capitalizeWords(data.name || '');
                 fatherInput.value = capitalizeWords(data.fatherName || '');
-                
-                // 🔥 Success toast - fast
-                setTimeout(() => {
-                    showToast(
-                        '✅ Student Found!',
-                        `Roll ${rollNumber}: ${data.name}`,
-                        'success',
-                        1200
-                    );
-                }, 200);
-                
-                return true;
-            } else {
-                // 🔥 Not found toast - fast
-                setTimeout(() => {
-                    showToast(
-                        '⚠️ New Student',
-                        `Roll ${rollNumber} not found. Please enter details.`,
-                        'warning',
-                        1200
-                    );
-                }, 200);
-                
-                return false;
             }
         } catch(error) {
             console.error('Auto fetch error:', error);
-            setTimeout(() => {
-                showToast(
-                    '❌ Error',
-                    'Could not fetch student data',
-                    'error',
-                    1200
-                );
-            }, 200);
-            return false;
         }
     }
     
@@ -921,6 +742,7 @@
         
         let html = '';
         students.forEach((s, idx) => {
+            // 🔥 Marks HTML - Subject columns only
             let marksHtml = '';
             subjects.forEach((sub) => {
                 const mark = s.marks[sub.name] || 0;
@@ -1029,12 +851,7 @@
             let val = parseInt(this.value) || 0;
             
             if (val > maxMarks) {
-                showToast(
-                    '⚠️ Invalid Marks',
-                    `${sub} marks cannot exceed ${maxMarks}`,
-                    'error',
-                    1200
-                );
+                alert(`${sub} marks cannot exceed ${maxMarks}`);
                 this.value = students[idx].marks[sub] || 0;
                 return;
             }
@@ -1066,16 +883,6 @@
         updateSummary();
         renderTable();
         updateRollNumber();
-        
-        // Welcome toast
-        setTimeout(() => {
-            showToast(
-                '👋 Welcome!',
-                'Enter roll numbers to auto-fetch student data',
-                'info',
-                1500
-            );
-        }, 500);
     }
     
     // ===== ADD STUDENT =====
@@ -1088,12 +895,7 @@
                 const val = parseInt(input.value) || 0;
                 const maxMarks = subjects.find(s => s.name === sub)?.total || 100;
                 if (val > maxMarks) {
-                    showToast(
-                        '⚠️ Invalid Marks',
-                        `${sub} marks cannot exceed ${maxMarks}`,
-                        'error',
-                        1200
-                    );
+                    alert(`${sub} marks cannot exceed ${maxMarks}`);
                     input.value = students[idx].marks[sub] || 0;
                     return;
                 }
@@ -1118,10 +920,7 @@
             const roll = parseInt(newRoll.value) || 1;
             const name = capitalizeWords(newName.value.trim());
             const father = capitalizeWords(newFather.value.trim());
-            if (!name) {
-                showToast('⚠️ Error', 'Please enter student name', 'error', 1200);
-                return;
-            }
+            if (!name) { alert('Enter name'); return; }
             
             const marks = {};
             let valid = true;
@@ -1130,7 +929,7 @@
                 const val = parseInt(input.value) || 0;
                 const maxMarks = subjects.find(s => s.name === sub)?.total || 100;
                 if (val > maxMarks) {
-                    showToast('⚠️ Invalid Marks', `${sub} marks cannot exceed ${maxMarks}`, 'error', 1200);
+                    alert(`${sub} marks cannot exceed ${maxMarks}`);
                     valid = false;
                     return;
                 }
@@ -1142,8 +941,6 @@
             renderTable();
             updateSummary();
             cancelEdit();
-            
-            showToast('✅ Updated', `Student ${name} updated`, 'success', 1200);
             
             setTimeout(() => {
                 const lastRow = tableBody.lastElementChild;
@@ -1158,7 +955,6 @@
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
         
-        // 🔥 Auto fetch if name is empty and autoFetch is ON
         if (!name && autoFetchEnabled && schoolId) {
             const classValue = examData.examClass || '';
             const sessionValue = examData.examSession || '2026-2027';
@@ -1181,10 +977,7 @@
             }
         }
         
-        if (!name) {
-            showToast('⚠️ Error', 'Please enter student name', 'error', 1200);
-            return;
-        }
+        if (!name) { alert('Please enter student name'); return; }
         
         const marks = {};
         let valid = true;
@@ -1193,7 +986,7 @@
             const val = parseInt(input.value) || 0;
             const maxMarks = subjects.find(s => s.name === sub)?.total || 100;
             if (val > maxMarks) {
-                showToast('⚠️ Invalid Marks', `${sub} marks cannot exceed ${maxMarks}`, 'error', 1200);
+                alert(`${sub} marks cannot exceed ${maxMarks}`);
                 valid = false;
                 return;
             }
@@ -1208,8 +1001,6 @@
         newName.value = '';
         newFather.value = '';
         document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
-        
-        showToast('✅ Added', `Student ${name} added successfully`, 'success', 1200);
         
         setTimeout(() => {
             const lastRow = tableBody.lastElementChild;
@@ -1228,7 +1019,6 @@
             s.fatherName = '';
             renderTable();
             updateSummary();
-            showToast('🧹 Cleared', `Student data cleared`, 'warning', 1000);
         }
     };
     
@@ -1240,7 +1030,6 @@
             renderTable();
             updateSummary();
             updateRollNumber();
-            showToast('🗑️ Deleted', `Student ${name} deleted`, 'error', 1000);
         }
     };
     
@@ -1251,7 +1040,6 @@
             renderTable();
             updateSummary();
             updateRollNumber();
-            showToast('🗑️ All Cleared', 'All students deleted', 'error', 1200);
         }
     });
     
@@ -1271,7 +1059,7 @@
         examData.examDate = modalExamDate.value;
         updateSummary();
         editExamModal.hide();
-        showToast('✅ Updated', 'Exam details updated successfully', 'success', 1200);
+        alert('Exam details updated!');
     });
     
     // ===== EDIT SUBJECTS =====
@@ -1304,7 +1092,7 @@
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.dataset.idx);
                 if (subjects.length <= 1) {
-                    showToast('⚠️ Error', 'You need at least one subject!', 'error', 1200);
+                    alert('You need at least one subject!');
                     return;
                 }
                 subjects.splice(idx, 1);
@@ -1314,14 +1102,13 @@
                 buildMarksInputs();
                 renderTable();
                 updateSummary();
-                showToast('🗑️ Removed', 'Subject deleted', 'warning', 1000);
                 editSubjectBtn.click();
             });
         });
         
         document.getElementById('addSubjectFieldBtn').addEventListener('click', function() {
             if (subjects.length >= 10) {
-                showToast('⚠️ Error', 'Maximum 10 subjects allowed!', 'error', 1200);
+                alert('Maximum 10 subjects allowed!');
                 return;
             }
             subjects.push({ name: 'New Subject', total: 100 });
@@ -1331,7 +1118,6 @@
             buildMarksInputs();
             renderTable();
             updateSummary();
-            showToast('➕ Added', 'New subject added', 'success', 1000);
             editSubjectBtn.click();
         });
     });
@@ -1349,14 +1135,8 @@
             newSubjects.push({ name, total });
         });
         
-        if (!valid) {
-            showToast('⚠️ Error', 'Please fill all subject fields correctly', 'error', 1200);
-            return;
-        }
-        if (newSubjects.length === 0) {
-            showToast('⚠️ Error', 'Please add at least one subject', 'error', 1200);
-            return;
-        }
+        if (!valid) { alert('Please fill all subject fields correctly'); return; }
+        if (newSubjects.length === 0) { alert('Please add at least one subject'); return; }
         
         subjects = newSubjects;
         editSubjectModal.hide();
@@ -1365,23 +1145,14 @@
         buildMarksInputs();
         renderTable();
         updateSummary();
-        showToast('✅ Updated', 'Subjects updated successfully', 'success', 1200);
+        alert('Subjects updated successfully!');
     });
     
     // ===== SAVE DRAFT =====
     saveDraftBtn.addEventListener('click', async () => {
-        if (!examData.examName) {
-            showToast('⚠️ Error', 'Please enter exam name', 'error', 1200);
-            return;
-        }
-        if (students.length === 0) {
-            showToast('⚠️ Error', 'Please add at least one student', 'error', 1200);
-            return;
-        }
-        if (!schoolId) {
-            showToast('⚠️ Error', 'Institute not found', 'error', 1200);
-            return;
-        }
+        if (!examData.examName) { alert('Please enter exam name'); return; }
+        if (students.length === 0) { alert('Please add at least one student'); return; }
+        if (!schoolId) { alert('Institute not found'); return; }
         
         try {
             const data = {
@@ -1396,10 +1167,10 @@
             
             if (isEditingDraft && draftId) {
                 await updateDoc(doc(db, "schools", schoolId, "draft_results", draftId), data);
-                showToast('✅ Updated', 'Draft updated successfully!', 'success', 1200);
+                alert('Draft updated!');
             } else {
                 await addDoc(collection(db, "schools", schoolId, "draft_results"), data);
-                showToast('✅ Saved', 'Draft saved successfully!', 'success', 1200);
+                alert('Draft saved!');
             }
             
             setTimeout(() => {
@@ -1407,24 +1178,15 @@
                 window.location.href = 'manage-results.html';
             }, 1500);
         } catch(error) {
-            showToast('❌ Error', error.message, 'error', 1500);
+            alert('Error: ' + error.message);
         }
     });
     
     // ===== PUBLISH RESULT =====
     publishResultBtn.addEventListener('click', async () => {
-        if (!examData.examName) {
-            showToast('⚠️ Error', 'Please enter exam name', 'error', 1200);
-            return;
-        }
-        if (students.length === 0) {
-            showToast('⚠️ Error', 'Please add at least one student', 'error', 1200);
-            return;
-        }
-        if (!schoolId) {
-            showToast('⚠️ Error', 'Institute not found', 'error', 1200);
-            return;
-        }
+        if (!examData.examName) { alert('Please enter exam name'); return; }
+        if (students.length === 0) { alert('Please add at least one student'); return; }
+        if (!schoolId) { alert('Institute not found'); return; }
         
         if (isEditingPublished) {
             if (!confirm('Update the existing published result?')) return;
@@ -1444,17 +1206,16 @@
             if (isEditingPublished && publishedId) {
                 data.updatedAt = serverTimestamp();
                 await updateDoc(doc(db, "schools", schoolId, "results", publishedId), data);
-                showToast('✅ Updated', 'Result updated successfully!', 'success', 1200);
+                alert('Result updated!');
             } else {
                 data.createdAt = serverTimestamp();
                 await addDoc(collection(db, "schools", schoolId, "results"), data);
                 if (isEditingDraft && draftId) {
                     await deleteDoc(doc(db, "schools", schoolId, "draft_results", draftId));
                 }
-                showToast('🎉 Published', 'Result published successfully!', 'success', 1500);
+                alert('Result published!');
             }
             
-            // 🔥 Save student data to Firebase
             const classValue = examData.examClass || 'Not Specified';
             const sessionValue = examData.examSession || '2026-2027';
             
@@ -1485,12 +1246,14 @@
                 }
             }
             
+            alert('✅ Result published and student data saved!');
+            
             setTimeout(() => {
                 window.close();
                 window.location.href = 'manage-results.html';
             }, 1500);
         } catch(error) {
-            showToast('❌ Error', error.message, 'error', 1500);
+            alert('Error: ' + error.message);
         }
     });
     
