@@ -67,7 +67,7 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        /* 🔥 Auto Fetch Toggle */
+        /* 🔥 Auto Fetch Toggle - Default OFF */
         .auto-fetch-container {
             display: flex;
             align-items: center;
@@ -478,13 +478,13 @@
         </div>
     </div>
 
-    <!-- 🔥 Auto Fetch Toggle + Progress Bar -->
+    <!-- 🔥 Auto Fetch Toggle - Default OFF -->
     <div class="auto-fetch-container">
         <label><i class="fas fa-sync-alt"></i> Auto Fetch</label>
-        <div class="toggle-switch active" id="autoFetchToggle">
+        <div class="toggle-switch" id="autoFetchToggle">
             <div class="toggle-slider"></div>
         </div>
-        <span class="toggle-status active" id="autoFetchStatus">ON</span>
+        <span class="toggle-status" id="autoFetchStatus">OFF</span>
         <span class="hint-text">(Enter press par student auto fill)</span>
         
         <!-- 🔥 Progress Bar -->
@@ -651,7 +651,7 @@
     let draftId = examData.draftId || null;
     let isEditingPublished = examData.isEditingPublished || false;
     let publishedId = examData.publishedId || null;
-    let autoFetchEnabled = true; // 🔥 Default ON
+    let autoFetchEnabled = false; // 🔥 Default OFF
     
     // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
@@ -716,7 +716,6 @@
         fetchText.textContent = message;
         fetchIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         progressFill.style.width = '0%';
-        // Animate progress
         let progress = 0;
         const interval = setInterval(() => {
             progress += Math.random() * 15;
@@ -774,21 +773,25 @@
         marksInputs.innerHTML = html;
     }
     
-    // ===== 🔥 AUTO FETCH STUDENT (Enter Key) =====
+    // ===== 🔥 AUTO FETCH STUDENT (ONLY ON ENTER KEY) =====
     async function fetchStudent(rollNumber, nameInput, fatherInput) {
         if (!autoFetchEnabled) {
+            hideProgress(false, 'Auto Fetch is OFF');
             return false;
         }
         if (!rollNumber || rollNumber < 1) {
+            hideProgress(false, 'Invalid Roll Number');
             return false;
         }
         if (!schoolId) {
+            hideProgress(false, 'School not found');
             return false;
         }
         
         const classValue = examData.examClass || '';
         const sessionValue = examData.examSession || '2026-2027';
         if (!classValue) {
+            hideProgress(false, 'Class not set');
             return false;
         }
         
@@ -809,7 +812,7 @@
                 const data = snap.docs[0].data();
                 nameInput.value = capitalizeWords(data.name || '');
                 fatherInput.value = capitalizeWords(data.fatherName || '');
-                hideProgress(true, `Student found: ${data.name}`);
+                hideProgress(true, `Found: ${data.name}`);
                 return true;
             } else {
                 hideProgress(false, 'Student not found!');
@@ -866,7 +869,7 @@
     
     // ===== EVENT LISTENERS =====
     function attachEventListeners() {
-        // 🔥 Roll Number - Enter key par fetch
+        // 🔥 Roll Number - ONLY Enter key par fetch
         document.querySelectorAll('.roll-input').forEach(input => {
             input.onkeydown = async function(e) {
                 if (e.key === 'Enter') {
@@ -1047,39 +1050,16 @@
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
         
-        // 🔥 Auto fetch if name is empty and autoFetch is ON
-        if (!name && autoFetchEnabled && schoolId) {
-            const classValue = examData.examClass || '';
-            const sessionValue = examData.examSession || '2026-2027';
-            if (classValue) {
-                const progressInterval = showProgress('Searching student...');
-                try {
-                    const q = query(
-                        collection(db, "schools", schoolId, "students"),
-                        where("rollNo", "==", roll),
-                        where("class", "==", classValue),
-                        where("session", "==", sessionValue)
-                    );
-                    const snap = await getDocs(q);
-                    clearInterval(progressInterval);
-                    if (!snap.empty) {
-                        const data = snap.docs[0].data();
-                        name = capitalizeWords(data.name || '');
-                        newName.value = name;
-                        newFather.value = capitalizeWords(data.fatherName || '');
-                        hideProgress(true, `Student found: ${name}`);
-                    } else {
-                        clearInterval(progressInterval);
-                        hideProgress(false, 'Student not found!');
-                    }
-                } catch(e) {
-                    clearInterval(progressInterval);
-                    hideProgress(false, 'Error: ' + e.message);
-                }
+        // 🔥 NO AUTO FETCH ON ADD ROW - Only manual entry or Enter key
+        if (!name) {
+            // 🔥 If Auto Fetch is ON and name is empty, show hint
+            if (autoFetchEnabled) {
+                alert('Please enter Roll Number and press ENTER to fetch student details, or type name manually.');
+            } else {
+                alert('Please enter student name, or enable Auto Fetch and press ENTER on Roll Number.');
             }
+            return;
         }
-        
-        if (!name) { alert('Please enter student name'); return; }
         
         const marks = {};
         let valid = true;
