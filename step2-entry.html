@@ -67,7 +67,6 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        /* 🔥 Auto Fetch Toggle - Default OFF */
         .auto-fetch-container {
             display: flex;
             align-items: center;
@@ -129,7 +128,6 @@
             margin-left: 4px;
         }
         
-        /* 🔥 Progress Bar */
         .fetch-progress {
             display: none;
             align-items: center;
@@ -478,7 +476,7 @@
         </div>
     </div>
 
-    <!-- 🔥 Auto Fetch Toggle - Default OFF -->
+    <!-- Auto Fetch Toggle - Default OFF -->
     <div class="auto-fetch-container">
         <label><i class="fas fa-sync-alt"></i> Auto Fetch</label>
         <div class="toggle-switch" id="autoFetchToggle">
@@ -487,7 +485,7 @@
         <span class="toggle-status" id="autoFetchStatus">OFF</span>
         <span class="hint-text">(Enter press par student auto fill)</span>
         
-        <!-- 🔥 Progress Bar -->
+        <!-- Progress Bar -->
         <div class="fetch-progress" id="fetchProgress">
             <span class="fetch-status-icon" id="fetchIcon"><i class="fas fa-spinner fa-spin"></i></span>
             <span class="fetch-text" id="fetchText">Fetching...</span>
@@ -505,7 +503,7 @@
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <!-- 🔥 Subject Columns inserted dynamically -->
+                        <th class="col-subject" id="subjectHeader"></th>
                         <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
@@ -513,12 +511,11 @@
                     <!-- Students rendered here -->
                 </tbody>
                 <tfoot id="tableFoot">
-                    <!-- 🔥 Add Row (Last Row) -->
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name" style="text-transform:capitalize;"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father" style="text-transform:capitalize;"></td>
-                        <!-- Subject inputs inserted dynamically -->
+                        <td class="col-subject" id="marksInputs"></td>
                         <td class="col-actions"></td>
                     </tr>
                 </tfoot>
@@ -651,7 +648,7 @@
     let draftId = examData.draftId || null;
     let isEditingPublished = examData.isEditingPublished || false;
     let publishedId = examData.publishedId || null;
-    let autoFetchEnabled = false; // 🔥 Default OFF
+    let autoFetchEnabled = false; // Default OFF
     
     // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
@@ -674,7 +671,6 @@
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishResultBtn = document.getElementById('publishResultBtn');
     
-    // 🔥 Auto Fetch Elements
     const autoFetchToggle = document.getElementById('autoFetchToggle');
     const autoFetchStatus = document.getElementById('autoFetchStatus');
     const fetchProgress = document.getElementById('fetchProgress');
@@ -702,7 +698,7 @@
         }).join(' ');
     }
     
-    // ===== 🔥 AUTO FETCH TOGGLE =====
+    // ===== AUTO FETCH TOGGLE =====
     autoFetchToggle.addEventListener('click', () => {
         autoFetchEnabled = !autoFetchEnabled;
         autoFetchToggle.classList.toggle('active');
@@ -710,7 +706,7 @@
         autoFetchStatus.classList.toggle('active');
     });
     
-    // ===== 🔥 SHOW/HIDE PROGRESS =====
+    // ===== SHOW/HIDE PROGRESS =====
     function showProgress(message = 'Fetching...') {
         fetchProgress.style.display = 'flex';
         fetchText.textContent = message;
@@ -773,7 +769,7 @@
         marksInputs.innerHTML = html;
     }
     
-    // ===== 🔥 AUTO FETCH STUDENT (ONLY ON ENTER KEY) =====
+    // ===== 🔥 AUTO FETCH STUDENT - ONLY ON ENTER KEY =====
     async function fetchStudent(rollNumber, nameInput, fatherInput) {
         if (!autoFetchEnabled) {
             hideProgress(false, 'Auto Fetch is OFF');
@@ -869,17 +865,20 @@
     
     // ===== EVENT LISTENERS =====
     function attachEventListeners() {
-        // 🔥 Roll Number - ONLY Enter key par fetch
+        // 🔥 FIXED: Roll Number - ONLY Enter key par fetch
         document.querySelectorAll('.roll-input').forEach(input => {
-            input.onkeydown = async function(e) {
+            input.addEventListener('keydown', async function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
+                    
                     const idx = parseInt(this.dataset.idx);
                     const roll = parseInt(this.value);
+                    
                     if (!isNaN(idx) && students[idx]) {
                         students[idx].rollNo = roll;
                         const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
                         const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
+                        
                         if (nameInput && fatherInput) {
                             const found = await fetchStudent(roll, nameInput, fatherInput);
                             if (found) {
@@ -891,7 +890,7 @@
                         }
                     }
                 }
-            };
+            });
         });
         
         document.querySelectorAll('.name-input').forEach(input => {
@@ -982,7 +981,7 @@
     
     // ===== ADD STUDENT =====
     addRowBtn.addEventListener('click', async () => {
-        // 🔥 Save all existing rows' marks
+        // Save all existing rows' marks
         document.querySelectorAll('.mark-input').forEach(input => {
             const idx = parseInt(input.dataset.idx);
             if (!isNaN(idx) && students[idx]) {
@@ -1050,9 +1049,8 @@
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
         
-        // 🔥 NO AUTO FETCH ON ADD ROW - Only manual entry or Enter key
+        // NO AUTO FETCH ON ADD ROW - Only manual entry or Enter key
         if (!name) {
-            // 🔥 If Auto Fetch is ON and name is empty, show hint
             if (autoFetchEnabled) {
                 alert('Please enter Roll Number and press ENTER to fetch student details, or type name manually.');
             } else {
