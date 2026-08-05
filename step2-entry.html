@@ -485,7 +485,7 @@
             <div class="toggle-slider"></div>
         </div>
         <span class="toggle-status" id="autoFetchStatus">OFF</span>
-        <span class="hint-text">(Enter press on Roll No to fetch student)</span>
+        <span class="hint-text">(Enter press on Roll Number to fetch student)</span>
         
         <!-- 🔥 Progress Bar -->
         <div class="fetch-progress" id="fetchProgress">
@@ -505,7 +505,7 @@
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <th class="col-subject" id="subjectHeader"></th>
+                        <!-- 🔥 Subject Columns inserted dynamically -->
                         <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
@@ -518,7 +518,7 @@
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name" style="text-transform:capitalize;"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father" style="text-transform:capitalize;"></td>
-                        <td class="col-subject" id="marksInputs"></td>
+                        <!-- Subject inputs inserted dynamically -->
                         <td class="col-actions"></td>
                     </tr>
                 </tfoot>
@@ -663,7 +663,6 @@
     
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
-    const subjectHeader = document.getElementById('subjectHeader');
     const addRow = document.getElementById('addRow');
     const marksInputs = document.getElementById('marksInputs');
     
@@ -750,7 +749,6 @@
             th.className = 'col-subject';
             th.textContent = `${s.name} (${s.total})`;
             tableHeader.insertBefore(th, actionsTh);
-            subjectHeader.appendChild(th);
         });
     }
     
@@ -775,123 +773,23 @@
         marksInputs.innerHTML = html;
     }
     
-    // ===== 🔥 KEYBOARD NAVIGATION - Excel Style =====
-    function setupKeyboardNavigation() {
-        // Get all editable inputs in order
-        const allInputs = document.querySelectorAll(
-            '.roll-input, .name-input, .father-input, .mark-input, ' +
-            '.roll-input-add, .name-input-add, .father-input-add, .marks-input-add'
-        );
-        
-        allInputs.forEach(input => {
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    
-                    // 🔥 If it's a roll input and autoFetch is ON, fetch student
-                    if (this.classList.contains('roll-input') || this.classList.contains('roll-input-add')) {
-                        const idx = this.dataset.idx;
-                        if (idx !== undefined) {
-                            const roll = parseInt(this.value);
-                            if (roll && !isNaN(roll) && autoFetchEnabled) {
-                                const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
-                                const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
-                                if (nameInput && fatherInput) {
-                                    fetchStudent(roll, nameInput, fatherInput).then(found => {
-                                        if (found) {
-                                            const s = students[idx];
-                                            if (s) {
-                                                s.name = nameInput.value;
-                                                s.fatherName = fatherInput.value;
-                                                renderTable();
-                                                updateSummary();
-                                            }
-                                        }
-                                        // Move to next input after fetch
-                                        moveToNextInput(this);
-                                    });
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                    
-                    // 🔥 Check if this is the last input in a row (subject column)
-                    const row = this.closest('tr');
-                    if (row) {
-                        const inputsInRow = row.querySelectorAll('input');
-                        const currentIndex = Array.from(inputsInRow).indexOf(this);
-                        
-                        // If it's the last input in the row
-                        if (currentIndex === inputsInRow.length - 1) {
-                            // Check if it's the last row (add row)
-                            if (row.classList.contains('add-row')) {
-                                // Last input of add row -> auto add new row
-                                addNewRowAndFocus();
-                                return;
-                            } else {
-                                // Move to next row's roll input
-                                const nextRow = row.nextElementSibling;
-                                if (nextRow) {
-                                    const nextRoll = nextRow.querySelector('.roll-input, .roll-input-add');
-                                    if (nextRoll) {
-                                        nextRoll.focus();
-                                        nextRoll.select();
-                                    }
-                                } else {
-                                    // If no next row, add new row
-                                    addNewRowAndFocus();
-                                }
-                                return;
-                            }
-                        }
-                    }
-                    
-                    // Move to next input in the same row
-                    moveToNextInput(this);
-                }
-            });
-        });
-    }
-    
-    // ===== MOVE TO NEXT INPUT =====
-    function moveToNextInput(currentInput) {
-        const row = currentInput.closest('tr');
-        if (!row) return;
-        
-        const inputsInRow = row.querySelectorAll('input');
-        const currentIndex = Array.from(inputsInRow).indexOf(currentInput);
-        const nextInput = inputsInRow[currentIndex + 1];
-        
-        if (nextInput) {
-            nextInput.focus();
-            nextInput.select();
-        }
-    }
-    
-    // ===== ADD NEW ROW AND FOCUS =====
-    function addNewRowAndFocus() {
-        // Simulate add row click
-        addRowBtn.click();
-        // Focus on new roll input after a small delay
-        setTimeout(() => {
-            const newRollInput = document.querySelector('.add-row .roll-input-add');
-            if (newRollInput) {
-                newRollInput.focus();
-                newRollInput.select();
-            }
-        }, 100);
-    }
-    
-    // ===== 🔥 AUTO FETCH STUDENT (Enter Key) =====
+    // ===== 🔥 AUTO FETCH STUDENT (Only on Enter Press) =====
     async function fetchStudent(rollNumber, nameInput, fatherInput) {
-        if (!autoFetchEnabled) return false;
-        if (!rollNumber || rollNumber < 1) return false;
-        if (!schoolId) return false;
+        if (!autoFetchEnabled) {
+            return false;
+        }
+        if (!rollNumber || rollNumber < 1) {
+            return false;
+        }
+        if (!schoolId) {
+            return false;
+        }
         
         const classValue = examData.examClass || '';
         const sessionValue = examData.examSession || '2026-2027';
-        if (!classValue) return false;
+        if (!classValue) {
+            return false;
+        }
         
         const progressInterval = showProgress('Searching student...');
         
@@ -928,7 +826,6 @@
         if (students.length === 0) {
             tableBody.innerHTML = '';
             updateSummary();
-            setTimeout(setupKeyboardNavigation, 50);
             return;
         }
         
@@ -964,19 +861,43 @@
         updateSummary();
         
         attachEventListeners();
-        setTimeout(setupKeyboardNavigation, 50);
     }
     
-    // ===== EVENT LISTENERS =====
+    // ===== 🔥 EVENT LISTENERS =====
     function attachEventListeners() {
-        // 🔥 Roll Number - Enter key par fetch (already handled in keyboard nav)
-        // But need to update roll number on change
+        // 🔥 Roll Number - ONLY Enter key par fetch
         document.querySelectorAll('.roll-input').forEach(input => {
-            input.onchange = function() {
-                const idx = parseInt(this.dataset.idx);
-                const roll = parseInt(this.value);
-                if (!isNaN(idx) && students[idx]) {
-                    students[idx].rollNo = roll;
+            input.onkeydown = async function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const idx = parseInt(this.dataset.idx);
+                    const roll = parseInt(this.value);
+                    
+                    if (!isNaN(idx) && students[idx]) {
+                        students[idx].rollNo = roll;
+                        const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
+                        const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
+                        
+                        if (nameInput && fatherInput) {
+                            // 🔥 ONLY fetch if Auto Fetch is ON
+                            if (autoFetchEnabled) {
+                                const found = await fetchStudent(roll, nameInput, fatherInput);
+                                if (found) {
+                                    students[idx].name = nameInput.value;
+                                    students[idx].fatherName = fatherInput.value;
+                                    renderTable();
+                                    updateSummary();
+                                }
+                            }
+                        }
+                    }
+                    
+                    // 🔥 Cursor automatically next field (Student Name) mein chala jayega
+                    const nextInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
+                    if (nextInput) {
+                        nextInput.focus();
+                        nextInput.select();
+                    }
                 }
             };
         });
@@ -1065,7 +986,6 @@
         updateSummary();
         renderTable();
         updateRollNumber();
-        setTimeout(setupKeyboardNavigation, 100);
     }
     
     // ===== ADD STUDENT =====
@@ -1130,7 +1050,6 @@
                 if (lastRow) {
                     lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-                setTimeout(setupKeyboardNavigation, 100);
             }, 100);
             return;
         }
@@ -1139,7 +1058,7 @@
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
         
-        // 🔥 Auto fetch if name is empty and autoFetch is ON
+        // 🔥 ONLY Auto fetch on Add Row if name is empty AND Auto Fetch is ON
         if (!name && autoFetchEnabled && schoolId) {
             const classValue = examData.examClass || '';
             const sessionValue = examData.examSession || '2026-2027';
@@ -1201,7 +1120,6 @@
             if (lastRow) {
                 lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-            setTimeout(setupKeyboardNavigation, 100);
         }, 100);
     });
     
