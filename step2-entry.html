@@ -485,7 +485,6 @@
         <span class="toggle-status" id="autoFetchStatus">OFF</span>
         <span class="hint-text">(Enter press par student auto fill)</span>
         
-        <!-- Progress Bar -->
         <div class="fetch-progress" id="fetchProgress">
             <span class="fetch-status-icon" id="fetchIcon"><i class="fas fa-spinner fa-spin"></i></span>
             <span class="fetch-text" id="fetchText">Fetching...</span>
@@ -648,7 +647,7 @@
     let draftId = examData.draftId || null;
     let isEditingPublished = examData.isEditingPublished || false;
     let publishedId = examData.publishedId || null;
-    let autoFetchEnabled = false; // Default OFF
+    let autoFetchEnabled = false;
     
     // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
@@ -660,6 +659,7 @@
     
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
+    const subjectHeader = document.getElementById('subjectHeader');
     const addRow = document.getElementById('addRow');
     const marksInputs = document.getElementById('marksInputs');
     
@@ -769,7 +769,7 @@
         marksInputs.innerHTML = html;
     }
     
-    // ===== 🔥 AUTO FETCH STUDENT - ONLY ON ENTER KEY =====
+    // ===== 🔥 FIXED: FETCH STUDENT (ONLY ON ENTER) =====
     async function fetchStudent(rollNumber, nameInput, fatherInput) {
         if (!autoFetchEnabled) {
             hideProgress(false, 'Auto Fetch is OFF');
@@ -863,52 +863,58 @@
         attachEventListeners();
     }
     
-    // ===== EVENT LISTENERS =====
+    // ===== 🔥 FIXED: EVENT LISTENERS =====
     function attachEventListeners() {
-        // 🔥 FIXED: Roll Number - ONLY Enter key par fetch
+        // Roll Number - ONLY Enter key par fetch
         document.querySelectorAll('.roll-input').forEach(input => {
-            input.addEventListener('keydown', async function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    
-                    const idx = parseInt(this.dataset.idx);
-                    const roll = parseInt(this.value);
-                    
-                    if (!isNaN(idx) && students[idx]) {
-                        students[idx].rollNo = roll;
-                        const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
-                        const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
-                        
-                        if (nameInput && fatherInput) {
-                            const found = await fetchStudent(roll, nameInput, fatherInput);
-                            if (found) {
-                                students[idx].name = nameInput.value;
-                                students[idx].fatherName = fatherInput.value;
-                                renderTable();
-                                updateSummary();
-                            }
-                        }
-                    }
-                }
-            });
+            // Remove old listener to avoid duplicates
+            input.removeEventListener('keydown', handleRollKeyDown);
+            input.addEventListener('keydown', handleRollKeyDown);
         });
         
         document.querySelectorAll('.name-input').forEach(input => {
-            input.oninput = handleNameInput;
-            input.onchange = handleNameChange;
+            input.removeEventListener('input', handleNameInput);
+            input.removeEventListener('change', handleNameChange);
+            input.addEventListener('input', handleNameInput);
+            input.addEventListener('change', handleNameChange);
         });
         
         document.querySelectorAll('.father-input').forEach(input => {
-            input.oninput = handleFatherInput;
-            input.onchange = handleFatherChange;
+            input.removeEventListener('input', handleFatherInput);
+            input.removeEventListener('change', handleFatherChange);
+            input.addEventListener('input', handleFatherInput);
+            input.addEventListener('change', handleFatherChange);
         });
         
         document.querySelectorAll('.mark-input').forEach(input => {
-            input.onchange = handleMarkChange;
+            input.removeEventListener('change', handleMarkChange);
+            input.addEventListener('change', handleMarkChange);
         });
     }
     
-    // ===== EVENT HANDLERS =====
+    // ===== 🔥 SEPARATE HANDLER FUNCTIONS =====
+    async function handleRollKeyDown(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const idx = parseInt(this.dataset.idx);
+            const roll = parseInt(this.value);
+            if (!isNaN(idx) && students[idx]) {
+                students[idx].rollNo = roll;
+                const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
+                const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
+                if (nameInput && fatherInput) {
+                    const found = await fetchStudent(roll, nameInput, fatherInput);
+                    if (found) {
+                        students[idx].name = nameInput.value;
+                        students[idx].fatherName = fatherInput.value;
+                        renderTable();
+                        updateSummary();
+                    }
+                }
+            }
+        }
+    }
+    
     function handleNameInput(e) {
         const cursorPos = this.selectionStart;
         this.value = capitalizeWords(this.value);
@@ -962,6 +968,7 @@
         summarySession.textContent = examData.examSession || '-';
         summarySubjects.textContent = subjects.length || 0;
         summaryStudents.textContent = students.length || 0;
+        subjectHeader.innerHTML = subjects.map(s => `${s.name} (${s.total})`).join(' | ');
     }
     
     function updateRollNumber() {
@@ -1049,10 +1056,10 @@
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
         
-        // NO AUTO FETCH ON ADD ROW - Only manual entry or Enter key
+        // NO AUTO FETCH ON ADD ROW
         if (!name) {
             if (autoFetchEnabled) {
-                alert('Please enter Roll Number and press ENTER to fetch student details, or type name manually.');
+                alert('Please enter Roll Number and press ENTER to fetch student details.');
             } else {
                 alert('Please enter student name, or enable Auto Fetch and press ENTER on Roll Number.');
             }
