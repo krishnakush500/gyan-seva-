@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== ALL STYLES SAME ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #e8ecf1; min-height: 100vh; padding: 10px; }
         
@@ -253,6 +254,7 @@
             margin: 0 auto;
         }
         
+        /* 🔥 Actions - Hidden by default, visible when name filled */
         .excel-table .row-actions.hidden { visibility: hidden; }
         .excel-table .row-actions.visible { visibility: visible; }
         
@@ -460,7 +462,7 @@
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <!-- 🔥 Subject Columns inserted dynamically -->
+                        <th class="col-subject" id="subjectHeader"></th>
                         <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
@@ -468,12 +470,11 @@
                     <!-- Students rendered here -->
                 </tbody>
                 <tfoot id="tableFoot">
-                    <!-- 🔥 Add Row (Last Row) -->
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name" style="text-transform:capitalize;"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father" style="text-transform:capitalize;"></td>
-                        <!-- Subject inputs inserted dynamically -->
+                        <td class="col-subject" id="marksInputs"></td>
                         <td class="col-actions"></td>
                     </tr>
                 </tfoot>
@@ -618,6 +619,7 @@
     
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
+    const subjectHeader = document.getElementById('subjectHeader');
     const addRow = document.getElementById('addRow');
     const marksInputs = document.getElementById('marksInputs');
     
@@ -662,14 +664,9 @@
     
     // ===== BUILD HEADER =====
     function buildHeader() {
-        // 🔥 Remove old subject headers
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
-        
-        // 🔥 Get reference to Actions column
         const actionsTh = tableHeader.querySelector('.col-actions');
-        
-        // 🔥 Insert subject headers BEFORE Actions
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
@@ -680,14 +677,9 @@
     
     // ===== BUILD ADD ROW =====
     function buildAddRow() {
-        // 🔥 Remove old subject input cells
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
-        
-        // 🔥 Get reference to Actions cell
         const actionsTd = addRow.querySelector('.col-actions');
-        
-        // 🔥 Insert subject input cells BEFORE Actions
         subjects.forEach((s) => {
             const td = document.createElement('td');
             td.className = 'col-subject-input';
@@ -732,7 +724,7 @@
         }
     }
     
-    // ===== RENDER STUDENTS =====
+    // ===== 🔥 RENDER STUDENTS - Actions Hidden Until Name Filled =====
     function renderTable() {
         if (students.length === 0) {
             tableBody.innerHTML = '';
@@ -742,13 +734,13 @@
         
         let html = '';
         students.forEach((s, idx) => {
-            // 🔥 Marks HTML - Subject columns only
             let marksHtml = '';
             subjects.forEach((sub) => {
                 const mark = s.marks[sub.name] || 0;
                 marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:60px; width:100%;"></td>`;
             });
             
+            // 🔥 Check if student has name - show/hide actions
             const hasName = s.name && s.name.trim().length > 0;
             const actionsClass = hasName ? 'visible' : 'hidden';
             
@@ -824,6 +816,8 @@
         const idx = parseInt(this.dataset.idx);
         if (!isNaN(idx) && students[idx]) {
             students[idx].name = this.value;
+            // 🔥 Re-render to show/hide actions based on name
+            renderTable();
             updateSummary();
         }
     }
@@ -868,6 +862,7 @@
         summarySession.textContent = examData.examSession || '-';
         summarySubjects.textContent = subjects.length || 0;
         summaryStudents.textContent = students.length || 0;
+        subjectHeader.innerHTML = subjects.map(s => `${s.name} (${s.total})`).join(' | ');
     }
     
     function updateRollNumber() {
