@@ -67,7 +67,7 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        /* 🔥 AUTO FETCH TOGGLE */
+        /* 🔥 Auto Fetch Container */
         .auto-fetch-container {
             display: flex;
             align-items: center;
@@ -129,47 +129,34 @@
             margin-left: 4px;
         }
         
-        /* 🔥 PROGRESS BAR - CHHOTA AUR CLEAN */
+        /* 🔥 Progress Bar - Chhota aur Clean */
         .fetch-progress {
             display: none;
             align-items: center;
             gap: 8px;
-            padding: 2px 10px;
-            background: #f0f7ff;
+            background: rgba(26,35,126,0.08);
+            padding: 2px 12px;
             border-radius: 20px;
-            border: 1px solid #dce8f5;
         }
-        .fetch-progress .progress-bar-mini {
-            width: 80px;
-            height: 4px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
+        .fetch-progress .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #1a237e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
-        .fetch-progress .progress-bar-mini .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #1a237e, #4a6cf7);
-            border-radius: 10px;
-            animation: progressAnim 1.2s ease-in-out infinite;
-        }
-        @keyframes progressAnim {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
-        .fetch-progress .progress-text {
-            font-size: 0.6rem;
+        .fetch-progress .text {
+            font-size: 0.65rem;
             color: #1a237e;
-            font-weight: 600;
+            font-weight: 500;
         }
-        .fetch-status-icon {
-            font-size: 0.8rem;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-        .fetch-status-icon.success { color: #16a34a; }
-        .fetch-status-icon.error { color: #dc2626; }
-        .fetch-status-icon.loading { color: #1a237e; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fetch-progress.show {
+            display: flex;
+        }
         
         .excel-container {
             background: white;
@@ -435,8 +422,8 @@
             .auto-fetch-container .toggle-switch.active .toggle-slider { left: 18px; }
             .auto-fetch-container .hint-text { font-size: 0.55rem; }
             .excel-table .col-name { left: 55px; }
-            .fetch-progress .progress-bar-mini { width: 50px; }
-            .fetch-progress .progress-text { font-size: 0.5rem; }
+            .fetch-progress .text { font-size: 0.55rem; }
+            .fetch-progress .spinner { width: 14px; height: 14px; }
         }
         
         @media (min-width: 769px) {
@@ -454,6 +441,7 @@
             .excel-table .row-marks input { max-width: 70px; }
             .btn-add-row { font-size: 0.9rem; padding: 8px 30px; }
             .btn-excel { font-size: 0.85rem; padding: 6px 18px; }
+            .fetch-progress .text { font-size: 0.7rem; }
         }
     </style>
 </head>
@@ -488,7 +476,7 @@
         </div>
     </div>
 
-    <!-- 🔥 AUTO FETCH TOGGLE WITH PROGRESS -->
+    <!-- 🔥 Auto Fetch Container - Default OFF -->
     <div class="auto-fetch-container">
         <label><i class="fas fa-sync-alt"></i> Auto Fetch</label>
         <div class="toggle-switch" id="autoFetchToggle">
@@ -496,16 +484,11 @@
         </div>
         <span class="toggle-status" id="autoFetchStatus">OFF</span>
         <span class="hint-text">(Auto fill student on roll number entry)</span>
-        
-        <!-- 🔥 CHHOTA PROGRESS BAR -->
+        <!-- 🔥 Progress Bar - Chhota aur Clean -->
         <div class="fetch-progress" id="fetchProgress">
-            <i class="fas fa-spinner fetch-status-icon loading"></i>
-            <div class="progress-bar-mini">
-                <div class="progress-fill"></div>
-            </div>
-            <span class="progress-text" id="progressText">Searching...</span>
+            <div class="spinner"></div>
+            <span class="text" id="fetchProgressText">Searching...</span>
         </div>
-        <span class="fetch-status-icon" id="fetchStatusIcon"></span>
     </div>
 
     <!-- Excel Sheet -->
@@ -662,8 +645,7 @@
     let draftId = examData.draftId || null;
     let isEditingPublished = examData.isEditingPublished || false;
     let publishedId = examData.publishedId || null;
-    let autoFetchEnabled = false;
-    let fetchTimeout = null;
+    let autoFetchEnabled = false; // Default OFF
     
     // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
@@ -675,7 +657,6 @@
     
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
-    const subjectHeader = document.getElementById('subjectHeader');
     const addRow = document.getElementById('addRow');
     const marksInputs = document.getElementById('marksInputs');
     
@@ -687,12 +668,10 @@
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishResultBtn = document.getElementById('publishResultBtn');
     
-    // 🔥 Auto Fetch Elements
     const autoFetchToggle = document.getElementById('autoFetchToggle');
     const autoFetchStatus = document.getElementById('autoFetchStatus');
     const fetchProgress = document.getElementById('fetchProgress');
-    const progressText = document.getElementById('progressText');
-    const fetchStatusIcon = document.getElementById('fetchStatusIcon');
+    const fetchProgressText = document.getElementById('fetchProgressText');
     
     const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
     const editSubjectModal = new bootstrap.Modal(document.getElementById('editSubjectModal'));
@@ -720,48 +699,20 @@
         autoFetchToggle.classList.toggle('active');
         autoFetchStatus.textContent = autoFetchEnabled ? 'ON' : 'OFF';
         autoFetchStatus.classList.toggle('active');
-        if (!autoFetchEnabled) {
-            fetchProgress.style.display = 'none';
-            fetchStatusIcon.className = 'fetch-status-icon';
-        }
     });
     
-    // ===== 🔥 SHOW/HIDE PROGRESS =====
+    // ===== 🔥 PROGRESS BAR FUNCTIONS =====
     function showProgress(text = 'Searching...') {
-        fetchProgress.style.display = 'flex';
-        progressText.textContent = text;
-        fetchStatusIcon.className = 'fetch-status-icon loading';
-        fetchStatusIcon.innerHTML = '<i class="fas fa-spinner"></i>';
+        fetchProgressText.textContent = text;
+        fetchProgress.classList.add('show');
     }
     
-    function hideProgress(success = true, message = '') {
-        setTimeout(() => {
-            fetchProgress.style.display = 'none';
-            if (success) {
-                fetchStatusIcon.className = 'fetch-status-icon success';
-                fetchStatusIcon.innerHTML = '✅';
-                setTimeout(() => {
-                    fetchStatusIcon.className = 'fetch-status-icon';
-                    fetchStatusIcon.innerHTML = '';
-                }, 2000);
-            } else {
-                fetchStatusIcon.className = 'fetch-status-icon error';
-                fetchStatusIcon.innerHTML = '❌';
-                setTimeout(() => {
-                    fetchStatusIcon.className = 'fetch-status-icon';
-                    fetchStatusIcon.innerHTML = '';
-                }, 3000);
-            }
-        }, 500);
+    function hideProgress() {
+        fetchProgress.classList.remove('show');
     }
     
     // ===== 🔥 AUTO FETCH STUDENT =====
     async function autoFetchStudent(rollNumber, nameInput, fatherInput) {
-        // Clear any pending timeout
-        if (fetchTimeout) {
-            clearTimeout(fetchTimeout);
-        }
-        
         if (!autoFetchEnabled) return;
         if (!rollNumber || rollNumber < 1) return;
         if (!schoolId) return;
@@ -770,36 +721,37 @@
         const sessionValue = examData.examSession || '2026-2027';
         if (!classValue) return;
         
-        // Show progress
+        // 🔥 Show progress bar
         showProgress('Searching student...');
         
-        // Debounce: Wait 500ms before searching
-        fetchTimeout = setTimeout(async () => {
-            try {
-                const q = query(
-                    collection(db, "schools", schoolId, "students"),
-                    where("rollNo", "==", parseInt(rollNumber)),
-                    where("class", "==", classValue),
-                    where("session", "==", sessionValue)
-                );
-                const snap = await getDocs(q);
-                
-                if (!snap.empty) {
-                    const data = snap.docs[0].data();
-                    nameInput.value = capitalizeWords(data.name || '');
-                    fatherInput.value = capitalizeWords(data.fatherName || '');
-                    progressText.textContent = '✅ Found!';
-                    hideProgress(true);
-                } else {
-                    progressText.textContent = '❌ Not found';
-                    hideProgress(false);
-                }
-            } catch(error) {
-                console.error('Auto fetch error:', error);
-                progressText.textContent = '⚠️ Error';
-                hideProgress(false);
+        try {
+            const q = query(
+                collection(db, "schools", schoolId, "students"),
+                where("rollNo", "==", parseInt(rollNumber)),
+                where("class", "==", classValue),
+                where("session", "==", sessionValue)
+            );
+            
+            // 🔥 Small delay to show progress (makes it feel responsive)
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            const snap = await getDocs(q);
+            
+            if (!snap.empty) {
+                const data = snap.docs[0].data();
+                nameInput.value = capitalizeWords(data.name || '');
+                fatherInput.value = capitalizeWords(data.fatherName || '');
+                showProgress('✅ Found!');
+                setTimeout(hideProgress, 800);
+            } else {
+                showProgress('❌ Not found');
+                setTimeout(hideProgress, 800);
             }
-        }, 500);
+        } catch(error) {
+            console.error('Auto fetch error:', error);
+            showProgress('❌ Error');
+            setTimeout(hideProgress, 1000);
+        }
     }
     
     // ===== BUILD HEADER =====
@@ -880,6 +832,7 @@
     
     // ===== EVENT LISTENERS =====
     function attachEventListeners() {
+        // 🔥 Roll input - Auto fetch on change
         document.querySelectorAll('.roll-input').forEach(input => {
             input.onchange = handleRollChange;
         });
@@ -908,8 +861,9 @@
             const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
             const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
             if (nameInput && fatherInput) {
-                // 🔥 Auto fetch on roll number change (Add row mein bhi kaam karega)
+                // 🔥 Auto fetch on roll number change
                 await autoFetchStudent(roll, nameInput, fatherInput);
+                // Update student data after auto fetch
                 students[idx].name = nameInput.value;
                 students[idx].fatherName = fatherInput.value;
             }
@@ -971,7 +925,6 @@
         summarySession.textContent = examData.examSession || '-';
         summarySubjects.textContent = subjects.length || 0;
         summaryStudents.textContent = students.length || 0;
-        subjectHeader.innerHTML = subjects.map(s => `${s.name} (${s.total})`).join(' | ');
     }
     
     function updateRollNumber() {
@@ -991,7 +944,7 @@
     
     // ===== ADD STUDENT =====
     addRowBtn.addEventListener('click', async () => {
-        // Save existing rows' marks
+        // 🔥 Save all existing rows' marks
         document.querySelectorAll('.mark-input').forEach(input => {
             const idx = parseInt(input.dataset.idx);
             if (!isNaN(idx) && students[idx]) {
@@ -1064,7 +1017,7 @@
             const classValue = examData.examClass || '';
             const sessionValue = examData.examSession || '2026-2027';
             if (classValue) {
-                showProgress('Fetching student...');
+                showProgress('Searching...');
                 try {
                     const q = query(
                         collection(db, "schools", schoolId, "students"),
@@ -1072,26 +1025,31 @@
                         where("class", "==", classValue),
                         where("session", "==", sessionValue)
                     );
+                    await new Promise(resolve => setTimeout(resolve, 300));
                     const snap = await getDocs(q);
                     if (!snap.empty) {
                         const data = snap.docs[0].data();
                         name = capitalizeWords(data.name || '');
                         newName.value = name;
                         newFather.value = capitalizeWords(data.fatherName || '');
-                        progressText.textContent = '✅ Found!';
-                        hideProgress(true);
+                        showProgress('✅ Found!');
+                        setTimeout(hideProgress, 600);
                     } else {
-                        progressText.textContent = '❌ Not found';
-                        hideProgress(false);
+                        showProgress('❌ Not found');
+                        setTimeout(hideProgress, 600);
                     }
                 } catch(e) {
-                    progressText.textContent = '⚠️ Error';
-                    hideProgress(false);
+                    showProgress('❌ Error');
+                    setTimeout(hideProgress, 800);
                 }
             }
         }
         
-        if (!name) { alert('Please enter student name'); return; }
+        if (!name) { 
+            hideProgress();
+            alert('Please enter student name'); 
+            return; 
+        }
         
         const marks = {};
         let valid = true;
