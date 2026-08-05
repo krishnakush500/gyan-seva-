@@ -67,67 +67,6 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        .auto-fetch-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 6px 0;
-            padding: 6px 14px;
-            background: #e8f0fe;
-            border-radius: 6px;
-            border: 1px solid #dce8f5;
-            flex-wrap: wrap;
-        }
-        .auto-fetch-container label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #1a237e;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .auto-fetch-container .toggle-switch {
-            position: relative;
-            width: 44px;
-            height: 24px;
-            background: #ccc;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            flex-shrink: 0;
-        }
-        .auto-fetch-container .toggle-switch.active {
-            background: #1a237e;
-        }
-        .auto-fetch-container .toggle-switch .toggle-slider {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            transition: 0.3s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-        .auto-fetch-container .toggle-switch.active .toggle-slider {
-            left: 22px;
-        }
-        .auto-fetch-container .toggle-status {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #64748b;
-        }
-        .auto-fetch-container .toggle-status.active {
-            color: #1a237e;
-        }
-        .auto-fetch-container .hint-text {
-            font-size: 0.65rem;
-            color: #94a3b8;
-            margin-left: 4px;
-        }
-        
         .excel-container {
             background: white;
             border-radius: 8px;
@@ -385,12 +324,6 @@
             .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
             .btn-add-row { font-size: 0.7rem; padding: 4px 14px; }
             .btn-excel { font-size: 0.6rem; padding: 3px 8px; }
-            .auto-fetch-container { padding: 4px 10px; }
-            .auto-fetch-container label { font-size: 0.65rem; }
-            .auto-fetch-container .toggle-switch { width: 36px; height: 20px; }
-            .auto-fetch-container .toggle-switch .toggle-slider { width: 16px; height: 16px; }
-            .auto-fetch-container .toggle-switch.active .toggle-slider { left: 18px; }
-            .auto-fetch-container .hint-text { font-size: 0.55rem; }
             .excel-table .col-name { left: 55px; }
         }
         
@@ -441,15 +374,6 @@
                 <i class="fas fa-pencil-alt"></i>
             </button>
         </div>
-    </div>
-
-    <div class="auto-fetch-container">
-        <label><i class="fas fa-sync-alt"></i> Auto Fetch</label>
-        <div class="toggle-switch" id="autoFetchToggle">
-            <div class="toggle-slider"></div>
-        </div>
-        <span class="toggle-status" id="autoFetchStatus">OFF</span>
-        <span class="hint-text">(Auto fill student on roll number entry)</span>
     </div>
 
     <div class="excel-container">
@@ -606,7 +530,6 @@
     let draftId = examData.draftId || null;
     let isEditingPublished = examData.isEditingPublished || false;
     let publishedId = examData.publishedId || null;
-    let autoFetchEnabled = false;
     
     // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
@@ -629,9 +552,6 @@
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishResultBtn = document.getElementById('publishResultBtn');
     
-    const autoFetchToggle = document.getElementById('autoFetchToggle');
-    const autoFetchStatus = document.getElementById('autoFetchStatus');
-    
     const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
     const editSubjectModal = new bootstrap.Modal(document.getElementById('editSubjectModal'));
     const editSubjectBody = document.getElementById('editSubjectBody');
@@ -651,14 +571,6 @@
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
         }).join(' ');
     }
-    
-    // ===== AUTO FETCH TOGGLE =====
-    autoFetchToggle.addEventListener('click', () => {
-        autoFetchEnabled = !autoFetchEnabled;
-        autoFetchToggle.classList.toggle('active');
-        autoFetchStatus.textContent = autoFetchEnabled ? 'ON' : 'OFF';
-        autoFetchStatus.classList.toggle('active');
-    });
     
     // ===== BUILD HEADER =====
     function buildHeader() {
@@ -702,34 +614,6 @@
             html += `<input type="number" class="marks-input-add" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
         });
         marksInputs.innerHTML = html;
-    }
-    
-    // ===== AUTO FETCH =====
-    async function autoFetchStudent(rollNumber, nameInput, fatherInput) {
-        if (!autoFetchEnabled) return;
-        if (!rollNumber || rollNumber < 1) return;
-        if (!schoolId) return;
-        
-        const classValue = examData.examClass || '';
-        const sessionValue = examData.examSession || '2026-2027';
-        if (!classValue) return;
-        
-        try {
-            const q = query(
-                collection(db, "schools", schoolId, "students"),
-                where("rollNo", "==", parseInt(rollNumber)),
-                where("class", "==", classValue),
-                where("session", "==", sessionValue)
-            );
-            const snap = await getDocs(q);
-            if (!snap.empty) {
-                const data = snap.docs[0].data();
-                nameInput.value = capitalizeWords(data.name || '');
-                fatherInput.value = capitalizeWords(data.fatherName || '');
-            }
-        } catch(error) {
-            console.error('Auto fetch error:', error);
-        }
     }
     
     // ===== RENDER STUDENTS =====
@@ -805,9 +689,27 @@
             const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
             const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
             if (nameInput && fatherInput) {
-                await autoFetchStudent(roll, nameInput, fatherInput);
-                students[idx].name = nameInput.value;
-                students[idx].fatherName = fatherInput.value;
+                // Auto fetch from Firebase
+                const classValue = examData.examClass || '';
+                const sessionValue = examData.examSession || '2026-2027';
+                if (classValue && schoolId) {
+                    try {
+                        const q = query(
+                            collection(db, "schools", schoolId, "students"),
+                            where("rollNo", "==", roll),
+                            where("class", "==", classValue),
+                            where("session", "==", sessionValue)
+                        );
+                        const snap = await getDocs(q);
+                        if (!snap.empty) {
+                            const data = snap.docs[0].data();
+                            nameInput.value = capitalizeWords(data.name || '');
+                            fatherInput.value = capitalizeWords(data.fatherName || '');
+                            students[idx].name = nameInput.value;
+                            students[idx].fatherName = fatherInput.value;
+                        }
+                    } catch(e) {}
+                }
             }
             renderTable();
             updateSummary();
@@ -955,10 +857,11 @@
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
         
-        if (!name && autoFetchEnabled && schoolId) {
+        if (!name) {
+            // 🔥 Auto fetch if name is empty
             const classValue = examData.examClass || '';
             const sessionValue = examData.examSession || '2026-2027';
-            if (classValue) {
+            if (classValue && schoolId) {
                 try {
                     const q = query(
                         collection(db, "schools", schoolId, "students"),
