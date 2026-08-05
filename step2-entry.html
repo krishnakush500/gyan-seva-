@@ -67,6 +67,111 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
+        /* 🔥 Auto Fetch Toggle */
+        .auto-fetch-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 6px 0;
+            padding: 6px 14px;
+            background: #e8f0fe;
+            border-radius: 6px;
+            border: 1px solid #dce8f5;
+            flex-wrap: wrap;
+        }
+        .auto-fetch-container label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1a237e;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .auto-fetch-container .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            flex-shrink: 0;
+        }
+        .auto-fetch-container .toggle-switch.active {
+            background: #1a237e;
+        }
+        .auto-fetch-container .toggle-switch .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .auto-fetch-container .toggle-switch.active .toggle-slider {
+            left: 22px;
+        }
+        .auto-fetch-container .toggle-status {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+        .auto-fetch-container .toggle-status.active {
+            color: #1a237e;
+        }
+        .auto-fetch-container .hint-text {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            margin-left: 4px;
+        }
+        
+        /* 🔥 Progress Bar */
+        .progress-container {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 10px;
+            background: #f8faff;
+            border-radius: 6px;
+            border: 1px solid #dce8f5;
+        }
+        .progress-container.active {
+            display: flex;
+        }
+        .progress-container .progress-bar-wrap {
+            width: 120px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-container .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #1a237e, #4a6cf7);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            animation: progressAnim 1.2s ease-in-out infinite;
+        }
+        @keyframes progressAnim {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+        .progress-container .progress-text {
+            font-size: 0.65rem;
+            color: #1a237e;
+            font-weight: 600;
+        }
+        .progress-container .progress-status {
+            font-size: 0.6rem;
+            color: #94a3b8;
+        }
+        
         .excel-container {
             background: white;
             border-radius: 8px;
@@ -324,7 +429,14 @@
             .excel-table .row-marks input { max-width: 40px; font-size: 0.65rem; }
             .btn-add-row { font-size: 0.7rem; padding: 4px 14px; }
             .btn-excel { font-size: 0.6rem; padding: 3px 8px; }
+            .auto-fetch-container { padding: 4px 10px; }
+            .auto-fetch-container label { font-size: 0.65rem; }
+            .auto-fetch-container .toggle-switch { width: 36px; height: 20px; }
+            .auto-fetch-container .toggle-switch .toggle-slider { width: 16px; height: 16px; }
+            .auto-fetch-container .toggle-switch.active .toggle-slider { left: 18px; }
+            .auto-fetch-container .hint-text { font-size: 0.55rem; }
             .excel-table .col-name { left: 55px; }
+            .progress-container .progress-bar-wrap { width: 80px; }
         }
         
         @media (min-width: 769px) {
@@ -373,6 +485,25 @@
             <button class="edit-btn" id="editExamDetailsBtn" title="Edit Exam Details">
                 <i class="fas fa-pencil-alt"></i>
             </button>
+        </div>
+    </div>
+
+    <!-- 🔥 Auto Fetch Toggle + Progress Bar -->
+    <div class="auto-fetch-container">
+        <label><i class="fas fa-sync-alt"></i> Auto Fetch</label>
+        <div class="toggle-switch active" id="autoFetchToggle">
+            <div class="toggle-slider"></div>
+        </div>
+        <span class="toggle-status active" id="autoFetchStatus">ON</span>
+        <span class="hint-text">(Enter roll number to auto fill student)</span>
+        
+        <!-- 🔥 Progress Bar -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">Searching...</span>
+            <span class="progress-status" id="progressStatus">Fetching student data</span>
         </div>
     </div>
 
@@ -530,6 +661,7 @@
     let draftId = examData.draftId || null;
     let isEditingPublished = examData.isEditingPublished || false;
     let publishedId = examData.publishedId || null;
+    let autoFetchEnabled = true; // 🔥 Default ON
     
     // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
@@ -552,6 +684,14 @@
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishResultBtn = document.getElementById('publishResultBtn');
     
+    // 🔥 Auto Fetch Elements
+    const autoFetchToggle = document.getElementById('autoFetchToggle');
+    const autoFetchStatus = document.getElementById('autoFetchStatus');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const progressStatus = document.getElementById('progressStatus');
+    
     const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
     const editSubjectModal = new bootstrap.Modal(document.getElementById('editSubjectModal'));
     const editSubjectBody = document.getElementById('editSubjectBody');
@@ -572,16 +712,95 @@
         }).join(' ');
     }
     
+    // ===== 🔥 AUTO FETCH TOGGLE =====
+    autoFetchToggle.addEventListener('click', () => {
+        autoFetchEnabled = !autoFetchEnabled;
+        autoFetchToggle.classList.toggle('active');
+        autoFetchStatus.textContent = autoFetchEnabled ? 'ON' : 'OFF';
+        autoFetchStatus.classList.toggle('active');
+    });
+    
+    // ===== 🔥 PROGRESS BAR FUNCTIONS =====
+    function showProgress(message, status) {
+        progressContainer.classList.add('active');
+        progressText.textContent = message || 'Searching...';
+        progressStatus.textContent = status || 'Fetching student data';
+        progressFill.style.animation = 'progressAnim 1.2s ease-in-out infinite';
+    }
+    
+    function hideProgress() {
+        progressContainer.classList.remove('active');
+        progressFill.style.animation = 'none';
+        progressFill.style.width = '0%';
+    }
+    
+    function updateProgressStatus(message, status) {
+        progressText.textContent = message;
+        progressStatus.textContent = status;
+    }
+    
+    // ===== 🔥 AUTO FETCH STUDENT =====
+    async function autoFetchStudent(rollNumber, nameInput, fatherInput) {
+        if (!autoFetchEnabled) {
+            updateProgressStatus('Auto Fetch OFF', 'Turn ON to auto fill');
+            setTimeout(hideProgress, 800);
+            return;
+        }
+        if (!rollNumber || rollNumber < 1) {
+            hideProgress();
+            return;
+        }
+        if (!schoolId) {
+            updateProgressStatus('Error', 'Institute not found');
+            setTimeout(hideProgress, 1000);
+            return;
+        }
+        
+        const classValue = examData.examClass || '';
+        const sessionValue = examData.examSession || '2026-2027';
+        
+        if (!classValue) {
+            updateProgressStatus('Error', 'Please select class first');
+            setTimeout(hideProgress, 1000);
+            return;
+        }
+        
+        showProgress('Searching...', `Roll No: ${rollNumber} | Class: ${classValue}`);
+        
+        try {
+            const q = query(
+                collection(db, "schools", schoolId, "students"),
+                where("rollNo", "==", parseInt(rollNumber)),
+                where("class", "==", classValue),
+                where("session", "==", sessionValue)
+            );
+            const snap = await getDocs(q);
+            
+            if (!snap.empty) {
+                const data = snap.docs[0].data();
+                updateProgressStatus('✅ Found!', `Student: ${data.name}`);
+                nameInput.value = capitalizeWords(data.name || '');
+                fatherInput.value = capitalizeWords(data.fatherName || '');
+                setTimeout(hideProgress, 600);
+                return true;
+            } else {
+                updateProgressStatus('❌ Not Found', 'No student with this roll number');
+                setTimeout(hideProgress, 1000);
+                return false;
+            }
+        } catch(error) {
+            console.error('Auto fetch error:', error);
+            updateProgressStatus('⚠️ Error', 'Please try again');
+            setTimeout(hideProgress, 1000);
+            return false;
+        }
+    }
+    
     // ===== BUILD HEADER =====
     function buildHeader() {
-        // 🔥 Remove old subject headers
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
-        
-        // 🔥 Get reference to Actions column
         const actionsTh = tableHeader.querySelector('.col-actions');
-        
-        // 🔥 Insert subject headers BEFORE Actions
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
@@ -592,14 +811,9 @@
     
     // ===== BUILD ADD ROW =====
     function buildAddRow() {
-        // 🔥 Remove old subject input cells
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
-        
-        // 🔥 Get reference to Actions cell
         const actionsTd = addRow.querySelector('.col-actions');
-        
-        // 🔥 Insert subject input cells BEFORE Actions
         subjects.forEach((s) => {
             const td = document.createElement('td');
             td.className = 'col-subject-input';
@@ -626,7 +840,6 @@
         
         let html = '';
         students.forEach((s, idx) => {
-            // 🔥 Marks HTML - Subject columns only
             let marksHtml = '';
             subjects.forEach((sub) => {
                 const mark = s.marks[sub.name] || 0;
@@ -661,8 +874,15 @@
     
     // ===== EVENT LISTENERS =====
     function attachEventListeners() {
+        // 🔥 Roll Number - onchange (Enter dabane par trigger)
         document.querySelectorAll('.roll-input').forEach(input => {
             input.onchange = handleRollChange;
+            // Also handle enter key
+            input.onkeydown = function(e) {
+                if (e.key === 'Enter') {
+                    this.blur(); // Trigger onchange
+                }
+            };
         });
         
         document.querySelectorAll('.name-input').forEach(input => {
@@ -680,7 +900,7 @@
         });
     }
     
-    // ===== EVENT HANDLERS =====
+    // ===== 🔥 ROLL CHANGE HANDLER =====
     async function handleRollChange(e) {
         const idx = parseInt(this.dataset.idx);
         const roll = parseInt(this.value);
@@ -689,27 +909,10 @@
             const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
             const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
             if (nameInput && fatherInput) {
-                // Auto fetch from Firebase
-                const classValue = examData.examClass || '';
-                const sessionValue = examData.examSession || '2026-2027';
-                if (classValue && schoolId) {
-                    try {
-                        const q = query(
-                            collection(db, "schools", schoolId, "students"),
-                            where("rollNo", "==", roll),
-                            where("class", "==", classValue),
-                            where("session", "==", sessionValue)
-                        );
-                        const snap = await getDocs(q);
-                        if (!snap.empty) {
-                            const data = snap.docs[0].data();
-                            nameInput.value = capitalizeWords(data.name || '');
-                            fatherInput.value = capitalizeWords(data.fatherName || '');
-                            students[idx].name = nameInput.value;
-                            students[idx].fatherName = fatherInput.value;
-                        }
-                    } catch(e) {}
-                }
+                // 🔥 Auto fetch on Enter
+                await autoFetchStudent(roll, nameInput, fatherInput);
+                students[idx].name = nameInput.value;
+                students[idx].fatherName = fatherInput.value;
             }
             renderTable();
             updateSummary();
@@ -857,11 +1060,12 @@
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
         
-        if (!name) {
-            // 🔥 Auto fetch if name is empty
+        // 🔥 Auto fetch if name is empty and Auto Fetch is ON
+        if (!name && autoFetchEnabled && schoolId) {
             const classValue = examData.examClass || '';
             const sessionValue = examData.examSession || '2026-2027';
-            if (classValue && schoolId) {
+            if (classValue) {
+                showProgress('Searching...', `Roll No: ${roll} | Class: ${classValue}`);
                 try {
                     const q = query(
                         collection(db, "schools", schoolId, "students"),
@@ -875,8 +1079,15 @@
                         name = capitalizeWords(data.name || '');
                         newName.value = name;
                         newFather.value = capitalizeWords(data.fatherName || '');
+                        updateProgressStatus('✅ Found!', `Student: ${name}`);
+                        setTimeout(hideProgress, 600);
+                    } else {
+                        updateProgressStatus('❌ Not Found', 'No student with this roll number');
+                        setTimeout(hideProgress, 800);
                     }
-                } catch(e) {}
+                } catch(e) {
+                    hideProgress();
+                }
             }
         }
         
