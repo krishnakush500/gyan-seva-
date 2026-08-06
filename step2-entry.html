@@ -67,7 +67,6 @@
         }
         .exam-summary .edit-btn:hover { background: #dce8f5; }
         
-        /* 🔥 Auto Fetch Toggle - Default OFF */
         .auto-fetch-container {
             display: flex;
             align-items: center;
@@ -127,39 +126,6 @@
             font-size: 0.65rem;
             color: #94a3b8;
             margin-left: 4px;
-        }
-        
-        /* 🔥 Progress Bar */
-        .fetch-progress {
-            display: none;
-            align-items: center;
-            gap: 10px;
-            padding: 4px 12px;
-            background: #f0f7ff;
-            border-radius: 6px;
-            border: 1px solid #dce8f5;
-        }
-        .fetch-progress .progress-bar-container {
-            width: 120px;
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .fetch-progress .progress-bar-fill {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #1a237e, #4a6cf7);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
-        .fetch-progress .fetch-text {
-            font-size: 0.65rem;
-            color: #1a237e;
-            font-weight: 600;
-        }
-        .fetch-progress .fetch-status-icon {
-            font-size: 0.8rem;
         }
         
         .excel-container {
@@ -426,7 +392,6 @@
             .auto-fetch-container .toggle-switch.active .toggle-slider { left: 18px; }
             .auto-fetch-container .hint-text { font-size: 0.55rem; }
             .excel-table .col-name { left: 55px; }
-            .fetch-progress .progress-bar-container { width: 80px; }
         }
         
         @media (min-width: 769px) {
@@ -478,23 +443,13 @@
         </div>
     </div>
 
-    <!-- 🔥 Auto Fetch Toggle - Default OFF -->
     <div class="auto-fetch-container">
         <label><i class="fas fa-sync-alt"></i> Auto Fetch</label>
         <div class="toggle-switch" id="autoFetchToggle">
             <div class="toggle-slider"></div>
         </div>
         <span class="toggle-status" id="autoFetchStatus">OFF</span>
-        <span class="hint-text">(Enter press on Roll Number to fetch student)</span>
-        
-        <!-- 🔥 Progress Bar -->
-        <div class="fetch-progress" id="fetchProgress">
-            <span class="fetch-status-icon" id="fetchIcon"><i class="fas fa-spinner fa-spin"></i></span>
-            <span class="fetch-text" id="fetchText">Fetching...</span>
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progressFill"></div>
-            </div>
-        </div>
+        <span class="hint-text">(Auto fill student on roll number entry)</span>
     </div>
 
     <div class="excel-container">
@@ -515,7 +470,7 @@
                 <tfoot id="tableFoot">
                     <!-- 🔥 Add Row (Last Row) -->
                     <tr class="add-row" id="addRow">
-                        <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll"></td>
+                        <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name" style="text-transform:capitalize;"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father" style="text-transform:capitalize;"></td>
                         <!-- Subject inputs inserted dynamically -->
@@ -651,7 +606,7 @@
     let draftId = examData.draftId || null;
     let isEditingPublished = examData.isEditingPublished || false;
     let publishedId = examData.publishedId || null;
-    let autoFetchEnabled = false; // 🔥 Default OFF
+    let autoFetchEnabled = false;
     
     // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
@@ -674,13 +629,8 @@
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishResultBtn = document.getElementById('publishResultBtn');
     
-    // 🔥 Auto Fetch Elements
     const autoFetchToggle = document.getElementById('autoFetchToggle');
     const autoFetchStatus = document.getElementById('autoFetchStatus');
-    const fetchProgress = document.getElementById('fetchProgress');
-    const progressFill = document.getElementById('progressFill');
-    const fetchText = document.getElementById('fetchText');
-    const fetchIcon = document.getElementById('fetchIcon');
     
     const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
     const editSubjectModal = new bootstrap.Modal(document.getElementById('editSubjectModal'));
@@ -702,7 +652,7 @@
         }).join(' ');
     }
     
-    // ===== 🔥 AUTO FETCH TOGGLE =====
+    // ===== AUTO FETCH TOGGLE =====
     autoFetchToggle.addEventListener('click', () => {
         autoFetchEnabled = !autoFetchEnabled;
         autoFetchToggle.classList.toggle('active');
@@ -710,40 +660,16 @@
         autoFetchStatus.classList.toggle('active');
     });
     
-    // ===== 🔥 SHOW/HIDE PROGRESS =====
-    function showProgress(message = 'Searching...') {
-        fetchProgress.style.display = 'flex';
-        fetchText.textContent = message;
-        fetchIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        progressFill.style.width = '0%';
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress > 90) progress = 90;
-            progressFill.style.width = progress + '%';
-        }, 200);
-        return interval;
-    }
-    
-    function hideProgress(success = true, message = 'Done!') {
-        progressFill.style.width = '100%';
-        if (success) {
-            fetchIcon.innerHTML = '<i class="fas fa-check-circle" style="color:#16a34a;"></i>';
-            fetchText.textContent = '✅ ' + message;
-        } else {
-            fetchIcon.innerHTML = '<i class="fas fa-exclamation-circle" style="color:#dc2626;"></i>';
-            fetchText.textContent = '❌ ' + message;
-        }
-        setTimeout(() => {
-            fetchProgress.style.display = 'none';
-        }, 2000);
-    }
-    
     // ===== BUILD HEADER =====
     function buildHeader() {
+        // 🔥 Remove old subject headers
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
+        
+        // 🔥 Get reference to Actions column
         const actionsTh = tableHeader.querySelector('.col-actions');
+        
+        // 🔥 Insert subject headers BEFORE Actions
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
@@ -754,9 +680,14 @@
     
     // ===== BUILD ADD ROW =====
     function buildAddRow() {
+        // 🔥 Remove old subject input cells
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
+        
+        // 🔥 Get reference to Actions cell
         const actionsTd = addRow.querySelector('.col-actions');
+        
+        // 🔥 Insert subject input cells BEFORE Actions
         subjects.forEach((s) => {
             const td = document.createElement('td');
             td.className = 'col-subject-input';
@@ -773,25 +704,15 @@
         marksInputs.innerHTML = html;
     }
     
-    // ===== 🔥 AUTO FETCH STUDENT (Only on Enter Press) =====
-    async function fetchStudent(rollNumber, nameInput, fatherInput) {
-        if (!autoFetchEnabled) {
-            return false;
-        }
-        if (!rollNumber || rollNumber < 1) {
-            return false;
-        }
-        if (!schoolId) {
-            return false;
-        }
+    // ===== AUTO FETCH =====
+    async function autoFetchStudent(rollNumber, nameInput, fatherInput) {
+        if (!autoFetchEnabled) return;
+        if (!rollNumber || rollNumber < 1) return;
+        if (!schoolId) return;
         
         const classValue = examData.examClass || '';
         const sessionValue = examData.examSession || '2026-2027';
-        if (!classValue) {
-            return false;
-        }
-        
-        const progressInterval = showProgress('Searching student...');
+        if (!classValue) return;
         
         try {
             const q = query(
@@ -801,23 +722,13 @@
                 where("session", "==", sessionValue)
             );
             const snap = await getDocs(q);
-            
-            clearInterval(progressInterval);
-            
             if (!snap.empty) {
                 const data = snap.docs[0].data();
                 nameInput.value = capitalizeWords(data.name || '');
                 fatherInput.value = capitalizeWords(data.fatherName || '');
-                hideProgress(true, `Student found: ${data.name}`);
-                return true;
-            } else {
-                hideProgress(false, 'Student not found!');
-                return false;
             }
         } catch(error) {
-            clearInterval(progressInterval);
-            hideProgress(false, 'Error: ' + error.message);
-            return false;
+            console.error('Auto fetch error:', error);
         }
     }
     
@@ -831,6 +742,7 @@
         
         let html = '';
         students.forEach((s, idx) => {
+            // 🔥 Marks HTML - Subject columns only
             let marksHtml = '';
             subjects.forEach((sub) => {
                 const mark = s.marks[sub.name] || 0;
@@ -863,43 +775,10 @@
         attachEventListeners();
     }
     
-    // ===== 🔥 EVENT LISTENERS =====
+    // ===== EVENT LISTENERS =====
     function attachEventListeners() {
-        // 🔥 Roll Number - ONLY Enter key par fetch
         document.querySelectorAll('.roll-input').forEach(input => {
-            input.onkeydown = async function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const idx = parseInt(this.dataset.idx);
-                    const roll = parseInt(this.value);
-                    
-                    if (!isNaN(idx) && students[idx]) {
-                        students[idx].rollNo = roll;
-                        const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
-                        const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
-                        
-                        if (nameInput && fatherInput) {
-                            // 🔥 ONLY fetch if Auto Fetch is ON
-                            if (autoFetchEnabled) {
-                                const found = await fetchStudent(roll, nameInput, fatherInput);
-                                if (found) {
-                                    students[idx].name = nameInput.value;
-                                    students[idx].fatherName = fatherInput.value;
-                                    renderTable();
-                                    updateSummary();
-                                }
-                            }
-                        }
-                    }
-                    
-                    // 🔥 Cursor automatically next field (Student Name) mein chala jayega
-                    const nextInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
-                    if (nextInput) {
-                        nextInput.focus();
-                        nextInput.select();
-                    }
-                }
-            };
+            input.onchange = handleRollChange;
         });
         
         document.querySelectorAll('.name-input').forEach(input => {
@@ -918,6 +797,23 @@
     }
     
     // ===== EVENT HANDLERS =====
+    async function handleRollChange(e) {
+        const idx = parseInt(this.dataset.idx);
+        const roll = parseInt(this.value);
+        if (!isNaN(idx) && students[idx]) {
+            students[idx].rollNo = roll;
+            const nameInput = document.querySelector(`.name-input[data-idx="${idx}"]`);
+            const fatherInput = document.querySelector(`.father-input[data-idx="${idx}"]`);
+            if (nameInput && fatherInput) {
+                await autoFetchStudent(roll, nameInput, fatherInput);
+                students[idx].name = nameInput.value;
+                students[idx].fatherName = fatherInput.value;
+            }
+            renderTable();
+            updateSummary();
+        }
+    }
+    
     function handleNameInput(e) {
         const cursorPos = this.selectionStart;
         this.value = capitalizeWords(this.value);
@@ -946,6 +842,7 @@
         }
     }
     
+    // ===== MARK CHANGE - NO TABLE RE-RENDER =====
     function handleMarkChange(e) {
         const idx = parseInt(this.dataset.idx);
         if (!isNaN(idx) && students[idx]) {
@@ -1058,12 +955,10 @@
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
         
-        // 🔥 ONLY Auto fetch on Add Row if name is empty AND Auto Fetch is ON
         if (!name && autoFetchEnabled && schoolId) {
             const classValue = examData.examClass || '';
             const sessionValue = examData.examSession || '2026-2027';
             if (classValue) {
-                const progressInterval = showProgress('Searching student...');
                 try {
                     const q = query(
                         collection(db, "schools", schoolId, "students"),
@@ -1072,21 +967,13 @@
                         where("session", "==", sessionValue)
                     );
                     const snap = await getDocs(q);
-                    clearInterval(progressInterval);
                     if (!snap.empty) {
                         const data = snap.docs[0].data();
                         name = capitalizeWords(data.name || '');
                         newName.value = name;
                         newFather.value = capitalizeWords(data.fatherName || '');
-                        hideProgress(true, `Student found: ${name}`);
-                    } else {
-                        clearInterval(progressInterval);
-                        hideProgress(false, 'Student not found!');
                     }
-                } catch(e) {
-                    clearInterval(progressInterval);
-                    hideProgress(false, 'Error: ' + e.message);
-                }
+                } catch(e) {}
             }
         }
         
