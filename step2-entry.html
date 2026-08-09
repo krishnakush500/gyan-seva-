@@ -1319,13 +1319,12 @@
             
             updatePublishProgress(100, '✅ Done!');
             
-            // 🔥 Wait then redirect to published results
+            // 🔥 Wait then redirect to published results in SAME TAB
             setTimeout(() => {
                 hidePublishProgress();
                 alert('✅ Result published successfully!');
                 
-                // 🔥 Close current tab and redirect to published results
-                window.close();
+                // 🔥 Redirect to manage-results.html with published section open
                 window.location.href = 'manage-results.html?showPublished=true';
             }, 500);
             
