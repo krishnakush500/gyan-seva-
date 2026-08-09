@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 Result Published Successfully</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e8ecf1 0%, #d5dce6 100%);
+            padding: 20px;
+        }
+        
+        .success-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 50px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(26, 35, 126, 0.15);
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .success-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #1a237e, #4a6cf7, #1a237e);
+            background-size: 200% 100%;
+            animation: shimmer 2s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .success-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: popIn 0.5s ease 0.3s both;
+        }
+        
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .success-icon i {
+            font-size: 45px;
+            color: white;
+        }
+        
+        .exam-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a237e;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        
+        .exam-name i {
+            color: #ffc107;
+            font-size: 1.6rem;
+            margin-right: 8px;
+        }
+        
+        .subtitle {
+            font-size: 0.95rem;
+            color: #64748b;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        
+        .subtitle i {
+            color: #4caf50;
+            margin-right: 5px;
+        }
+        
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 20px 0;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .detail-item {
+            background: #f8faff;
+            border-radius: 12px;
+            padding: 14px 12px;
+            transition: 0.3s;
+        }
+        
+        .detail-item:hover {
+            background: #e8f0fe;
+            transform: translateY(-2px);
+        }
+        
+        .detail-item .label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+        
+        .detail-item .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a237e;
+        }
+        
+        .detail-item .value i {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .detail-item.highlight {
+            background: linear-gradient(135deg, #1a237e, #283593);
+        }
+        
+        .detail-item.highlight .label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .detail-item.highlight .value {
+            color: white;
+        }
+        
+        .subjects-list {
+            background: #f8faff;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 15px 0 20px;
+            text-align: left;
+        }
+        
+        .subjects-list .label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        
+        .subjects-list .subjects-text {
+            font-size: 0.85rem;
+            color: #334155;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+        
+        .btn-group-custom {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-custom {
+            padding: 10px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-primary-custom {
+            background: #1a237e;
+            color: white;
+        }
+        
+        .btn-primary-custom:hover {
+            background: #283593;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 35, 126, 0.3);
+            color: white;
+        }
+        
+        .btn-outline-custom {
+            background: transparent;
+            color: #1a237e;
+            border: 2px solid #1a237e;
+        }
+        
+        .btn-outline-custom:hover {
+            background: #1a237e;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success-custom {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .btn-success-custom:hover {
+            background: #43a047;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+            color: white;
+        }
+        
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confettiFall linear forwards;
+        }
+        
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .publish-time {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 480px) {
+            .success-card {
+                padding: 25px 20px;
+            }
+            
+            .exam-name {
+                font-size: 1.4rem;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .detail-item {
+                padding: 10px 8px;
+            }
+            
+            .detail-item .value {
+                font-size: 0.95rem;
+            }
+            
+            .btn-group-custom {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn-custom {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Confetti Container -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- Success Card -->
+<div class="success-card">
+    <!-- Icon -->
+    <div class="success-icon">
+        <i class="fas fa-check"></i>
+    </div>
+    
+    <!-- Exam Name -->
+    <h1 class="exam-name">
+        <i class="fas fa-graduation-cap"></i> 
+        <span id="displayExamName">-</span>
+    </h1>
+    
+    <p class="subtitle">
+        <i class="fas fa-check-circle"></i> Result Published Successfully! 🎉
+    </p>
+    
+    <div class="divider"></div>
+    
+    <!-- Details Grid -->
+    <div class="details-grid">
+        <div class="detail-item">
+            <div class="label"><i class="fas fa-book"></i> Class</div>
+            <div class="value" id="displayClass">-</div>
+        </div>
+        <div class="detail-item highlight">
+            <div class="label"><i class="fas fa-users"></i> Students</div>
+            <div class="value" id="displayStudents">-</div>
+        </div>
+        <div class="detail-item">
+            <div class="label"><i class="fas fa-calendar"></i> Session</div>
+            <div class="value" id="displaySession">-</div>
+        </div>
+        <div class="detail-item">
+            <div class="label"><i class="fas fa-calendar-day"></i> Date</div>
+            <div class="value" id="displayDate">-</div>
+        </div>
+    </div>
+    
+    <!-- Subjects -->
+    <div class="subjects-list">
+        <div class="label"><i class="fas fa-list"></i> Subjects</div>
+        <div class="subjects-text" id="displaySubjects">-</div>
+    </div>
+    
+    <!-- Publish Time -->
+    <div class="publish-time">
+        <i class="far fa-clock"></i> 
+        Published on: <span id="displayPublishTime">-</span>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="btn-group-custom">
+        <a href="manage-results.html" class="btn-custom btn-primary-custom">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <a href="entry-sheet.html" class="btn-custom btn-success-custom">
+            <i class="fas fa-plus"></i> Publish Another Result
+        </a>
+        <a href="manage-results.html?showPublished=true" class="btn-custom btn-outline-custom">
+            <i class="fas fa-eye"></i> View Published Results
+        </a>
+    </div>
+</div>
+
+<script>
+    // ===== LOAD DATA FROM localStorage =====
+    const successData = JSON.parse(localStorage.getItem('publishSuccessData') || '{}');
+    
+    document.getElementById('displayExamName').textContent = successData.examName || 'Exam';
+    document.getElementById('displayClass').textContent = successData.examClass || '-';
+    document.getElementById('displayStudents').textContent = successData.totalStudents || 0;
+    document.getElementById('displaySession').textContent = successData.examSession || '-';
+    document.getElementById('displaySubjects').textContent = successData.subjects || '-';
+    
+    // Format date
+    if (successData.examDate) {
+        const date = new Date(successData.examDate);
+        document.getElementById('displayDate').textContent = date.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+    } else {
+        document.getElementById('displayDate').textContent = '-';
+    }
+    
+    // Publish time
+    const now = new Date();
+    document.getElementById('displayPublishTime').textContent = now.toLocaleString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+    
+    // ===== 🎊 CONFETTI ANIMATION =====
+    function createConfetti() {
+        const container = document.getElementById('confettiContainer');
+        const colors = ['#1a237e', '#4a6cf7', '#4caf50', '#ffc107', '#f44336', '#e91e63', '#9c27b0', '#00bcd4'];
+        
+        for (let i = 0; i < 80; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-10px';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = (Math.random() * 8 + 4) + 'px';
+            confetti.style.height = (Math.random() * 8 + 4) + 'px';
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            confetti.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+            confetti.style.animationDelay = (Math.random() * 1.5) + 's';
+            container.appendChild(confetti);
+        }
+        
+        // Remove confetti after animation
+        setTimeout(() => {
+            container.innerHTML = '';
+        }, 4000);
+    }
+    
+    // Start confetti
+    createConfetti();
+    
+    // Re-trigger confetti after 2 seconds for extra joy
+    setTimeout(createConfetti, 1500);
+</script>
+</body>
+</html>
