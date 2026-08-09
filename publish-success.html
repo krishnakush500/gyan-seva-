@@ -477,11 +477,14 @@
         }
     }
     
-    // ===== 🔥 SHARE TEXT - ONLY ASCII + SAFE EMOJIS =====
+    // ===== 🔥 SHARE TEXT - 100% WhatsApp Compatible =====
     function getShareText() {
         const examName = successData.examName || 'Result';
         const className = successData.examClass || '';
         const link = getShareableLink();
+        const phone = localStorage.getItem('directorPhone') || '+91 8252658421';
+        const email = localStorage.getItem('directorEmail') || 'info@gyanseva.com';
+        
         return `*RESULT PUBLISHED* ✅
 
 Exam: ${examName}
@@ -490,7 +493,19 @@ Class: ${className}
 Check your result here:
 ${link}
 
-Enter your roll number to view your marks.`;
+Enter your roll number to view your marks.
+
+How to Check:
+1. Click on the link above
+2. Select your exam
+3. Enter your Roll Number
+4. View your marks instantly!
+
+For any query, contact:
+${phone}
+${email}
+
+Best of luck! 🎯`;
     }
     
     // ===== SHARE FUNCTIONS =====
