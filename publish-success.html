@@ -17,7 +17,7 @@
             padding: 20px;
         }
         
-        /* ===== TOP BAR (Same as Entry Sheet) ===== */
+        /* ===== TOP BAR ===== */
         .topbar {
             position: fixed;
             top: 10px;
@@ -383,7 +383,7 @@
     </div>
     
     <div class="subtitle">
-        <i class="fas fa-check-circle"></i> Result Published Successfully!
+        <i class="fas fa-check-circle"></i> Result Published Successfully! 🎉
     </div>
     
     <div class="divider"></div>
@@ -413,7 +413,7 @@
     <!-- ===== 🔥 SHARE LINK SECTION ===== -->
     <div class="share-link-section">
         <div class="label">
-            <i class="fas fa-link"></i> Share Result Link with Students
+            <i class="fas fa-link"></i> Share Result Link with Students 📤
         </div>
         <div class="share-link-box">
             <input type="text" id="shareLinkInput" readonly value="">
@@ -460,6 +460,9 @@
     // ===== LOAD DATA =====
     const successData = JSON.parse(localStorage.getItem('publishSuccessData') || '{}');
     const schoolId = localStorage.getItem('schoolId') || '';
+    const coachingName = localStorage.getItem('coachingName') || 'GYAN SEVA ACADEMY';
+    const coachingPhone = localStorage.getItem('coachingPhone') || '+91 8252658421';
+    const coachingEmail = localStorage.getItem('coachingEmail') || 'info@gyanseva.com';
     
     document.getElementById('displayExamName').textContent = successData.examName || 'Exam';
     document.getElementById('displayClass').textContent = successData.examClass || '-';
@@ -469,9 +472,7 @@
     
     // ===== 🔥 GENERATE SHAREABLE LINK =====
     function getShareableLink() {
-        // Use the current domain or localhost
         const baseUrl = window.location.origin + window.location.pathname.replace('publish-success.html', '');
-        // Link to dashboard.html with school ID
         return `${baseUrl}dashboard.html?id=${schoolId}`;
     }
     
@@ -489,7 +490,7 @@
             document.execCommand('copy');
             const btn = document.getElementById('copyLinkBtn');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied! ✅';
             btn.classList.add('copied');
             setTimeout(() => {
                 btn.innerHTML = originalText;
@@ -500,14 +501,45 @@
         }
     }
     
-    // ===== SHARE FUNCTIONS =====
+    // ===== 🔥 SHARE TEXT WITH PERFECT EMOJIS =====
     function getShareText() {
         const examName = successData.examName || 'Result';
         const className = successData.examClass || '';
+        const examDate = successData.examDate || new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
         const link = getShareableLink();
-        return `📢 *Result Published* 📢\n\n🏫 Exam: ${examName}\n📚 Class: ${className}\n\n🔗 Check your result here:\n${link}\n\nEnter your roll number to view your marks.`;
+        const studentsCount = successData.totalStudents || 0;
+        
+        return `📢 *🎉 RESULT PUBLISHED!* 🎉
+
+🏫 *Institute:* ${coachingName}
+📚 *Exam:* ${examName}
+📖 *Class:* ${className}
+📅 *Date:* ${examDate}
+👨‍🎓 *Students:* ${studentsCount}
+
+━━━━━━━━━━━━━━━━━━━━━━
+🔗 *Check Your Result Here:*
+👇👇👇
+${link}
+👆👆👆
+
+━━━━━━━━━━━━━━━━━━━━━━
+📝 *How to Check:*
+1️⃣ Click on the link above
+2️⃣ Select your exam
+3️⃣ Enter your Roll Number
+4️⃣ View your marks instantly! 📊
+
+━━━━━━━━━━━━━━━━━━━━━━
+👨‍🏫 *For any query, contact:*
+📞 ${coachingPhone}
+📧 ${coachingEmail}
+
+━━━━━━━━━━━━━━━━━━━━━━
+✅ *Best of luck!* 🌟`;
     }
     
+    // ===== SHARE FUNCTIONS =====
     function shareOnWhatsApp() {
         const text = getShareText();
         const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -521,7 +553,7 @@
     }
     
     function shareOnEmail() {
-        const subject = `${successData.examName || 'Result'} - Published`;
+        const subject = `${successData.examName || 'Result'} - Published 📢`;
         const body = getShareText();
         const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.open(url, '_blank');
@@ -541,7 +573,7 @@
     // ===== CONFETTI =====
     function createConfetti() {
         const container = document.getElementById('confettiContainer');
-        const colors = ['#1a237e', '#4a6cf7', '#4caf50', '#ffc107', '#f44336'];
+        const colors = ['#1a237e', '#4a6cf7', '#4caf50', '#ffc107', '#f44336', '#e91e63', '#9c27b0'];
         for (let i = 0; i < 50; i++) {
             const c = document.createElement('div');
             c.className = 'confetti';
