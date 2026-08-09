@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>GYAN SEVA | Founder Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', 'Segoe UI', sans-serif; }
     body { background:#ffffff; min-height:100vh; padding:40px 24px; position:relative; }
@@ -67,6 +73,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .template-modal-header h3 {
       font-size: 1.2rem;
@@ -105,10 +114,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
     }
     .template-label span {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
+    }
+    .template-label .badge-default {
+      font-size: 0.6rem;
       color: #64748b;
+      background: #e2e8f0;
+      padding: 2px 10px;
+      border-radius: 30px;
     }
     .template-text {
       width: 100%;
@@ -119,10 +136,12 @@
       resize: vertical;
       font-family: monospace;
       background: white;
+      min-height: 80px;
     }
     .template-text:focus {
       outline: none;
       border-color: #1a237e;
+      box-shadow: 0 0 0 3px rgba(26,35,126,0.1);
     }
     .btn-save-template {
       background: #10b981;
@@ -131,20 +150,35 @@
       padding: 6px 16px;
       border-radius: 30px;
       cursor: pointer;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
+      transition: 0.3s;
+      white-space: nowrap;
     }
     .btn-save-template:hover {
       background: #059669;
+      transform: translateY(-1px);
+    }
+    .btn-save-template.saved {
+      background: #10b981;
+      opacity: 0.7;
     }
     .info-note {
       background: #eef2ff;
-      padding: 12px;
+      padding: 12px 16px;
       border-radius: 12px;
       font-size: 0.75rem;
       color: #1e293b;
       margin-top: 15px;
       text-align: center;
+      border: 1px solid #dbeafe;
+    }
+    .info-note code {
+      background: #dbeafe;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      color: #1a237e;
     }
     .toast {
       position: fixed;
@@ -156,7 +190,11 @@
       border-radius: 40px;
       font-size: 0.8rem;
       z-index: 10001;
-      animation: fadeOut 2s ease forwards;
+      animation: fadeOut 2.5s ease forwards;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .toast.error {
+      background: #dc2626;
     }
     @keyframes fadeOut {
       0% { opacity: 1; transform: translateX(0); }
@@ -166,7 +204,7 @@
     
     /* Rest of original styles */
     .top-brand { text-align:center; margin-bottom:30px; }
-    .brand-chip { display:inline-flex; align-items:center; gap:12px; background:#f8fafc; padding:10px 28px; border-radius:100px; margin-bottom:20px; }
+    .brand-chip { display:inline-flex; align-items:center; gap:12px; background:#f8fafc; padding:10px 28px; border-radius:100px; margin-bottom:20px; border:1px solid #eef2f7; }
     .brand-chip i { font-size:2rem; color:#0f172a; }
     .brand-chip h1 { font-size:2rem; font-weight:800; background:linear-gradient(130deg,#0f172a,#1e293b); -webkit-background-clip:text; background-clip:text; color:transparent; }
     .founder-name { background:#f1f5f9; display:inline-block; padding:6px 24px; border-radius:40px; font-weight:500; color:#1e293b; margin-bottom:20px; }
@@ -174,7 +212,7 @@
     .motivation-text { font-size:1.1rem; font-weight:500; color:#b45309; }
     .action-row { display:flex; flex-wrap:wrap; justify-content:center; gap:35px; margin:60px 0 45px; }
     .action-card { flex:1; min-width:280px; max-width:340px; background:#ffffff; border-radius:44px; padding:36px 20px 34px; text-align:center; cursor:pointer; box-shadow:0 20px 35px -12px rgba(0,0,0,0.1); border:1px solid #eef2ff; transition:all 0.25s ease; }
-    .action-card:hover { transform:translateY(-8px); }
+    .action-card:hover { transform:translateY(-8px); box-shadow:0 30px 45px -15px rgba(0,0,0,0.15); }
     .card-save { border-bottom:5px solid #dc2626; }
     .card-save .icon-bg { background:#fee2e2; color:#b91c1c; }
     .card-save h3 { color:#991b1b; }
@@ -190,11 +228,24 @@
     .icon-bg { width:90px; height:90px; line-height:90px; border-radius:50%; font-size:2.4rem; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; }
     .action-card h3 { font-size:1.7rem; font-weight:800; margin-bottom:12px; }
     .action-card p { font-size:0.9rem; color:#334155; line-height:1.45; margin-bottom:24px; }
-    .btn-preview { display:inline-block; padding:8px 26px; border-radius:40px; color:white; font-weight:600; font-size:0.85rem; }
+    .btn-preview { display:inline-block; padding:8px 26px; border-radius:40px; color:white; font-weight:600; font-size:0.85rem; transition:0.3s; }
+    .btn-preview:hover { opacity:0.85; transform:translateY(-1px); }
     .stats-line { display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin-bottom:35px; }
     .stat-badge { background:#f1f5f9; padding:6px 24px; border-radius:40px; font-weight:500; color:#0f172a; }
     footer { text-align:center; margin-top:55px; color:#94a3b8; font-size:0.8rem; }
-    @media (max-width:750px) { .action-card h3 { font-size:1.3rem; } .template-btn { width:45px; height:45px; bottom:20px; right:20px; } }
+    
+    @media (max-width:750px) { 
+      .action-card h3 { font-size:1.3rem; } 
+      .template-btn { width:45px; height:45px; bottom:20px; right:20px; }
+      .brand-chip h1 { font-size:1.5rem; }
+      .brand-chip { padding:8px 18px; }
+    }
+    @media (max-width:480px) {
+      body { padding:20px 12px; }
+      .action-card { min-width:100%; max-width:100%; padding:28px 16px; }
+      .template-modal-content { width:95%; }
+      .template-body { padding:15px; }
+    }
   </style>
 </head>
 <body>
@@ -204,6 +255,7 @@
     <div class="founder-name"><i class="fas fa-crown"></i> Krishna Kumar — Founder</div>
     <div class="motivation-box"><div class="motivation-text"><i class="fas fa-lightbulb"></i> "Small town coaching, big digital dream" — Build, Serve, Scale.</div></div>
   </div>
+  
   <div class="action-row">
     <div class="action-card card-save" onclick="window.location.href='save-customer.html'">
       <div class="icon-bg"><i class="fas fa-save"></i></div>
@@ -224,11 +276,13 @@
       <div class="btn-preview"><i class="fas fa-tachometer-alt"></i> Open Dashboard</div>
     </div>
   </div>
+  
   <div class="stats-line">
     <div class="stat-badge"><i class="fas fa-user-plus" style="color:#dc2626;"></i> Pending Leads: <span id="pendingCount">0</span></div>
     <div class="stat-badge"><i class="fas fa-check-circle" style="color:#10b981;"></i> Active Coachings: <span id="activeCount">0</span></div>
     <div class="stat-badge"><i class="fas fa-chart-line" style="color:#2563eb;"></i> Total Results: <span id="resultsCount">0</span></div>
   </div>
+  
   <footer><i class="fas fa-heart" style="color:#dc2626;"></i> GYAN SEVA — Result ki seva, Gyan ki seva</footer>
 </div>
 
@@ -245,74 +299,167 @@
       <button class="close-modal" onclick="closeTemplateModal()"><i class="fas fa-times"></i></button>
     </div>
     <div class="template-body">
+      <!-- Template 1: Initial Outreach -->
       <div class="template-item">
         <div class="template-label">
           <span><i class="fas fa-bullhorn"></i> Template 1: Initial Outreach</span>
-          <button class="btn-save-template" onclick="saveTemplateToFirebase('template1')">Save to Cloud</button>
+          <button class="btn-save-template" onclick="saveTemplateToFirebase('template1')">💾 Save</button>
         </div>
         <textarea id="template1" class="template-text" rows="4"></textarea>
       </div>
       
+      <!-- Template 2: Follow-up -->
       <div class="template-item">
         <div class="template-label">
           <span><i class="fas fa-check-circle"></i> Template 2: Follow-up (No Reply)</span>
-          <button class="btn-save-template" onclick="saveTemplateToFirebase('template2')">Save to Cloud</button>
+          <button class="btn-save-template" onclick="saveTemplateToFirebase('template2')">💾 Save</button>
         </div>
         <textarea id="template2" class="template-text" rows="4"></textarea>
       </div>
       
+      <!-- Template 3: Dashboard Ready -->
       <div class="template-item">
         <div class="template-label">
           <span><i class="fas fa-handshake"></i> Template 3: Dashboard Ready (Demo)</span>
-          <button class="btn-save-template" onclick="saveTemplateToFirebase('template3')">Save to Cloud</button>
+          <button class="btn-save-template" onclick="saveTemplateToFirebase('template3')">💾 Save</button>
         </div>
         <textarea id="template3" class="template-text" rows="4"></textarea>
       </div>
       
-      <div class="template-item">
+      <!-- ===== 🔥 TEMPLATE 4: RESULT PUBLISHED ===== -->
+      <div class="template-item" style="border: 2px solid #1a237e; background: #f0f7ff;">
         <div class="template-label">
-          <span><i class="fas fa-file-alt"></i> Template 4: Result Published</span>
-          <button class="btn-save-template" onclick="saveTemplateToFirebase('template4')">Save to Cloud</button>
+          <span><i class="fas fa-file-alt" style="color:#1a237e;"></i> <strong>Template 4: Result Published</strong> <span class="badge-default">⭐ MOST USED</span></span>
+          <button class="btn-save-template" onclick="saveTemplateToFirebase('template4')">💾 Save</button>
         </div>
-        <textarea id="template4" class="template-text" rows="4"></textarea>
+        <textarea id="template4" class="template-text" rows="8"></textarea>
+        <div style="font-size:0.65rem; color:#64748b; margin-top:6px;">
+          <i class="fas fa-info-circle"></i> Variables: <code>{examName}</code> <code>{class}</code> <code>{link}</code> <code>{phone}</code> <code>{email}</code>
+        </div>
       </div>
       
+      <!-- Template 5: Custom -->
       <div class="template-item">
         <div class="template-label">
           <span><i class="fas fa-star"></i> Template 5: Custom Message</span>
-          <button class="btn-save-template" onclick="saveTemplateToFirebase('template5')">Save to Cloud</button>
+          <button class="btn-save-template" onclick="saveTemplateToFirebase('template5')">💾 Save</button>
         </div>
         <textarea id="template5" class="template-text" rows="4"></textarea>
       </div>
       
       <div class="info-note">
-        <i class="fas fa-info-circle"></i> <strong>Variables:</strong> <code>{name}</code> - Coaching Name | <code>{link}</code> - URL | <code>{examName}</code> - Exam Name<br>
-        <strong>💾 Saved to Firebase Cloud</strong> — Access from any device!
+        <i class="fas fa-cloud-upload-alt"></i> <strong>Saved to Firebase Cloud</strong> — Access from any device!<br>
+        <strong>Variables:</strong> <code>{name}</code> - Coaching Name | <code>{link}</code> - URL | <code>{examName}</code> - Exam Name | <code>{class}</code> - Class | <code>{phone}</code> - Phone | <code>{email}</code> - Email
       </div>
     </div>
   </div>
 </div>
 
-<script type="module">
-  import { db } from './firebase-config.js';
-  import { collection, getDocs, query, where, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  
-  // Default templates
-  const defaultTemplates = {
-    template1: "नमस्ते {name} sir,%0A%0AThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.%0A%0A✅ Online result system%0A✅ Students can check marks with roll number%0A✅ PDF download option%0A%0A🔰 Completely FREE trial for 1 month.%0A🔰 No technical knowledge required.%0A%0AInterested? Reply \"YES\" to get your demo portal.%0A%0AThank you%0AGYAN SEVA Team",
-    template2: "नमस्ते {name} sir,%0A%0AJust a gentle reminder about the FREE DEMO result portal from GYAN SEVA.%0A%0A✅ Students can check marks online%0A✅ No technical knowledge needed%0A✅ 1 month free trial%0A%0AStill interested? Reply \"YES\" and I'll set it up for you.%0A%0AThank you%0AGYAN SEVA Team",
-    template3: "नमस्ते {name} sir,%0A%0AGreat news! Your coaching's result portal is ready for demo 🎉%0A%0A🔗 Dashboard Link: {link}%0A%0A📝 Demo Roll Numbers: 101, 202, 303%0A%0ATry it yourself and see how students can check their results.%0A%0ALet me know your feedback!%0A%0A-GYAN SEVA Team",
-    template4: "नमस्ते {name} sir,%0A%0A📢 Result published for {examName}!%0A%0A🔗 Student Result Link: {link}%0A%0AStudents can enter their roll number and check marks.%0A%0AShare this link with your students.%0A%0AThank you%0AGYAN SEVA Team",
-    template5: "Type your custom message here...%0A%0AUse {name} for coaching name, {link} for URL"
+<script>
+  // ===== FIREBASE CONFIG =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
+    authDomain: "gyan-seva.firebaseapp.com",
+    projectId: "gyan-seva",
+    storageBucket: "gyan-seva.firebasestorage.app",
+    messagingSenderId: "451862212887",
+    appId: "1:451862212887:web:637fd8785c4c01bd448752",
+    measurementId: "G-R375P3YCHP"
   };
-  
-  // Load templates from Firebase
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  // ===== DEFAULT TEMPLATES =====
+  const defaultTemplates = {
+    template1: `नमस्ते {name} sir,
+
+This is GYAN SEVA. We provide FREE DEMO result portal for coaching.
+
+✅ Online result system
+✅ Students can check marks with roll number
+✅ PDF download option
+
+🔰 Completely FREE trial for 1 month.
+🔰 No technical knowledge required.
+
+Interested? Reply "YES" to get your demo portal.
+
+Thank you
+GYAN SEVA Team`,
+
+    template2: `नमस्ते {name} sir,
+
+Just a gentle reminder about the FREE DEMO result portal from GYAN SEVA.
+
+✅ Students can check marks online
+✅ No technical knowledge needed
+✅ 1 month free trial
+
+Still interested? Reply "YES" and I'll set it up for you.
+
+Thank you
+GYAN SEVA Team`,
+
+    template3: `नमस्ते {name} sir,
+
+Great news! Your coaching's result portal is ready for demo 🎉
+
+🔗 Dashboard Link: {link}
+
+📝 Demo Roll Numbers: 101, 202, 303
+
+Try it yourself and see how students can check their results.
+
+Let me know your feedback!
+
+-GYAN SEVA Team`,
+
+    // ===== 🔥 TEMPLATE 4: RESULT PUBLISHED =====
+    template4: `*RESULT PUBLISHED* ✅
+
+Exam: {examName}
+Class: {class}
+
+Check your result here:
+{link}
+
+Enter your roll number to view your marks.
+
+How to Check:
+1. Click on the link above
+2. Select your exam
+3. Enter your Roll Number
+4. View your marks instantly!
+
+For any query, contact:
+{phone}
+{email}
+
+Best of luck! 🎯`,
+
+    template5: `Type your custom message here...
+
+Use {name} for coaching name, {link} for URL`
+  };
+
+  // ===== SHOW TOAST =====
+  function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast' + (isError ? ' error' : '');
+    toast.innerHTML = (isError ? '<i class="fas fa-exclamation-triangle"></i> ' : '<i class="fas fa-check-circle"></i> ') + message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
+
+  // ===== LOAD TEMPLATES FROM FIREBASE =====
   async function loadTemplatesFromFirebase() {
     try {
-      const docRef = doc(db, "templates", "whatsapp_templates");
-      const docSnap = await getDoc(docRef);
+      const docRef = db.collection("templates").doc("whatsapp_templates");
+      const docSnap = await docRef.get();
       
-      if(docSnap.exists()) {
+      if(docSnap.exists) {
         const data = docSnap.data();
         for(let i = 1; i <= 5; i++) {
           const templateId = `template${i}`;
@@ -323,7 +470,7 @@
         }
       } else {
         // First time - save defaults
-        await setDoc(docRef, defaultTemplates);
+        await db.collection("templates").doc("whatsapp_templates").set(defaultTemplates);
         for(let i = 1; i <= 5; i++) {
           const templateId = `template${i}`;
           const textarea = document.getElementById(templateId);
@@ -342,78 +489,122 @@
           textarea.value = defaultTemplates[templateId];
         }
       }
+      showToast('Using default templates (offline)', true);
     }
   }
-  
-  // Save template to Firebase
+
+  // ===== SAVE TEMPLATE TO FIREBASE =====
   window.saveTemplateToFirebase = async (templateId) => {
     const textarea = document.getElementById(templateId);
     const value = textarea.value;
+    const btn = textarea.closest('.template-item').querySelector('.btn-save-template');
+    const originalText = btn.innerHTML;
+    
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
     
     try {
-      const docRef = doc(db, "templates", "whatsapp_templates");
-      const docSnap = await getDoc(docRef);
+      const docRef = db.collection("templates").doc("whatsapp_templates");
+      const docSnap = await docRef.get();
       
-      if(docSnap.exists()) {
+      if(docSnap.exists) {
         const updateData = {};
         updateData[templateId] = value;
-        await setDoc(docRef, updateData, { merge: true });
+        await docRef.update(updateData);
       } else {
         const newData = { ...defaultTemplates };
         newData[templateId] = value;
-        await setDoc(docRef, newData);
+        await docRef.set(newData);
       }
       
-      // Show toast
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.innerHTML = '<i class="fas fa-check-circle"></i> Template saved to cloud!';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
+      btn.innerHTML = '✅ Saved!';
+      btn.style.background = '#10b981';
+      showToast('Template saved to cloud!');
+      
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.style.background = '#10b981';
+      }, 1500);
       
     } catch(error) {
       console.error("Error saving template:", error);
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.style.background = '#dc2626';
-      toast.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error saving!';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
+      btn.innerHTML = '❌ Error';
+      btn.style.background = '#dc2626';
+      showToast('Error saving template!', true);
+      
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.style.background = '#10b981';
+      }, 2000);
     }
   };
-  
+
+  // ===== MODAL CONTROLS =====
   window.closeTemplateModal = () => {
     document.getElementById('templateModal').style.display = 'none';
   };
-  
-  // Open modal and load templates
+
   document.getElementById('templateBtn').onclick = async () => {
     await loadTemplatesFromFirebase();
     document.getElementById('templateModal').style.display = 'flex';
   };
-  
+
   // Close modal on outside click
   document.getElementById('templateModal').onclick = (e) => {
     if(e.target === document.getElementById('templateModal')) {
       closeTemplateModal();
     }
   };
-  
-  // Stats
+
+  // ===== UPDATE STATS =====
   async function updateStats() {
-    const leadsSnap = await getDocs(query(collection(db, "leads"), where("status", "==", "pending")));
-    document.getElementById('pendingCount').innerText = leadsSnap.size;
-    const coachingsSnap = await getDocs(collection(db, "coachings"));
-    document.getElementById('activeCount').innerText = coachingsSnap.size;
-    let totalResults = 0;
-    for(const docSnap of coachingsSnap.docs) {
-      const resultsSnap = await getDocs(collection(db, "coachings", docSnap.id, "results"));
-      totalResults += resultsSnap.size;
+    try {
+      // Pending leads
+      const leadsSnap = await db.collection("leads").where("status", "==", "pending").get();
+      document.getElementById('pendingCount').innerText = leadsSnap.size;
+      
+      // Active coachings
+      const coachingsSnap = await db.collection("coachings").get();
+      document.getElementById('activeCount').innerText = coachingsSnap.size;
+      
+      // Total results
+      let totalResults = 0;
+      for(const docSnap of coachingsSnap.docs) {
+        const resultsSnap = await db.collection("coachings").doc(docSnap.id).collection("results").get();
+        totalResults += resultsSnap.size;
+      }
+      document.getElementById('resultsCount').innerText = totalResults;
+    } catch(error) {
+      console.error('Error updating stats:', error);
     }
-    document.getElementById('resultsCount').innerText = totalResults;
   }
+  
   updateStats();
-  setInterval(updateStats, 5000);
+  setInterval(updateStats, 30000); // Update every 30 seconds
+
+  // ===== CHECK ADMIN LOGIN STATUS =====
+  async function checkAdminStatus() {
+    try {
+      const user = auth.currentUser;
+      if(user) {
+        console.log('Admin logged in:', user.email);
+      }
+    } catch(e) {
+      console.log('Admin not logged in');
+    }
+  }
+  
+  auth.onAuthStateChanged((user) => {
+    if(user) {
+      console.log('✅ Admin authenticated:', user.email);
+    }
+  });
+  
+  // ===== INIT =====
+  console.log('✅ GYAN SEVA Dashboard Loaded');
+  console.log('📝 Edit Template 4 for Result Published messages');
 </script>
 </body>
 </html>
