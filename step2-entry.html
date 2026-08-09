@@ -150,7 +150,7 @@
             min-width: 600px;
         }
         
-        /* 🔥 ONLY ROLL NO COLUMN FIXED */
+        /* 🔥 SIRF ROLL NUMBER COLUMN FIXED - Student Name scroll hoga */
         .excel-table .col-roll {
             position: sticky !important;
             z-index: 20 !important;
@@ -161,24 +161,39 @@
             max-width: 80px !important;
         }
         
-        /* 🔥 HEADER ROLL NO FIXED - Higher z-index */
+        /* 🔥 Student Name - Fixed nahi, normal scroll */
+        .excel-table .col-name {
+            position: relative !important;
+            z-index: auto !important;
+            background: white !important;
+            min-width: 180px !important;
+            width: 200px !important;
+        }
+        
+        /* 🔥 Header Roll No - Fixed */
         .excel-table thead .col-roll {
             background: #1a237e !important;
             z-index: 30 !important;
             left: 0 !important;
         }
         
-        /* 🔥 FOOTER (ADD ROW) ROLL NO FIXED */
+        /* 🔥 Header Student Name - Normal */
+        .excel-table thead .col-name {
+            background: #1a237e !important;
+            z-index: auto !important;
+        }
+        
+        /* 🔥 Footer Add Row Roll No - Fixed */
         .excel-table tfoot .col-roll {
             background: #f8faff !important;
             z-index: 25 !important;
             left: 0 !important;
         }
         
-        /* 🔥 STUDENT NAME - NOT FIXED (scrollable) */
-        .col-name { 
-            min-width: 180px; 
-            width: 200px; 
+        /* 🔥 Footer Add Row Student Name - Normal */
+        .excel-table tfoot .col-name {
+            background: #f8faff !important;
+            z-index: auto !important;
         }
         
         .col-father { width: 170px; min-width: 130px; }
@@ -374,8 +389,8 @@
                 height: 32px;
                 font-size: 0.7rem;
             }
-            .col-roll { min-width: 55px; width: 60px; }
             .col-name { width: 120px; min-width: 80px; }
+            .col-roll { min-width: 55px; width: 60px; }
             .col-father { width: 80px; min-width: 60px; }
             .col-subject { width: 75px; min-width: 60px; }
             .col-actions { width: 80px; min-width: 70px; }
@@ -398,7 +413,6 @@
                 height: 42px;
                 font-size: 0.9rem;
             }
-            .col-roll { width: 70px; min-width: 60px; }
             .col-name { width: 220px; min-width: 170px; }
             .col-father { width: 190px; min-width: 145px; }
             .col-subject { width: 130px; min-width: 105px; }
@@ -457,7 +471,7 @@
                         <th class="col-roll">Roll No</th>
                         <th class="col-name">Student Name</th>
                         <th class="col-father">Father Name</th>
-                        <th class="col-subject" id="subjectHeader"></th>
+                        <!-- 🔥 Subject Columns inserted dynamically -->
                         <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
@@ -465,11 +479,12 @@
                     <!-- Students rendered here -->
                 </tbody>
                 <tfoot id="tableFoot">
+                    <!-- 🔥 Add Row (Last Row) -->
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
                         <td class="col-name"><input type="text" class="name-input-add" id="newName" placeholder="Student Name" style="text-transform:capitalize;"></td>
                         <td class="col-father"><input type="text" class="father-input-add" id="newFather" placeholder="Father" style="text-transform:capitalize;"></td>
-                        <td class="col-subject" id="marksInputs"></td>
+                        <!-- Subject inputs inserted dynamically -->
                         <td class="col-actions"></td>
                     </tr>
                 </tfoot>
@@ -614,7 +629,6 @@
     
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
-    const subjectHeader = document.getElementById('subjectHeader');
     const addRow = document.getElementById('addRow');
     const marksInputs = document.getElementById('marksInputs');
     
@@ -659,9 +673,14 @@
     
     // ===== BUILD HEADER =====
     function buildHeader() {
+        // 🔥 Remove old subject headers
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
+        
+        // 🔥 Get reference to Actions column
         const actionsTh = tableHeader.querySelector('.col-actions');
+        
+        // 🔥 Insert subject headers BEFORE Actions
         subjects.forEach((s) => {
             const th = document.createElement('th');
             th.className = 'col-subject';
@@ -672,9 +691,14 @@
     
     // ===== BUILD ADD ROW =====
     function buildAddRow() {
+        // 🔥 Remove old subject input cells
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
+        
+        // 🔥 Get reference to Actions cell
         const actionsTd = addRow.querySelector('.col-actions');
+        
+        // 🔥 Insert subject input cells BEFORE Actions
         subjects.forEach((s) => {
             const td = document.createElement('td');
             td.className = 'col-subject-input';
@@ -729,6 +753,7 @@
         
         let html = '';
         students.forEach((s, idx) => {
+            // 🔥 Marks HTML - Subject columns only
             let marksHtml = '';
             subjects.forEach((sub) => {
                 const mark = s.marks[sub.name] || 0;
@@ -743,7 +768,7 @@
                     <td class="col-roll row-roll">
                         <input type="number" class="roll-input" data-idx="${idx}" value="${s.rollNo}" style="width:100%; border:none; background:transparent; text-align:center; font-weight:600; color:#1a237e; outline:none; font-size:0.85rem;">
                     </td>
-                    <td class="row-name"><input type="text" class="name-input" data-idx="${idx}" value="${capitalizeWords(s.name)}" style="width:100%; text-transform:capitalize;"></td>
+                    <td class="col-name row-name"><input type="text" class="name-input" data-idx="${idx}" value="${capitalizeWords(s.name)}" style="width:100%; text-transform:capitalize;"></td>
                     <td class="row-father"><input type="text" class="father-input" data-idx="${idx}" value="${capitalizeWords(s.fatherName || '')}" style="width:100%; text-transform:capitalize;"></td>
                     ${marksHtml}
                     <td class="row-actions ${actionsClass}">
@@ -873,6 +898,7 @@
     
     // ===== ADD STUDENT =====
     addRowBtn.addEventListener('click', async () => {
+        // 🔥 Save all existing rows' marks
         document.querySelectorAll('.mark-input').forEach(input => {
             const idx = parseInt(input.dataset.idx);
             if (!isNaN(idx) && students[idx]) {
