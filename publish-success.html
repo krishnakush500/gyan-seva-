@@ -56,7 +56,7 @@
             background: white;
             border-radius: 12px;
             padding: 35px 40px;
-            max-width: 520px;
+            max-width: 550px;
             width: 100%;
             box-shadow: 0 4px 16px rgba(26, 35, 126, 0.08);
             border: 1px solid #e2e8f0;
@@ -175,6 +175,103 @@
             margin: 10px 0 16px;
         }
         
+        /* ===== 🔥 SHARE LINK SECTION ===== */
+        .share-link-section {
+            background: #f0f7ff;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin: 14px 0 16px;
+            border: 1.5px dashed #1a237e;
+        }
+        .share-link-section .label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1a237e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .share-link-section .label i {
+            font-size: 0.9rem;
+            color: #ffc107;
+        }
+        .share-link-box {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .share-link-box input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #c8d0dc;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            background: white;
+            color: #1a237e;
+            min-width: 150px;
+            font-weight: 500;
+            outline: none;
+        }
+        .share-link-box input:focus {
+            border-color: #1a237e;
+            box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
+        }
+        .share-link-box .copy-btn {
+            padding: 8px 14px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        .share-link-box .copy-btn:hover {
+            background: #283593;
+            transform: translateY(-1px);
+        }
+        .share-link-box .copy-btn.copied {
+            background: #4caf50;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .share-buttons .share-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            text-decoration: none;
+        }
+        .share-buttons .share-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+        .share-btn.whatsapp { background: #25D366; }
+        .share-btn.telegram { background: #0088cc; }
+        .share-btn.email { background: #ea4335; }
+        .share-btn.copy { background: #1a237e; }
+        
         /* ===== ACTION BUTTONS ===== */
         .btn-group-custom {
             display: flex;
@@ -224,7 +321,7 @@
             color: white;
         }
         
-        /* ===== CONFETTI (Light) ===== */
+        /* ===== CONFETTI ===== */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -254,12 +351,15 @@
             .detail-item .value { font-size: 0.85rem; }
             .btn-custom { font-size: 0.7rem; padding: 6px 14px; }
             .topbar .brand { font-size: 0.75rem; }
+            .share-link-box input { font-size: 0.65rem; padding: 6px 10px; }
+            .share-link-box .copy-btn { font-size: 0.65rem; padding: 6px 12px; }
+            .share-buttons .share-btn { font-size: 0.6rem; padding: 4px 10px; }
         }
     </style>
 </head>
 <body>
 
-<!-- ===== TOP BAR (Same as Entry Sheet) ===== -->
+<!-- ===== TOP BAR ===== -->
 <div class="topbar">
     <div class="brand"><i class="fas fa-table"></i> GYAN SEVA</div>
     <div>
@@ -310,6 +410,33 @@
         <div class="subjects-text" id="displaySubjects">-</div>
     </div>
     
+    <!-- ===== 🔥 SHARE LINK SECTION ===== -->
+    <div class="share-link-section">
+        <div class="label">
+            <i class="fas fa-link"></i> Share Result Link with Students
+        </div>
+        <div class="share-link-box">
+            <input type="text" id="shareLinkInput" readonly value="">
+            <button class="copy-btn" id="copyLinkBtn" onclick="copyShareLink()">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
+        <div class="share-buttons">
+            <button class="share-btn whatsapp" onclick="shareOnWhatsApp()">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </button>
+            <button class="share-btn telegram" onclick="shareOnTelegram()">
+                <i class="fab fa-telegram-plane"></i> Telegram
+            </button>
+            <button class="share-btn email" onclick="shareOnEmail()">
+                <i class="fas fa-envelope"></i> Email
+            </button>
+        </div>
+        <div style="font-size:0.65rem; color:#94a3b8; margin-top:6px;">
+            <i class="fas fa-info-circle"></i> Students can check their result by entering roll number
+        </div>
+    </div>
+    
     <!-- Publish Time -->
     <div class="publish-time">
         <i class="far fa-clock"></i> Published: <span id="displayPublishTime">-</span>
@@ -332,6 +459,7 @@
 <script>
     // ===== LOAD DATA =====
     const successData = JSON.parse(localStorage.getItem('publishSuccessData') || '{}');
+    const schoolId = localStorage.getItem('schoolId') || '';
     
     document.getElementById('displayExamName').textContent = successData.examName || 'Exam';
     document.getElementById('displayClass').textContent = successData.examClass || '-';
@@ -339,7 +467,67 @@
     document.getElementById('displaySession').textContent = successData.examSession || '-';
     document.getElementById('displaySubjects').textContent = successData.subjects || '-';
     
-    // Publish time
+    // ===== 🔥 GENERATE SHAREABLE LINK =====
+    function getShareableLink() {
+        // Use the current domain or localhost
+        const baseUrl = window.location.origin + window.location.pathname.replace('publish-success.html', '');
+        // Link to dashboard.html with school ID
+        return `${baseUrl}dashboard.html?id=${schoolId}`;
+    }
+    
+    // Set share link
+    const shareLinkInput = document.getElementById('shareLinkInput');
+    shareLinkInput.value = getShareableLink();
+    
+    // ===== COPY LINK =====
+    function copyShareLink() {
+        const input = document.getElementById('shareLinkInput');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        
+        try {
+            document.execCommand('copy');
+            const btn = document.getElementById('copyLinkBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('copied');
+            }, 2000);
+        } catch(err) {
+            alert('Please copy the link manually: ' + input.value);
+        }
+    }
+    
+    // ===== SHARE FUNCTIONS =====
+    function getShareText() {
+        const examName = successData.examName || 'Result';
+        const className = successData.examClass || '';
+        const link = getShareableLink();
+        return `📢 *Result Published* 📢\n\n🏫 Exam: ${examName}\n📚 Class: ${className}\n\n🔗 Check your result here:\n${link}\n\nEnter your roll number to view your marks.`;
+    }
+    
+    function shareOnWhatsApp() {
+        const text = getShareText();
+        const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+    }
+    
+    function shareOnTelegram() {
+        const text = getShareText();
+        const url = `https://t.me/share/url?url=${encodeURIComponent(getShareableLink())}&text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+    }
+    
+    function shareOnEmail() {
+        const subject = `${successData.examName || 'Result'} - Published`;
+        const body = getShareText();
+        const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(url, '_blank');
+    }
+    
+    // ===== PUBLISH TIME =====
     const now = new Date();
     document.getElementById('displayPublishTime').textContent = now.toLocaleString('en-IN', {
         day: 'numeric',
@@ -372,6 +560,5 @@
     createConfetti();
     setTimeout(createConfetti, 1500);
 </script>
-
 </body>
 </html>
