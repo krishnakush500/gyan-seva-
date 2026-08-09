@@ -477,17 +477,17 @@
         }
     }
     
-    // ===== 🔥 SHARE TEXT WITH PROPER EMOJIS =====
+    // ===== 🔥 SHARE TEXT - ONLY ASCII + SAFE EMOJIS =====
     function getShareText() {
         const examName = successData.examName || 'Result';
         const className = successData.examClass || '';
         const link = getShareableLink();
-        return `📢 Result Published 📢
+        return `*RESULT PUBLISHED* ✅
 
-🏫 Exam: ${examName}
-📚 Class: ${className}
+Exam: ${examName}
+Class: ${className}
 
-🔗 Check your result here:
+Check your result here:
 ${link}
 
 Enter your roll number to view your marks.`;
