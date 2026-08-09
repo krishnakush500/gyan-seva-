@@ -17,7 +17,6 @@
             padding: 20px;
         }
         
-        /* ===== TOP BAR ===== */
         .topbar {
             position: fixed;
             top: 10px;
@@ -51,7 +50,6 @@
         }
         .topbar .back-btn:hover { background: rgba(255,255,255,0.25); color: white; }
         
-        /* ===== SUCCESS CARD ===== */
         .success-card {
             background: white;
             border-radius: 12px;
@@ -111,7 +109,6 @@
             margin: 16px 0;
         }
         
-        /* ===== DETAILS GRID ===== */
         .details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -146,7 +143,6 @@
         .detail-item.highlight .label { color: rgba(255,255,255,0.7); }
         .detail-item.highlight .value { color: white; }
         
-        /* ===== SUBJECTS ===== */
         .subjects-box {
             background: #f8faff;
             border-radius: 8px;
@@ -175,7 +171,6 @@
             margin: 10px 0 16px;
         }
         
-        /* ===== 🔥 SHARE LINK SECTION ===== */
         .share-link-section {
             background: #f0f7ff;
             border-radius: 10px;
@@ -270,9 +265,7 @@
         .share-btn.whatsapp { background: #25D366; }
         .share-btn.telegram { background: #0088cc; }
         .share-btn.email { background: #ea4335; }
-        .share-btn.copy { background: #1a237e; }
         
-        /* ===== ACTION BUTTONS ===== */
         .btn-group-custom {
             display: flex;
             gap: 8px;
@@ -321,7 +314,6 @@
             color: white;
         }
         
-        /* ===== CONFETTI ===== */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -359,7 +351,6 @@
 </head>
 <body>
 
-<!-- ===== TOP BAR ===== -->
 <div class="topbar">
     <div class="brand"><i class="fas fa-table"></i> GYAN SEVA</div>
     <div>
@@ -367,28 +358,23 @@
     </div>
 </div>
 
-<!-- ===== CONFETTI ===== -->
 <div class="confetti-container" id="confettiContainer"></div>
 
-<!-- ===== SUCCESS CARD ===== -->
 <div class="success-card">
-    <!-- Icon -->
     <div class="success-icon">
         <i class="fas fa-check-circle"></i>
     </div>
     
-    <!-- Exam Name -->
     <div class="exam-name">
         <i class="fas fa-graduation-cap"></i> <span id="displayExamName">-</span>
     </div>
     
     <div class="subtitle">
-        <i class="fas fa-check-circle"></i> Result Published Successfully! 🎉
+        <i class="fas fa-check-circle"></i> Result Published Successfully!
     </div>
     
     <div class="divider"></div>
     
-    <!-- Details Grid -->
     <div class="details-grid">
         <div class="detail-item">
             <div class="label">📚 Class</div>
@@ -404,16 +390,15 @@
         </div>
     </div>
     
-    <!-- Subjects -->
     <div class="subjects-box">
         <div class="label">📋 Subjects</div>
         <div class="subjects-text" id="displaySubjects">-</div>
     </div>
     
-    <!-- ===== 🔥 SHARE LINK SECTION ===== -->
+    <!-- ===== SHARE LINK SECTION ===== -->
     <div class="share-link-section">
         <div class="label">
-            <i class="fas fa-link"></i> Share Result Link with Students 📤
+            <i class="fas fa-link"></i> Share Result Link with Students
         </div>
         <div class="share-link-box">
             <input type="text" id="shareLinkInput" readonly value="">
@@ -437,12 +422,10 @@
         </div>
     </div>
     
-    <!-- Publish Time -->
     <div class="publish-time">
         <i class="far fa-clock"></i> Published: <span id="displayPublishTime">-</span>
     </div>
     
-    <!-- Action Buttons -->
     <div class="btn-group-custom">
         <a href="manage-results.html" class="btn-custom btn-primary-custom">
             <i class="fas fa-arrow-left"></i> Dashboard
@@ -457,12 +440,8 @@
 </div>
 
 <script>
-    // ===== LOAD DATA =====
     const successData = JSON.parse(localStorage.getItem('publishSuccessData') || '{}');
     const schoolId = localStorage.getItem('schoolId') || '';
-    const coachingName = localStorage.getItem('coachingName') || 'GYAN SEVA ACADEMY';
-    const coachingPhone = localStorage.getItem('coachingPhone') || '+91 8252658421';
-    const coachingEmail = localStorage.getItem('coachingEmail') || 'info@gyanseva.com';
     
     document.getElementById('displayExamName').textContent = successData.examName || 'Exam';
     document.getElementById('displayClass').textContent = successData.examClass || '-';
@@ -470,15 +449,13 @@
     document.getElementById('displaySession').textContent = successData.examSession || '-';
     document.getElementById('displaySubjects').textContent = successData.subjects || '-';
     
-    // ===== 🔥 GENERATE SHAREABLE LINK =====
+    // ===== SHAREABLE LINK =====
     function getShareableLink() {
         const baseUrl = window.location.origin + window.location.pathname.replace('publish-success.html', '');
         return `${baseUrl}dashboard.html?id=${schoolId}`;
     }
     
-    // Set share link
-    const shareLinkInput = document.getElementById('shareLinkInput');
-    shareLinkInput.value = getShareableLink();
+    document.getElementById('shareLinkInput').value = getShareableLink();
     
     // ===== COPY LINK =====
     function copyShareLink() {
@@ -489,11 +466,10 @@
         try {
             document.execCommand('copy');
             const btn = document.getElementById('copyLinkBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Copied! ✅';
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
             btn.classList.add('copied');
             setTimeout(() => {
-                btn.innerHTML = originalText;
+                btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
                 btn.classList.remove('copied');
             }, 2000);
         } catch(err) {
@@ -501,42 +477,20 @@
         }
     }
     
-    // ===== 🔥 SHARE TEXT WITH PERFECT EMOJIS =====
+    // ===== 🔥 SHARE TEXT WITH PROPER EMOJIS =====
     function getShareText() {
         const examName = successData.examName || 'Result';
         const className = successData.examClass || '';
-        const examDate = successData.examDate || new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
         const link = getShareableLink();
-        const studentsCount = successData.totalStudents || 0;
-        
-        return `📢 *🎉 RESULT PUBLISHED!* 🎉
+        return `📢 Result Published 📢
 
-🏫 *Institute:* ${coachingName}
-📚 *Exam:* ${examName}
-📖 *Class:* ${className}
-📅 *Date:* ${examDate}
-👨‍🎓 *Students:* ${studentsCount}
+🏫 Exam: ${examName}
+📚 Class: ${className}
 
-━━━━━━━━━━━━━━━━━━━━━━
-🔗 *Check Your Result Here:*
-👇👇👇
+🔗 Check your result here:
 ${link}
-👆👆👆
 
-━━━━━━━━━━━━━━━━━━━━━━
-📝 *How to Check:*
-1️⃣ Click on the link above
-2️⃣ Select your exam
-3️⃣ Enter your Roll Number
-4️⃣ View your marks instantly! 📊
-
-━━━━━━━━━━━━━━━━━━━━━━
-👨‍🏫 *For any query, contact:*
-📞 ${coachingPhone}
-📧 ${coachingEmail}
-
-━━━━━━━━━━━━━━━━━━━━━━
-✅ *Best of luck!* 🌟`;
+Enter your roll number to view your marks.`;
     }
     
     // ===== SHARE FUNCTIONS =====
@@ -553,7 +507,7 @@ ${link}
     }
     
     function shareOnEmail() {
-        const subject = `${successData.examName || 'Result'} - Published 📢`;
+        const subject = `${successData.examName || 'Result'} - Published`;
         const body = getShareText();
         const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.open(url, '_blank');
@@ -573,7 +527,7 @@ ${link}
     // ===== CONFETTI =====
     function createConfetti() {
         const container = document.getElementById('confettiContainer');
-        const colors = ['#1a237e', '#4a6cf7', '#4caf50', '#ffc107', '#f44336', '#e91e63', '#9c27b0'];
+        const colors = ['#1a237e', '#4a6cf7', '#4caf50', '#ffc107', '#f44336'];
         for (let i = 0; i < 50; i++) {
             const c = document.createElement('div');
             c.className = 'confetti';
