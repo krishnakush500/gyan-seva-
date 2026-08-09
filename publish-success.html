@@ -6,6 +6,11 @@
     <title>🎉 Result Published</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
@@ -335,6 +340,13 @@
             100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
         
+        .loading-templates {
+            text-align: center;
+            padding: 8px;
+            font-size: 0.75rem;
+            color: #1a237e;
+        }
+        
         @media (max-width: 480px) {
             .success-card { padding: 24px 18px; margin-top: 60px; }
             .exam-name { font-size: 1.2rem; }
@@ -417,8 +429,8 @@
                 <i class="fas fa-envelope"></i> Email
             </button>
         </div>
-        <div style="font-size:0.65rem; color:#94a3b8; margin-top:6px;">
-            <i class="fas fa-info-circle"></i> Students can check their result by entering roll number
+        <div id="templateStatus" class="loading-templates">
+            <i class="fas fa-spinner fa-spin"></i> Loading template...
         </div>
     </div>
     
@@ -440,6 +452,21 @@
 </div>
 
 <script>
+    // ===== FIREBASE CONFIG =====
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
+        authDomain: "gyan-seva.firebaseapp.com",
+        projectId: "gyan-seva",
+        storageBucket: "gyan-seva.firebasestorage.app",
+        messagingSenderId: "451862212887",
+        appId: "1:451862212887:web:637fd8785c4c01bd448752",
+        measurementId: "G-R375P3YCHP"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ===== LOAD DATA =====
     const successData = JSON.parse(localStorage.getItem('publishSuccessData') || '{}');
     const schoolId = localStorage.getItem('schoolId') || '';
     
@@ -477,21 +504,35 @@
         }
     }
     
-    // ===== 🔥 SHARE TEXT - 100% WhatsApp Compatible =====
-    function getShareText() {
-        const examName = successData.examName || 'Result';
-        const className = successData.examClass || '';
-        const link = getShareableLink();
-        const phone = localStorage.getItem('directorPhone') || '+91 8252658421';
-        const email = localStorage.getItem('directorEmail') || 'info@gyanseva.com';
+    // ===== 🔥 LOAD TEMPLATE FROM FIREBASE =====
+    let templateText = '';
+    const phone = localStorage.getItem('directorPhone') || '+91 8252658421';
+    const email = localStorage.getItem('directorEmail') || 'info@gyanseva.com';
+    
+    async function loadTemplateFromFirebase() {
+        const statusEl = document.getElementById('templateStatus');
         
-        return `*RESULT PUBLISHED* ✅
+        try {
+            const docRef = db.collection("templates").doc("whatsapp_templates");
+            const docSnap = await docRef.get();
+            
+            if(docSnap.exists) {
+                const data = docSnap.data();
+                // Template 4 is for Result Published
+                templateText = data.template4 || '';
+                
+                if(templateText) {
+                    statusEl.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Template loaded from cloud';
+                    statusEl.style.color = '#10b981';
+                } else {
+                    // Fallback template
+                    templateText = `*RESULT PUBLISHED* ✅
 
-Exam: ${examName}
-Class: ${className}
+Exam: {examName}
+Class: {class}
 
 Check your result here:
-${link}
+{link}
 
 Enter your roll number to view your marks.
 
@@ -502,10 +543,83 @@ How to Check:
 4. View your marks instantly!
 
 For any query, contact:
-${phone}
-${email}
+{phone}
+{email}
 
 Best of luck! 🎯`;
+                    statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Using default template (edit in index.html)';
+                    statusEl.style.color = '#64748b';
+                }
+            } else {
+                // Fallback template
+                templateText = `*RESULT PUBLISHED* ✅
+
+Exam: {examName}
+Class: {class}
+
+Check your result here:
+{link}
+
+Enter your roll number to view your marks.
+
+How to Check:
+1. Click on the link above
+2. Select your exam
+3. Enter your Roll Number
+4. View your marks instantly!
+
+For any query, contact:
+{phone}
+{email}
+
+Best of luck! 🎯`;
+                statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Using default template (edit in index.html)';
+                statusEl.style.color = '#64748b';
+            }
+        } catch(error) {
+            console.error('Error loading template:', error);
+            // Fallback template
+            templateText = `*RESULT PUBLISHED* ✅
+
+Exam: {examName}
+Class: {class}
+
+Check your result here:
+{link}
+
+Enter your roll number to view your marks.
+
+How to Check:
+1. Click on the link above
+2. Select your exam
+3. Enter your Roll Number
+4. View your marks instantly!
+
+For any query, contact:
+{phone}
+{email}
+
+Best of luck! 🎯`;
+            statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Using default template';
+            statusEl.style.color = '#f59e0b';
+        }
+    }
+    
+    // ===== 🔥 GET SHARE TEXT WITH VARIABLES =====
+    function getShareText() {
+        const examName = successData.examName || 'Result';
+        const className = successData.examClass || '';
+        const link = getShareableLink();
+        
+        // Replace variables in template
+        let text = templateText;
+        text = text.replace(/{examName}/g, examName);
+        text = text.replace(/{class}/g, className);
+        text = text.replace(/{link}/g, link);
+        text = text.replace(/{phone}/g, phone);
+        text = text.replace(/{email}/g, email);
+        
+        return text;
     }
     
     // ===== SHARE FUNCTIONS =====
@@ -558,8 +672,15 @@ Best of luck! 🎯`;
         }
         setTimeout(() => container.innerHTML = '', 4000);
     }
-    createConfetti();
-    setTimeout(createConfetti, 1500);
+    
+    // ===== INIT =====
+    async function init() {
+        await loadTemplateFromFirebase();
+        createConfetti();
+        setTimeout(createConfetti, 1500);
+    }
+    
+    init();
 </script>
 </body>
 </html>
