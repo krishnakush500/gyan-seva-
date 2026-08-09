@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== ALL STYLES SAME AS BEFORE ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #e8ecf1; min-height: 100vh; padding: 10px; }
         
@@ -372,70 +373,6 @@
             box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
         }
         
-        #publishProgressOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            backdrop-filter: blur(4px);
-        }
-        #publishProgressOverlay.show {
-            display: flex;
-        }
-        .progress-card {
-            background: white;
-            padding: 35px 40px;
-            border-radius: 16px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .progress-card .spinner {
-            font-size: 2.5rem;
-            color: #1a237e;
-            margin-bottom: 15px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .progress-card h4 {
-            color: #1a237e;
-            margin-bottom: 10px;
-        }
-        .progress-card p {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-        }
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .progress-bar-fill {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #1a237e, #4a6cf7);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
-        .progress-percent {
-            margin-top: 8px;
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-        
         @media (max-width: 768px) {
             body { padding: 5px; }
             .topbar { padding: 6px 10px; }
@@ -483,6 +420,7 @@
 </head>
 <body>
 
+<!-- TOP BAR -->
 <div class="topbar">
     <div class="brand"><i class="fas fa-table"></i> GYAN SEVA — Entry Sheet</div>
     <div>
@@ -491,6 +429,7 @@
 </div>
 
 <div class="container">
+    <!-- Exam Summary -->
     <div class="exam-summary" id="examSummary">
         <div class="info">
             <span>📝 <strong id="summaryExamName">-</strong></span>
@@ -530,7 +469,9 @@
                         <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody"></tbody>
+                <tbody id="tableBody">
+                    <!-- Students rendered here -->
+                </tbody>
                 <tfoot id="tableFoot">
                     <tr class="add-row" id="addRow">
                         <td class="col-roll"><input type="number" class="roll-input-add" id="newRoll" placeholder="Roll" value="1"></td>
@@ -554,7 +495,7 @@
     </div>
 </div>
 
-<!-- MODALS -->
+<!-- ===== EDIT SUBJECT MODAL ===== -->
 <div class="modal fade edit-subject-modal" id="editSubjectModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -571,6 +512,7 @@
     </div>
 </div>
 
+<!-- ===== EDIT EXAM DETAILS MODAL ===== -->
 <div class="modal fade edit-modal" id="editExamModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -623,23 +565,11 @@
     </div>
 </div>
 
-<div id="publishProgressOverlay">
-    <div class="progress-card">
-        <div class="spinner"><i class="fas fa-spinner"></i></div>
-        <h4>Publishing Result</h4>
-        <p id="publishProgressText">Preparing...</p>
-        <div class="progress-bar-container">
-            <div class="progress-bar-fill" id="publishProgressBar"></div>
-        </div>
-        <div class="progress-percent" id="publishProgressPercent">0%</div>
-    </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { 
         getFirestore, 
         collection, 
@@ -649,6 +579,7 @@
         updateDoc, 
         deleteDoc, 
         query, 
+        orderBy,
         serverTimestamp,
         where,
         getDoc
@@ -680,16 +611,19 @@
     let publishedId = examData.publishedId || null;
     let autoFetchEnabled = false;
     
-    // DOM
+    // ===== DOM =====
     const summaryExamName = document.getElementById('summaryExamName');
     const summaryClass = document.getElementById('summaryClass');
     const summaryDate = document.getElementById('summaryDate');
     const summarySession = document.getElementById('summarySession');
     const summarySubjects = document.getElementById('summarySubjects');
     const summaryStudents = document.getElementById('summaryStudents');
+    
     const tableBody = document.getElementById('tableBody');
     const tableHeader = document.getElementById('tableHeader');
     const addRow = document.getElementById('addRow');
+    const marksInputs = document.getElementById('marksInputs');
+    
     const newRoll = document.getElementById('newRoll');
     const newName = document.getElementById('newName');
     const newFather = document.getElementById('newFather');
@@ -697,8 +631,10 @@
     const clearAllBtn = document.getElementById('clearAllBtn');
     const saveDraftBtn = document.getElementById('saveDraftBtn');
     const publishResultBtn = document.getElementById('publishResultBtn');
+    
     const autoFetchToggle = document.getElementById('autoFetchToggle');
     const autoFetchStatus = document.getElementById('autoFetchStatus');
+    
     const editExamModal = new bootstrap.Modal(document.getElementById('editExamModal'));
     const editSubjectModal = new bootstrap.Modal(document.getElementById('editSubjectModal'));
     const editSubjectBody = document.getElementById('editSubjectBody');
@@ -710,10 +646,6 @@
     const editExamDetailsBtn = document.getElementById('editExamDetailsBtn');
     const editSubjectBtn = document.getElementById('editSubjectBtn');
     const saveSubjectBtn = document.getElementById('saveSubjectBtn');
-    const progressOverlay = document.getElementById('publishProgressOverlay');
-    const progressBar = document.getElementById('publishProgressBar');
-    const progressText = document.getElementById('publishProgressText');
-    const progressPercent = document.getElementById('publishProgressPercent');
     
     function capitalizeWords(text) {
         if (!text) return '';
@@ -723,23 +655,7 @@
         }).join(' ');
     }
     
-    function showPublishProgress() {
-        progressOverlay.classList.add('show');
-        progressBar.style.width = '0%';
-        progressPercent.textContent = '0%';
-        progressText.textContent = 'Preparing...';
-    }
-    
-    function updatePublishProgress(percent, text) {
-        progressBar.style.width = percent + '%';
-        progressPercent.textContent = percent + '%';
-        if (text) progressText.textContent = text;
-    }
-    
-    function hidePublishProgress() {
-        progressOverlay.classList.remove('show');
-    }
-    
+    // ===== AUTO FETCH TOGGLE =====
     autoFetchToggle.addEventListener('click', () => {
         autoFetchEnabled = !autoFetchEnabled;
         autoFetchToggle.classList.toggle('active');
@@ -747,6 +663,7 @@
         autoFetchStatus.classList.toggle('active');
     });
     
+    // ===== BUILD HEADER =====
     function buildHeader() {
         const oldSubjectHeaders = tableHeader.querySelectorAll('.col-subject');
         oldSubjectHeaders.forEach(el => el.remove());
@@ -759,6 +676,7 @@
         });
     }
     
+    // ===== BUILD ADD ROW =====
     function buildAddRow() {
         const oldSubjectInputs = addRow.querySelectorAll('.col-subject-input');
         oldSubjectInputs.forEach(el => el.remove());
@@ -771,13 +689,29 @@
         });
     }
     
+    function buildMarksInputs() {
+        let html = '';
+        subjects.forEach((s) => {
+            html += `<input type="number" class="marks-input-add" data-subject="${s.name}" min="0" max="${s.total}" placeholder="0" style="max-width:60px; width:100%;">`;
+        });
+        marksInputs.innerHTML = html;
+    }
+    
+    // ===== 🔥 AUTO FETCH WITH PROGRESS =====
     async function autoFetchStudent(rollNumber, nameInput, fatherInput) {
         if (!autoFetchEnabled) return;
         if (!rollNumber || rollNumber < 1) return;
         if (!schoolId) return;
+        
         const classValue = examData.examClass || '';
         const sessionValue = examData.examSession || '2026-2027';
         if (!classValue) return;
+        
+        const originalText = autoFetchStatus.textContent;
+        const originalColor = autoFetchStatus.style.color;
+        autoFetchStatus.textContent = '⏳ Searching...';
+        autoFetchStatus.style.color = '#1a237e';
+        
         try {
             const q = query(
                 collection(db, "schools", schoolId, "students"),
@@ -786,6 +720,7 @@
                 where("session", "==", sessionValue)
             );
             const snap = await getDocs(q);
+            
             if (!snap.empty) {
                 const data = snap.docs[0].data();
                 nameInput.value = capitalizeWords(data.name || '');
@@ -796,18 +731,33 @@
                     autoFetchStatus.textContent = autoFetchEnabled ? 'ON' : 'OFF';
                     autoFetchStatus.style.color = autoFetchEnabled ? '#1a237e' : '#64748b';
                 }, 1500);
+            } else {
+                autoFetchStatus.textContent = '❌ Not found';
+                autoFetchStatus.style.color = '#dc2626';
+                setTimeout(() => {
+                    autoFetchStatus.textContent = autoFetchEnabled ? 'ON' : 'OFF';
+                    autoFetchStatus.style.color = autoFetchEnabled ? '#1a237e' : '#64748b';
+                }, 1500);
             }
         } catch(error) {
             console.error('Auto fetch error:', error);
+            autoFetchStatus.textContent = '❌ Error';
+            autoFetchStatus.style.color = '#dc2626';
+            setTimeout(() => {
+                autoFetchStatus.textContent = autoFetchEnabled ? 'ON' : 'OFF';
+                autoFetchStatus.style.color = autoFetchEnabled ? '#1a237e' : '#64748b';
+            }, 1500);
         }
     }
     
+    // ===== RENDER STUDENTS =====
     function renderTable() {
         if (students.length === 0) {
             tableBody.innerHTML = '';
             updateSummary();
             return;
         }
+        
         let html = '';
         students.forEach((s, idx) => {
             let marksHtml = '';
@@ -815,8 +765,10 @@
                 const mark = s.marks[sub.name] || 0;
                 marksHtml += `<td class="row-marks"><input type="number" class="mark-input" data-idx="${idx}" data-subject="${sub.name}" value="${mark}" min="0" max="${sub.total}" style="max-width:60px; width:100%;"></td>`;
             });
+            
             const hasName = s.name && s.name.trim().length > 0;
             const actionsClass = hasName ? 'visible' : 'hidden';
+            
             html += `
                 <tr>
                     <td class="col-roll row-roll">
@@ -832,29 +784,36 @@
                 </tr>
             `;
         });
+        
         tableBody.innerHTML = html;
         summaryStudents.textContent = students.length;
         updateSummary();
+        
         attachEventListeners();
     }
     
+    // ===== EVENT LISTENERS =====
     function attachEventListeners() {
         document.querySelectorAll('.roll-input').forEach(input => {
             input.onchange = handleRollChange;
         });
+        
         document.querySelectorAll('.name-input').forEach(input => {
             input.oninput = handleNameInput;
             input.onchange = handleNameChange;
         });
+        
         document.querySelectorAll('.father-input').forEach(input => {
             input.oninput = handleFatherInput;
             input.onchange = handleFatherChange;
         });
+        
         document.querySelectorAll('.mark-input').forEach(input => {
             input.onchange = handleMarkChange;
         });
     }
     
+    // ===== EVENT HANDLERS =====
     async function handleRollChange(e) {
         const idx = parseInt(this.dataset.idx);
         const roll = parseInt(this.value);
@@ -906,11 +865,13 @@
             const sub = this.dataset.subject;
             const maxMarks = subjects.find(s => s.name === sub)?.total || 100;
             let val = parseInt(this.value) || 0;
+            
             if (val > maxMarks) {
                 alert(`${sub} marks cannot exceed ${maxMarks}`);
                 this.value = students[idx].marks[sub] || 0;
                 return;
             }
+            
             students[idx].marks[sub] = val;
             updateSummary();
         }
@@ -930,14 +891,62 @@
         newRoll.value = maxRoll + 1;
     }
     
+    // ===== INIT =====
     function init() {
         buildHeader();
         buildAddRow();
+        buildMarksInputs();
         updateSummary();
         renderTable();
         updateRollNumber();
     }
     
+    // ===== 🔥 PROGRESS BAR FUNCTIONS =====
+    function showPublishProgress() {
+        const overlay = document.createElement('div');
+        overlay.id = 'publishProgressOverlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(4px);
+        `;
+        overlay.innerHTML = `
+            <div style="background: white; padding: 35px 40px; border-radius: 16px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2.5rem; color: #1a237e; margin-bottom: 15px;"></i>
+                <h4 style="color: #1a237e; margin-bottom: 10px;">Publishing Result</h4>
+                <p id="publishProgressText" style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">Preparing...</p>
+                <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden;">
+                    <div id="publishProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #1a237e, #4a6cf7); border-radius: 10px; transition: width 0.3s ease;"></div>
+                </div>
+                <div style="margin-top: 8px; font-size: 0.75rem; color: #94a3b8;" id="publishProgressPercent">0%</div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+    
+    function updatePublishProgress(percent, text) {
+        const bar = document.getElementById('publishProgressBar');
+        const textEl = document.getElementById('publishProgressText');
+        const percentEl = document.getElementById('publishProgressPercent');
+        if (bar) bar.style.width = percent + '%';
+        if (textEl) textEl.textContent = text;
+        if (percentEl) percentEl.textContent = percent + '%';
+    }
+    
+    function hidePublishProgress() {
+        const overlay = document.getElementById('publishProgressOverlay');
+        if (overlay) overlay.remove();
+    }
+    
+    // ===== ADD STUDENT =====
     addRowBtn.addEventListener('click', async () => {
         document.querySelectorAll('.mark-input').forEach(input => {
             const idx = parseInt(input.dataset.idx);
@@ -953,6 +962,7 @@
                 students[idx].marks[sub] = val;
             }
         });
+        
         document.querySelectorAll('.name-input').forEach(input => {
             const idx = parseInt(input.dataset.idx);
             if (!isNaN(idx) && students[idx]) {
@@ -965,11 +975,13 @@
                 students[idx].fatherName = input.value;
             }
         });
+        
         if (editingIndex !== null) {
             const roll = parseInt(newRoll.value) || 1;
             const name = capitalizeWords(newName.value.trim());
             const father = capitalizeWords(newFather.value.trim());
             if (!name) { alert('Enter name'); return; }
+            
             const marks = {};
             let valid = true;
             document.querySelectorAll('.marks-input-add').forEach(input => {
@@ -984,19 +996,25 @@
                 marks[sub] = val;
             });
             if (!valid) return;
+            
             students[editingIndex] = { rollNo: roll, name, fatherName: father, marks };
             renderTable();
             updateSummary();
-            editingIndex = null;
-            newName.value = '';
-            newFather.value = '';
-            document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
-            updateRollNumber();
+            cancelEdit();
+            
+            setTimeout(() => {
+                const lastRow = tableBody.lastElementChild;
+                if (lastRow) {
+                    lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
             return;
         }
+        
         const roll = parseInt(newRoll.value) || 1;
         let name = capitalizeWords(newName.value.trim());
         const father = capitalizeWords(newFather.value.trim());
+        
         if (!name && autoFetchEnabled && schoolId) {
             const classValue = examData.examClass || '';
             const sessionValue = examData.examSession || '2026-2027';
@@ -1018,7 +1036,9 @@
                 } catch(e) {}
             }
         }
+        
         if (!name) { alert('Please enter student name'); return; }
+        
         const marks = {};
         let valid = true;
         document.querySelectorAll('.marks-input-add').forEach(input => {
@@ -1033,6 +1053,7 @@
             marks[sub] = val;
         });
         if (!valid) return;
+        
         students.push({ rollNo: roll, name, fatherName: father || capitalizeWords(newFather.value.trim()), marks });
         renderTable();
         updateSummary();
@@ -1040,8 +1061,16 @@
         newName.value = '';
         newFather.value = '';
         document.querySelectorAll('.marks-input-add').forEach(input => input.value = '');
+        
+        setTimeout(() => {
+            const lastRow = tableBody.lastElementChild;
+            if (lastRow) {
+                lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 100);
     });
     
+    // ===== CLEAR STUDENT =====
     window.clearStudent = function(idx) {
         if (confirm(`Clear all data for student "${students[idx].name}"?`)) {
             const s = students[idx];
@@ -1053,6 +1082,7 @@
         }
     };
     
+    // ===== DELETE STUDENT =====
     window.deleteStudent = function(idx) {
         const name = students[idx].name || 'this student';
         if (confirm(`Delete "${name}" permanently?`)) {
@@ -1063,6 +1093,7 @@
         }
     };
     
+    // ===== CLEAR ALL =====
     clearAllBtn.addEventListener('click', () => {
         if (confirm('Delete all students?')) {
             students = [];
@@ -1072,6 +1103,7 @@
         }
     });
     
+    // ===== EDIT EXAM DETAILS =====
     editExamDetailsBtn.addEventListener('click', () => {
         modalExamName.value = examData.examName || '';
         modalExamClass.value = examData.examClass || '';
@@ -1090,6 +1122,7 @@
         alert('Exam details updated!');
     });
     
+    // ===== EDIT SUBJECTS =====
     editSubjectBtn.addEventListener('click', () => {
         let html = '';
         subjects.forEach((s, idx) => {
@@ -1101,9 +1134,12 @@
                 </div>
             `;
         });
-        html += `<button class="btn btn-sm btn-primary" id="addSubjectFieldBtn"><i class="fas fa-plus"></i> Add Subject</button>`;
+        html += `
+            <button class="btn btn-sm btn-primary" id="addSubjectFieldBtn"><i class="fas fa-plus"></i> Add Subject</button>
+        `;
         editSubjectBody.innerHTML = html;
         editSubjectModal.show();
+        
         document.querySelectorAll('.edit-subject-name').forEach(input => {
             input.addEventListener('input', function() {
                 const cursorPos = this.selectionStart;
@@ -1111,6 +1147,7 @@
                 this.setSelectionRange(cursorPos, cursorPos);
             });
         });
+        
         document.querySelectorAll('.remove-subject-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.dataset.idx);
@@ -1122,11 +1159,13 @@
                 editSubjectModal.hide();
                 buildHeader();
                 buildAddRow();
+                buildMarksInputs();
                 renderTable();
                 updateSummary();
                 editSubjectBtn.click();
             });
         });
+        
         document.getElementById('addSubjectFieldBtn').addEventListener('click', function() {
             if (subjects.length >= 10) {
                 alert('Maximum 10 subjects allowed!');
@@ -1136,6 +1175,7 @@
             editSubjectModal.hide();
             buildHeader();
             buildAddRow();
+            buildMarksInputs();
             renderTable();
             updateSummary();
             editSubjectBtn.click();
@@ -1147,27 +1187,33 @@
         const totalInputs = document.querySelectorAll('.edit-subject-total');
         let newSubjects = [];
         let valid = true;
+        
         nameInputs.forEach((input, idx) => {
             const name = capitalizeWords(input.value.trim());
             const total = parseInt(totalInputs[idx].value);
             if (!name || isNaN(total) || total < 1) { valid = false; return; }
             newSubjects.push({ name, total });
         });
+        
         if (!valid) { alert('Please fill all subject fields correctly'); return; }
         if (newSubjects.length === 0) { alert('Please add at least one subject'); return; }
+        
         subjects = newSubjects;
         editSubjectModal.hide();
         buildHeader();
         buildAddRow();
+        buildMarksInputs();
         renderTable();
         updateSummary();
         alert('Subjects updated successfully!');
     });
     
+    // ===== SAVE DRAFT =====
     saveDraftBtn.addEventListener('click', async () => {
         if (!examData.examName) { alert('Please enter exam name'); return; }
         if (students.length === 0) { alert('Please add at least one student'); return; }
         if (!schoolId) { alert('Institute not found'); return; }
+        
         try {
             const data = {
                 examName: examData.examName,
@@ -1178,6 +1224,7 @@
                 students: students,
                 createdAt: serverTimestamp()
             };
+            
             if (isEditingDraft && draftId) {
                 await updateDoc(doc(db, "schools", schoolId, "draft_results", draftId), data);
                 alert('Draft updated!');
@@ -1185,6 +1232,7 @@
                 await addDoc(collection(db, "schools", schoolId, "draft_results"), data);
                 alert('Draft saved!');
             }
+            
             setTimeout(() => {
                 window.close();
                 window.location.href = 'manage-results.html';
@@ -1194,7 +1242,7 @@
         }
     });
     
-    // ===== 🔥 FIXED PUBLISH RESULT =====
+    // ===== 🔥 PUBLISH RESULT WITH PROGRESS BAR =====
     publishResultBtn.addEventListener('click', async () => {
         if (!examData.examName) { alert('Please enter exam name'); return; }
         if (students.length === 0) { alert('Please add at least one student'); return; }
@@ -1204,6 +1252,7 @@
             if (!confirm('Update the existing published result?')) return;
         }
         
+        // 🔥 Show progress bar
         showPublishProgress();
         
         try {
@@ -1247,6 +1296,7 @@
                     schoolId: schoolId,
                     updatedAt: serverTimestamp()
                 };
+                
                 const q = query(
                     collection(db, "schools", schoolId, "students"),
                     where("rollNo", "==", student.rollNo),
@@ -1254,6 +1304,7 @@
                     where("session", "==", sessionValue)
                 );
                 const snap = await getDocs(q);
+                
                 if (snap.empty) {
                     studentData.createdAt = serverTimestamp();
                     await addDoc(collection(db, "schools", schoolId, "students"), studentData);
@@ -1263,15 +1314,18 @@
             }
             
             updatePublishProgress(90, 'Finalizing...');
+            
             await new Promise(resolve => setTimeout(resolve, 300));
+            
             updatePublishProgress(100, '✅ Done!');
             
-            // 🔥 DIRECT REDIRECT - ONLY PUBLISHED SECTION
+            // 🔥 Wait then redirect to published results in SAME TAB
             setTimeout(() => {
                 hidePublishProgress();
                 alert('✅ Result published successfully!');
-                // 🔥 FORCE REDIRECT WITH showPublished=true
-                window.location.replace('manage-results.html?showPublished=true&t=' + Date.now());
+                
+                // 🔥 Redirect to manage-results.html with published section open
+                window.location.href = 'manage-results.html?showPublished=true';
             }, 500);
             
         } catch(error) {
@@ -1280,8 +1334,9 @@
         }
     });
     
+    // ===== INIT =====
     init();
-    console.log('✅ Entry Sheet Loaded');
+    console.log('✅ Step 2 Entry Loaded:', examData);
 </script>
 </body>
 </html>
