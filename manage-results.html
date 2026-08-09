@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== ALL STYLES SAME AS BEFORE ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #f0f2f5; min-height: 100vh; }
         
@@ -430,19 +431,24 @@
         return params.get('coachingId');
     }
 
-    // ===== 🔥 CHECK URL PARAMETERS =====
+    // ===== 🔥 FAST URL PARAM CHECK =====
     function checkURLParams() {
         const params = new URLSearchParams(window.location.search);
         const showPublished = params.get('showPublished');
         if (showPublished === 'true') {
-            // 🔥 Directly show published results section
-            setTimeout(() => {
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                oldResultsSection.classList.add('active');
-                loadOldResults();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                console.log('✅ Published results section opened automatically!');
-            }, 600);
+            // 🔥 HIDE ALL SECTIONS FIRST
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            
+            // 🔥 SHOW ONLY PUBLISHED SECTION
+            oldResultsSection.classList.add('active');
+            
+            // 🔥 LOAD RESULTS IMMEDIATELY
+            loadOldResults();
+            
+            // 🔥 SCROLL TO TOP
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            console.log('✅ Published results opened!');
         }
     }
 
@@ -455,8 +461,6 @@
             document.getElementById('instituteName').textContent = 'No ID';
             document.getElementById('welcomeInstitute').textContent = 'No ID';
             document.getElementById('topbarInstituteName').textContent = 'No ID';
-            // 🔥 Still check URL params even if no ID
-            checkURLParams();
             return;
         }
         try {
@@ -481,7 +485,7 @@
                 
                 localStorage.setItem('schoolId', coachingId);
                 
-                // 🔥 Check URL params after loading
+                // 🔥 CHECK URL PARAMS AFTER LOAD
                 checkURLParams();
             }
         } catch(error) {
@@ -752,7 +756,7 @@
         }
     }
 
-    // ===== 🔥 LOAD PUBLISHED =====
+    // ===== LOAD PUBLISHED =====
     async function loadOldResults() {
         if (!schoolId) {
             oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
