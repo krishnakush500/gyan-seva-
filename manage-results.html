@@ -194,7 +194,7 @@
 </head>
 <body>
 
-<!-- ===== 🔥 TOP BAR WITH LOGO & COACHING NAME ===== -->
+<!-- TOP BAR -->
 <div class="topbar">
     <div class="brand">
         <img id="topbarLogo" src="https://via.placeholder.com/32?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/32?text=Logo'">
@@ -430,6 +430,22 @@
         return params.get('coachingId');
     }
 
+    // ===== 🔥 CHECK URL PARAMETERS =====
+    function checkURLParams() {
+        const params = new URLSearchParams(window.location.search);
+        const showPublished = params.get('showPublished');
+        if (showPublished === 'true') {
+            // 🔥 Directly show published results section
+            setTimeout(() => {
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                oldResultsSection.classList.add('active');
+                loadOldResults();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                console.log('✅ Published results section opened automatically!');
+            }, 600);
+        }
+    }
+
     async function loadInstituteFromCoachingId(coachingId) {
         if (!coachingId) {
             const savedId = localStorage.getItem('schoolId');
@@ -439,6 +455,8 @@
             document.getElementById('instituteName').textContent = 'No ID';
             document.getElementById('welcomeInstitute').textContent = 'No ID';
             document.getElementById('topbarInstituteName').textContent = 'No ID';
+            // 🔥 Still check URL params even if no ID
+            checkURLParams();
             return;
         }
         try {
@@ -451,19 +469,20 @@
                 const logo = schoolData.logoUrl || '';
                 const director = schoolData.director || 'Teacher';
                 
-                // 🔥 Update Top Bar
                 document.getElementById('topbarInstituteName').textContent = name;
                 document.getElementById('instituteName').textContent = name;
                 document.getElementById('welcomeInstitute').textContent = name;
                 document.getElementById('teacherName').textContent = director;
                 
-                // 🔥 Update Logo
                 if (logo) {
                     document.getElementById('topbarLogo').src = logo;
                     document.getElementById('instituteLogo').src = logo;
                 }
                 
                 localStorage.setItem('schoolId', coachingId);
+                
+                // 🔥 Check URL params after loading
+                checkURLParams();
             }
         } catch(error) {
             console.error('Error:', error);
@@ -733,7 +752,7 @@
         }
     }
 
-    // ===== LOAD PUBLISHED =====
+    // ===== 🔥 LOAD PUBLISHED =====
     async function loadOldResults() {
         if (!schoolId) {
             oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
