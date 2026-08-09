@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== ALL STYLES SAME AS BEFORE ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #f0f2f5; min-height: 100vh; }
         
@@ -190,19 +191,11 @@
             .btn { font-size: 0.85rem; padding: 8px 18px; }
             .class-dropdown { font-size: 0.9rem; padding: 8px 12px; }
         }
-        
-        @keyframes highlightPulse {
-            0% { box-shadow: 0 0 0 0 rgba(26, 35, 126, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(26, 35, 126, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(26, 35, 126, 0); }
-        }
-        .section-highlight {
-            animation: highlightPulse 0.8s ease-out 2;
-        }
     </style>
 </head>
 <body>
 
+<!-- TOP BAR -->
 <div class="topbar">
     <div class="brand">
         <img id="topbarLogo" src="https://via.placeholder.com/32?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/32?text=Logo'">
@@ -219,6 +212,7 @@
 </div>
 
 <div class="container">
+    <!-- Welcome Card -->
     <div class="welcome-card">
         <img id="instituteLogo" class="institute-logo" src="https://via.placeholder.com/40?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/40?text=Logo'">
         <div class="welcome-text">
@@ -227,6 +221,7 @@
         </div>
     </div>
 
+    <!-- ===== DASHBOARD CARDS ===== -->
     <div id="dashboardSection" class="section active">
         <div class="row g-2">
             <div class="col-4">
@@ -256,11 +251,13 @@
         </div>
     </div>
 
+    <!-- ===== STEP 1: EXAM SETUP ===== -->
     <div id="createResultSection" class="section">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <h5 class="mb-0"><i class="fas fa-plus-circle text-primary"></i> Create Result</h5>
             <button id="backToDashboardBtn" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></button>
         </div>
+        
         <div class="card mb-3">
             <div class="card-header bg-primary text-white py-2">
                 <h6 class="mb-0">📋 Step 1: Exam Setup</h6>
@@ -311,7 +308,9 @@
                 </div>
             </div>
         </div>
+        
         <div id="subjectFields" class="mb-3"></div>
+        
         <div id="step1NextBtn" class="d-none text-center">
             <button id="nextToStudentEntryBtn" class="btn btn-success btn-sm">
                 <i class="fas fa-arrow-right"></i> Next → 
@@ -320,6 +319,7 @@
         </div>
     </div>
 
+    <!-- ===== DRAFT RESULTS SECTION ===== -->
     <div id="draftResultsSection" class="section">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <h5 class="mb-0"><i class="fas fa-file-draft text-warning"></i> Drafts</h5>
@@ -328,15 +328,17 @@
         <div id="draftResultsList" class="row g-2"></div>
     </div>
 
+    <!-- ===== PUBLISHED RESULTS SECTION ===== -->
     <div id="oldResultsSection" class="section">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="mb-0"><i class="fas fa-history text-info"></i> Published Results</h5>
+            <h5 class="mb-0"><i class="fas fa-history text-info"></i> Published</h5>
             <button id="backToDashboardBtn3" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i></button>
         </div>
         <div id="oldResultsList" class="row g-2"></div>
     </div>
 </div>
 
+<!-- ===== RESULT VIEW MODAL ===== -->
 <div class="modal fade" id="resultModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -353,6 +355,7 @@
     </div>
 </div>
 
+<!-- ===== EDIT PUBLISHED CONFIRM MODAL ===== -->
 <div class="modal fade" id="editPublishedConfirmModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -372,9 +375,16 @@
     </div>
 </div>
 
+<!-- ===== TOASTS ===== -->
 <div id="successToast" class="toast align-items-center text-bg-success border-0 success-message" role="alert">
     <div class="d-flex">
         <div class="toast-body" id="toastMessage">Saved!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+</div>
+<div id="publishedToast" class="toast align-items-center text-bg-success border-0 success-message published-toast" role="alert" style="display: none;">
+    <div class="d-flex">
+        <div class="toast-body">✅ Published!</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
 </div>
@@ -383,7 +393,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { 
         getFirestore, 
         collection, 
@@ -421,42 +431,25 @@
         return params.get('coachingId');
     }
 
-    // ===== 🔥 FORCE OPEN PUBLISHED SECTION =====
-    function forceOpenPublishedSection() {
+    // ===== 🔥 FAST URL PARAM CHECK =====
+    function checkURLParams() {
         const params = new URLSearchParams(window.location.search);
         const showPublished = params.get('showPublished');
-        
         if (showPublished === 'true') {
-            console.log('🔥 Force opening published section...');
-            
-            // Hide ALL sections
+            // 🔥 HIDE ALL SECTIONS FIRST
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             
-            // Show ONLY published section
-            const oldResultsSection = document.getElementById('oldResultsSection');
+            // 🔥 SHOW ONLY PUBLISHED SECTION
             oldResultsSection.classList.add('active');
-            oldResultsSection.classList.add('section-highlight');
             
-            // Load results
+            // 🔥 LOAD RESULTS IMMEDIATELY
             loadOldResults();
             
-            // Scroll to top
+            // 🔥 SCROLL TO TOP
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
-            // Remove highlight after animation
-            setTimeout(() => {
-                oldResultsSection.classList.remove('section-highlight');
-            }, 2000);
-            
-            // 🔥 Remove parameter from URL after opening
-            setTimeout(() => {
-                const newUrl = window.location.pathname + window.location.search.replace(/[?&]showPublished=true/, '').replace(/[?&]t=\d+/, '');
-                window.history.replaceState({}, document.title, newUrl);
-            }, 100);
-            
-            return true;
+            console.log('✅ Published results opened!');
         }
-        return false;
     }
 
     async function loadInstituteFromCoachingId(coachingId) {
@@ -492,12 +485,8 @@
                 
                 localStorage.setItem('schoolId', coachingId);
                 
-                // 🔥 Check and force open published section
-                const opened = forceOpenPublishedSection();
-                if (!opened) {
-                    // If not opening published, show dashboard
-                    showSection(dashboardSection);
-                }
+                // 🔥 CHECK URL PARAMS AFTER LOAD
+                checkURLParams();
             }
         } catch(error) {
             console.error('Error:', error);
@@ -515,7 +504,7 @@
     const coachingId = getCoachingIdFromURL() || localStorage.getItem('schoolId');
     loadInstituteFromCoachingId(coachingId);
 
-    // DOM
+    // ===== DOM ELEMENTS =====
     const dashboardSection = document.getElementById('dashboardSection');
     const createResultSection = document.getElementById('createResultSection');
     const draftResultsSection = document.getElementById('draftResultsSection');
@@ -547,10 +536,17 @@
     const resultDetails = document.getElementById('resultDetails');
     const downloadPdfBtn = document.getElementById('downloadPdfBtn');
     
+    const editPublishedConfirmModal = new bootstrap.Modal(document.getElementById('editPublishedConfirmModal'));
+    const dontSaveConfirmBtn = document.getElementById('dontSaveConfirmBtn');
+    const saveDraftConfirmBtn = document.getElementById('saveDraftConfirmBtn');
+    const saveChangesConfirmBtn = document.getElementById('saveChangesConfirmBtn');
+    
     const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+    const publishedToast = new bootstrap.Toast(document.getElementById('publishedToast'));
     const toastMessage = document.getElementById('toastMessage');
 
     let subjects = [];
+    let editingDraftId = null;
 
     function showSection(section) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -562,6 +558,7 @@
         successToast.show();
     }
 
+    // ===== NAVIGATION =====
     createResultBtn.addEventListener('click', () => { resetCreateResultForm(); showSection(createResultSection); });
     draftResultsBtn.addEventListener('click', () => { loadDraftResults(); showSection(draftResultsSection); });
     oldResultsBtn.addEventListener('click', () => { loadOldResults(); showSection(oldResultsSection); });
@@ -570,6 +567,7 @@
     backToDashboardBtn2.addEventListener('click', () => showSection(dashboardSection));
     backToDashboardBtn3.addEventListener('click', () => showSection(dashboardSection));
 
+    // ===== DELETE SUBJECT =====
     window.deleteSubject = function(index) {
         if (confirm('Delete this subject?')) {
             const boxes = subjectFields.querySelectorAll('.subject-box');
@@ -594,10 +592,12 @@
         }
     };
 
+    // ===== STEP 1: GENERATE SUBJECTS =====
     generateSubjectFieldsBtn.addEventListener('click', () => {
         const count = parseInt(subjectCountInput.value);
         if (count < 1) { alert('Please enter valid number of subjects'); return; }
         if (count > 10) { alert('Maximum 10 subjects allowed!'); return; }
+        
         if (!examNameInput.value.trim()) { alert('Please enter Exam Name'); return; }
         if (!examClassSelect.value) { alert('Please select Class'); return; }
         if (!examDateInput.value) { alert('Please select Exam Date'); return; }
@@ -633,23 +633,28 @@
             });
         }
         step1NextBtn.classList.remove('d-none');
+        
         setTimeout(() => {
             subjectFields.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
     });
 
+    // ===== STEP 1: NEXT =====
     nextToStudentEntryBtn.addEventListener('click', () => {
         const nameInputs = document.querySelectorAll('.subject-name');
         const totalInputs = document.querySelectorAll('.subject-total');
         subjects = [];
         let valid = true;
+        
         for (let i = 0; i < nameInputs.length; i++) {
             const name = nameInputs[i].value.trim();
             const total = parseInt(totalInputs[i].value);
             if (!name || isNaN(total) || total < 1) { valid = false; break; }
             subjects.push({ name, total });
         }
+        
         if (!valid) { alert('Please fill all subject fields correctly'); return; }
+        
         const examData = {
             examName: examNameInput.value.trim(),
             examClass: examClassSelect.value,
@@ -659,6 +664,7 @@
         };
         localStorage.setItem('examData', JSON.stringify(examData));
         localStorage.setItem('schoolId', schoolId);
+        
         window.open('step2-entry.html', '_blank');
     });
 
@@ -673,6 +679,7 @@
         subjects = [];
     }
 
+    // ===== LOAD DRAFTS =====
     async function loadDraftResults() {
         if (!schoolId) {
             draftResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
@@ -716,6 +723,7 @@
             const snap = await getDocs(query(collection(db, "schools", schoolId, "draft_results"), where("__name__", "==", id)));
             if (snap.empty) return;
             const data = snap.docs[0].data();
+            
             const examData = {
                 examName: data.examName || '',
                 examClass: data.class || '',
@@ -728,6 +736,7 @@
             };
             localStorage.setItem('examData', JSON.stringify(examData));
             localStorage.setItem('schoolId', schoolId);
+            
             window.open('step2-entry.html', '_blank');
         } catch(error) {
             alert('Error loading draft: ' + error.message);
@@ -747,7 +756,7 @@
         }
     }
 
-    // ===== 🔥 LOAD PUBLISHED RESULTS =====
+    // ===== LOAD PUBLISHED =====
     async function loadOldResults() {
         if (!schoolId) {
             oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
@@ -771,8 +780,7 @@
                             <div class="card-body p-2">
                                 <h6 class="card-title mb-0" style="font-size:0.75rem;">${d.examName || 'Unnamed'} ${demoBadge}</h6>
                                 <p class="card-text text-muted" style="font-size:0.65rem;">📚 ${d.class || ''} | ${d.students?.length || 0} students</p>
-                                <small style="font-size:0.55rem;color:#94a3b8;">${date}</small>
-                                <div class="d-flex gap-1 flex-wrap mt-1">
+                                <div class="d-flex gap-1 flex-wrap">
                                     <button class="btn btn-sm btn-primary view-result" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">View</button>
                                     <button class="btn btn-sm btn-warning edit-result" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">Edit</button>
                                     <button class="btn btn-sm btn-danger delete-result" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">Del</button>
@@ -841,6 +849,7 @@
             const snap = await getDocs(query(collection(db, "schools", schoolId, "results"), where("__name__", "==", id)));
             if (snap.empty) return;
             const data = snap.docs[0].data();
+            
             const examData = {
                 examName: data.examName || '',
                 examClass: data.class || '',
@@ -853,6 +862,7 @@
             };
             localStorage.setItem('examData', JSON.stringify(examData));
             localStorage.setItem('schoolId', schoolId);
+            
             window.open('step2-entry.html', '_blank');
         } catch(error) {
             alert('Error loading result: ' + error.message);
@@ -872,10 +882,12 @@
         }
     }
 
+    // ===== PDF DOWNLOAD =====
     downloadPdfBtn.addEventListener('click', () => {
         const data = window._currentResultData;
         const name = window._currentExamName;
         if (!data) return;
+        
         if (typeof window.jspdf === 'undefined') {
             const script = document.createElement('script');
             script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
@@ -931,7 +943,7 @@
         showToast('PDF Downloaded');
     }
 
-    console.log('✅ Manage Results Loaded');
+    console.log('✅ Manage Results Loaded for School ID:', schoolId);
 </script>
 </body>
 </html>
