@@ -372,52 +372,6 @@
             box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
         }
         
-        /* ===== TOAST STYLES ===== */
-        #toastContainer {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 99999;
-            min-width: 280px;
-            max-width: 400px;
-        }
-        .toast-custom {
-            background: #1a237e;
-            color: white;
-            padding: 16px 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideInRight 0.5s ease;
-            font-size: 0.95rem;
-            border-left: 5px solid #4caf50;
-        }
-        .toast-custom i {
-            font-size: 1.5rem;
-            color: #4caf50;
-        }
-        .toast-custom .toast-close {
-            margin-left: auto;
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.6);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0 4px;
-        }
-        .toast-custom .toast-close:hover { color: white; }
-        
-        @keyframes slideInRight {
-            0% { transform: translateX(120%); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slideOutRight {
-            0% { transform: translateX(0); opacity: 1; }
-            100% { transform: translateX(120%); opacity: 0; }
-        }
-        
         @media (max-width: 768px) {
             body { padding: 5px; }
             .topbar { padding: 6px 10px; }
@@ -443,8 +397,6 @@
             .auto-fetch-container .toggle-switch .toggle-slider { width: 16px; height: 16px; }
             .auto-fetch-container .toggle-switch.active .toggle-slider { left: 18px; }
             .auto-fetch-container .hint-text { font-size: 0.55rem; }
-            #toastContainer { top: 10px; right: 10px; min-width: 200px; max-width: 300px; }
-            .toast-custom { padding: 12px 14px; font-size: 0.85rem; }
         }
         
         @media (min-width: 769px) {
@@ -466,9 +418,6 @@
     </style>
 </head>
 <body>
-
-<!-- ===== TOAST CONTAINER ===== -->
-<div id="toastContainer"></div>
 
 <!-- TOP BAR -->
 <div class="topbar">
@@ -701,34 +650,6 @@
             if (word.length === 0) return word;
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
         }).join(' ');
-    }
-    
-    // ===== TOAST FUNCTION =====
-    function showToast(message, icon = 'fa-check-circle', bgColor = '#1a237e', borderColor = '#4caf50') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = 'toast-custom';
-        toast.style.borderLeftColor = borderColor;
-        toast.style.background = bgColor;
-        toast.innerHTML = `
-            <i class="fas ${icon}"></i>
-            <span style="flex:1;">${message}</span>
-            <button class="toast-close">&times;</button>
-        `;
-        container.appendChild(toast);
-        
-        // Auto remove after 4 seconds
-        const timeout = setTimeout(() => {
-            toast.style.animation = 'slideOutRight 0.5s ease forwards';
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
-        
-        // Close button
-        toast.querySelector('.toast-close').addEventListener('click', () => {
-            clearTimeout(timeout);
-            toast.style.animation = 'slideOutRight 0.5s ease forwards';
-            setTimeout(() => toast.remove(), 500);
-        });
     }
     
     // ===== AUTO FETCH TOGGLE =====
@@ -1150,7 +1071,7 @@
         examData.examDate = modalExamDate.value;
         updateSummary();
         editExamModal.hide();
-        showToast('✅ Exam details updated successfully!', 'fa-pencil-alt', '#1a237e', '#2196f3');
+        alert('Exam details updated!');
     });
     
     // ===== EDIT SUBJECTS =====
@@ -1236,7 +1157,7 @@
         buildMarksInputs();
         renderTable();
         updateSummary();
-        showToast('✅ Subjects updated successfully!', 'fa-book', '#1a237e', '#2196f3');
+        alert('Subjects updated successfully!');
     });
     
     // ===== SAVE DRAFT =====
@@ -1258,19 +1179,22 @@
             
             if (isEditingDraft && draftId) {
                 await updateDoc(doc(db, "schools", schoolId, "draft_results", draftId), data);
-                showToast('✅ Draft updated successfully!', 'fa-save', '#1a237e', '#4caf50');
+                alert('Draft updated!');
             } else {
                 await addDoc(collection(db, "schools", schoolId, "draft_results"), data);
-                showToast('✅ Draft saved successfully!', 'fa-save', '#1a237e', '#4caf50');
+                alert('Draft saved!');
             }
             
-            // Stay on same page - no redirect!
+            setTimeout(() => {
+                window.close();
+                window.location.href = 'manage-results.html';
+            }, 1500);
         } catch(error) {
             alert('Error: ' + error.message);
         }
     });
     
-    // ===== 🔥 PUBLISH RESULT - ONLY TOAST, NO REDIRECT =====
+    // ===== 🔥 PUBLISH RESULT - REDIRECT TO SUCCESS PAGE (SAME TAB) =====
     publishResultBtn.addEventListener('click', async () => {
         if (!examData.examName) { alert('Please enter exam name'); return; }
         if (students.length === 0) { alert('Please add at least one student'); return; }
@@ -1337,12 +1261,20 @@
                 }
             }
             
-            // ✅ Show toast - NO REDIRECT!
-            showToast('✅ Result published successfully! 🎉', 'fa-globe', '#1a237e', '#4caf50');
+            // ✅ SAVE DATA TO localStorage FOR SUCCESS PAGE
+            const successData = {
+                examName: examData.examName,
+                examClass: examData.examClass,
+                examSession: examData.examSession,
+                examDate: examData.examDate,
+                totalStudents: students.length,
+                totalSubjects: subjects.length,
+                subjects: subjects.map(s => `${s.name} (${s.total})`).join(', ')
+            };
+            localStorage.setItem('publishSuccessData', JSON.stringify(successData));
             
-            // Reset button
-            publishResultBtn.disabled = false;
-            publishResultBtn.innerHTML = '<i class="fas fa-globe"></i> Publish Result';
+            // 🔥 REDIRECT TO SUCCESS PAGE (SAME TAB)
+            window.location.href = 'publish-success.html';
             
         } catch(error) {
             alert('Error: ' + error.message);
