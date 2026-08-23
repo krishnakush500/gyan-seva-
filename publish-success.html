@@ -17,7 +17,6 @@
             padding: 20px;
         }
         
-        /* ===== TOP BAR (Same as Entry Sheet) ===== */
         .topbar {
             position: fixed;
             top: 10px;
@@ -51,7 +50,6 @@
         }
         .topbar .back-btn:hover { background: rgba(255,255,255,0.25); color: white; }
         
-        /* ===== SUCCESS CARD ===== */
         .success-card {
             background: white;
             border-radius: 12px;
@@ -111,7 +109,6 @@
             margin: 16px 0;
         }
         
-        /* ===== DETAILS GRID ===== */
         .details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -146,7 +143,6 @@
         .detail-item.highlight .label { color: rgba(255,255,255,0.7); }
         .detail-item.highlight .value { color: white; }
         
-        /* ===== SUBJECTS ===== */
         .subjects-box {
             background: #f8faff;
             border-radius: 8px;
@@ -175,7 +171,6 @@
             margin: 10px 0 16px;
         }
         
-        /* ===== 🔥 SHARE LINK SECTION ===== */
         .share-link-section {
             background: #f0f7ff;
             border-radius: 10px;
@@ -272,7 +267,6 @@
         .share-btn.email { background: #ea4335; }
         .share-btn.copy { background: #1a237e; }
         
-        /* ===== ACTION BUTTONS ===== */
         .btn-group-custom {
             display: flex;
             gap: 8px;
@@ -321,7 +315,6 @@
             color: white;
         }
         
-        /* ===== CONFETTI ===== */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -363,7 +356,6 @@
 <div class="topbar">
     <div class="brand"><i class="fas fa-table"></i> GYAN SEVA</div>
     <div>
-        <!-- ✅ Back button --> 
         <a href="manage-results.html" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back
         </a>
@@ -375,12 +367,10 @@
 
 <!-- ===== SUCCESS CARD ===== -->
 <div class="success-card">
-    <!-- Icon -->
     <div class="success-icon">
         <i class="fas fa-check-circle"></i>
     </div>
     
-    <!-- Exam Name -->
     <div class="exam-name">
         <i class="fas fa-graduation-cap"></i> <span id="displayExamName">-</span>
     </div>
@@ -391,7 +381,6 @@
     
     <div class="divider"></div>
     
-    <!-- Details Grid -->
     <div class="details-grid">
         <div class="detail-item">
             <div class="label">📚 Class</div>
@@ -407,13 +396,12 @@
         </div>
     </div>
     
-    <!-- Subjects -->
     <div class="subjects-box">
         <div class="label">📋 Subjects</div>
         <div class="subjects-text" id="displaySubjects">-</div>
     </div>
     
-    <!-- ===== 🔥 SHARE LINK SECTION ===== -->
+    <!-- ===== SHARE LINK SECTION ===== -->
     <div class="share-link-section">
         <div class="label">
             <i class="fas fa-link"></i> Share Result Link with Students
@@ -440,12 +428,10 @@
         </div>
     </div>
     
-    <!-- Publish Time -->
     <div class="publish-time">
         <i class="far fa-clock"></i> Published: <span id="displayPublishTime">-</span>
     </div>
     
-    <!-- Action Buttons -->
     <div class="btn-group-custom">
         <a href="manage-results.html" class="btn-custom btn-primary-custom">
             <i class="fas fa-arrow-left"></i> Dashboard
@@ -470,13 +456,12 @@
     document.getElementById('displaySession').textContent = successData.examSession || '-';
     document.getElementById('displaySubjects').textContent = successData.subjects || '-';
     
-    // ===== 🔥 GENERATE SHAREABLE LINK =====
+    // ===== GENERATE SHAREABLE LINK =====
     function getShareableLink() {
         const baseUrl = window.location.origin + window.location.pathname.replace('publish-success.html', '');
         return `${baseUrl}dashboard.html?id=${schoolId}`;
     }
     
-    // Set share link
     const shareLinkInput = document.getElementById('shareLinkInput');
     shareLinkInput.value = getShareableLink();
     
@@ -501,12 +486,26 @@
         }
     }
     
-    // ===== SHARE FUNCTIONS =====
+    // ===== 🔥 SHARE FUNCTIONS WITH EMOJIS =====
     function getShareText() {
         const examName = successData.examName || 'Result';
         const className = successData.examClass || '';
         const link = getShareableLink();
-        return `📢 *Result Published* 📢\n\n🏫 Exam: ${examName}\n📚 Class: ${className}\n\n🔗 Check your result here:\n${link}\n\nEnter your roll number to view your marks.`;
+        const examDate = successData.examDate || '';
+        
+        // Format date if exists
+        let dateStr = '';
+        if (examDate) {
+            try {
+                const d = new Date(examDate);
+                dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            } catch(e) {
+                dateStr = examDate;
+            }
+        }
+        
+        // 🔥 WhatsApp-friendly emoji message
+        return `📢 *RESULT PUBLISHED* 📢\n\n🏫 Exam: ${examName}\n📚 Class: ${className}${dateStr ? '\n📅 Date: ' + dateStr : ''}\n\n🔗 Check your result here:\n${link}\n\nEnter your roll number to view your marks. ✅`;
     }
     
     function shareOnWhatsApp() {
