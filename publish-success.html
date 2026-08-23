@@ -265,7 +265,6 @@
         .share-btn.whatsapp { background: #25D366; }
         .share-btn.telegram { background: #0088cc; }
         .share-btn.email { background: #ea4335; }
-        .share-btn.copy { background: #1a237e; }
         
         .btn-group-custom {
             display: flex;
@@ -383,21 +382,21 @@
     
     <div class="details-grid">
         <div class="detail-item">
-            <div class="label">📚 Class</div>
+            <div class="label">Class</div>
             <div class="value" id="displayClass">-</div>
         </div>
         <div class="detail-item highlight">
-            <div class="label">👨‍🎓 Students</div>
+            <div class="label">Students</div>
             <div class="value" id="displayStudents">0</div>
         </div>
         <div class="detail-item">
-            <div class="label">📅 Session</div>
+            <div class="label">Session</div>
             <div class="value" id="displaySession">-</div>
         </div>
     </div>
     
     <div class="subjects-box">
-        <div class="label">📋 Subjects</div>
+        <div class="label">Subjects</div>
         <div class="subjects-text" id="displaySubjects">-</div>
     </div>
     
@@ -486,26 +485,13 @@
         }
     }
     
-    // ===== 🔥 SHARE FUNCTIONS WITH EMOJIS =====
+    // ===== 🔥 SHARE FUNCTIONS - ONLY TEXT (No Emojis) =====
     function getShareText() {
         const examName = successData.examName || 'Result';
         const className = successData.examClass || '';
         const link = getShareableLink();
-        const examDate = successData.examDate || '';
         
-        // Format date if exists
-        let dateStr = '';
-        if (examDate) {
-            try {
-                const d = new Date(examDate);
-                dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-            } catch(e) {
-                dateStr = examDate;
-            }
-        }
-        
-        // 🔥 WhatsApp-friendly emoji message
-        return `📢 *RESULT PUBLISHED* 📢\n\n🏫 Exam: ${examName}\n📚 Class: ${className}${dateStr ? '\n📅 Date: ' + dateStr : ''}\n\n🔗 Check your result here:\n${link}\n\nEnter your roll number to view your marks. ✅`;
+        return `RESULT PUBLISHED\n\nExam: ${examName}\nClass: ${className}\n\nCheck your result here:\n${link}\n\nEnter your roll number to view your marks.`;
     }
     
     function shareOnWhatsApp() {
