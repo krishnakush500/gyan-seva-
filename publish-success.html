@@ -6,11 +6,6 @@
     <title>🎉 Result Published</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
@@ -22,6 +17,7 @@
             padding: 20px;
         }
         
+        /* ===== TOP BAR (Same as Entry Sheet) ===== */
         .topbar {
             position: fixed;
             top: 10px;
@@ -55,6 +51,7 @@
         }
         .topbar .back-btn:hover { background: rgba(255,255,255,0.25); color: white; }
         
+        /* ===== SUCCESS CARD ===== */
         .success-card {
             background: white;
             border-radius: 12px;
@@ -114,6 +111,7 @@
             margin: 16px 0;
         }
         
+        /* ===== DETAILS GRID ===== */
         .details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -148,6 +146,7 @@
         .detail-item.highlight .label { color: rgba(255,255,255,0.7); }
         .detail-item.highlight .value { color: white; }
         
+        /* ===== SUBJECTS ===== */
         .subjects-box {
             background: #f8faff;
             border-radius: 8px;
@@ -176,6 +175,7 @@
             margin: 10px 0 16px;
         }
         
+        /* ===== 🔥 SHARE LINK SECTION ===== */
         .share-link-section {
             background: #f0f7ff;
             border-radius: 10px;
@@ -270,7 +270,9 @@
         .share-btn.whatsapp { background: #25D366; }
         .share-btn.telegram { background: #0088cc; }
         .share-btn.email { background: #ea4335; }
+        .share-btn.copy { background: #1a237e; }
         
+        /* ===== ACTION BUTTONS ===== */
         .btn-group-custom {
             display: flex;
             gap: 8px;
@@ -319,6 +321,7 @@
             color: white;
         }
         
+        /* ===== CONFETTI ===== */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -340,13 +343,6 @@
             100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
         
-        .loading-templates {
-            text-align: center;
-            padding: 8px;
-            font-size: 0.75rem;
-            color: #1a237e;
-        }
-        
         @media (max-width: 480px) {
             .success-card { padding: 24px 18px; margin-top: 60px; }
             .exam-name { font-size: 1.2rem; }
@@ -363,20 +359,28 @@
 </head>
 <body>
 
+<!-- ===== TOP BAR ===== -->
 <div class="topbar">
     <div class="brand"><i class="fas fa-table"></i> GYAN SEVA</div>
     <div>
-        <a href="manage-results.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+        <!-- ✅ Back button --> 
+        <a href="manage-results.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
     </div>
 </div>
 
+<!-- ===== CONFETTI ===== -->
 <div class="confetti-container" id="confettiContainer"></div>
 
+<!-- ===== SUCCESS CARD ===== -->
 <div class="success-card">
+    <!-- Icon -->
     <div class="success-icon">
         <i class="fas fa-check-circle"></i>
     </div>
     
+    <!-- Exam Name -->
     <div class="exam-name">
         <i class="fas fa-graduation-cap"></i> <span id="displayExamName">-</span>
     </div>
@@ -387,6 +391,7 @@
     
     <div class="divider"></div>
     
+    <!-- Details Grid -->
     <div class="details-grid">
         <div class="detail-item">
             <div class="label">📚 Class</div>
@@ -402,12 +407,13 @@
         </div>
     </div>
     
+    <!-- Subjects -->
     <div class="subjects-box">
         <div class="label">📋 Subjects</div>
         <div class="subjects-text" id="displaySubjects">-</div>
     </div>
     
-    <!-- ===== SHARE LINK SECTION ===== -->
+    <!-- ===== 🔥 SHARE LINK SECTION ===== -->
     <div class="share-link-section">
         <div class="label">
             <i class="fas fa-link"></i> Share Result Link with Students
@@ -429,15 +435,17 @@
                 <i class="fas fa-envelope"></i> Email
             </button>
         </div>
-        <div id="templateStatus" class="loading-templates">
-            <i class="fas fa-spinner fa-spin"></i> Loading template...
+        <div style="font-size:0.65rem; color:#94a3b8; margin-top:6px;">
+            <i class="fas fa-info-circle"></i> Students can check their result by entering roll number
         </div>
     </div>
     
+    <!-- Publish Time -->
     <div class="publish-time">
         <i class="far fa-clock"></i> Published: <span id="displayPublishTime">-</span>
     </div>
     
+    <!-- Action Buttons -->
     <div class="btn-group-custom">
         <a href="manage-results.html" class="btn-custom btn-primary-custom">
             <i class="fas fa-arrow-left"></i> Dashboard
@@ -452,20 +460,6 @@
 </div>
 
 <script>
-    // ===== FIREBASE CONFIG =====
-    const firebaseConfig = {
-        apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
-        authDomain: "gyan-seva.firebaseapp.com",
-        projectId: "gyan-seva",
-        storageBucket: "gyan-seva.firebasestorage.app",
-        messagingSenderId: "451862212887",
-        appId: "1:451862212887:web:637fd8785c4c01bd448752",
-        measurementId: "G-R375P3YCHP"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
     // ===== LOAD DATA =====
     const successData = JSON.parse(localStorage.getItem('publishSuccessData') || '{}');
     const schoolId = localStorage.getItem('schoolId') || '';
@@ -476,13 +470,15 @@
     document.getElementById('displaySession').textContent = successData.examSession || '-';
     document.getElementById('displaySubjects').textContent = successData.subjects || '-';
     
-    // ===== SHAREABLE LINK =====
+    // ===== 🔥 GENERATE SHAREABLE LINK =====
     function getShareableLink() {
         const baseUrl = window.location.origin + window.location.pathname.replace('publish-success.html', '');
         return `${baseUrl}dashboard.html?id=${schoolId}`;
     }
     
-    document.getElementById('shareLinkInput').value = getShareableLink();
+    // Set share link
+    const shareLinkInput = document.getElementById('shareLinkInput');
+    shareLinkInput.value = getShareableLink();
     
     // ===== COPY LINK =====
     function copyShareLink() {
@@ -493,10 +489,11 @@
         try {
             document.execCommand('copy');
             const btn = document.getElementById('copyLinkBtn');
+            const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
             btn.classList.add('copied');
             setTimeout(() => {
-                btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                btn.innerHTML = originalText;
                 btn.classList.remove('copied');
             }, 2000);
         } catch(err) {
@@ -504,125 +501,14 @@
         }
     }
     
-    // ===== 🔥 LOAD TEMPLATE FROM FIREBASE =====
-    let templateText = '';
-    const phone = localStorage.getItem('directorPhone') || '+91 8252658421';
-    const email = localStorage.getItem('directorEmail') || 'info@gyanseva.com';
-    
-    async function loadTemplateFromFirebase() {
-        const statusEl = document.getElementById('templateStatus');
-        
-        try {
-            const docRef = db.collection("templates").doc("whatsapp_templates");
-            const docSnap = await docRef.get();
-            
-            if(docSnap.exists) {
-                const data = docSnap.data();
-                // Template 4 is for Result Published
-                templateText = data.template4 || '';
-                
-                if(templateText) {
-                    statusEl.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Template loaded from cloud';
-                    statusEl.style.color = '#10b981';
-                } else {
-                    // Fallback template
-                    templateText = `*RESULT PUBLISHED* ✅
-
-Exam: {examName}
-Class: {class}
-
-Check your result here:
-{link}
-
-Enter your roll number to view your marks.
-
-How to Check:
-1. Click on the link above
-2. Select your exam
-3. Enter your Roll Number
-4. View your marks instantly!
-
-For any query, contact:
-{phone}
-{email}
-
-Best of luck! 🎯`;
-                    statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Using default template (edit in index.html)';
-                    statusEl.style.color = '#64748b';
-                }
-            } else {
-                // Fallback template
-                templateText = `*RESULT PUBLISHED* ✅
-
-Exam: {examName}
-Class: {class}
-
-Check your result here:
-{link}
-
-Enter your roll number to view your marks.
-
-How to Check:
-1. Click on the link above
-2. Select your exam
-3. Enter your Roll Number
-4. View your marks instantly!
-
-For any query, contact:
-{phone}
-{email}
-
-Best of luck! 🎯`;
-                statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Using default template (edit in index.html)';
-                statusEl.style.color = '#64748b';
-            }
-        } catch(error) {
-            console.error('Error loading template:', error);
-            // Fallback template
-            templateText = `*RESULT PUBLISHED* ✅
-
-Exam: {examName}
-Class: {class}
-
-Check your result here:
-{link}
-
-Enter your roll number to view your marks.
-
-How to Check:
-1. Click on the link above
-2. Select your exam
-3. Enter your Roll Number
-4. View your marks instantly!
-
-For any query, contact:
-{phone}
-{email}
-
-Best of luck! 🎯`;
-            statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Using default template';
-            statusEl.style.color = '#f59e0b';
-        }
-    }
-    
-    // ===== 🔥 GET SHARE TEXT WITH VARIABLES =====
+    // ===== SHARE FUNCTIONS =====
     function getShareText() {
         const examName = successData.examName || 'Result';
         const className = successData.examClass || '';
         const link = getShareableLink();
-        
-        // Replace variables in template
-        let text = templateText;
-        text = text.replace(/{examName}/g, examName);
-        text = text.replace(/{class}/g, className);
-        text = text.replace(/{link}/g, link);
-        text = text.replace(/{phone}/g, phone);
-        text = text.replace(/{email}/g, email);
-        
-        return text;
+        return `📢 *Result Published* 📢\n\n🏫 Exam: ${examName}\n📚 Class: ${className}\n\n🔗 Check your result here:\n${link}\n\nEnter your roll number to view your marks.`;
     }
     
-    // ===== SHARE FUNCTIONS =====
     function shareOnWhatsApp() {
         const text = getShareText();
         const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -672,15 +558,8 @@ Best of luck! 🎯`;
         }
         setTimeout(() => container.innerHTML = '', 4000);
     }
-    
-    // ===== INIT =====
-    async function init() {
-        await loadTemplateFromFirebase();
-        createConfetti();
-        setTimeout(createConfetti, 1500);
-    }
-    
-    init();
+    createConfetti();
+    setTimeout(createConfetti, 1500);
 </script>
 </body>
 </html>
