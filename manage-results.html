@@ -164,6 +164,25 @@
             box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
         }
         
+        /* 🔥 Tooltip for buttons */
+        .btn-icon-tip {
+            position: relative;
+        }
+        .btn-icon-tip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a237e;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.55rem;
+            white-space: nowrap;
+            margin-bottom: 4px;
+        }
+        
         @media (max-width: 768px) {
             .topbar { padding: 8px 12px; }
             .topbar .brand { font-size: 0.85rem; }
@@ -436,18 +455,10 @@
         const params = new URLSearchParams(window.location.search);
         const showPublished = params.get('showPublished');
         if (showPublished === 'true') {
-            // 🔥 HIDE ALL SECTIONS FIRST
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            
-            // 🔥 SHOW ONLY PUBLISHED SECTION
             oldResultsSection.classList.add('active');
-            
-            // 🔥 LOAD RESULTS IMMEDIATELY
             loadOldResults();
-            
-            // 🔥 SCROLL TO TOP
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            
             console.log('✅ Published results opened!');
         }
     }
@@ -484,8 +495,6 @@
                 }
                 
                 localStorage.setItem('schoolId', coachingId);
-                
-                // 🔥 CHECK URL PARAMS AFTER LOAD
                 checkURLParams();
             }
         } catch(error) {
@@ -756,7 +765,7 @@
         }
     }
 
-    // ===== LOAD PUBLISHED =====
+    // ===== 🔥 LOAD PUBLISHED (UPDATED WITH COPY & WHATSAPP) =====
     async function loadOldResults() {
         if (!schoolId) {
             oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No institute found.</p></div>';
@@ -770,34 +779,136 @@
                 oldResultsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">No published results found.</p></div>';
                 return;
             }
+            
+            // 🔥 Generate shareable link base
+            const baseUrl = window.location.origin + window.location.pathname.replace('manage-results.html', '');
+            const shareLinkBase = `${baseUrl}dashboard.html?id=${schoolId}`;
+            
             snap.forEach(doc => {
                 const d = doc.data();
                 const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleDateString('en-IN') : 'Unknown';
                 const demoBadge = d.isDemo ? '<span class="demo-badge">🎯 Demo</span>' : '';
+                const examName = d.examName || 'Unnamed';
+                const className = d.class || '';
+                const studentCount = d.students?.length || 0;
+                
                 oldResultsList.innerHTML += `
                     <div class="col-6 col-md-4 col-lg-3 mb-2">
                         <div class="card h-100">
                             <div class="card-body p-2">
-                                <h6 class="card-title mb-0" style="font-size:0.75rem;">${d.examName || 'Unnamed'} ${demoBadge}</h6>
-                                <p class="card-text text-muted" style="font-size:0.65rem;">📚 ${d.class || ''} | ${d.students?.length || 0} students</p>
+                                <h6 class="card-title mb-0" style="font-size:0.75rem;">${examName} ${demoBadge}</h6>
+                                <p class="card-text text-muted" style="font-size:0.65rem;">📚 ${className} | ${studentCount} students</p>
                                 <div class="d-flex gap-1 flex-wrap">
                                     <button class="btn btn-sm btn-primary view-result" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">View</button>
                                     <button class="btn btn-sm btn-warning edit-result" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">Edit</button>
                                     <button class="btn btn-sm btn-danger delete-result" data-id="${doc.id}" style="font-size:0.6rem;padding:2px 8px;">Del</button>
+                                    <!-- 🔥 COPY LINK BUTTON -->
+                                    <button class="btn btn-sm btn-info copy-result-link" data-link="${shareLinkBase}" data-tip="Copy Link" style="font-size:0.6rem;padding:2px 8px;">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <!-- 🔥 WHATSAPP SHARE BUTTON -->
+                                    <button class="btn btn-sm btn-success share-result-wa" data-exam="${examName}" data-class="${className}" data-link="${shareLinkBase}" data-tip="Share on WhatsApp" style="font-size:0.6rem;padding:2px 8px;">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
             });
+            
+            // ===== ATTACH EVENT LISTENERS =====
             document.querySelectorAll('.view-result').forEach(btn => btn.addEventListener('click', e => viewResult(e.target.dataset.id)));
             document.querySelectorAll('.edit-result').forEach(btn => btn.addEventListener('click', e => editPublishedResult(e.target.dataset.id)));
             document.querySelectorAll('.delete-result').forEach(btn => btn.addEventListener('click', e => deletePublishedResult(e.target.dataset.id)));
+            
+            // 🔥 Copy Link
+            document.querySelectorAll('.copy-result-link').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const link = this.dataset.link;
+                    copyToClipboard(link, this);
+                });
+            });
+            
+            // 🔥 WhatsApp Share
+            document.querySelectorAll('.share-result-wa').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const examName = this.dataset.exam;
+                    const className = this.dataset.class;
+                    const link = this.dataset.link;
+                    shareOnWhatsApp(examName, className, link);
+                });
+            });
+            
         } catch(error) {
             console.error('Error:', error);
         }
     }
 
+    // ===== 🔥 COPY TO CLIPBOARD =====
+    function copyToClipboard(text, btn) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                btn.style.background = '#10b981';
+                btn.style.borderColor = '#10b981';
+                setTimeout(() => {
+                    btn.innerHTML = original;
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                }, 1500);
+                showToast('Link copied!');
+            }).catch(() => {
+                fallbackCopy(text, btn);
+            });
+        } else {
+            fallbackCopy(text, btn);
+        }
+    }
+
+    function fallbackCopy(text, btn) {
+        const input = document.createElement('input');
+        input.value = text;
+        document.body.appendChild(input);
+        input.select();
+        try {
+            document.execCommand('copy');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            btn.style.background = '#10b981';
+            btn.style.borderColor = '#10b981';
+            setTimeout(() => {
+                btn.innerHTML = original;
+                btn.style.background = '';
+                btn.style.borderColor = '';
+            }, 1500);
+            showToast('Link copied!');
+        } catch(err) {
+            alert('Copy this link: ' + text);
+        }
+        document.body.removeChild(input);
+    }
+
+    // ===== 🔥 SHARE ON WHATSAPP =====
+    function shareOnWhatsApp(examName, className, link) {
+        const message = `RESULT PUBLISHED
+
+Exam: ${examName}
+Class: ${className}
+
+Check your result here:
+${link}
+
+Enter your roll number to view your marks.`;
+        
+        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    }
+
+    // ===== VIEW RESULT =====
     async function viewResult(id) {
         if (!schoolId) return;
         try {
