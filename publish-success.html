@@ -6,6 +6,11 @@
     <title>🎉 Result Published</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
@@ -365,7 +370,7 @@
 <div class="confetti-container" id="confettiContainer"></div>
 
 <!-- ===== SUCCESS CARD ===== -->
-<div class="success-card">
+<div class="success-card" id="successCard">
     <div class="success-icon">
         <i class="fas fa-check-circle"></i>
     </div>
@@ -445,9 +450,27 @@
 </div>
 
 <script>
+    // ===== FIREBASE CONFIG =====
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtrUQKvT-B66fXgxAF8yJA1e_9i98ddpA",
+        authDomain: "gyan-seva.firebaseapp.com",
+        projectId: "gyan-seva",
+        storageBucket: "gyan-seva.firebasestorage.app",
+        messagingSenderId: "451862212887",
+        appId: "1:451862212887:web:637fd8785c4c01bd448752",
+        measurementId: "G-R375P3YCHP"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     // ===== LOAD DATA =====
     const successData = JSON.parse(localStorage.getItem('publishSuccessData') || '{}');
     const schoolId = localStorage.getItem('schoolId') || '';
+    
+    // Coaching details from localStorage (set in entry-sheet)
+    const coachingPhone = localStorage.getItem('coachingPhone') || '';
+    const coachingEmail = localStorage.getItem('coachingEmail') || '';
     
     document.getElementById('displayExamName').textContent = successData.examName || 'Exam';
     document.getElementById('displayClass').textContent = successData.examClass || '-';
@@ -485,28 +508,101 @@
         }
     }
     
-    // ===== 🔥 SHARE FUNCTIONS - ONLY TEXT (No Emojis) =====
+    // ===== 🔥 FETCH TEMPLATE FROM FIREBASE =====
+    let template4Text = '';
+    
+    async function fetchTemplateFromFirebase() {
+        try {
+            const docRef = db.collection("templates").doc("whatsapp_templates");
+            const docSnap = await docRef.get();
+            
+            if(docSnap.exists) {
+                const data = docSnap.data();
+                template4Text = data.template4 || '';
+            }
+            
+            // If no template found, use default
+            if(!template4Text) {
+                template4Text = `*RESULT PUBLISHED* ✅
+
+Exam: {examName}
+Class: {class}
+
+Check your result here:
+{link}
+
+Enter your roll number to view your marks.
+
+For any query, contact:
+{phone}
+{email}
+
+Best of luck! 🎯`;
+            }
+        } catch(error) {
+            console.error('Error fetching template:', error);
+            // Fallback default
+            template4Text = `*RESULT PUBLISHED* ✅
+
+Exam: {examName}
+Class: {class}
+
+Check your result here:
+{link}
+
+Enter your roll number to view your marks.
+
+For any query, contact:
+{phone}
+{email}
+
+Best of luck! 🎯`;
+        }
+    }
+    
+    // ===== 🔥 REPLACE VARIABLES IN TEMPLATE =====
     function getShareText() {
         const examName = successData.examName || 'Result';
         const className = successData.examClass || '';
         const link = getShareableLink();
+        const phone = coachingPhone || 'N/A';
+        const email = coachingEmail || 'N/A';
         
-        return `RESULT PUBLISHED\n\nExam: ${examName}\nClass: ${className}\n\nCheck your result here:\n${link}\n\nEnter your roll number to view your marks.`;
+        // Replace variables
+        let message = template4Text
+            .replace(/{examName}/g, examName)
+            .replace(/{class}/g, className)
+            .replace(/{link}/g, link)
+            .replace(/{phone}/g, phone)
+            .replace(/{email}/g, email);
+        
+        return message;
     }
     
-    function shareOnWhatsApp() {
+    // ===== SHARE FUNCTIONS =====
+    async function shareOnWhatsApp() {
+        // Fetch template if not loaded
+        if(!template4Text) {
+            await fetchTemplateFromFirebase();
+        }
         const text = getShareText();
         const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     }
     
-    function shareOnTelegram() {
+    async function shareOnTelegram() {
+        if(!template4Text) {
+            await fetchTemplateFromFirebase();
+        }
         const text = getShareText();
         const url = `https://t.me/share/url?url=${encodeURIComponent(getShareableLink())}&text=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     }
     
-    function shareOnEmail() {
+    async function shareOnEmail() {
+        if(!template4Text) {
+            await fetchTemplateFromFirebase();
+        }
         const subject = `${successData.examName || 'Result'} - Published`;
         const body = getShareText();
         const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -545,6 +641,12 @@
     }
     createConfetti();
     setTimeout(createConfetti, 1500);
+    
+    // ===== INIT =====
+    // Load template from Firebase on page load
+    fetchTemplateFromFirebase();
+    console.log('✅ Publish Success Page Loaded');
+    console.log('📝 Template will be fetched from Firebase on share');
 </script>
 </body>
 </html>
