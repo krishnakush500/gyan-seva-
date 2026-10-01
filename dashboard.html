@@ -44,19 +44,88 @@
       justify-content: center;
       gap: 4px;
     }
+    
+    /* 🔥 LOGO WRAPPER - Click to Login */
+    .logo-wrapper {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .logo-wrapper:hover {
+      transform: scale(1.05);
+    }
+    .logo-wrapper:hover .header-logo {
+      border-color: #ffc107;
+      box-shadow: 0 8px 25px rgba(255,193,7,0.4);
+    }
+    
     .header-logo {
       width: 100px;
       height: 100px;
       border-radius: 50%;
       object-fit: cover;
       border: 3px solid rgba(255,255,255,0.3);
-      transition: transform 0.3s;
+      transition: all 0.3s;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: block;
     }
-    .header-logo:hover {
-      transform: scale(1.05);
-      border-color: #ffc107;
+    
+    /* 🔥 Lock Icon on Logo */
+    .logo-lock-icon {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      background: #ffc107;
+      color: #1a237e;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      border: 2px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s;
+      pointer-events: none;
     }
+    .logo-wrapper:hover .logo-lock-icon {
+      background: #ff9800;
+      transform: rotate(15deg) scale(1.1);
+    }
+    
+    /* 🔥 Tooltip */
+    .logo-tooltip {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 100;
+    }
+    .logo-tooltip::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid rgba(0,0,0,0.85);
+    }
+    .logo-wrapper:hover .logo-tooltip {
+      opacity: 1;
+    }
+    
     .header-text {
       text-align: center;
       width: 100%;
@@ -349,6 +418,7 @@
       font-size: 1rem;
     }
     
+    /* ===== 🔥 PASSWORD MODAL (UPDATED) ===== */
     .password-modal {
       position: fixed;
       top: 0;
@@ -360,76 +430,171 @@
       justify-content: center;
       align-items: center;
       z-index: 10000;
+      animation: fadeInModal 0.3s ease;
+      padding: 20px;
     }
+    .password-modal.active {
+      display: flex;
+    }
+    @keyframes fadeInModal {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
     .password-box {
       background: white;
-      padding: 30px;
-      border-radius: 15px;
+      padding: 30px 25px 25px;
+      border-radius: 18px;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      width: 90%;
-      max-width: 400px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      animation: slideUpModal 0.3s ease;
     }
+    @keyframes slideUpModal {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    /* 🔥 Close Button */
+    .password-close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .password-close-btn:hover {
+      background: #fee2e2;
+      color: #dc2626;
+      transform: rotate(90deg);
+    }
+    
+    .password-box .lock-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a237e, #283593);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 15px;
+      box-shadow: 0 6px 20px rgba(26,35,126,0.3);
+    }
+    
     .password-box h3 {
       color: #1a237e;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       font-size: 1.3rem;
     }
     .password-box p {
       color: #666;
       margin-bottom: 20px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
     .password-input {
       width: 100%;
       padding: 12px 15px;
-      font-size: 1rem;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      margin-bottom: 15px;
+      font-size: 0.95rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      margin-bottom: 12px;
       text-align: left;
+      transition: border-color 0.2s;
+      font-family: inherit;
     }
     .password-input:focus {
       border-color: #1a237e;
       outline: none;
+      box-shadow: 0 0 0 3px rgba(26,35,126,0.1);
     }
     .password-buttons {
       display: flex;
       gap: 10px;
       justify-content: center;
+      margin-top: 8px;
     }
     .password-btn {
-      padding: 10px 25px;
+      padding: 11px 25px;
       border: none;
-      border-radius: 8px;
-      font-size: 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex: 1;
     }
     .password-btn.submit {
-      background: #1a237e;
+      background: linear-gradient(135deg, #1a237e, #283593);
       color: white;
     }
     .password-btn.submit:hover {
-      background: #283593;
+      background: linear-gradient(135deg, #283593, #303f9f);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(26,35,126,0.3);
+    }
+    .password-btn.submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
     }
     .password-btn.cancel {
-      background: #6c757d;
-      color: white;
+      background: #f1f5f9;
+      color: #475569;
     }
     .password-btn.cancel:hover {
-      background: #5a6268;
+      background: #e2e8f0;
     }
     .password-error {
-      color: #dc3545;
+      color: #dc2626;
       margin-top: 10px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       display: none;
+      padding: 8px 12px;
+      background: #fee2e2;
+      border-radius: 8px;
+      text-align: left;
+    }
+    .password-error.show {
+      display: block;
+    }
+    
+    /* 🔥 Hint box */
+    .password-hint {
+      margin-top: 15px;
+      padding: 10px 14px;
+      background: #eff6ff;
+      border-radius: 10px;
+      border: 1px solid #bfdbfe;
+      font-size: 0.75rem;
+      color: #1e40af;
+      text-align: left;
+    }
+    .password-hint i {
+      margin-right: 4px;
     }
     
     @media (min-width: 769px) {
       .header { padding: 14px 20px; }
       .header-logo { width: 110px; height: 110px; }
+      .logo-lock-icon { width: 30px; height: 30px; font-size: 0.85rem; }
       .school-name { font-size: 2rem; }
       .location { font-size: 0.95rem; }
       .results-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
@@ -445,6 +610,7 @@
     @media (max-width: 480px) {
       .header { padding: 10px 10px; }
       .header-logo { width: 75px; height: 75px; }
+      .logo-lock-icon { width: 22px; height: 22px; font-size: 0.6rem; bottom: 2px; right: 2px; }
       .school-name { font-size: 1.4rem; }
       .location { font-size: 0.75rem; }
       .marquee-container { height: 30px; }
@@ -454,21 +620,44 @@
       .result-item { padding: 10px; }
       .exam-name { font-size: 0.85rem; }
       .input-group input { max-width: 100%; }
+      .password-box { padding: 25px 18px 20px; }
+      .password-buttons { flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <!-- Password Modal -->
+
+  <!-- ===== 🔥 PASSWORD MODAL (Teacher Login) ===== -->
   <div class="password-modal" id="passwordModal">
     <div class="password-box">
-      <h3><i class="fas fa-lock"></i> Admin Login</h3>
-      <p>Enter your email and password to access admin panel</p>
-      <input type="email" id="adminEmail" class="password-input" placeholder="Email address" autocomplete="off">
-      <input type="password" id="adminPassword" class="password-input" placeholder="Password" autocomplete="off">
-      <div class="password-error" id="passwordError">Invalid email or password!</div>
+      <button class="password-close-btn" onclick="closePasswordModal()" title="Close">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="lock-icon">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      
+      <h3>Teacher Login</h3>
+      <p>Enter your credentials to access admin panel</p>
+      
+      <input type="email" id="adminEmail" class="password-input" placeholder="📧 Email address" autocomplete="off">
+      <input type="password" id="adminPassword" class="password-input" placeholder="🔒 Password" autocomplete="off">
+      
+      <div class="password-error" id="passwordError"></div>
+      
       <div class="password-buttons">
-        <button class="password-btn submit" onclick="checkAdminPassword()"><i class="fas fa-sign-in-alt"></i> Login</button>
-        <button class="password-btn cancel" onclick="closePasswordModal()"><i class="fas fa-times"></i> Cancel</button>
+        <button class="password-btn cancel" onclick="closePasswordModal()">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button class="password-btn submit" onclick="checkAdminPassword()">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+      </div>
+      
+      <div class="password-hint">
+        <i class="fas fa-info-circle"></i>
+        <strong>Note:</strong> Only registered teachers can login. Contact your institute director if you don't have credentials.
       </div>
     </div>
   </div>
@@ -476,7 +665,16 @@
   <div class="container">
     <div class="header">
       <div class="header-content">
-        <img id="schoolLogo" class="header-logo" src="https://via.placeholder.com/110?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/110?text=Logo'">
+        
+        <!-- 🔥 LOGO WITH CLICK TO LOGIN -->
+        <div class="logo-wrapper" onclick="openPasswordModal()" title="Teacher? Click to Login">
+          <img id="schoolLogo" class="header-logo" src="https://via.placeholder.com/110?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/110?text=Logo'">
+          <div class="logo-lock-icon">
+            <i class="fas fa-lock"></i>
+          </div>
+          <div class="logo-tooltip">🔐 Teacher Login</div>
+        </div>
+        
         <div class="header-text">
           <h1 class="school-name" id="schoolName">Loading...</h1>
           <p class="location" id="schoolLocation">📍 Loading location...</p>
@@ -749,7 +947,7 @@
       document.querySelectorAll('.result-item').forEach(item => item.classList.remove('active'));
     }
 
-    // ===== 🔥 GET RESULT FUNCTION - UPDATED WITH FALLBACK VALUES =====
+    // ===== GET RESULT FUNCTION =====
     function getResult() {
       const rollInput = document.getElementById('roll-input').value.trim();
       if (!rollInput) {
@@ -767,18 +965,15 @@
         return;
       }
       
-      // 🔥 Get coaching data from schoolData
       const coachingName = schoolData?.coachingName || schoolData?.name || 'GYAN SEVA';
       const directorName = schoolData?.director || 'Director';
       const coachingLogo = schoolData?.logoUrl || '';
       const coachingPhone = schoolData?.phone || '';
       const directorEmail = schoolData?.directorEmail || '';
       
-      // 🔥 Prepare subjects and marks
       const subjects = selectedExamData.subjects.map(s => s.name);
       const marks = student.marks || {};
       
-      // 🔥 Calculate total and percentage
       let totalObtained = 0;
       let totalMax = 0;
       selectedExamData.subjects.forEach(sub => {
@@ -787,16 +982,13 @@
       });
       const totalPercent = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(2) : 0;
       
-      // 🔥 Calculate division
       let division = 'FAIL';
       if (totalPercent >= 60) division = 'FIRST DIVISION';
       else if (totalPercent >= 45) division = 'SECOND DIVISION';
       else if (totalPercent >= 33) division = 'THIRD DIVISION';
       
-      // 🔥 NEW: Get class from exam data or student data (with fallback)
       const studentClass = selectedExamData.class || student.class || 'Not Specified';
       
-      // 🔥 NEW: Exam Date - use from data or fallback
       let examDate = 'Not Specified';
       if (selectedExamData.examDate) {
         examDate = selectedExamData.examDate;
@@ -813,10 +1005,8 @@
         examDate = '15 Jan 2025';
       }
       
-      // 🔥 NEW: Session - use from data or fallback
       const examSession = selectedExamData.session || '2026-2027';
       
-      // 🔥 Create URL parameters with all fields
       const params = new URLSearchParams();
       params.set('name', student.name);
       params.set('roll', student.rollNo);
@@ -830,38 +1020,46 @@
       params.set('percent', totalPercent);
       params.set('division', division);
       
-      // 🔥 Store coaching data in localStorage for result-viewer
       localStorage.setItem('coachingName', coachingName);
       localStorage.setItem('directorName', directorName);
       localStorage.setItem('coachingLogo', coachingLogo);
       localStorage.setItem('directorPhone', coachingPhone);
       localStorage.setItem('directorEmail', directorEmail);
       
-      // 🔥 Open result-viewer.html with parameters
       const url = `result-viewer.html?${params.toString()}`;
       window.open(url, '_blank');
     }
 
-    // ===== PASSWORD MODAL =====
+    // ===== 🔥 PASSWORD MODAL FUNCTIONS =====
     function openPasswordModal() {
-      document.getElementById('passwordModal').style.display = 'flex';
+      document.getElementById('passwordModal').classList.add('active');
       document.getElementById('adminEmail').value = '';
       document.getElementById('adminPassword').value = '';
-      document.getElementById('passwordError').style.display = 'none';
+      document.getElementById('passwordError').classList.remove('show');
+      document.getElementById('passwordError').textContent = '';
+      
+      // Auto-focus email field after modal opens
+      setTimeout(() => {
+        document.getElementById('adminEmail').focus();
+      }, 300);
     }
 
     function closePasswordModal() {
-      document.getElementById('passwordModal').style.display = 'none';
+      document.getElementById('passwordModal').classList.remove('active');
+      document.getElementById('adminEmail').value = '';
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('passwordError').classList.remove('show');
     }
 
+    // 🔥 MAIN LOGIN FUNCTION
     async function checkAdminPassword() {
-      const email = document.getElementById('adminEmail').value;
+      const email = document.getElementById('adminEmail').value.trim();
       const password = document.getElementById('adminPassword').value;
       const errorElement = document.getElementById('passwordError');
       
       if(!email || !password) {
-        errorElement.textContent = 'Please enter both email and password!';
-        errorElement.style.display = 'block';
+        errorElement.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter both email and password!';
+        errorElement.classList.add('show');
         return;
       }
       
@@ -869,39 +1067,77 @@
       const originalText = submitBtn.innerHTML;
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
       submitBtn.disabled = true;
-      errorElement.style.display = 'none';
+      errorElement.classList.remove('show');
       
       try {
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         if(userCredential.user) {
-          sessionStorage.setItem('adminLoggedIn', 'true');
-          sessionStorage.setItem('adminEmail', userCredential.user.email);
+          // ✅ Save session
+          sessionStorage.setItem('teacherLoggedIn', 'true');
+          sessionStorage.setItem('teacherEmail', userCredential.user.email);
           sessionStorage.setItem('loginTime', Date.now());
-          closePasswordModal();
-          window.open('admin.html', '_blank');
+          
+          // ✅ Success message
+          errorElement.style.background = '#d1fae5';
+          errorElement.style.color = '#065f46';
+          errorElement.innerHTML = '<i class="fas fa-check-circle"></i> Login successful! Opening admin panel...';
+          errorElement.classList.add('show');
+          
+          // ✅ Close modal & redirect after 800ms
+          setTimeout(() => {
+            closePasswordModal();
+            // 🔥 OPEN TEACHER PANEL WITH coachingId
+            const teacherPanelUrl = `teacher-panel.html?coachingId=${schoolId}`;
+            window.open(teacherPanelUrl, '_blank');
+          }, 800);
         }
       } catch(error) {
         console.error('Login Error:', error);
-        if(error.code === 'auth/user-not-found') errorElement.textContent = 'Email not found! Please contact admin.';
-        else if(error.code === 'auth/wrong-password') errorElement.textContent = 'Wrong password! Please try again.';
-        else if(error.code === 'auth/invalid-email') errorElement.textContent = 'Invalid email format!';
-        else if(error.code === 'auth/too-many-requests') errorElement.textContent = 'Too many failed attempts! Please try later.';
-        else errorElement.textContent = 'Login failed: ' + error.message;
-        errorElement.style.display = 'block';
+        let errorMsg = '';
+        
+        if(error.code === 'auth/user-not-found') {
+          errorMsg = '<i class="fas fa-exclamation-circle"></i> Email not found! Please contact your institute director.';
+        } else if(error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+          errorMsg = '<i class="fas fa-exclamation-circle"></i> Wrong password! Please try again.';
+        } else if(error.code === 'auth/invalid-email') {
+          errorMsg = '<i class="fas fa-exclamation-circle"></i> Invalid email format!';
+        } else if(error.code === 'auth/too-many-requests') {
+          errorMsg = '<i class="fas fa-exclamation-circle"></i> Too many failed attempts! Please try after some time.';
+        } else if(error.code === 'auth/network-request-failed') {
+          errorMsg = '<i class="fas fa-exclamation-circle"></i> Network error! Please check your internet.';
+        } else {
+          errorMsg = '<i class="fas fa-exclamation-circle"></i> ' + error.message;
+        }
+        
+        errorElement.innerHTML = errorMsg;
+        errorElement.classList.add('show');
       } finally {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
       }
     }
 
+    // 🔥 Enter key support
     document.getElementById('adminEmail').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') document.getElementById('adminPassword').focus();
     });
     document.getElementById('adminPassword').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') checkAdminPassword();
     });
+    
+    // 🔥 Click outside to close
     document.getElementById('passwordModal').addEventListener('click', function(e) {
       if (e.target.id === 'passwordModal') closePasswordModal();
+    });
+    
+    // 🔥 ESC key to close
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('passwordModal');
+        if (modal.classList.contains('active')) {
+          closePasswordModal();
+        }
+      }
     });
 
     // ===== INIT =====
