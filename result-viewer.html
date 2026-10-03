@@ -339,13 +339,13 @@
     .result-card { isolation: isolate; }
     .result-watermark {
       position: absolute;
-      z-index: 0;
+      z-index: 2;
       top: 52%;
       left: 50%;
       width: min(48%, 360px);
       max-height: 44%;
       object-fit: contain;
-      opacity: .07;
+      opacity: .045;
       filter: grayscale(.55);
       transform: translate(-50%, -50%);
       pointer-events: none;
@@ -365,7 +365,7 @@
       .result-watermark { width: 62%; }
     }
     @media print {
-      .result-watermark { opacity: .07; }
+      .result-watermark { opacity: .045; }
     }
   </style>
 </head>
@@ -433,6 +433,10 @@
       <div class="info-row">
         <span class="info-label">Class:</span>
         <span class="info-value" id="studentClass">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Exam Date:</span>
+        <span class="info-value" id="examDate">-</span>
       </div>
       <div class="info-row">
         <span class="info-label">Session:</span>
@@ -516,6 +520,7 @@
   document.getElementById('studentRoll').innerText = studentRoll;
   document.getElementById('fatherName').innerText = fatherName;
   document.getElementById('studentClass').innerText = studentClass;
+  document.getElementById('examDate').innerText = examDate || 'Not Specified';
   document.getElementById('examSession').innerText = examSession;
   document.getElementById('totalPercentage').innerHTML = `Total Percentage: ${totalPercent}%`;
   document.getElementById('coachingMention').innerHTML = `<p>This result is published by ${coachingName} | Director: ${directorName}</p><p>For queries: ${coachingPhone}</p>`;
