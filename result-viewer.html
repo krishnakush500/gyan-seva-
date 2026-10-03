@@ -1072,6 +1072,31 @@
       .score-summary-grid { grid-template-columns: 1fr 1fr; }
       .signature-row { break-inside: avoid; }
     }
+    /* Quiet school-logo watermark and the requested two-column student details. */
+    .result-card { isolation: isolate; }
+    .result-watermark {
+      position: absolute;
+      z-index: 0;
+      top: 52%;
+      left: 50%;
+      width: min(48%, 360px);
+      height: auto;
+      max-height: 44%;
+      object-fit: contain;
+      opacity: .06;
+      transform: translate(-50%, -50%);
+      filter: grayscale(.65);
+      pointer-events: none;
+      user-select: none;
+    }
+    .result-card > :not(.result-watermark) { position: relative; z-index: 1; }
+    .student-info { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .student-info > .info-item:nth-child(n) { border-right: 0; }
+    .student-info > .info-item:nth-child(even) { border-right: 1px solid #e1eaf2; }
+    .student-info > .info-item:nth-child(4),
+    .student-info > .info-item:nth-child(5),
+    .student-info > .info-item:nth-child(6),
+    .student-info > .info-item:nth-child(7) { border-top: 1px solid #e1eaf2; }
   </style>
 </head>
 <body>
@@ -1110,6 +1135,7 @@
   
   <!-- Result Card -->
   <div class="result-card" id="resultCard">
+    <img id="watermarkLogo" class="result-watermark" src="" alt="" aria-hidden="true">
     <div class="result-card-header">
       <div class="result-logo">
         <img id="coachingLogo" src="" alt="Logo">
@@ -1130,12 +1156,12 @@
         <span class="info-copy"><span class="label">Student</span><span class="value highlight" id="studentName">-</span></span>
       </div>
       <div class="info-item">
-        <i class="fas fa-hashtag info-icon"></i>
-        <span class="info-copy"><span class="label">Roll No.</span><span class="value" id="studentRoll">-</span></span>
-      </div>
-      <div class="info-item">
         <i class="fas fa-user-group info-icon"></i>
         <span class="info-copy"><span class="label">Father</span><span class="value" id="fatherName">-</span></span>
+      </div>
+      <div class="info-item">
+        <i class="fas fa-hashtag info-icon"></i>
+        <span class="info-copy"><span class="label">Roll No.</span><span class="value" id="studentRoll">-</span></span>
       </div>
       <div class="info-item">
         <i class="fas fa-book-open info-icon"></i>
@@ -1238,6 +1264,9 @@
   const logoImg = document.getElementById('coachingLogo');
   logoImg.src = coachingLogo;
   logoImg.crossOrigin = 'Anonymous';
+  const watermarkImg = document.getElementById('watermarkLogo');
+  watermarkImg.src = coachingLogo;
+  watermarkImg.crossOrigin = 'Anonymous';
   
   document.getElementById('coachingName').innerText = coachingName;
   document.getElementById('directorName').innerText = directorName;
