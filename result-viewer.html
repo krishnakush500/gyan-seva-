@@ -687,6 +687,217 @@
       .division-display { margin-right: 20px; }
       .coaching-mention { padding: 13px 20px; }
     }
+
+    /* Formal school report card */
+    :root {
+      --report-navy: #122b4a;
+      --report-blue: #1b4773;
+      --report-green: #147d64;
+      --report-gold: #c69745;
+      --report-ink: #1e2d3d;
+      --report-muted: #6b7a8b;
+      --report-line: #e3e9ef;
+    }
+    body {
+      background:
+        radial-gradient(ellipse at 3% 0%, rgba(27,71,115,.09), transparent 30rem),
+        radial-gradient(ellipse at 100% 100%, rgba(20,125,100,.08), transparent 28rem),
+        #eef2f5;
+      color: var(--report-ink);
+      padding: 42px 20px 64px;
+    }
+    .result-container { max-width: 940px; }
+    .action-buttons { margin-bottom: 16px; }
+    .action-btn { border-radius: 10px; font-weight: 650; }
+    .btn-download { background: var(--report-navy); border-color: var(--report-navy); }
+    .btn-download:hover { background: var(--report-blue); }
+    .btn-share { color: #147d64; }
+    .result-card {
+      position: relative;
+      border-radius: 18px;
+      border-color: #d9e1e8;
+      box-shadow: 0 24px 70px rgba(18,43,74,.14);
+    }
+    .result-card::before { height: 7px; background: linear-gradient(90deg, #d78e28, #f2c96b 40%, #fff 50%, #4d9d72 72%, #147d64); }
+    .result-card-header {
+      align-items: center;
+      min-height: 154px;
+      padding: 30px 38px 27px;
+      background: linear-gradient(115deg, #fff 0%, #f8fafb 70%, #f2f7f5 100%);
+    }
+    .result-logo {
+      width: 90px;
+      height: 90px;
+      padding: 4px;
+      border: 1px solid #d9e1e8;
+      border-radius: 50%;
+      box-shadow: 0 0 0 5px #fff, 0 0 0 6px #e5ebef, 0 8px 20px rgba(18,43,74,.12);
+    }
+    .result-title { padding-right: 148px; }
+    .result-title::before { color: var(--report-green); letter-spacing: 2px; }
+    .result-title h2 { color: var(--report-navy); text-transform: uppercase; letter-spacing: .1px; }
+    .result-title h3 { color: #344b61; }
+    .result-title p { font-size: .8rem; }
+    .result-title p strong { color: var(--report-navy); }
+    .record-badge {
+      position: absolute;
+      top: 34px;
+      right: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 11px;
+      border: 1px solid #d5e8df;
+      border-radius: 8px;
+      background: #f1f8f4;
+      color: #17684f;
+      font-size: .62rem;
+      font-weight: 800;
+      letter-spacing: .8px;
+      white-space: nowrap;
+    }
+    .record-badge i { font-size: .72rem; }
+    .student-info {
+      margin: 25px 34px 28px;
+      border-radius: 12px;
+      box-shadow: 0 5px 16px rgba(18,43,74,.035);
+    }
+    .student-info::before { background: #f5f7f9; }
+    .info-item { position: relative; }
+    .info-item:not(:nth-child(3n)) { border-right: 1px solid #edf0f3; }
+    .info-item .label { color: #778596; }
+    .info-item .label i { color: var(--report-green); }
+    .info-item .value.highlight { color: var(--report-navy); }
+    .marks-section-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 12px;
+      color: var(--report-navy);
+      font-size: .72rem;
+      letter-spacing: 1.4px;
+    }
+    .marks-section-label::before {
+      content: "";
+      width: 3px;
+      height: 17px;
+      border-radius: 3px;
+      background: var(--report-gold);
+    }
+    .marks-table th { background: var(--report-navy); }
+    .marks-table th:not(:first-child), .marks-table td:not(:first-child) { text-align: center; }
+    .marks-table td:first-child { font-weight: 650; color: #263c52; }
+    .marks-table .total-marks td { background: #f0f5f8; color: var(--report-navy); }
+    .score-summary {
+      margin: 23px 34px 28px;
+      padding: 18px;
+      border: 1px solid var(--report-line);
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f8fafb, #f4f8f6);
+    }
+    .score-summary-heading {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 14px;
+      color: var(--report-navy);
+      font-size: .69rem;
+      font-weight: 800;
+      letter-spacing: 1.3px;
+    }
+    .score-summary-heading i { color: var(--report-gold); }
+    .score-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .percentage-display, .division-display {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 92px;
+      margin: 0;
+      padding: 14px 18px;
+      border: 1px solid #dce7e6;
+      border-left: 4px solid var(--report-green);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--report-navy);
+      font-size: .68rem;
+      font-weight: 750;
+      letter-spacing: .65px;
+      text-transform: uppercase;
+    }
+    .division-display { border-left-color: var(--report-gold); }
+    .score-value {
+      display: block;
+      margin-top: 4px;
+      color: var(--report-navy);
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      line-height: 1.15;
+      text-transform: none;
+    }
+    .division-display .score-value { color: #8a6421; font-size: 1.25rem; }
+    .division-display.result-first { border-left-color: var(--report-green); background: #f4faf6; }
+    .division-display.result-first .score-value { color: var(--report-green); }
+    .division-display.result-second { border-left-color: var(--report-blue); }
+    .division-display.result-second .score-value { color: var(--report-blue); }
+    .division-display.result-third { border-left-color: var(--report-gold); }
+    .division-display.result-fail { border-left-color: #bc4b48; background: #fff8f7; }
+    .division-display.result-fail .score-value { color: #a43d3b; }
+    .coaching-mention {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 19px 34px 23px;
+      background: #f7f9fa;
+      text-align: left;
+    }
+    .school-seal {
+      display: grid;
+      flex: 0 0 42px;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border: 1px solid #dce5e6;
+      border-radius: 50%;
+      background: #fff;
+      color: var(--report-green);
+      font-size: 1rem;
+    }
+    .coaching-mention-copy { min-width: 0; }
+    .coaching-mention p { margin: 0 0 3px; color: #405265; font-size: .72rem; }
+    .coaching-mention p:last-child { margin-bottom: 0; color: var(--report-muted); }
+    @media (max-width: 600px) {
+      body { padding: 18px 11px 32px; }
+      .result-card-header { min-height: 0; padding: 22px 16px 18px; }
+      .result-title { padding-right: 0; }
+      .record-badge { top: 12px; right: 12px; padding: 6px 7px; font-size: .5rem; }
+      .result-title::before { max-width: 150px; margin-top: 17px; }
+      .result-logo { width: 60px; height: 60px; }
+      .student-info { margin: 16px 13px 19px; }
+      .info-item:not(:nth-child(4n)) { border-right: 0; }
+      .info-item:nth-child(odd) { border-right: 1px solid #edf0f3; }
+      .score-summary { margin: 18px 13px 21px; padding: 13px; }
+      .score-summary-grid { gap: 8px; }
+      .percentage-display, .division-display { min-height: 78px; padding: 11px; font-size: .58rem; }
+      .score-value { font-size: 1.35rem; }
+      .division-display .score-value { font-size: .98rem; }
+      .coaching-mention { gap: 10px; padding: 15px 16px 18px; }
+      .school-seal { flex-basis: 36px; width: 36px; height: 36px; }
+      .coaching-mention p { font-size: .64rem; overflow-wrap: anywhere; }
+    }
+    @media (max-width: 380px) {
+      .record-badge { display: none; }
+      .result-title::before { margin-top: 0; }
+      .score-summary-grid { grid-template-columns: 1fr; }
+      .percentage-display, .division-display { min-height: 70px; }
+    }
+    @media print {
+      body { padding: 0; background: #fff; }
+      .result-card { box-shadow: none; }
+      .action-buttons { display: none; }
+      .score-summary { break-inside: avoid; }
+    }
   </style>
 </head>
 <body>
@@ -734,6 +945,7 @@
         <h3 id="examName">Exam Name</h3>
         <p>Institute Director: <strong id="directorName">Director</strong></p>
       </div>
+      <div class="record-badge"><i class="fas fa-circle-check"></i> OFFICIAL RESULT</div>
     </div>
     
     <!-- ===== 🔥 STUDENT INFO - ATTRACTIVE ===== -->
@@ -772,12 +984,20 @@
       <tbody id="marksTableBody"></tbody>
     </table>
     
-    <div class="percentage-display" id="totalPercentage">Total Percentage: 0%</div>
-    <div class="division-display" id="divisionBox">Division: -</div>
+    <section class="score-summary" aria-label="Result summary">
+      <h4 class="score-summary-heading"><i class="fas fa-chart-line"></i> RESULT SUMMARY</h4>
+      <div class="score-summary-grid">
+        <div class="percentage-display" id="totalPercentage">Overall Percentage<span class="score-value" id="percentageValue">0%</span></div>
+        <div class="division-display" id="divisionBox">Division<span class="score-value" id="divisionValue">-</span></div>
+      </div>
+    </section>
     
     <div class="coaching-mention" id="coachingMention">
-      <p>This result is published by MODERN ACADEMY, Begusarai | Director: RAMAN SIR</p>
-      <p>For queries: +91 8252658421</p>
+      <div class="school-seal"><i class="fas fa-award"></i></div>
+      <div class="coaching-mention-copy">
+        <p id="resultPublisher">This result is published by MODERN ACADEMY, Begusarai | Director: RAMAN SIR</p>
+        <p>For queries: <span id="resultContact">+91 8252658421</span> <span id="resultEmail"></span></p>
+      </div>
     </div>
   </div>
 </div>
@@ -841,29 +1061,18 @@
   document.getElementById('studentClass').innerText = studentClass;
   document.getElementById('examDate').innerText = examDate;
   document.getElementById('examSession').innerText = examSession;
-  document.getElementById('totalPercentage').innerHTML = `Total Percentage: ${totalPercent}%`;
-  document.getElementById('coachingMention').innerHTML = `<p>This result is published by ${coachingName} | Director: ${directorName}</p><p>For queries: ${coachingPhone} | ${directorEmail}</p>`;
+  document.getElementById('percentageValue').textContent = `${totalPercent}%`;
+  document.getElementById('resultPublisher').textContent = `This result is published by ${coachingName} | Director: ${directorName}`;
+  document.getElementById('resultContact').textContent = coachingPhone;
+  document.getElementById('resultEmail').textContent = directorEmail ? ` | ${directorEmail}` : '';
   
   // Division with color
   const divisionBox = document.getElementById('divisionBox');
-  if(division === 'FIRST DIVISION') {
-    divisionBox.style.background = '#d4edda';
-    divisionBox.style.color = '#155724';
-    divisionBox.style.border = '2px solid #28a745';
-  } else if(division === 'SECOND DIVISION') {
-    divisionBox.style.background = '#d1ecf1';
-    divisionBox.style.color = '#0c5460';
-    divisionBox.style.border = '2px solid #17a2b8';
-  } else if(division === 'THIRD DIVISION') {
-    divisionBox.style.background = '#fff3cd';
-    divisionBox.style.color = '#856404';
-    divisionBox.style.border = '2px solid #ffc107';
-  } else {
-    divisionBox.style.background = '#f8d7da';
-    divisionBox.style.color = '#721c24';
-    divisionBox.style.border = '2px solid #dc3545';
-  }
-  divisionBox.innerHTML = `Division: ${division}`;
+  if(division === 'FIRST DIVISION') divisionBox.classList.add('result-first');
+  else if(division === 'SECOND DIVISION') divisionBox.classList.add('result-second');
+  else if(division === 'THIRD DIVISION') divisionBox.classList.add('result-third');
+  else divisionBox.classList.add('result-fail');
+  document.getElementById('divisionValue').textContent = division;
   
   // Generate marks table
   let marksHtml = '';
