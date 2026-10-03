@@ -45,19 +45,10 @@
       gap: 4px;
     }
     
-    /* 🔥 LOGO WRAPPER - Click to Login */
+    /* The logo opens the staff login without a visible sign. */
     .logo-wrapper {
       position: relative;
       display: inline-block;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    .logo-wrapper:hover {
-      transform: scale(1.05);
-    }
-    .logo-wrapper:hover .header-logo {
-      border-color: #ffc107;
-      box-shadow: 0 8px 25px rgba(255,193,7,0.4);
     }
     
     .header-logo {
@@ -69,61 +60,6 @@
       transition: all 0.3s;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       display: block;
-    }
-    
-    /* 🔥 Lock Icon on Logo */
-    .logo-lock-icon {
-      position: absolute;
-      bottom: 4px;
-      right: 4px;
-      background: #ffc107;
-      color: #1a237e;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      border: 2px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      transition: all 0.3s;
-      pointer-events: none;
-    }
-    .logo-wrapper:hover .logo-lock-icon {
-      background: #ff9800;
-      transform: rotate(15deg) scale(1.1);
-    }
-    
-    /* 🔥 Tooltip */
-    .logo-tooltip {
-      position: absolute;
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.85);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-      z-index: 100;
-    }
-    .logo-tooltip::before {
-      content: '';
-      position: absolute;
-      top: -5px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-bottom: 5px solid rgba(0,0,0,0.85);
-    }
-    .logo-wrapper:hover .logo-tooltip {
-      opacity: 1;
     }
     
     .header-text {
@@ -594,7 +530,6 @@
     @media (min-width: 769px) {
       .header { padding: 14px 20px; }
       .header-logo { width: 110px; height: 110px; }
-      .logo-lock-icon { width: 30px; height: 30px; font-size: 0.85rem; }
       .school-name { font-size: 2rem; }
       .location { font-size: 0.95rem; }
       .results-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
@@ -610,7 +545,6 @@
     @media (max-width: 480px) {
       .header { padding: 10px 10px; }
       .header-logo { width: 75px; height: 75px; }
-      .logo-lock-icon { width: 22px; height: 22px; font-size: 0.6rem; bottom: 2px; right: 2px; }
       .school-name { font-size: 1.4rem; }
       .location { font-size: 0.75rem; }
       .marquee-container { height: 30px; }
@@ -638,8 +572,8 @@
         <i class="fas fa-user-shield"></i>
       </div>
       
-      <h3>Teacher Login</h3>
-      <p>Enter your credentials to access admin panel</p>
+      <h3>Teacher / Owner Login</h3>
+      <p>Enter your institute account email and password</p>
       
       <input type="email" id="adminEmail" class="password-input" placeholder="📧 Email address" autocomplete="off">
       <input type="password" id="adminPassword" class="password-input" placeholder="🔒 Password" autocomplete="off">
@@ -657,7 +591,7 @@
       
       <div class="password-hint">
         <i class="fas fa-info-circle"></i>
-        <strong>Note:</strong> Only registered teachers can login. Contact your institute director if you don't have credentials.
+        <strong>Note:</strong> Institute owner or teachers with this account can login. Share its credentials only with trusted staff.
       </div>
     </div>
   </div>
@@ -666,13 +600,8 @@
     <div class="header">
       <div class="header-content">
         
-        <!-- 🔥 LOGO WITH CLICK TO LOGIN -->
-        <div class="logo-wrapper" onclick="openPasswordModal()" title="Teacher? Click to Login">
+        <div class="logo-wrapper" onclick="openPasswordModal()">
           <img id="schoolLogo" class="header-logo" src="https://via.placeholder.com/110?text=Logo" alt="Logo" onerror="this.src='https://via.placeholder.com/110?text=Logo'">
-          <div class="logo-lock-icon">
-            <i class="fas fa-lock"></i>
-          </div>
-          <div class="logo-tooltip">🔐 Teacher Login</div>
         </div>
         
         <div class="header-text">
@@ -1076,6 +1005,7 @@
           sessionStorage.setItem('teacherLoggedIn', 'true');
           sessionStorage.setItem('teacherEmail', userCredential.user.email);
           sessionStorage.setItem('loginTime', Date.now());
+          localStorage.setItem('schoolId', schoolId);
           
           // ✅ Success message
           errorElement.style.background = '#d1fae5';
@@ -1083,12 +1013,9 @@
           errorElement.innerHTML = '<i class="fas fa-check-circle"></i> Login successful! Opening admin panel...';
           errorElement.classList.add('show');
           
-          // ✅ Close modal & redirect after 800ms
+          // ✅ Close modal & open this institute's teacher panel
           setTimeout(() => {
-            closePasswordModal();
-            // 🔥 OPEN TEACHER PANEL WITH coachingId
-            const teacherPanelUrl = `teacher-panel.html?coachingId=${schoolId}`;
-            window.open(teacherPanelUrl, '_blank');
+            window.location.href = `teacher-panel.html?coachingId=${encodeURIComponent(schoolId)}`;
           }, 800);
         }
       } catch(error) {
