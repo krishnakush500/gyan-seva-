@@ -898,6 +898,180 @@
       .action-buttons { display: none; }
       .score-summary { break-inside: avoid; }
     }
+    /* Certificate styling matched to the supplied school report reference. */
+    .result-card::before {
+      height: 12px;
+      background: linear-gradient(90deg, var(--report-navy) 0 18%, #1b4773 18% 82%, var(--report-navy) 82%);
+      border-bottom: 3px solid #d8b25f;
+    }
+    .result-card-header {
+      justify-content: center;
+      min-height: 200px;
+      padding: 27px 38px 28px;
+      border-bottom: 0;
+      background: #fff;
+    }
+    .result-logo {
+      position: absolute;
+      left: 42px;
+      width: 112px;
+      height: 112px;
+      border: 2px solid var(--report-navy);
+      box-shadow: 0 0 0 4px #fff, 0 0 0 5px #d8b25f;
+    }
+    .result-title {
+      flex: 1;
+      max-width: 720px;
+      padding: 0 118px;
+      text-align: center;
+    }
+    .result-title::before {
+      margin-bottom: 9px;
+      color: var(--report-navy);
+      font-size: .69rem;
+      letter-spacing: 3px;
+    }
+    .result-title h2 { font-size: clamp(1.55rem, 3.3vw, 2.15rem); line-height: 1.08; }
+    .result-title h3 { margin-top: 6px; color: #17649a; font-size: 1.22rem; }
+    .result-title p { margin-top: 7px; color: #344b61; font-size: .95rem; }
+    .record-badge {
+      top: 32px;
+      right: 35px;
+      padding: 13px 15px;
+      border-color: #a8d1b9;
+      border-radius: 12px;
+      background: #eff8f2;
+      color: #17684f;
+      font-size: .75rem;
+    }
+    .student-info {
+      overflow: hidden;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      margin: 0 30px 24px;
+      border: 1px solid #b9d3ed;
+      border-radius: 12px;
+      box-shadow: none;
+    }
+    .student-info::before { content: none; }
+    .student-profile-heading {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 17px;
+      border-bottom: 1px solid #c8daed;
+      background: #eaf3fc;
+      color: var(--report-navy);
+      font-size: .86rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .student-profile-heading i { color: #17649a; font-size: 1.1rem; }
+    .student-info > .info-item:nth-child(3n),
+    .student-info > .info-item:nth-child(3n + 2) { border-right: 1px solid #e1eaf2; }
+    .student-info > .info-item:nth-child(5),
+    .student-info > .info-item:nth-child(6),
+    .student-info > .info-item:nth-child(7) { border-top: 1px solid #e1eaf2; }
+    .student-info .info-item { min-height: 83px; flex-direction: row; align-items: flex-start; gap: 12px; padding: 16px 17px; }
+    .student-info .info-item .info-icon { flex: 0 0 22px; margin-top: 3px; color: #17649a; font-size: 1.08rem; text-align: center; }
+    .student-info .info-copy { display: flex; min-width: 0; flex-direction: column; }
+    .student-info .info-item .label { margin: 0 0 5px; color: #53677c; font-size: .68rem; letter-spacing: .8px; opacity: 1; }
+    .student-info .info-item .value { font-size: .94rem; }
+    .marks-section-label {
+      margin: 0 30px;
+      padding: 12px 16px;
+      border: 1px solid #b9d3ed;
+      border-bottom: 0;
+      border-radius: 12px 12px 0 0;
+      background: #eaf3fc;
+      font-size: .82rem;
+    }
+    .marks-section-label::before { content: none; }
+    .marks-section-label i { color: #17649a; font-size: 1rem; }
+    .marks-table { width: calc(100% - 60px); margin: 0 30px 22px; border-color: #b9d3ed; border-radius: 0 0 12px 12px; }
+    .marks-table th { padding: 13px 15px; background: #164778; font-size: .75rem; }
+    .marks-table td { padding: 12px 15px; }
+    .marks-table .total-marks td { background: #dcecfb; font-size: .96rem; font-weight: 800; }
+    .score-summary { overflow: hidden; margin: 0 30px 18px; padding: 0; border-color: #b9d3ed; background: #fff; }
+    .score-summary-heading { margin: 0; padding: 12px 16px; border-bottom: 1px solid #c8daed; background: #eaf3fc; font-size: .82rem; }
+    .score-summary-heading i { color: #c28a21; font-size: 1rem; }
+    .score-summary-grid { padding: 10px 14px; gap: 14px; }
+    .percentage-display, .division-display {
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 14px;
+      min-height: 112px;
+      border: 1px solid #a8d9c1;
+      border-left: 5px solid #149369;
+      border-radius: 12px;
+      background: linear-gradient(110deg, #f3fcf7, #fff);
+      color: #17354d;
+      font-size: .82rem;
+      letter-spacing: .3px;
+    }
+    .division-display { border-color: #f1b4ae; border-left-color: #ef514f; background: linear-gradient(110deg, #fff6f5, #fff); }
+    .summary-icon { display: grid; flex: 0 0 58px; width: 58px; height: 58px; place-items: center; border-radius: 50%; background: #15936b; color: #fff; font-size: 1.65rem; }
+    .division-display .summary-icon { background: #ef514f; }
+    .summary-copy { display: block; color: var(--report-navy); font-size: .75rem; font-weight: 750; }
+    .score-value { margin-top: 5px; color: #126344; font-size: 1.9rem; }
+    .division-display .score-value { color: #d82942; font-size: 1.35rem; }
+    .division-display.result-first .score-value { color: #d82942; }
+    .division-display.result-second .score-value { color: #1b4773; }
+    .division-display.result-third .score-value { color: #9a6b13; }
+    .division-display.result-fail .score-value { color: #a43d3b; }
+    .signature-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding: 12px 36px 23px; }
+    .signature-slot { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .signature-slot span { width: 100%; height: 34px; border-bottom: 1px solid #294e7c; }
+    .signature-slot strong { color: var(--report-navy); font-size: .68rem; letter-spacing: .8px; text-align: center; }
+    @media (max-width: 600px) {
+      .result-card-header { min-height: 165px; padding: 21px 13px 18px; }
+      .result-logo { left: 16px; top: 50%; width: 60px; height: 60px; transform: translateY(-50%); }
+      .result-title { max-width: none; padding: 0 4px 0 66px; text-align: center; }
+      .result-title::before { margin: 12px 0 7px; font-size: .51rem; letter-spacing: 1px; }
+      .result-title h2 { font-size: 1.15rem; }
+      .result-title h3 { font-size: .92rem; }
+      .result-title p { font-size: .75rem; }
+      .record-badge { top: 10px; right: 10px; padding: 5px 7px; font-size: .48rem; }
+      .student-info { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 13px 18px; }
+      .student-info .info-item { min-height: 71px; padding: 12px 10px; gap: 8px; }
+      .student-info > .info-item:nth-child(n) { border-top: 1px solid #e1eaf2; border-right: 0; }
+      .student-info > .info-item:nth-child(even) { border-right: 1px solid #e1eaf2; }
+      .student-info > .student-profile-heading { border-top: 0; }
+      .student-info .info-item .info-icon { flex-basis: 19px; font-size: .93rem; }
+      .student-info .info-item .label { margin-bottom: 4px; font-size: .57rem; letter-spacing: .4px; }
+      .student-info .info-item .value { font-size: .77rem; }
+      .marks-section-label { margin: 0 13px; padding: 10px 11px; font-size: .69rem; }
+      .marks-table { width: calc(100% - 26px); margin: 0 13px 17px; }
+      .marks-table th { padding: 9px 6px; font-size: .56rem; letter-spacing: 0; }
+      .marks-table td { padding: 9px 6px; font-size: .7rem; }
+      .score-summary { margin: 0 13px 16px; }
+      .score-summary-heading { padding: 10px 12px; font-size: .7rem; }
+      .score-summary-grid { grid-template-columns: 1fr; padding: 10px; gap: 9px; }
+      .percentage-display, .division-display { min-height: 82px; padding: 11px 13px; }
+      .summary-icon { flex-basis: 46px; width: 46px; height: 46px; font-size: 1.3rem; }
+      .summary-copy { font-size: .65rem; }
+      .score-value { font-size: 1.5rem; }
+      .division-display .score-value { font-size: 1.12rem; }
+      .signature-row { gap: 12px; padding: 8px 15px 18px; }
+      .signature-slot span { height: 27px; }
+      .signature-slot strong { font-size: .48rem; letter-spacing: .2px; }
+    }
+    @media (max-width: 380px) {
+      .record-badge { display: none; }
+      .result-title { padding-left: 60px; }
+      .result-title::before { margin-top: 0; }
+      .signature-row { gap: 8px; padding-left: 10px; padding-right: 10px; }
+      .signature-slot strong { font-size: .43rem; }
+    }
+    @media print {
+      .result-card-header { min-height: 170px; }
+      .result-logo { left: 32px; }
+      .result-title { padding-left: 105px; padding-right: 105px; }
+      .score-summary-grid { grid-template-columns: 1fr 1fr; }
+      .signature-row { break-inside: avoid; }
+    }
   </style>
 </head>
 <body>
@@ -945,38 +1119,39 @@
         <h3 id="examName">Exam Name</h3>
         <p>Institute Director: <strong id="directorName">Director</strong></p>
       </div>
-      <div class="record-badge"><i class="fas fa-circle-check"></i> OFFICIAL RESULT</div>
+      <div class="record-badge"><i class="fas fa-graduation-cap"></i> RESULT CARD</div>
     </div>
     
     <!-- ===== 🔥 STUDENT INFO - ATTRACTIVE ===== -->
     <div class="student-info" id="studentInfo">
+      <div class="student-profile-heading"><i class="fas fa-user-graduate"></i> STUDENT PROFILE</div>
       <div class="info-item">
-        <span class="label"><i class="fas fa-user-graduate"></i> Student</span>
-        <span class="value highlight" id="studentName">-</span>
+        <i class="fas fa-user info-icon"></i>
+        <span class="info-copy"><span class="label">Student</span><span class="value highlight" id="studentName">-</span></span>
       </div>
       <div class="info-item">
-        <span class="label"><i class="fas fa-hashtag"></i> Roll No</span>
-        <span class="value" id="studentRoll">-</span>
+        <i class="fas fa-hashtag info-icon"></i>
+        <span class="info-copy"><span class="label">Roll No.</span><span class="value" id="studentRoll">-</span></span>
       </div>
       <div class="info-item">
-        <span class="label"><i class="fas fa-user-tie"></i> Father</span>
-        <span class="value" id="fatherName">-</span>
+        <i class="fas fa-user-group info-icon"></i>
+        <span class="info-copy"><span class="label">Father</span><span class="value" id="fatherName">-</span></span>
       </div>
       <div class="info-item">
-        <span class="label"><i class="fas fa-chalkboard"></i> Class</span>
-        <span class="value" id="studentClass">-</span>
+        <i class="fas fa-book-open info-icon"></i>
+        <span class="info-copy"><span class="label">Class</span><span class="value" id="studentClass">-</span></span>
       </div>
       <div class="info-item">
-        <span class="label"><i class="fas fa-calendar-alt"></i> Exam Date</span>
-        <span class="value" id="examDate">-</span>
+        <i class="fas fa-calendar-days info-icon"></i>
+        <span class="info-copy"><span class="label">Exam Date</span><span class="value" id="examDate">-</span></span>
       </div>
       <div class="info-item">
-        <span class="label"><i class="fas fa-calendar-check"></i> Session</span>
-        <span class="value" id="examSession">-</span>
+        <i class="fas fa-graduation-cap info-icon"></i>
+        <span class="info-copy"><span class="label">Session</span><span class="value" id="examSession">-</span></span>
       </div>
     </div>
     
-    <div class="marks-section-label">SUBJECT-WISE PERFORMANCE</div>
+    <div class="marks-section-label"><i class="fas fa-chart-column"></i> SUBJECT-WISE PERFORMANCE</div>
     <table class="marks-table">
       <thead>
         <tr><th>Subject</th><th>Marks Obtained</th><th>Total Marks</th><th>Grade</th></tr>
@@ -985,11 +1160,23 @@
     </table>
     
     <section class="score-summary" aria-label="Result summary">
-      <h4 class="score-summary-heading"><i class="fas fa-chart-line"></i> RESULT SUMMARY</h4>
+      <h4 class="score-summary-heading"><i class="fas fa-trophy"></i> RESULT SUMMARY</h4>
       <div class="score-summary-grid">
-        <div class="percentage-display" id="totalPercentage">Overall Percentage<span class="score-value" id="percentageValue">0%</span></div>
-        <div class="division-display" id="divisionBox">Division<span class="score-value" id="divisionValue">-</span></div>
+        <div class="percentage-display" id="totalPercentage">
+          <span class="summary-icon"><i class="fas fa-percent"></i></span>
+          <span class="summary-copy">OVERALL PERCENTAGE<strong class="score-value" id="percentageValue">0%</strong></span>
+        </div>
+        <div class="division-display" id="divisionBox">
+          <span class="summary-icon"><i class="fas fa-chart-simple"></i></span>
+          <span class="summary-copy">DIVISION<strong class="score-value" id="divisionValue">-</strong></span>
+        </div>
       </div>
+    </section>
+
+    <section class="signature-row" aria-label="Result approval signatures">
+      <div class="signature-slot"><span></span><strong>CLASS TEACHER</strong></div>
+      <div class="signature-slot"><span></span><strong>EXAMINATION IN-CHARGE</strong></div>
+      <div class="signature-slot"><span></span><strong>DIRECTOR</strong></div>
     </section>
     
     <div class="coaching-mention" id="coachingMention">
@@ -1068,11 +1255,13 @@
   
   // Division with color
   const divisionBox = document.getElementById('divisionBox');
-  if(division === 'FIRST DIVISION') divisionBox.classList.add('result-first');
-  else if(division === 'SECOND DIVISION') divisionBox.classList.add('result-second');
-  else if(division === 'THIRD DIVISION') divisionBox.classList.add('result-third');
+  const normalizedDivision = division.trim().toUpperCase();
+  if(normalizedDivision === 'FIRST DIVISION') divisionBox.classList.add('result-first');
+  else if(normalizedDivision === 'SECOND DIVISION') divisionBox.classList.add('result-second');
+  else if(normalizedDivision === 'THIRD DIVISION') divisionBox.classList.add('result-third');
   else divisionBox.classList.add('result-fail');
-  document.getElementById('divisionValue').textContent = division;
+  const divisionLabel = normalizedDivision.toLowerCase().replace(/\b\w/g, letter => letter.toUpperCase());
+  document.getElementById('divisionValue').textContent = divisionLabel;
   
   // Generate marks table
   let marksHtml = '';
@@ -1103,7 +1292,7 @@
       <td><strong>Total</strong></td>
       <td><strong>${totalObtained}</strong></td>
       <td><strong>${totalMax}</strong></td>
-      <td></td>
+      <td>-</td>
     </tr>
   `;
   
