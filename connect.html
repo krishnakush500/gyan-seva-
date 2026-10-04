@@ -122,14 +122,14 @@
     <p style="color:#666; font-size:0.85rem;">Coaching name and WhatsApp number are enough for now.</p>
     
     <label>🏫 Coaching / School Name</label>
-    <input type="text" id="addSchoolName" placeholder="e.g., Modern Academy" maxlength="25">
+    <input type="text" id="addSchoolName" placeholder="e.g., Modern Academy" maxlength="80" required>
     
     <label>📞 Phone Number</label>
-    <input type="tel" id="addSchoolPhone" inputmode="tel" placeholder="10-digit mobile number" maxlength="16">
+    <input type="tel" id="addSchoolPhone" inputmode="tel" placeholder="10-digit mobile number" maxlength="16" required>
     
     <div class="modal-buttons">
       <button class="btn-cancel" onclick="closeAddSchoolModal()">Cancel</button>
-      <button class="btn-submit" onclick="saveSchoolToFirebase()"><i class="fas fa-save"></i> Save Lead</button>
+      <button class="btn-submit" onclick="saveNewCustomerLead()"><i class="fas fa-save"></i> Save Lead</button>
     </div>
   </div>
 </div>
@@ -144,7 +144,14 @@
   const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbW1nZW9kYWJ5dHB1emthcnJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNzQyMDEsImV4cCI6MjA4Njg1MDIwMX0._NxbC8_P3GQWRMyqNZgneC7lYWDTvEpekt40ZFRmtJk";
   
   let allLeads = [], currentPage = 1, itemsPerPage = 10;
-  let leadStatus = JSON.parse(localStorage.getItem('lead_status') || '{}');
+  let leadStatus = {};
+  try {
+    leadStatus = JSON.parse(localStorage.getItem('lead_status') || '{}') || {};
+  } catch (error) {
+    localStorage.removeItem('lead_status');
+  }
+  let authReady = false;
+  let signedInUser = null;
   let templates = {};
   const defaultTeacherOutreachMessage = `Hello {name} Sir,\n\nGYAN SEVA helps coaching centres share exam results online. Students can check results using their roll number.\n\nSee a sample: https://krishnakush500.github.io/Quest-Coaching-Centre/\n\nOne-time setup: ₹499.\nReply YES to get started.\n- GYAN SEVA`;
   const oldTeacherOutreachMessage = `नमस्ते {name} sir,\n\nThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.\n\n✅ Online result system\n✅ Students can check marks with roll number\n✅ PDF download option\n\n🔰 Completely FREE trial for 1 month.\n🔰 No technical knowledge required.\n\nInterested? Reply "YES" to get your demo portal.\n\nThank you\nGYAN SEVA Team`;
@@ -197,87 +204,40 @@
   window.openAddSchoolModal = () => {
     document.getElementById('addSchoolModal').style.display = 'flex';
     document.getElementById('addSchoolName').value = '';
-    document.getElementById('addSchoolLocation').value = '';
-    document.getElementById('addSchoolDirector').value = '';
     document.getElementById('addSchoolPhone').value = '';
-    document.getElementById('logoPreview').src = 'https://via.placeholder.com/80?text=Logo';
-    document.getElementById('searchCodeBox').style.display = 'none';
-    document.getElementById('logoInput').value = '';
-    selectedLogoFile = null;
-    generatedCode = null;
   };
 
   window.closeAddSchoolModal = () => {
     document.getElementById('addSchoolModal').style.display = 'none';
   };
 
-  window.generateCodeForSchool = () => {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    generatedCode = code;
-    const box = document.getElementById('searchCodeBox');
-    box.textContent = code;
-    box.style.display = 'block';
-  };
-
-  window.saveSchoolToFirebase = async () => {
+  window.saveNewCustomerLead = async () => {
     const name = document.getElementById('addSchoolName').value.trim();
-    const location = document.getElementById('addSchoolLocation').value.trim();
-    const director = document.getElementById('addSchoolDirector').value.trim();
-    const phone = document.getElementById('addSchoolPhone').value.trim();
+    const phoneInput = document.getElementById('addSchoolPhone').value.trim();
+    const phoneDigits = phoneInput.replace(/\D/g, '');
+    const phone = phoneDigits.startsWith('91') && phoneDigits.length === 12
+      ? phoneDigits.slice(2)
+      : phoneDigits.startsWith('0') && phoneDigits.length === 11
+        ? phoneDigits.slice(1)
+        : phoneDigits;
 
-    if(!name || !location || !director || !phone) {
-      alert('Please fill all required fields');
+    if(!name || phone.length !== 10) {
+      alert('Enter a coaching name and a valid 10-digit phone number.');
       return;
     }
-
-    if(!generatedCode) {
-      alert('Please generate a search code first');
-      return;
-    }
-
-    const user = auth.currentUser;
-    if(!user) {
-      alert('Please login first');
-      return;
-    }
-
-    const userId = user.uid;
-    let logoUrl = '';
-
-    if(selectedLogoFile) {
-      try {
-        logoUrl = await uploadToSupabase(selectedLogoFile);
-        alert('✅ Logo uploaded successfully!');
-      } catch(error) {
-        alert('Logo upload failed: ' + error.message);
-        return;
-      }
-    }
-
-    const schoolData = {
-      coachingName: name,
-      location: location,
-      director: director,
-      phone: phone,
-      logoUrl: logoUrl,
-      searchCode: generatedCode,
-      createdBy: userId,
-      createdAt: Date.now(),
-      subscriptionStatus: 'active',
-      subscriptionPlan: 'free_trial'
-    };
 
     try {
-      await setDoc(doc(db, "schools", userId), schoolData);
-      await setDoc(doc(db, "schools", userId, "teachers", userId), {
-        name: director,
-        email: user.email || '',
-        role: 'director',
-        joinedAt: Date.now(),
-        isActive: true
+      await addDoc(collection(db, 'leads'), {
+        name,
+        phone,
+        city: '',
+        status: 'pending',
+        source: 'manual',
+        createdAt: Date.now()
       });
-      alert('✅ Institute created successfully!\nSearch Code: ' + generatedCode);
       closeAddSchoolModal();
+      showToast(`✅ ${name} added to pending leads`);
+      await loadLeads();
     } catch(error) {
       alert('Error saving: ' + error.message);
     }
@@ -475,25 +435,44 @@
   window.goToPage=(page)=>{ currentPage=page; renderPage(); };
 
   window.loadLeads=async()=>{
-    await loadTemplates();
-    const snap=await getDocs(query(collection(db,"leads"), where("status","==","pending")));
-    let leads=[];
-    snap.forEach(d=>leads.push({id:d.id,...d.data()}));
-    allLeads=leads.sort((a,b)=>{ 
-      const aStatus = leadStatus[a.id] || 'unsent';
-      const bStatus = leadStatus[b.id] || 'unsent';
-      const order = { unsent: 0, sent: 1, reminder_sent: 2 };
-      return (order[aStatus] || 0) - (order[bStatus] || 0);
-    });
-    currentPage=1; renderPage();
+    const container = document.getElementById('leadsList');
+    if (!authReady) return;
+    if (!signedInUser) {
+      document.getElementById('leadCount').innerText = '0';
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-lock"></i><br>Please sign in to GYAN SEVA to view pending leads.</div>';
+      return;
+    }
+
+    container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading leads...</div>';
+    try {
+      await loadTemplates();
+      const snap=await getDocs(query(collection(db,"leads"), where("status","==","pending")));
+      let leads=[];
+      snap.forEach(d=>leads.push({id:d.id,...d.data()}));
+      allLeads=leads.sort((a,b)=>{
+        const aStatus = leadStatus[a.id] || 'unsent';
+        const bStatus = leadStatus[b.id] || 'unsent';
+        const order = { unsent: 0, sent: 1, reminder_sent: 2 };
+        return (order[aStatus] || 0) - (order[bStatus] || 0);
+      });
+      currentPage=1; renderPage();
+    } catch(error) {
+      console.error('Could not load pending leads:', error);
+      document.getElementById('leadCount').innerText = '0';
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Could not load leads. Check your connection or sign in again, then press Refresh.</div>';
+    }
   };
 
   // Auto login check
   onAuthStateChanged(auth, (user) => {
+    authReady = true;
+    signedInUser = user;
     if(user) {
       console.log('Logged in:', user.uid);
+      loadLeads();
     } else {
       console.log('Not logged in');
+      loadLeads();
     }
   });
 
