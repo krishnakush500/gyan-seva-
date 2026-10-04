@@ -143,7 +143,7 @@
 
 <script type="module">
   import { db, auth } from './firebase-config.js';
-  import { collection, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, getDocs, getDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   let currentEditId = null;
@@ -239,18 +239,41 @@ For any help, contact GYAN SEVA Support.
     return digits.length === 10 ? `91${digits}` : digits;
   }
 
-  window.shareDemoOnWhatsApp = function(phone, name, coachingId) {
+  async function getShareTemplate(templateId, fallback) {
+    try {
+      const templateSnap = await getDoc(doc(db, 'templates', 'whatsapp_templates'));
+      if (templateSnap.exists()) return templateSnap.data()[templateId] || fallback;
+    } catch (error) {
+      console.error('Could not load saved WhatsApp template:', error);
+    }
+    return fallback;
+  }
+
+  function fillShareTemplate(template, values) {
+    return Object.entries(values).reduce((message, [key, value]) => message.split(`{${key}}`).join(String(value ?? '')), template);
+  }
+
+  function openWhatsAppDraft(recipient) {
+    const draftWindow = window.open('about:blank', '_blank');
+    if (!draftWindow) showCopyToast('WhatsApp tab nahi khula. Browser mein pop-ups allow karein.');
+    return draftWindow;
+  }
+
+  window.shareDemoOnWhatsApp = async function(phone, name, coachingId) {
     const recipient = getWhatsAppNumber(phone);
     if (!recipient) {
       showCopyToast('Coaching ka WhatsApp number available nahi hai.');
       return;
     }
+    const draftWindow = openWhatsAppDraft(recipient);
+    if (!draftWindow) return;
     const dashboardLink = `${getBaseUrl()}/dashboard.html?id=${encodeURIComponent(coachingId)}`;
-    const message = `📚 *Namaste ${name}!*\n\nAapke coaching ka GYAN SEVA demo portal taiyar hai.\n\n🔗 *Student Dashboard:* ${dashboardLink}\n🧪 *Demo test roll numbers:* 1 se 10 (kisi bhi roll number se check karein)\n\nDashboard kholkar exam select karein aur roll number enter karke demo result dekhein.\n\n*GYAN SEVA* — Connected, Served, Growing`;
-    window.open(`https://wa.me/${recipient}?text=${encodeURIComponent(message)}`, '_blank');
+    const template = await getShareTemplate('template3', `नमस्ते {name} sir,\n\nAapke coaching ka GYAN SEVA demo portal taiyar hai 🎉\n\n🔗 Student Dashboard: {link}\n🧪 Demo test roll numbers: {rollNumbers}\n\nDashboard par exam select karein aur roll number daal kar result dekhein.\n\n-GYAN SEVA Team`);
+    const message = fillShareTemplate(template, { name, link: dashboardLink, rollNumbers: '1 se 10' });
+    draftWindow.location.href = `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
   };
 
-  window.shareCoachingLoginOnWhatsApp = function(phone, name, coachingId, email) {
+  window.shareCoachingLoginOnWhatsApp = async function(phone, name, coachingId, email) {
     const recipient = getWhatsAppNumber(phone);
     if (!recipient) {
       showCopyToast('Coaching ka WhatsApp number available nahi hai.');
@@ -260,15 +283,19 @@ For any help, contact GYAN SEVA Support.
       showCopyToast('Is coaching ka Gmail saved nahi hai. Edit mein Gmail add karein.');
       return;
     }
+    const draftWindow = openWhatsAppDraft(recipient);
+    if (!draftWindow) return;
     const password = window.prompt(`Ready coaching “${name}” ka login password daalein. Password save nahi hoga; sirf WhatsApp message mein bheja jayega:`);
-    if (password === null) return;
+    if (password === null) { draftWindow.close(); return; }
     if (!password.trim()) {
+      draftWindow.close();
       showCopyToast('Password khaali hai. Share cancel kar diya.');
       return;
     }
     const dashboardLink = `${getBaseUrl()}/dashboard.html?id=${encodeURIComponent(coachingId)}`;
-    const message = `📚 *Namaste ${name}!*\n\nAapka GYAN SEVA coaching dashboard ready hai.\n\n🔗 *Dashboard Login:* ${dashboardLink}\n📧 *Gmail:* ${email}\n🔒 *Password:* ${password}\n\nDashboard par coaching logo par click karke in details se login karein. Kripya password trusted staff ke saath hi share karein.\n\n*GYAN SEVA* — Connected, Served, Growing`;
-    window.open(`https://wa.me/${recipient}?text=${encodeURIComponent(message)}`, '_blank');
+    const template = await getShareTemplate('template6', `📚 *Namaste {name}!*\n\nAapka GYAN SEVA coaching dashboard ready hai.\n\n🔗 *Dashboard Login:* {link}\n📧 *Gmail:* {email}\n🔒 *Password:* {password}\n\nDashboard par coaching logo par click karke in details se login karein.`);
+    const message = fillShareTemplate(template, { name, link: dashboardLink, email, password });
+    draftWindow.location.href = `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
   };
 
   // ===== EDIT FUNCTIONS =====
