@@ -16,6 +16,13 @@
     .connect-header h2 { color:white; font-size:2rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:12px; }
     .connect-header p { color:#ecfdf5; margin-top:8px; font-size:0.9rem; }
     .connect-body { padding:32px; }
+    .quick-lead-form { background:#f8fafc; border:1px solid #dbeafe; border-radius:20px; padding:20px; margin-bottom:22px; }
+    .quick-lead-form h3 { color:#1e293b; font-size:1rem; margin-bottom:14px; }
+    .quick-lead-fields { display:grid; grid-template-columns:1fr 1fr auto; gap:12px; align-items:end; }
+    .quick-lead-fields label { display:block; color:#475569; font-size:0.78rem; font-weight:600; margin-bottom:6px; }
+    .quick-lead-fields input { width:100%; padding:11px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:0.9rem; }
+    .btn-save-lead { background:#10b981; color:#fff; padding:11px 18px; border:0; border-radius:10px; font-weight:600; cursor:pointer; white-space:nowrap; }
+    .btn-save-lead:hover { background:#059669; }
     
     .btn-add-school { background:#10b981; color:white; padding:12px 24px; border-radius:40px; border:none; font-size:0.9rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:8px; margin-bottom:20px; }
     .btn-add-school:hover { background:#059669; }
@@ -39,7 +46,7 @@
     .toast { position:fixed; bottom:30px; right:30px; background:#1e293b; color:white; padding:12px 24px; border-radius:50px; font-size:0.85rem; z-index:1000; animation:fadeInOut 3s ease; }
     @keyframes fadeInOut { 0%{opacity:0;transform:translateY(20px);}15%{opacity:1;transform:translateY(0);}85%{opacity:1;}100%{opacity:0;transform:translateY(20px);} }
     footer { text-align:center; margin-top:40px; color:#94a3b8; font-size:0.75rem; }
-    @media (max-width:640px){ .lead-item{ flex-direction:column; align-items:flex-start; } .btn-make-dashboard,.whatsapp-btn,.btn-remove{ width:100%; justify-content:center; } }
+    @media (max-width:640px){ .lead-item{ flex-direction:column; align-items:flex-start; } .btn-make-dashboard,.whatsapp-btn,.btn-remove{ width:100%; justify-content:center; } .quick-lead-fields{grid-template-columns:1fr;} .btn-save-lead{width:100%;} }
     
     /* Modal Styles */
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center; }
@@ -81,8 +88,23 @@
   <div class="connect-card">
     <div class="connect-header"><h2><i class="fab fa-whatsapp"></i> CONNECT TO CUSTOMER</h2><p>Send messages — sent leads move to bottom</p></div>
     <div class="connect-body">
+      <form class="quick-lead-form" onsubmit="savePendingLead(event)">
+        <h3><i class="fas fa-user-plus" style="color:#10b981;"></i> Add a coaching to pending leads</h3>
+        <div class="quick-lead-fields">
+          <div>
+            <label for="pendingLeadName">Coaching name</label>
+            <input id="pendingLeadName" type="text" placeholder="e.g. Bright Future Coaching" maxlength="80" required>
+          </div>
+          <div>
+            <label for="pendingLeadPhone">Teacher WhatsApp number</label>
+            <input id="pendingLeadPhone" type="tel" inputmode="tel" placeholder="10-digit mobile number" maxlength="16" required>
+          </div>
+          <button id="savePendingLeadButton" class="btn-save-lead" type="submit"><i class="fas fa-save"></i> Save Lead</button>
+        </div>
+      </form>
+
       <button class="btn-add-school" onclick="openAddSchoolModal()">
-        <i class="fas fa-plus-circle"></i> Add School / Coaching
+        <i class="fas fa-plus-circle"></i> Add Customer
       </button>
 
       <div class="stats-bar"><span><i class="fas fa-users"></i> <strong>Pending Leads</strong></span><span class="stat-count" id="leadCount">0</span><button class="refresh-btn" onclick="loadLeads()"><i class="fas fa-sync-alt"></i> Refresh</button></div>
@@ -93,41 +115,21 @@
   <footer><i class="fas fa-heart" style="color:#10b981;"></i> GYAN SEVA — Connect, Convert, Serve</footer>
 </div>
 
-<!-- ✅ Add School/Coaching Modal with Logo Upload -->
+<!-- Add a customer with the basic details first -->
 <div id="addSchoolModal" class="modal">
   <div class="modal-content">
-    <h3><i class="fas fa-school" style="color:#10b981;"></i> Add School / Coaching</h3>
-    <p style="color:#666; font-size:0.85rem;">Enter details — logo will be uploaded to cloud</p>
+    <h3><i class="fas fa-user-plus" style="color:#10b981;"></i> Add Customer to Pending Leads</h3>
+    <p style="color:#666; font-size:0.85rem;">Coaching name and WhatsApp number are enough for now.</p>
     
     <label>🏫 Coaching / School Name</label>
     <input type="text" id="addSchoolName" placeholder="e.g., Modern Academy" maxlength="25">
     
-    <label>📍 Location</label>
-    <input type="text" id="addSchoolLocation" placeholder="e.g., Begusarai, Bihar" maxlength="30">
-    
-    <label>👤 Director Name</label>
-    <input type="text" id="addSchoolDirector" placeholder="e.g., Raman Sir" maxlength="20">
-    
     <label>📞 Phone Number</label>
-    <input type="text" id="addSchoolPhone" placeholder="e.g., 9123456789">
-    
-    <!-- ✅ Logo Upload Section -->
-    <label>🖼️ Logo</label>
-    <div class="logo-upload-area" id="logoUploadArea" onclick="document.getElementById('logoInput').click()">
-      <img id="logoPreview" src="https://via.placeholder.com/80?text=Logo" alt="Logo Preview">
-      <p><i class="fas fa-cloud-upload-alt"></i> Click to upload logo</p>
-      <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="previewLogo(event)">
-    </div>
-    
-    <label>🔑 Search Code</label>
-    <div style="display:flex; gap:10px; align-items:center;">
-      <div class="search-code-box" id="searchCodeBox" style="flex:1;">—</div>
-      <button class="btn-generate" onclick="generateCodeForSchool()"><i class="fas fa-sync-alt"></i> Generate</button>
-    </div>
+    <input type="tel" id="addSchoolPhone" inputmode="tel" placeholder="10-digit mobile number" maxlength="16">
     
     <div class="modal-buttons">
       <button class="btn-cancel" onclick="closeAddSchoolModal()">Cancel</button>
-      <button class="btn-submit" onclick="saveSchoolToFirebase()"><i class="fas fa-save"></i> Save Institute</button>
+      <button class="btn-submit" onclick="saveSchoolToFirebase()"><i class="fas fa-save"></i> Save Lead</button>
     </div>
   </div>
 </div>
@@ -333,6 +335,47 @@
     loadLeads();
   };
 
+  window.savePendingLead = async (event) => {
+    event.preventDefault();
+    const name = document.getElementById('pendingLeadName').value.trim();
+    const phoneInput = document.getElementById('pendingLeadPhone').value.trim();
+    const phoneDigits = phoneInput.replace(/\D/g, '');
+    const phone = phoneDigits.startsWith('91') && phoneDigits.length === 12
+      ? phoneDigits.slice(2)
+      : phoneDigits.startsWith('0') && phoneDigits.length === 11
+        ? phoneDigits.slice(1)
+        : phoneDigits;
+
+    if (!name || phone.length !== 10) {
+      showToast('Enter a coaching name and a valid 10-digit Indian mobile number.', true);
+      return;
+    }
+
+    const saveButton = document.getElementById('savePendingLeadButton');
+    saveButton.disabled = true;
+    saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    try {
+      await addDoc(collection(db, 'leads'), {
+        name,
+        phone,
+        city: '',
+        status: 'pending',
+        source: 'manual',
+        createdAt: Date.now()
+      });
+      document.getElementById('pendingLeadName').value = '';
+      document.getElementById('pendingLeadPhone').value = '';
+      showToast(`✅ ${name} added to pending leads`);
+      await loadLeads();
+    } catch (error) {
+      console.error('Could not save pending lead:', error);
+      showToast('Could not save lead. Please try again.', true);
+    } finally {
+      saveButton.disabled = false;
+      saveButton.innerHTML = '<i class="fas fa-save"></i> Save Lead';
+    }
+  };
+
   function getWhatsAppLink(leadId, leadName, leadPhone, currentStatus) {
     let template, actionType;
     if(currentStatus === 'sent') {
@@ -343,7 +386,9 @@
       actionType = 'sent';
     }
     const encodedMsg = encodeURIComponent(template);
-    const waLink = `https://api.whatsapp.com/send/?phone=91${leadPhone}&text=${encodedMsg}`;
+    const waPhoneDigits = String(leadPhone || '').replace(/\D/g, '');
+    const waPhone = waPhoneDigits.length === 10 ? `91${waPhoneDigits}` : waPhoneDigits;
+    const waLink = `https://api.whatsapp.com/send/?phone=${waPhone}&text=${encodedMsg}`;
     return { waLink, actionType };
   }
 
