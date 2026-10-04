@@ -113,7 +113,7 @@
 
 <script type="module">
   import { db, auth } from './firebase-config.js';
-  import { collection, doc, setDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, doc, setDoc, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const SUPABASE_URL = "https://qfmmgeodabytpuzkarrb.supabase.co";
@@ -280,6 +280,20 @@
     return baseUrl;
   }
 
+  async function getWhatsAppTemplate(templateId, fallback) {
+    try {
+      const snapshot = await getDoc(doc(db, 'templates', 'whatsapp_templates'));
+      if (snapshot.exists()) return snapshot.data()[templateId] || fallback;
+    } catch (error) {
+      console.error('Could not load saved WhatsApp template:', error);
+    }
+    return fallback;
+  }
+
+  function fillWhatsAppTemplate(template, values) {
+    return Object.entries(values).reduce((message, [key, value]) => message.split(`{${key}}`).join(String(value ?? '')), template);
+  }
+
   window.saveSchoolToFirebase = async () => {
     const name = document.getElementById('addSchoolName').value.trim();
     const location = document.getElementById('addSchoolLocation').value.trim();
@@ -368,18 +382,18 @@
       const baseUrl = getBaseUrl();
       const dashboardLink = `${baseUrl}/teacher-panel.html?coachingId=${schoolId}`;
       
-      const message = `📚 *Namaste ${name} Team!*
+      const messageTemplate = await getWhatsAppTemplate('template7', `📚 *Namaste {name} Team!*
 
 🎯 Your GYAN SEVA Admin Panel is ready!
 
-🔗 *Dashboard Link:* ${dashboardLink}
+🔗 *Dashboard Link:* {link}
+📧 *Registered Gmail:* {email}
+📞 *Support:* {phone}
 
-📊 You can:
-✅ Manage Results (Create, Edit, Publish)
-✅ Conduct Online Tests
-✅ View Student Performance
+Manage results and conduct online tests from your dashboard.
 
-*GYAN SEVA* — Connected, Served, Growing 📈`;
+*GYAN SEVA* — Connected, Served, Growing 📈`);
+      const message = fillWhatsAppTemplate(messageTemplate, { name, link: dashboardLink, email, phone });
 
       const whatsappUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
