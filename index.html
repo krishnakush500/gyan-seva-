@@ -392,21 +392,15 @@
 
   // ===== DEFAULT TEMPLATES =====
   const defaultTemplates = {
-    template1: `नमस्ते {name} sir,
+    template1: `Hello {name} Sir,
 
-This is GYAN SEVA. We provide FREE DEMO result portal for coaching.
+GYAN SEVA helps coaching centres share exam results online. Students can check results using their roll number.
 
-✅ Online result system
-✅ Students can check marks with roll number
-✅ PDF download option
+See a sample: https://krishnakush500.github.io/Quest-Coaching-Centre/
 
-🔰 Completely FREE trial for 1 month.
-🔰 No technical knowledge required.
-
-Interested? Reply "YES" to get your demo portal.
-
-Thank you
-GYAN SEVA Team`,
+One-time setup: ₹499.
+Reply YES to get started.
+- GYAN SEVA`,
 
     template2: `नमस्ते {name} sir,
 
@@ -476,6 +470,22 @@ Let me know your feedback!
 
 -GYAN SEVA Team`;
 
+  const legacyDefaultTemplate1 = `नमस्ते {name} sir,
+
+This is GYAN SEVA. We provide FREE DEMO result portal for coaching.
+
+✅ Online result system
+✅ Students can check marks with roll number
+✅ PDF download option
+
+🔰 Completely FREE trial for 1 month.
+🔰 No technical knowledge required.
+
+Interested? Reply "YES" to get your demo portal.
+
+Thank you
+GYAN SEVA Team`;
+
   // ===== SHOW TOAST =====
   function showToast(message, isError = false) {
     const toast = document.createElement('div');
@@ -493,15 +503,23 @@ Let me know your feedback!
       
       if(docSnap.exists) {
         const data = docSnap.data();
+        const shouldUpdateOldOutreachDefault = data.template1 === legacyDefaultTemplate1;
         const shouldUpdateOldDemoDefault = data.template3 === legacyDefaultTemplate3;
         for(let i = 1; i <= 7; i++) {
           const templateId = `template${i}`;
           const textarea = document.getElementById(templateId);
           if(textarea) {
-            textarea.value = templateId === 'template3' && shouldUpdateOldDemoDefault
-              ? defaultTemplates.template3
-              : (data[templateId] || defaultTemplates[templateId]);
+            if(templateId === 'template1' && shouldUpdateOldOutreachDefault) {
+              textarea.value = defaultTemplates.template1;
+            } else if(templateId === 'template3' && shouldUpdateOldDemoDefault) {
+              textarea.value = defaultTemplates.template3;
+            } else {
+              textarea.value = data[templateId] || defaultTemplates[templateId];
+            }
           }
+        }
+        if(shouldUpdateOldOutreachDefault) {
+          docRef.update({ template1: defaultTemplates.template1 }).catch(error => console.warn('Could not update the old outreach message:', error));
         }
         if(shouldUpdateOldDemoDefault) {
           docRef.update({ template3: defaultTemplates.template3 }).catch(error => console.warn('Could not update the old demo message:', error));
