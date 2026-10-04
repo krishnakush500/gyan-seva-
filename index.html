@@ -324,6 +324,7 @@
           <button class="btn-save-template" onclick="saveTemplateToFirebase('template3')">💾 Save</button>
         </div>
         <textarea id="template3" class="template-text" rows="4"></textarea>
+        <div style="font-size:0.65rem; color:#64748b; margin-top:6px;">Variables: <code>{name}</code> <code>{link}</code> <code>{rollNumbers}</code></div>
       </div>
       
       <!-- ===== 🔥 TEMPLATE 4: RESULT PUBLISHED ===== -->
@@ -346,10 +347,28 @@
         </div>
         <textarea id="template5" class="template-text" rows="4"></textarea>
       </div>
+
+      <div class="template-item">
+        <div class="template-label">
+          <span><i class="fas fa-key"></i> Template 6: Coaching Login Details</span>
+          <button class="btn-save-template" onclick="saveTemplateToFirebase('template6')">💾 Save</button>
+        </div>
+        <textarea id="template6" class="template-text" rows="6"></textarea>
+        <div style="font-size:0.65rem; color:#64748b; margin-top:6px;">Variables: <code>{name}</code> <code>{link}</code> <code>{email}</code> <code>{password}</code></div>
+      </div>
+
+      <div class="template-item">
+        <div class="template-label">
+          <span><i class="fas fa-chalkboard-teacher"></i> Template 7: New Coaching Dashboard</span>
+          <button class="btn-save-template" onclick="saveTemplateToFirebase('template7')">💾 Save</button>
+        </div>
+        <textarea id="template7" class="template-text" rows="6"></textarea>
+        <div style="font-size:0.65rem; color:#64748b; margin-top:6px;">Variables: <code>{name}</code> <code>{link}</code> <code>{email}</code> <code>{phone}</code></div>
+      </div>
       
       <div class="info-note">
         <i class="fas fa-cloud-upload-alt"></i> <strong>Saved to Firebase Cloud</strong> — Access from any device!<br>
-        <strong>Variables:</strong> <code>{name}</code> - Coaching Name | <code>{link}</code> - URL | <code>{examName}</code> - Exam Name | <code>{class}</code> - Class | <code>{phone}</code> - Phone | <code>{email}</code> - Email
+        <strong>Variables:</strong> <code>{name}</code> - Coaching Name | <code>{link}</code> - URL | <code>{rollNumbers}</code> - Demo roll numbers | <code>{examName}</code> - Exam Name | <code>{class}</code> - Class | <code>{phone}</code> - Phone | <code>{email}</code> - Email | <code>{password}</code> - Login password
       </div>
     </div>
   </div>
@@ -408,7 +427,7 @@ Great news! Your coaching's result portal is ready for demo 🎉
 
 🔗 Dashboard Link: {link}
 
-📝 Demo Roll Numbers: 101, 202, 303
+📝 Demo Roll Numbers: {rollNumbers}
 
 Try it yourself and see how students can check their results.
 
@@ -441,7 +460,11 @@ Best of luck! 🎯`,
 
     template5: `Type your custom message here...
 
-Use {name} for coaching name, {link} for URL`
+Use {name} for coaching name, {link} for URL`,
+
+    template6: `📚 *Namaste {name}!*\n\nAapka GYAN SEVA coaching dashboard ready hai.\n\n🔗 *Dashboard Login:* {link}\n📧 *Gmail:* {email}\n🔒 *Password:* {password}\n\nDashboard par coaching logo par click karke in details se login karein.`,
+
+    template7: `📚 *Namaste {name} Team!*\n\nAapka GYAN SEVA coaching dashboard ready hai.\n\n🔗 *Admin Dashboard:* {link}\n📧 *Registered Gmail:* {email}\n📞 *Support:* {phone}\n\nAap students ke results manage kar sakte hain aur online tests chala sakte hain.\n\n*GYAN SEVA* — Connected, Served, Growing 📈`
   };
 
   // ===== SHOW TOAST =====
@@ -461,7 +484,7 @@ Use {name} for coaching name, {link} for URL`
       
       if(docSnap.exists) {
         const data = docSnap.data();
-        for(let i = 1; i <= 5; i++) {
+        for(let i = 1; i <= 7; i++) {
           const templateId = `template${i}`;
           const textarea = document.getElementById(templateId);
           if(textarea) {
@@ -471,7 +494,7 @@ Use {name} for coaching name, {link} for URL`
       } else {
         // First time - save defaults
         await db.collection("templates").doc("whatsapp_templates").set(defaultTemplates);
-        for(let i = 1; i <= 5; i++) {
+        for(let i = 1; i <= 7; i++) {
           const templateId = `template${i}`;
           const textarea = document.getElementById(templateId);
           if(textarea) {
@@ -482,7 +505,7 @@ Use {name} for coaching name, {link} for URL`
     } catch(error) {
       console.error("Error loading templates:", error);
       // Fallback to defaults
-      for(let i = 1; i <= 5; i++) {
+      for(let i = 1; i <= 7; i++) {
         const templateId = `template${i}`;
         const textarea = document.getElementById(templateId);
         if(textarea) {
