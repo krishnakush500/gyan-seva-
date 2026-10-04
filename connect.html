@@ -144,6 +144,8 @@
   let allLeads = [], currentPage = 1, itemsPerPage = 10;
   let leadStatus = JSON.parse(localStorage.getItem('lead_status') || '{}');
   let templates = {};
+  const defaultTeacherOutreachMessage = `Hello {name} Sir,\n\nGYAN SEVA helps coaching centres share exam results online. Students can check results using their roll number.\n\nSee a sample: https://krishnakush500.github.io/Quest-Coaching-Centre/\n\nOne-time setup: ₹499.\nReply YES to get started.\n- GYAN SEVA`;
+  const oldTeacherOutreachMessage = `नमस्ते {name} sir,\n\nThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.\n\n✅ Online result system\n✅ Students can check marks with roll number\n✅ PDF download option\n\n🔰 Completely FREE trial for 1 month.\n🔰 No technical knowledge required.\n\nInterested? Reply "YES" to get your demo portal.\n\nThank you\nGYAN SEVA Team`;
   let generatedCode = null;
   let selectedLogoFile = null;
 
@@ -298,9 +300,12 @@
       const docSnap = await getDoc(docRef);
       if(docSnap.exists()) {
         templates = docSnap.data();
+        if (templates.template1 === oldTeacherOutreachMessage) {
+          templates.template1 = defaultTeacherOutreachMessage;
+        }
       } else {
         templates = {
-          template1: "📢 GYAN SEVA\n\nHello {name},\n\nWe provide online result system for institutes.\n\n🎁 FREE DEMO for your institute.\n\n✅ Students check marks online with roll number\n✅ No phone calls for result\n✅ Save your time\n\nInterested? Reply YES.\n\nThank you\nGYAN SEVA",
+          template1: defaultTeacherOutreachMessage,
           template2: "👋 GYAN SEVA\n\nHello {name},\n\nJust a gentle reminder about FREE DEMO for your institute.\n\nYour students can check online result with roll number.\n\nReply YES to get your free demo link.\n\nThank you\nGYAN SEVA"
         };
       }
