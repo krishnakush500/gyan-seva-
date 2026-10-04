@@ -42,6 +42,10 @@
     
     .btn-whatsapp { background:#25D366; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-whatsapp:hover { background:#1da851; color:white; }
+    .btn-share-demo { background:#0f9f79; }
+    .btn-share-demo:hover { background:#087f61; }
+    .btn-share-login { background:#0b6db7; }
+    .btn-share-login:hover { background:#07578f; }
     
     .btn-edit { background:#f59e0b; color:white; padding:8px 18px; border-radius:40px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .btn-edit:hover { background:#d97706; }
@@ -127,6 +131,7 @@
     <input type="text" id="editName" placeholder="Coaching Name" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
     <input type="text" id="editDirector" placeholder="Director" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
     <input type="text" id="editPhone" placeholder="Phone" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
+    <input type="email" id="editEmail" placeholder="Director Gmail" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
     <input type="text" id="editLocation" placeholder="Location" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
     <input type="text" id="editLogo" placeholder="Logo URL" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:12px;">
     <div style="display:flex; gap:12px; margin-top:20px; justify-content:flex-end;">
@@ -228,12 +233,51 @@ For any help, contact GYAN SEVA Support.
     window.open(whatsappUrl, '_blank');
   };
 
+  function getWhatsAppNumber(phone) {
+    const digits = String(phone || '').replace(/\D/g, '');
+    if (!digits) return '';
+    return digits.length === 10 ? `91${digits}` : digits;
+  }
+
+  window.shareDemoOnWhatsApp = function(phone, name, coachingId) {
+    const recipient = getWhatsAppNumber(phone);
+    if (!recipient) {
+      showCopyToast('Coaching ka WhatsApp number available nahi hai.');
+      return;
+    }
+    const dashboardLink = `${getBaseUrl()}/dashboard.html?id=${encodeURIComponent(coachingId)}`;
+    const message = `📚 *Namaste ${name}!*\n\nAapke coaching ka GYAN SEVA demo portal taiyar hai.\n\n🔗 *Student Dashboard:* ${dashboardLink}\n🧪 *Demo test roll numbers:* 1 se 10 (kisi bhi roll number se check karein)\n\nDashboard kholkar exam select karein aur roll number enter karke demo result dekhein.\n\n*GYAN SEVA* — Connected, Served, Growing`;
+    window.open(`https://wa.me/${recipient}?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  window.shareCoachingLoginOnWhatsApp = function(phone, name, coachingId, email) {
+    const recipient = getWhatsAppNumber(phone);
+    if (!recipient) {
+      showCopyToast('Coaching ka WhatsApp number available nahi hai.');
+      return;
+    }
+    if (!email) {
+      showCopyToast('Is coaching ka Gmail saved nahi hai. Edit mein Gmail add karein.');
+      return;
+    }
+    const password = window.prompt(`Ready coaching “${name}” ka login password daalein. Password save nahi hoga; sirf WhatsApp message mein bheja jayega:`);
+    if (password === null) return;
+    if (!password.trim()) {
+      showCopyToast('Password khaali hai. Share cancel kar diya.');
+      return;
+    }
+    const dashboardLink = `${getBaseUrl()}/dashboard.html?id=${encodeURIComponent(coachingId)}`;
+    const message = `📚 *Namaste ${name}!*\n\nAapka GYAN SEVA coaching dashboard ready hai.\n\n🔗 *Dashboard Login:* ${dashboardLink}\n📧 *Gmail:* ${email}\n🔒 *Password:* ${password}\n\nDashboard par coaching logo par click karke in details se login karein. Kripya password trusted staff ke saath hi share karein.\n\n*GYAN SEVA* — Connected, Served, Growing`;
+    window.open(`https://wa.me/${recipient}?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
   // ===== EDIT FUNCTIONS =====
-  window.openEditModal = (id, name, dir, phone, loc, logo) => {
+  window.openEditModal = (id, name, dir, phone, email, loc, logo) => {
     currentEditId = id;
     document.getElementById('editName').value = name || '';
     document.getElementById('editDirector').value = dir || '';
     document.getElementById('editPhone').value = phone || '';
+    document.getElementById('editEmail').value = email || '';
     document.getElementById('editLocation').value = loc || '';
     document.getElementById('editLogo').value = logo || '';
     document.getElementById('editModal').style.display = 'flex';
@@ -250,6 +294,7 @@ For any help, contact GYAN SEVA Support.
         coachingName: document.getElementById('editName').value.trim(),
         director: document.getElementById('editDirector').value.trim(),
         phone: document.getElementById('editPhone').value.trim(),
+        directorEmail: document.getElementById('editEmail').value.trim(),
         location: document.getElementById('editLocation').value.trim(),
         logoUrl: document.getElementById('editLogo').value.trim()
       };
@@ -341,11 +386,14 @@ For any help, contact GYAN SEVA Support.
                 <i class="fas fa-user-shield"></i> Admin Panel
               </a>
               
-              <button class="btn-whatsapp" onclick="shareOnWhatsApp('${c.phone}','${(c.coachingName||'').replace(/'/g,"\\'")}','${id}')">
-                <i class="fab fa-whatsapp"></i> Share Link
+              <button class="btn-whatsapp btn-share-demo" onclick="shareDemoOnWhatsApp('${c.phone||''}','${(c.coachingName||c.name||'Coaching').replace(/'/g,"\\'")}','${id}')">
+                <i class="fab fa-whatsapp"></i> Share Demo
+              </button>
+              <button class="btn-whatsapp btn-share-login" onclick="shareCoachingLoginOnWhatsApp('${c.phone||''}','${(c.coachingName||c.name||'Coaching').replace(/'/g,"\\'")}','${id}','${(c.directorEmail||'').replace(/'/g,"\\'")}')">
+                <i class="fab fa-whatsapp"></i> Share Login Details
               </button>
               
-              <button class="btn-edit" onclick="openEditModal('${id}','${(c.coachingName||'').replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone||''}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logoUrl||'').replace(/'/g,"\\'")}')">
+              <button class="btn-edit" onclick="openEditModal('${id}','${(c.coachingName||c.name||'').replace(/'/g,"\\'")}','${(c.director||'').replace(/'/g,"\\'")}','${c.phone||''}','${(c.directorEmail||'').replace(/'/g,"\\'")}','${(c.location||'').replace(/'/g,"\\'")}','${(c.logoUrl||'').replace(/'/g,"\\'")}')">
                 <i class="fas fa-pen"></i> Edit
               </button>
               
