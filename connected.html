@@ -151,7 +151,7 @@
   // Edit these two messages here. Supported placeholders are replaced automatically.
   const connectedWhatsAppMessages = {
     demo: `Hi {name}!\n\nYour coaching demo is ready.\nOpen: {link}\nTry roll numbers: {rollNumbers}\n\nSelect an exam and enter a roll number to view a sample result.\n- GYAN SEVA`,
-    login: `Hi {name}!\n\nYour GYAN SEVA coaching dashboard is ready.\nDashboard: {link}\nGmail: {email}\nPassword: {password}\n\nClick the coaching logo on the dashboard and sign in with these details.\n- GYAN SEVA`
+    login: `Hi {name}! Your GYAN SEVA dashboard is ready.\n\nDashboard: {link}\nEmail: {email}\nPassword: __________\n\nTo open the Teacher Panel:\n1. Open the dashboard link.\n2. Click the coaching logo.\n3. Enter the email and password, then log in.\n\n- GYAN SEVA`
   };
 
   // ===== GET BASE URL =====
@@ -255,15 +255,8 @@
     }
     const draftWindow = openWhatsAppDraft(recipient);
     if (!draftWindow) return;
-    const password = window.prompt(`Ready coaching “${name}” ka login password daalein. Password save nahi hoga; sirf WhatsApp message mein bheja jayega:`);
-    if (password === null) { draftWindow.close(); return; }
-    if (!password.trim()) {
-      draftWindow.close();
-      showCopyToast('Password khaali hai. Share cancel kar diya.');
-      return;
-    }
     const dashboardLink = `${getBaseUrl()}/dashboard.html?id=${encodeURIComponent(coachingId)}`;
-    const message = fillShareTemplate(connectedWhatsAppMessages.login, { name, link: dashboardLink, email, password });
+    const message = fillShareTemplate(connectedWhatsAppMessages.login, { name, link: dashboardLink, email });
     draftWindow.location.href = `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
   };
 
