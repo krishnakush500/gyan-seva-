@@ -421,19 +421,14 @@ Still interested? Reply "YES" and I'll set it up for you.
 Thank you
 GYAN SEVA Team`,
 
-    template3: `नमस्ते {name} sir,
+    template3: `Hi {name}!
 
-Great news! Your coaching's result portal is ready for demo 🎉
+Your coaching demo is ready.
+Open: {link}
+Try roll numbers: {rollNumbers}
 
-🔗 Dashboard Link: {link}
-
-📝 Demo Roll Numbers: {rollNumbers}
-
-Try it yourself and see how students can check their results.
-
-Let me know your feedback!
-
--GYAN SEVA Team`,
+Select an exam and enter a roll number to view a sample result.
+- GYAN SEVA`,
 
     // ===== 🔥 TEMPLATE 4: RESULT PUBLISHED =====
     template4: `*RESULT PUBLISHED* ✅
@@ -467,6 +462,20 @@ Use {name} for coaching name, {link} for URL`,
     template7: `📚 *Namaste {name} Team!*\n\nAapka GYAN SEVA coaching dashboard ready hai.\n\n🔗 *Admin Dashboard:* {link}\n📧 *Registered Gmail:* {email}\n📞 *Support:* {phone}\n\nAap students ke results manage kar sakte hain aur online tests chala sakte hain.\n\n*GYAN SEVA* — Connected, Served, Growing 📈`
   };
 
+  const legacyDefaultTemplate3 = `नमस्ते {name} sir,
+
+Great news! Your coaching's result portal is ready for demo 🎉
+
+🔗 Dashboard Link: {link}
+
+📝 Demo Roll Numbers: {rollNumbers}
+
+Try it yourself and see how students can check their results.
+
+Let me know your feedback!
+
+-GYAN SEVA Team`;
+
   // ===== SHOW TOAST =====
   function showToast(message, isError = false) {
     const toast = document.createElement('div');
@@ -484,12 +493,18 @@ Use {name} for coaching name, {link} for URL`,
       
       if(docSnap.exists) {
         const data = docSnap.data();
+        const shouldUpdateOldDemoDefault = data.template3 === legacyDefaultTemplate3;
         for(let i = 1; i <= 7; i++) {
           const templateId = `template${i}`;
           const textarea = document.getElementById(templateId);
           if(textarea) {
-            textarea.value = data[templateId] || defaultTemplates[templateId];
+            textarea.value = templateId === 'template3' && shouldUpdateOldDemoDefault
+              ? defaultTemplates.template3
+              : (data[templateId] || defaultTemplates[templateId]);
           }
+        }
+        if(shouldUpdateOldDemoDefault) {
+          docRef.update({ template3: defaultTemplates.template3 }).catch(error => console.warn('Could not update the old demo message:', error));
         }
       } else {
         // First time - save defaults
