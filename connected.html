@@ -268,8 +268,8 @@ For any help, contact GYAN SEVA Support.
     const draftWindow = openWhatsAppDraft(recipient);
     if (!draftWindow) return;
     const dashboardLink = `${getBaseUrl()}/dashboard.html?id=${encodeURIComponent(coachingId)}`;
-    const template = await getShareTemplate('template3', `नमस्ते {name} sir,\n\nAapke coaching ka GYAN SEVA demo portal taiyar hai 🎉\n\n🔗 Student Dashboard: {link}\n🧪 Demo test roll numbers: {rollNumbers}\n\nDashboard par exam select karein aur roll number daal kar result dekhein.\n\n-GYAN SEVA Team`);
-    const message = fillShareTemplate(template, { name, link: dashboardLink, rollNumbers: '1 se 10' });
+    const template = await getShareTemplate('template3', `Hi {name}!\n\nYour coaching demo is ready.\nOpen: {link}\nTry roll numbers: {rollNumbers}\n\nSelect an exam and enter a roll number to view a sample result.\n- GYAN SEVA`);
+    const message = fillShareTemplate(template, { name, link: dashboardLink, rollNumbers: '1 to 10' });
     draftWindow.location.href = `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
   };
 
