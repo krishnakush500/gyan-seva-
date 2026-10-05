@@ -136,7 +136,7 @@
 
 <script type="module">
   import { db, auth } from './firebase-config.js';
-  import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   
   // Supabase Config (same as mobile app)
@@ -150,8 +150,12 @@
   } catch (error) {
     localStorage.removeItem('lead_status');
   }
-  let templates = {};
   const defaultTeacherOutreachMessage = `Hello {name} Sir,\n\nGYAN SEVA helps coaching centres share exam results online. Students can check results using their roll number.\n\nSee a sample: https://krishnakush500.github.io/Quest-Coaching-Centre/\n\nOne-time setup: ₹499.\nReply YES to get started.\n- GYAN SEVA`;
+  const defaultTeacherFollowUpMessage = `Hello {name},\n\nJust checking if you would like a demo of the GYAN SEVA result portal. Students can check results using their roll number.\n\nReply YES to get your demo link.\n- GYAN SEVA`;
+  let templates = {
+    template1: defaultTeacherOutreachMessage,
+    template2: defaultTeacherFollowUpMessage
+  };
   const oldTeacherOutreachMessage = `नमस्ते {name} sir,\n\nThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.\n\n✅ Online result system\n✅ Students can check marks with roll number\n✅ PDF download option\n\n🔰 Completely FREE trial for 1 month.\n🔰 No technical knowledge required.\n\nInterested? Reply "YES" to get your demo portal.\n\nThank you\nGYAN SEVA Team`;
   let generatedCode = null;
   let selectedLogoFile = null;
@@ -259,25 +263,35 @@
       const docRef = doc(db, "templates", "whatsapp_templates");
       const docSnap = await getDoc(docRef);
       if(docSnap.exists()) {
-        templates = docSnap.data();
+        const savedTemplates = docSnap.data();
+        templates = {
+          template1: savedTemplates.template1 || defaultTeacherOutreachMessage,
+          template2: savedTemplates.template2 || defaultTeacherFollowUpMessage
+        };
         if (templates.template1 === oldTeacherOutreachMessage) {
           templates.template1 = defaultTeacherOutreachMessage;
         }
       } else {
         templates = {
           template1: defaultTeacherOutreachMessage,
-          template2: "👋 GYAN SEVA\n\nHello {name},\n\nJust a gentle reminder about FREE DEMO for your institute.\n\nYour students can check online result with roll number.\n\nReply YES to get your free demo link.\n\nThank you\nGYAN SEVA"
+          template2: defaultTeacherFollowUpMessage
         };
       }
-    } catch(e) { console.error("Error loading templates:", e); }
+    } catch(e) {
+      console.error("Error loading templates; using built-in messages:", e);
+      templates = {
+        template1: defaultTeacherOutreachMessage,
+        template2: defaultTeacherFollowUpMessage
+      };
+    }
   }
 
   function getMessage(leadName, type) {
-    if (type === 'reminder') {
-      return (templates.template2 || templates.template1).replace(/{name}/g, leadName);
-    } else {
-      return (templates.template1 || templates.template2).replace(/{name}/g, leadName);
-    }
+    const isReminder = type === 'reminder';
+    const message = isReminder
+      ? (templates.template2 || templates.template1 || defaultTeacherFollowUpMessage)
+      : (templates.template1 || templates.template2 || defaultTeacherOutreachMessage);
+    return message.replace(/{name}/g, String(leadName || ''));
   }
 
   window.markLeadAction = async (leadId, leadName, leadPhone, action) => {
@@ -464,7 +478,9 @@
     }
   });
 
-  loadTemplates();
+  loadTemplates().then(() => {
+    if (allLeads.length) renderPage();
+  });
   loadLeads(); 
   setInterval(loadLeads, 15000);
 </script>
