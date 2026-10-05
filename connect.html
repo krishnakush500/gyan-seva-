@@ -255,16 +255,10 @@
   };
 
   function getMessage(leadName, type) {
-    const coachingName = String(leadName || 'Coaching');
-    const message = type === 'reminder' ? teacherReminderMessage : teacherOutreachMessage;
-    let personalizedMessage = message.replace(/{name}/gi, coachingName);
-    if (!personalizedMessage.toLowerCase().includes(coachingName.toLowerCase())) {
-      personalizedMessage = personalizedMessage.replace(/^(?:hello|hi|dear)[^\n]*/i, `Hello ${coachingName} Sir,`);
-      if (!personalizedMessage.startsWith(`Hello ${coachingName} Sir,`)) {
-        personalizedMessage = `Hello ${coachingName} Sir,\n\n${personalizedMessage}`;
-      }
-    }
-    return personalizedMessage;
+    // Keep one greeting only; don't append the old "Sir" greeting fallback.
+    const coachingName = String(leadName || 'Coaching').trim();
+    const template = type === 'reminder' ? teacherReminderMessage : teacherOutreachMessage;
+    return template.replace(/{name}/gi, coachingName);
   }
 
   window.markLeadAction = async (leadId, leadName, leadPhone, action) => {
