@@ -150,7 +150,7 @@
   } catch (error) {
     localStorage.removeItem('lead_status');
   }
-  const defaultTeacherOutreachMessage = `Hello {name} Sir,\n\nGYAN SEVA helps coaching centres share exam results online. Students can check results using their roll number.\n\nSee a sample: https://krishnakush500.github.io/Quest-Coaching-Centre/\n\nOne-time setup: ₹499.\nReply YES to get started.\n- GYAN SEVA`;
+  const defaultTeacherOutreachMessage = `Hello {name},\n\nOnline Result System for your coaching.\n\n✓ Students check marks with Roll No.\n✓ Teacher Admin Panel\n✓ PDF Download | WhatsApp Share\n✓ Lifetime Access\n\n💰 One-Time Setup: ₹499 Only\n\nReply "YES" for free demo.\n\nSample result portal: https://krishnakush500.github.io/Quest-Coaching-Centre/\n\nGYAN SEVA 📊`;
   const defaultTeacherFollowUpMessage = `Hello {name},\n\nJust checking if you would like a demo of the GYAN SEVA result portal. Students can check results using their roll number.\n\nReply YES to get your demo link.\n- GYAN SEVA`;
   const samplePortalUrl = 'https://krishnakush500.github.io/Quest-Coaching-Centre/';
   let templates = {
@@ -269,7 +269,8 @@
           template1: savedTemplates.template1 || defaultTeacherOutreachMessage,
           template2: savedTemplates.template2 || defaultTeacherFollowUpMessage
         };
-        if (templates.template1 === oldTeacherOutreachMessage) {
+        if (templates.template1 === oldTeacherOutreachMessage ||
+            (typeof templates.template1 === 'string' && templates.template1.includes('₹299') && templates.template1.includes('GYAN SEVA 📊') && templates.template1.includes('Quest-Coaching-Centre'))) {
           templates.template1 = defaultTeacherOutreachMessage;
         }
       } else {
