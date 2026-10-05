@@ -511,7 +511,9 @@ GYAN SEVA Team`;
       if(docSnap.exists) {
         const data = docSnap.data();
         const shouldUpdateOldOutreachDefault = data.template1 === legacyDefaultTemplate1 ||
-          (typeof data.template1 === 'string' && data.template1.includes('₹299') && data.template1.includes('GYAN SEVA 📊') && data.template1.includes('Quest-Coaching-Centre'));
+          (typeof data.template1 === 'string' && data.template1.includes('299') &&
+            data.template1.toLowerCase().includes('gyan seva') &&
+            data.template1.toLowerCase().includes('quest-coaching-centre'));
         const shouldUpdateOldDemoDefault = data.template3 === legacyDefaultTemplate3;
         for(let i = 1; i <= 7; i++) {
           const templateId = `template${i}`;
