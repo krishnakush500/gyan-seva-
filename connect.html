@@ -136,7 +136,7 @@
 
 <script type="module">
   import { db, auth } from './firebase-config.js';
-  import { collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   
   // Supabase Config (same as mobile app)
@@ -150,14 +150,9 @@
   } catch (error) {
     localStorage.removeItem('lead_status');
   }
-  const defaultTeacherOutreachMessage = `Hello {name},\n\nOnline Result System for your coaching.\n\n✓ Students check marks with Roll No.\n✓ Teacher Admin Panel\n✓ PDF Download | WhatsApp Share\n✓ Lifetime Access\n\n💰 One-Time Setup: ₹499 Only\n\nReply "YES" for free demo.\n\nSample result portal: https://krishnakush500.github.io/Quest-Coaching-Centre/\n\nGYAN SEVA 📊`;
-  const defaultTeacherFollowUpMessage = `Hello {name},\n\nJust checking if you would like a demo of the GYAN SEVA result portal. Students can check results using their roll number.\n\nReply YES to get your demo link.\n- GYAN SEVA`;
   const samplePortalUrl = 'https://krishnakush500.github.io/Quest-Coaching-Centre/';
-  let templates = {
-    template1: defaultTeacherOutreachMessage,
-    template2: defaultTeacherFollowUpMessage
-  };
-  const oldTeacherOutreachMessage = `नमस्ते {name} sir,\n\nThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.\n\n✅ Online result system\n✅ Students can check marks with roll number\n✅ PDF download option\n\n🔰 Completely FREE trial for 1 month.\n🔰 No technical knowledge required.\n\nInterested? Reply "YES" to get your demo portal.\n\nThank you\nGYAN SEVA Team`;
+  const teacherOutreachMessage = `Hello {name},\n\nOnline Result System for your coaching.\n\n✓ Students check marks with Roll No.\n✓ Teacher Admin Panel\n✓ PDF Download | WhatsApp Share\n✓ Lifetime Access\n\n💰 One-Time Setup: ₹499 Only\n\nReply "YES" for free demo.\n\nSample result portal: ${samplePortalUrl}\n\nGYAN SEVA 📊`;
+  const teacherReminderMessage = `Hello {name},\n\nWould you like to see the GYAN SEVA online result system for your coaching?\n\nReply "YES" and I will share your free demo.\n\nSample result portal: ${samplePortalUrl}\n\nGYAN SEVA 📊`;
   let generatedCode = null;
   let selectedLogoFile = null;
 
@@ -259,54 +254,15 @@
     }
   };
 
-  async function loadTemplates() {
-    try {
-      const docRef = doc(db, "templates", "whatsapp_templates");
-      const docSnap = await getDoc(docRef);
-      if(docSnap.exists()) {
-        const savedTemplates = docSnap.data();
-        templates = {
-          template1: savedTemplates.template1 || defaultTeacherOutreachMessage,
-          template2: savedTemplates.template2 || defaultTeacherFollowUpMessage
-        };
-        const isOldPriceOutreach = typeof templates.template1 === 'string' &&
-          templates.template1.includes('299') &&
-          templates.template1.toLowerCase().includes('quest-coaching-centre') &&
-          templates.template1.toLowerCase().includes('gyan seva');
-        if (templates.template1 === oldTeacherOutreachMessage || isOldPriceOutreach) {
-          templates.template1 = defaultTeacherOutreachMessage;
-          await setDoc(docRef, { template1: defaultTeacherOutreachMessage }, { merge: true });
-        }
-      } else {
-        templates = {
-          template1: defaultTeacherOutreachMessage,
-          template2: defaultTeacherFollowUpMessage
-        };
-      }
-    } catch(e) {
-      console.error("Error loading templates; using built-in messages:", e);
-      templates = {
-        template1: defaultTeacherOutreachMessage,
-        template2: defaultTeacherFollowUpMessage
-      };
-    }
-  }
-
   function getMessage(leadName, type) {
-    const isReminder = type === 'reminder';
-    const message = isReminder
-      ? (templates.template2 || templates.template1 || defaultTeacherFollowUpMessage)
-      : (templates.template1 || templates.template2 || defaultTeacherOutreachMessage);
     const coachingName = String(leadName || 'Coaching');
+    const message = type === 'reminder' ? teacherReminderMessage : teacherOutreachMessage;
     let personalizedMessage = message.replace(/{name}/gi, coachingName);
     if (!personalizedMessage.toLowerCase().includes(coachingName.toLowerCase())) {
       personalizedMessage = personalizedMessage.replace(/^(?:hello|hi|dear)[^\n]*/i, `Hello ${coachingName} Sir,`);
       if (!personalizedMessage.startsWith(`Hello ${coachingName} Sir,`)) {
         personalizedMessage = `Hello ${coachingName} Sir,\n\n${personalizedMessage}`;
       }
-    }
-    if (!personalizedMessage.includes(samplePortalUrl)) {
-      personalizedMessage = `${personalizedMessage.trim()}\n\nSample result portal: ${samplePortalUrl}`;
     }
     return personalizedMessage;
   }
@@ -495,9 +451,6 @@
     }
   });
 
-  loadTemplates().then(() => {
-    if (allLeads.length) renderPage();
-  });
   loadLeads(); 
   setInterval(loadLeads, 15000);
 </script>
