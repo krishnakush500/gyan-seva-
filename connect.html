@@ -269,9 +269,13 @@
           template1: savedTemplates.template1 || defaultTeacherOutreachMessage,
           template2: savedTemplates.template2 || defaultTeacherFollowUpMessage
         };
-        if (templates.template1 === oldTeacherOutreachMessage ||
-            (typeof templates.template1 === 'string' && templates.template1.includes('₹299') && templates.template1.includes('GYAN SEVA 📊') && templates.template1.includes('Quest-Coaching-Centre'))) {
+        const isOldPriceOutreach = typeof templates.template1 === 'string' &&
+          templates.template1.includes('299') &&
+          templates.template1.toLowerCase().includes('quest-coaching-centre') &&
+          templates.template1.toLowerCase().includes('gyan seva');
+        if (templates.template1 === oldTeacherOutreachMessage || isOldPriceOutreach) {
           templates.template1 = defaultTeacherOutreachMessage;
+          await setDoc(docRef, { template1: defaultTeacherOutreachMessage }, { merge: true });
         }
       } else {
         templates = {
