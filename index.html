@@ -392,15 +392,22 @@
 
   // ===== DEFAULT TEMPLATES =====
   const defaultTemplates = {
-    template1: `Hello {name} Sir,
+    template1: `Hello {name},
 
-GYAN SEVA helps coaching centres share exam results online. Students can check results using their roll number.
+Online Result System for your coaching.
 
-See a sample: https://krishnakush500.github.io/Quest-Coaching-Centre/
+✓ Students check marks with Roll No.
+✓ Teacher Admin Panel
+✓ PDF Download | WhatsApp Share
+✓ Lifetime Access
 
-One-time setup: ₹499.
-Reply YES to get started.
-- GYAN SEVA`,
+💰 One-Time Setup: ₹499 Only
+
+Reply "YES" for free demo.
+
+Sample result portal: https://krishnakush500.github.io/Quest-Coaching-Centre/
+
+GYAN SEVA 📊`,
 
     template2: `नमस्ते {name} sir,
 
@@ -503,7 +510,8 @@ GYAN SEVA Team`;
       
       if(docSnap.exists) {
         const data = docSnap.data();
-        const shouldUpdateOldOutreachDefault = data.template1 === legacyDefaultTemplate1;
+        const shouldUpdateOldOutreachDefault = data.template1 === legacyDefaultTemplate1 ||
+          (typeof data.template1 === 'string' && data.template1.includes('₹299') && data.template1.includes('GYAN SEVA 📊') && data.template1.includes('Quest-Coaching-Centre'));
         const shouldUpdateOldDemoDefault = data.template3 === legacyDefaultTemplate3;
         for(let i = 1; i <= 7; i++) {
           const templateId = `template${i}`;
