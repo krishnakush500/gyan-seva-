@@ -152,6 +152,7 @@
   }
   const defaultTeacherOutreachMessage = `Hello {name} Sir,\n\nGYAN SEVA helps coaching centres share exam results online. Students can check results using their roll number.\n\nSee a sample: https://krishnakush500.github.io/Quest-Coaching-Centre/\n\nOne-time setup: ₹499.\nReply YES to get started.\n- GYAN SEVA`;
   const defaultTeacherFollowUpMessage = `Hello {name},\n\nJust checking if you would like a demo of the GYAN SEVA result portal. Students can check results using their roll number.\n\nReply YES to get your demo link.\n- GYAN SEVA`;
+  const samplePortalUrl = 'https://krishnakush500.github.io/Quest-Coaching-Centre/';
   let templates = {
     template1: defaultTeacherOutreachMessage,
     template2: defaultTeacherFollowUpMessage
@@ -291,7 +292,18 @@
     const message = isReminder
       ? (templates.template2 || templates.template1 || defaultTeacherFollowUpMessage)
       : (templates.template1 || templates.template2 || defaultTeacherOutreachMessage);
-    return message.replace(/{name}/g, String(leadName || ''));
+    const coachingName = String(leadName || 'Coaching');
+    let personalizedMessage = message.replace(/{name}/gi, coachingName);
+    if (!personalizedMessage.toLowerCase().includes(coachingName.toLowerCase())) {
+      personalizedMessage = personalizedMessage.replace(/^(?:hello|hi|dear)[^\n]*/i, `Hello ${coachingName} Sir,`);
+      if (!personalizedMessage.startsWith(`Hello ${coachingName} Sir,`)) {
+        personalizedMessage = `Hello ${coachingName} Sir,\n\n${personalizedMessage}`;
+      }
+    }
+    if (!personalizedMessage.includes(samplePortalUrl)) {
+      personalizedMessage = `${personalizedMessage.trim()}\n\nSample result portal: ${samplePortalUrl}`;
+    }
+    return personalizedMessage;
   }
 
   window.markLeadAction = async (leadId, leadName, leadPhone, action) => {
