@@ -150,8 +150,6 @@
   } catch (error) {
     localStorage.removeItem('lead_status');
   }
-  let authReady = false;
-  let signedInUser = null;
   let templates = {};
   const defaultTeacherOutreachMessage = `Hello {name} Sir,\n\nGYAN SEVA helps coaching centres share exam results online. Students can check results using their roll number.\n\nSee a sample: https://krishnakush500.github.io/Quest-Coaching-Centre/\n\nOne-time setup: ₹499.\nReply YES to get started.\n- GYAN SEVA`;
   const oldTeacherOutreachMessage = `नमस्ते {name} sir,\n\nThis is GYAN SEVA. We provide FREE DEMO result portal for coaching.\n\n✅ Online result system\n✅ Students can check marks with roll number\n✅ PDF download option\n\n🔰 Completely FREE trial for 1 month.\n🔰 No technical knowledge required.\n\nInterested? Reply "YES" to get your demo portal.\n\nThank you\nGYAN SEVA Team`;
@@ -436,16 +434,8 @@
 
   window.loadLeads=async()=>{
     const container = document.getElementById('leadsList');
-    if (!authReady) return;
-    if (!signedInUser) {
-      document.getElementById('leadCount').innerText = '0';
-      container.innerHTML = '<div class="empty-state"><i class="fas fa-lock"></i><br>Please sign in to GYAN SEVA to view pending leads.</div>';
-      return;
-    }
-
     container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading leads...</div>';
     try {
-      await loadTemplates();
       const snap=await getDocs(query(collection(db,"leads"), where("status","==","pending")));
       let leads=[];
       snap.forEach(d=>leads.push({id:d.id,...d.data()}));
@@ -459,23 +449,22 @@
     } catch(error) {
       console.error('Could not load pending leads:', error);
       document.getElementById('leadCount').innerText = '0';
-      container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Could not load leads. Check your connection or sign in again, then press Refresh.</div>';
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Firebase could not return the leads. Try Refresh.<br><small id="leadLoadError" style="display:block;margin-top:8px;"></small></div>';
+      const errorDetail = document.getElementById('leadLoadError');
+      if (errorDetail) errorDetail.textContent = `${error.code || 'Firebase error'}: ${error.message || 'Unknown error'}`;
     }
   };
 
   // Auto login check
   onAuthStateChanged(auth, (user) => {
-    authReady = true;
-    signedInUser = user;
     if(user) {
       console.log('Logged in:', user.uid);
-      loadLeads();
     } else {
       console.log('Not logged in');
-      loadLeads();
     }
   });
 
+  loadTemplates();
   loadLeads(); 
   setInterval(loadLeads, 15000);
 </script>
